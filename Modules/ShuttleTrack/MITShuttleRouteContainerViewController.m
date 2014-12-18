@@ -27,11 +27,18 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     MITShuttleStopSubtitleLabelAnimationTypeBackward
 };
 
+typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
+    MITShuttleStopInfiniteScrollingLayoutPositionLeft,
+    MITShuttleStopInfiniteScrollingLayoutPositionCenter,
+    MITShuttleStopInfiniteScrollingLayoutPositionRight
+};
+
 @interface MITShuttleRouteContainerViewController () <MITShuttleRouteViewControllerDataSource, MITShuttleRouteViewControllerDelegate, MITShuttleMapViewControllerDelegate>
 
 @property (strong, nonatomic) MITShuttleMapViewController *mapViewController;
 @property (strong, nonatomic) MITShuttleRouteViewController *routeViewController;
 @property (copy, nonatomic) NSArray *stopViewControllers;
+@property (nonatomic, strong) NSArray *stopViewControllersInScrollView;
 
 @property (weak, nonatomic) IBOutlet UIView *mapContainerView;
 @property (weak, nonatomic) IBOutlet UIView *routeContainerView;
@@ -90,7 +97,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     [self setupNavBar];
     [self displayAllChildViewControllers];
-    [self layoutStopViews];
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
     }
@@ -103,7 +109,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self configureLayoutForState:self.state animated:NO];
-        [self layoutStopViews];
         [self configureStopViewControllerRefreshing];
     }
 }
@@ -189,15 +194,87 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     self.stopViewControllers = [NSArray arrayWithArray:stopViewControllers];
 }
 
+#pragma mark - StopViewController Cycling
+
+- (void)displayStopViewControllerInScrollView:(MITShuttleStopViewController *)viewController
+{
+    CGFloat width = CGRectGetWidth(self.stopsScrollView.bounds);
+    CGFloat height = CGRectGetHeight(self.stopsScrollView.bounds);
+    self.stopsScrollView.contentSize = CGSizeMake(width * 3.0, height);
+    
+    MITShuttleStopViewController *center = viewController;
+    [self layoutStopViewController:center forLayoutPosition:MITShuttleStopInfiniteScrollingLayoutPositionCenter];
+    MITShuttleStopViewController *left = [self leftStopViewControllerForCenterStopViewController:center];
+    [self layoutStopViewController:left forLayoutPosition:MITShuttleStopInfiniteScrollingLayoutPositionLeft];
+    MITShuttleStopViewController *right = [self rightStopViewControllerForCenterStopViewController:center];
+    [self layoutStopViewController:right forLayoutPosition:MITShuttleStopInfiniteScrollingLayoutPositionRight];
+    
+    self.stopViewControllersInScrollView = @[left, center, right];
+    
+    [self.stopsScrollView setContentOffset:CGPointMake(width, 0) animated:NO];
+}
+
+- (void)layoutStopViewController:(MITShuttleStopViewController *)stopViewController forLayoutPosition:(MITShuttleStopInfiniteScrollingLayoutPosition)layoutPosition
+{
+    CGFloat width = CGRectGetWidth(self.stopsScrollView.bounds);
+    CGFloat height = CGRectGetHeight(self.stopsScrollView.bounds);
+    
+    if (![self.stopViewControllersInScrollView containsObject:stopViewController]) {
+        [self addViewOfChildViewController:stopViewController toView:self.stopsScrollView];
+    }
+    
+    CGRect layoutFrame;
+    switch (layoutPosition) {
+        case MITShuttleStopInfiniteScrollingLayoutPositionLeft:
+            layoutFrame = CGRectMake(0, 0, width, height);
+            break;
+        case MITShuttleStopInfiniteScrollingLayoutPositionCenter:
+            layoutFrame = CGRectMake(width, 0, width, height);
+            break;
+        case MITShuttleStopInfiniteScrollingLayoutPositionRight:
+            layoutFrame = CGRectMake(width * 2.0, 0, width, height);
+            break;
+    }
+    
+    stopViewController.view.frame = layoutFrame;
+}
+
+- (MITShuttleStopViewController *)leftStopViewControllerForCenterStopViewController:(MITShuttleStopViewController *)centerStopViewController
+{
+    MITShuttleStopViewController *leftStopViewController;
+    
+    NSInteger centerIndex = [self.stopViewControllers indexOfObject:centerStopViewController];
+    if (centerIndex == 0) {
+        // Is First Object -- Return Last
+        leftStopViewController = self.stopViewControllers.lastObject;
+    } else {
+        leftStopViewController = self.stopViewControllers[centerIndex - 1];
+    }
+    
+    return leftStopViewController;
+}
+
+- (MITShuttleStopViewController *)rightStopViewControllerForCenterStopViewController:(MITShuttleStopViewController *)centerStopViewController
+{
+    MITShuttleStopViewController *rightStopViewController;
+    
+    NSInteger centerIndex = [self.stopViewControllers indexOfObject:centerStopViewController];
+    if (centerIndex == (self.stopViewControllers.count - 1)) {
+        // Is Last Object -- Return First
+        rightStopViewController = self.stopViewControllers.firstObject;
+    } else {
+        rightStopViewController = self.stopViewControllers[centerIndex + 1];
+    }
+    
+    return rightStopViewController;
+}
+
 #pragma mark - Child View Controllers
 
 - (void)displayAllChildViewControllers
 {
     [self addViewOfChildViewController:self.mapViewController toView:self.mapContainerView];
     [self addViewOfChildViewController:self.routeViewController toView:self.routeContainerView];
-    for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
-        [self addViewOfChildViewController:stopViewController toView:self.stopsScrollView];
-    }
 }
 
 - (void)addViewOfChildViewController:(UIViewController *)childViewController toView:(UIView *)view
@@ -317,34 +394,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     }
 }
 
-- (void)layoutStopViews
-{
-    CGSize stopViewSize = self.stopsScrollView.frame.size;
-    CGFloat xOffset = 0;
-    for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
-        stopViewController.view.frame = CGRectMake(xOffset, 0, stopViewSize.width, stopViewSize.height);
-        xOffset += stopViewSize.width;
-    }
-    self.stopsScrollView.contentSize = CGSizeMake(xOffset, stopViewSize.height);
-    
-    if (self.stop) {
-        [self scrollToStop:self.stop animated:NO];
-    }
-}
-
-- (void)scrollToStop:(MITShuttleStop *)stop animated:(BOOL)animated
-{
-    NSInteger index = [self.route.stops indexOfObject:stop];
-    CGFloat offset = self.stopsScrollView.frame.size.width * index;
-    [self.stopsScrollView setContentOffset:CGPointMake(offset, 0) animated:animated];
-}
-
 - (void)didScrollToStop:(MITShuttleStop *)stop
 {
     MITShuttleStopSubtitleLabelAnimationType animationType;
     NSInteger previousStopIndex = [self.route.stops indexOfObject:self.stop];
     NSInteger newStopIndex = [self.route.stops indexOfObject:stop];
-    if (previousStopIndex < newStopIndex) {
+    NSInteger maxIndex = self.route.stops.count - 1;
+    if (previousStopIndex == maxIndex && newStopIndex == 0) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
+    } else if (previousStopIndex == 0 && newStopIndex == maxIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
+    } else if (previousStopIndex < newStopIndex) {
         animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
     } else if (previousStopIndex > newStopIndex) {
         animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
@@ -501,7 +561,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
     };
     
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
-        [self layoutStopViews];
+        [self displayStopViewControllerInScrollView:[self stopViewControllerForStop:self.stop]];
         [self setRouteViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
         MITShuttleStopViewController *stopViewController = [self stopViewControllerForStop:self.stop];
@@ -676,8 +736,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 {
     if (scrollView == self.stopsScrollView) {
         NSInteger stopIndex = (*targetContentOffset).x / self.stopsScrollView.frame.size.width;
-        MITShuttleStop *stop = self.route.stops[stopIndex];
-        [self didScrollToStop:stop];
+        MITShuttleStopViewController *scrolledToVC = self.stopViewControllersInScrollView[stopIndex];
+        [self didScrollToStop:scrolledToVC.stop];
     }
 }
 
@@ -701,6 +761,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopSubtitleLabelAnimationType) {
 - (void)scrollingDidEnd
 {
     [self configureStopViewControllerRefreshing];
+    MITShuttleStopViewController *vcForStop = [self stopViewControllerForStop:self.stop];
+    [self displayStopViewControllerInScrollView:vcForStop];
 }
 
 #pragma mark - MITShuttleMapViewControllerDelegate Methods
