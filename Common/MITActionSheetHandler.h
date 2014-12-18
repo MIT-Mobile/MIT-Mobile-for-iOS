@@ -1,9 +1,3 @@
-//
-//  MITActionSheetHandler.h
-//  MIT Mobile
-//
-//
-
 #import <Foundation/Foundation.h>
 
 typedef void (^MITActionSheetDelegateBlock)(UIActionSheet *actionSheet, NSInteger buttonIndex);

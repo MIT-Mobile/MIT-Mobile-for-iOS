@@ -1,10 +1,3 @@
-//
-//  MITPeopleSearchSplitContainerViewController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleSearchSplitContainerViewController.h"
 
 @interface MITPeopleSearchSplitContainerViewController ()

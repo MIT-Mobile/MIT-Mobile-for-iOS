@@ -1,10 +1,3 @@
-//
-//  MITPeopleRecentResultsViewController.m
-//  MIT Mobile
-//
-//
-//
-
 #import "MITPeopleRecentResultsViewController.h"
 #import "PeopleRecentSearchTerm.h"
 

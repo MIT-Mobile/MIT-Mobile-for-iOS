@@ -1,9 +1,3 @@
-//
-//  UIImage+Metadata.m
-//  MIT Mobile
-//
-//
-
 #import "UIImage+Metadata.h"
 
 #import <ImageIO/ImageIO.h>

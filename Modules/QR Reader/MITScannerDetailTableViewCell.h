@@ -2,9 +2,6 @@
 //  MITScannerDetailTableViewCell.h
 //  MIT Mobile
 //
-//  Created by Yev Motov on 11/22/14.
-//
-//
 
 #import <UIKit/UIKit.h>
 
