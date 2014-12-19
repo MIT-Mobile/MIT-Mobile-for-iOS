@@ -17,6 +17,9 @@ NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITS
 NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITShuttleStopViewControllerRouteCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMITShuttleStopViewControllerDefaultCellReuseIdentifier";
 
+static CGFloat const kMITShuttleStopShortTitleSpacing = 20.0;
+static CGFloat const kMITShuttleStopDefaultTitleSpacing = 44.0;
+
 typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleStopViewControllerSectionTypeTitle,
     MITShuttleStopViewControllerSectionTypePredictions,
@@ -277,6 +280,28 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleRoute *route = self.intersectingRoutes[indexPath.row];
     [cell setRoute:route];
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
+    switch (self.viewOption) {
+        case MITShuttleStopViewOptionAll: {
+            switch (sectionType) {
+                case MITShuttleStopViewControllerSectionTypeTitle:
+                case MITShuttleStopViewControllerSectionTypePredictions: {
+                    return kMITShuttleStopShortTitleSpacing;
+                }
+                case MITShuttleStopViewControllerSectionTypeRoutes:
+                default: {
+                    return kMITShuttleStopDefaultTitleSpacing;
+                }
+            }
+        }
+        case MITShuttleStopViewOptionIntersectingOnly:
+        default:
+            return kMITShuttleStopShortTitleSpacing;
+    }
 }
 
 #pragma mark - UITableViewDelegate
