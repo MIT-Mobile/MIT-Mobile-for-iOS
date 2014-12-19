@@ -23,6 +23,7 @@
 #import "Reachability.h"
 #import "MITResourceConstants.h"
 #import "MITMobileServerConfiguration.h"
+#import "MITSlidingViewController.h"
 
 CGFloat const refreshControlTextHeight = 19;
 
@@ -468,8 +469,7 @@ CGFloat const refreshControlTextHeight = 19;
         if (self.isSingleDataSource) {
             self.navigationItem.hidesBackButton = YES;
         } else {
-            self.navigationItem.leftBarButtonItem.tintColor = [UIColor clearColor];
-            self.navigationItem.leftBarButtonItem.enabled = NO;
+            self.navigationItem.leftBarButtonItem = nil;
         }
         
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
@@ -481,8 +481,7 @@ CGFloat const refreshControlTextHeight = 19;
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
-        self.navigationItem.leftBarButtonItem.tintColor = self.navigationController.navigationBar.tintColor;
-        self.navigationItem.leftBarButtonItem.enabled = YES;
+        [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
         [self.navigationItem setTitle:@"MIT News"];
     }
     
