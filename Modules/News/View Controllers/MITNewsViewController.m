@@ -481,7 +481,10 @@ CGFloat const refreshControlTextHeight = 19;
         UIBarButtonItem *searchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch target:self action:@selector(searchButtonWasTriggered:)];
         [rightBarItems addObject:searchItem];
         self.navigationController.view.tintAdjustmentMode = UIViewTintAdjustmentModeAutomatic;
-        [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+        
+        if (!self.isSingleDataSource) {
+            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+        }
         [self.navigationItem setTitle:@"MIT News"];
     }
     
@@ -1103,8 +1106,8 @@ CGFloat const refreshControlTextHeight = 19;
     [self.searchController removeFromParentViewController];
     self.searchController = nil;
     self.searching = NO;
-    [self updateNavigationItem:NO];
     [self changeToMainStories];
+    [self updateNavigationItem:NO];
 }
 
 - (void)changeToMainStories
