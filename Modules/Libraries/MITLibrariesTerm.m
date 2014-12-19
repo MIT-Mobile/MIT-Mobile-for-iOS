@@ -27,8 +27,8 @@
 {
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
  
-    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
-    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+    NSDate *startDate = [[self.dateFormatter dateFromString:self.dates.start] startOfDay];
+    NSDate *endDate = [[self.dateFormatter dateFromString:self.dates.end] endOfDay];
  
     [self.dateFormatter setDateFormat:@"MMM d, yyyy"];
  
@@ -93,8 +93,8 @@
 {
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
 
-    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
-    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+    NSDate *startDate = [[self.dateFormatter dateFromString:self.dates.start] startOfDay];
+    NSDate *endDate = [[self.dateFormatter dateFromString:self.dates.end] endOfDay];
     
     return [date dateFallsBetweenStartDate:startDate endDate:endDate];
 }
@@ -103,8 +103,8 @@
 {
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
 
-    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
-    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+    NSDate *startDate = [[self.dateFormatter dateFromString:self.dates.start] startOfDay];
+    NSDate *endDate = [[self.dateFormatter dateFromString:self.dates.end] endOfDay];
     
     // Check to see if the date even falls within the term
     if (![date dateFallsBetweenStartDate:startDate endDate:endDate])
@@ -140,8 +140,8 @@
 {
     [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
     
-    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
-    NSDate *endDate = [self.dateFormatter dateFromString:self.dates.end];
+    NSDate *startDate = [[self.dateFormatter dateFromString:self.dates.start] startOfDay];
+    NSDate *endDate = [[self.dateFormatter dateFromString:self.dates.end] endOfDay];
     
     // Check to see if the date even falls within the term
     if (![date dateFallsBetweenStartDate:startDate endDate:endDate])
