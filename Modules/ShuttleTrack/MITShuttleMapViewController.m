@@ -774,6 +774,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
+    [self setupCalloutView];
+    
     self.calloutView.contentView = nil;
     self.calloutView.title = stop.title;
     
@@ -955,6 +957,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     [self startAnimatingBusAnnotations];
+    [self refreshVehicles];
 }
 
 #pragma mark - MITShuttleStopViewControllerDelegate
