@@ -630,6 +630,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         
         MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
         [composeViewController setToRecipients:@[email]];
+        composeViewController.mailComposeDelegate = self;
         [self presentViewController:composeViewController animated:YES completion:nil];
     }
 }

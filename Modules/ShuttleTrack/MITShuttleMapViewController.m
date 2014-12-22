@@ -633,6 +633,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)removeMapAnnotationsForClass:(Class)class
 {
+    // Leave this to prevent crash when an annotation is selected and the view controller is navigated away.
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
+        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
+    }
+    
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:class] && annotation != self.stop) {
