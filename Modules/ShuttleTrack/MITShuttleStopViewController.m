@@ -374,6 +374,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:nil];
             [self.navigationController pushViewController:routeVC animated:YES];
         }
+    } else if (sectionType == MITShuttleStopViewControllerSectionTypePredictions) {
+        MITShuttleStopAlarmCell *alarmCell = (MITShuttleStopAlarmCell *)[tableView cellForRowAtIndexPath:indexPath];
+        [self stopAlarmCellDidToggleAlarm:alarmCell];
+        
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
