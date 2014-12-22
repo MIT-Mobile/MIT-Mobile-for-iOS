@@ -774,6 +774,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
+    [self setupCalloutView];
+    
     self.calloutView.contentView = nil;
     self.calloutView.title = stop.title;
     
