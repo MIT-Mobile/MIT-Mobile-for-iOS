@@ -957,6 +957,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
 {
     [self startAnimatingBusAnnotations];
+    [self refreshVehicles];
 }
 
 #pragma mark - MITShuttleStopViewControllerDelegate
