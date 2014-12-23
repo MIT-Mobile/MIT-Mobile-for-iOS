@@ -128,11 +128,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
             break;
         case MITLibraryDetailCellLocation:
         {
-            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme, MITModuleTagCampusMap, [MITMapModelController sanitizeMapSearchString:self.library.location]];
-            NSURL *url = [NSURL URLWithString:urlString];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
-            }
+            [MITMapModelController openMapWithUnsanitizedSearchString:self.library.location];
         }
             break;
         case MITLibraryDetailCellHoursToday:

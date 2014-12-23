@@ -525,6 +525,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
     MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapPlaces];
+    
+    MITMobileResource *mapObjectPlaces = [[MITMapObjectResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:mapObjectPlaces];
 
     MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapCategories];

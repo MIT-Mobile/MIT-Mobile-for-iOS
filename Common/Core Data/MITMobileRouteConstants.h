@@ -77,6 +77,10 @@ FOUNDATION_EXTERN NSString* const MITMapCategoriesPathPattern;
 FOUNDATION_EXTERN NSString* const MITMapPlacesResourceName;
 FOUNDATION_EXTERN NSString* const MITMapPlacesPathPattern;
 
+#pragma mark maps/places/:objectID
+FOUNDATION_EXTERN NSString* const MITMapObjectResourceName;
+FOUNDATION_EXTERN NSString* const MITMapObjectPathPattern;
+
 #pragma mark maps/rooms
 FOUNDATION_EXTERN NSString* const MITMapRoomsResourceName;
 FOUNDATION_EXTERN NSString* const MITMapRoomsPathPattern;

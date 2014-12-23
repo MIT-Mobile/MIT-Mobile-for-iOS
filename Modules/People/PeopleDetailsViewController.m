@@ -606,12 +606,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)mapIconTapped:(NSString *)room
 {
     if (room) {
-        NSString *searchString = [MITMapModelController sanitizeMapSearchString:room];
-        NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
-        NSURL *url = [NSURL URLWithString:urlString];
-        if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[UIApplication sharedApplication] openURL:url];
-        }
+        [MITMapModelController openMapWithUnsanitizedSearchString:room];
     }
 }
 

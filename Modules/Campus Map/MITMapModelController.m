@@ -28,6 +28,32 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     return modelController;
 }
 
++ (void)openMapWithRoomNumber:(NSString *)roomNumber
+{
+    NSString *objectString = [NSString stringWithFormat:@"object-%@", [MITMapModelController sanitizeMapSearchString:roomNumber]];
+    NSString *urlString = [NSString stringWithFormat:@"%@://%@/places/%@",MITInternalURLScheme, MITModuleTagCampusMap, objectString];
+    [MITMapModelController openMapsWithURLString:urlString];
+}
+
++ (void)openMapWithUnsanitizedSearchString:(NSString *)searchString
+{
+    [MITMapModelController openMapWithSearchString:[MITMapModelController sanitizeMapSearchString:searchString]];
+}
+
++ (void)openMapWithSearchString:(NSString *)searchString
+{
+    NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme, MITModuleTagCampusMap, searchString];
+    [MITMapModelController openMapsWithURLString:urlString];
+}
+
++ (void)openMapsWithURLString:(NSString *)urlString
+{
+    NSURL *url = [NSURL URLWithString:urlString];
+    if ([[UIApplication sharedApplication] canOpenURL:url]) {
+        [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
 + (NSString *)sanitizeMapSearchString:(NSString *)searchString
 {
     NSString *buildingNumber;
@@ -207,6 +233,10 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     [MITMapPlacesResource placesWithQuery:queryString loaded:block];
 }
 
+- (void)getPlacesForObjectID:(NSString *)objectID loaded:(MITMobileResult)block
+{
+    [MITMapObjectResource placesWithObjectID:objectID loaded:block];
+}
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block
 {
@@ -217,7 +247,6 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 {
     return [MITMapPlacesResource placesInCategory:nil loaded:block];
 }
-
 
 - (void)placesInCategory:(MITMapCategory*)category loaded:(MITMobileManagedResult)block
 {

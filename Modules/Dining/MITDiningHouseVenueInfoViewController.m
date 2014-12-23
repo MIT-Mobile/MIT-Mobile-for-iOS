@@ -2,10 +2,9 @@
 #import "MITDiningHouseVenue.h"
 #import "MITDiningLocation.h"
 #import "UIKit+MITAdditions.h"
-
+#import "MITMapModelController.h"
 #import "MITDiningScheduleCell.h"
 #import "MITDiningVenueInfoCell.h"
-
 #import "Foundation+MITAdditions.h"
 
 static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningVenueInfoCell";
@@ -183,7 +182,14 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-    // TODO: Hook the location cell up to jump to maps module
+    if (indexPath.section == kMITVenueInfoSectionLocation) {
+        if (self.houseVenue.location.mitRoomNumber) {
+             [MITMapModelController openMapWithRoomNumber:self.houseVenue.location.mitRoomNumber];
+        }
+        else {
+            [MITMapModelController openMapWithSearchString:self.houseVenue.location.locationDescription];
+        }
+    }
 }
 
 #pragma mark Setters/Getters
