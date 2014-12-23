@@ -190,6 +190,7 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     switch (indexPath.section) {
         case kMITMapPlaceBottomButtonsSection: {
             switch (indexPath.row) {
