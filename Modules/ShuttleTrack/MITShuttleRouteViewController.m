@@ -227,6 +227,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if (!_routeStatusCell) {
         _routeStatusCell = [[NSBundle mainBundle] loadNibNamed:kMITShuttleRouteStatusCellNibName owner:self options:nil][0];
         [_routeStatusCell setRoute:self.route];
+        
+        CGRect screenRect = [UIScreen mainScreen].bounds;
+        CGFloat width = CGRectGetWidth(screenRect);
+        CGFloat height = CGRectGetHeight(screenRect);
+        CGFloat longestEdge = height > width ? height : width;
+        _routeStatusCell.separatorInset = UIEdgeInsetsMake(0, longestEdge, 0, 0);
     }
     return _routeStatusCell;
 }
