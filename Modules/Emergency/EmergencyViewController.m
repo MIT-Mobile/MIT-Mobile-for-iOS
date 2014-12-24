@@ -39,13 +39,15 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     } else {
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
     }
 	self.tableView.backgroundView = nil;
+    self.refreshControl = [UIRefreshControl new];
+    [self.tableView addSubview:self.refreshControl];
+    [self.refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -92,8 +94,14 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)refreshInfo:(id)sender {
-	self.refreshButtonPressed = (sender != nil);
+- (void)refreshControlActivated:(UIRefreshControl *)refreshControl
+{
+    self.refreshButtonPressed = YES;
+    [self refreshInfo];
+}
+
+- (void)refreshInfo
+{
     [[EmergencyData sharedData] checkForEmergencies];
 }
 
@@ -277,6 +285,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
+    
+    [self.refreshControl endRefreshing];
 }
 
 - (void)infoDidFailToLoad:(NSNotification *)aNotification {
@@ -296,6 +306,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	
 	// touch handled
 	self.refreshButtonPressed = NO;
+    
+    [self.refreshControl endRefreshing];
 }
 
 @end

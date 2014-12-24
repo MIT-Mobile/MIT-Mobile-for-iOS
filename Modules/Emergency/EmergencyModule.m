@@ -81,7 +81,7 @@
 - (void)didReceiveNotification:(NSDictionary *)userInfo
 {
     [super didReceiveNotification:userInfo];
-    [self.rootViewController refreshInfo:nil];
+    [self.rootViewController refreshInfo];
 }
 
 - (void) syncUnreadNotifications {
