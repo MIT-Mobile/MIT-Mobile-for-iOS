@@ -15,6 +15,7 @@
 #import "MITTiledMapView.h"
 #import "MITLocationManager.h"
 #import "MITTileOverlay.h"
+#import <QuartzCore/QuartzCore.h>
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -891,9 +892,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     for (MKAnnotationView *view in views) {
         if ([view.annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [view.superview bringSubviewToFront:view];
+            view.layer.zPosition = -1;
         } else {
-            [view.superview sendSubviewToBack:view];
+            view.layer.zPosition = 0;
         }
     }
 }
