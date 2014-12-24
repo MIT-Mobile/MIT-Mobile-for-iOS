@@ -167,8 +167,8 @@
 {
     UICollectionViewCell *collectionViewCell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]];
     MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
-    if (self.errorMessage) {
-        loadMoreCell.textLabel.text = self.errorMessage;
+    if (_errorMessage) {
+        loadMoreCell.textLabel.text = _errorMessage;
         loadMoreCell.loadingIndicator.hidden = YES;
     } else if (_storyUpdateInProgress) {
         loadMoreCell.textLabel.text = @"Loading More...";
@@ -189,15 +189,21 @@
     if ([collectionViewCell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
             MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
-            if (self.errorMessage) {
-                loadMoreCell.textLabel.text = self.errorMessage;
+            if (_errorMessage) {
+                loadMoreCell.textLabel.text = _errorMessage;
                 loadMoreCell.loadingIndicator.hidden = YES;
+                
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
-            } else {
+            
+            } else if (_storyRefreshInProgress) {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
+            
+            } else {
+                loadMoreCell.textLabel.text = @"Loading More...";
+                loadMoreCell.loadingIndicator.hidden = NO;
             }
             
             return loadMoreCell;
@@ -208,6 +214,21 @@
         }
     }
     return collectionViewCell;
+}
+
+- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
+        
+            if (!_errorMessage && !_storyUpdateInProgress && !_storyRefreshInProgress) {
+                [self getMoreStoriesForSection:indexPath.section];
+            }
+            
+        } else {
+            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]),NSStringFromClass([cell class]));
+        }
+    }
 }
 
 - (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath

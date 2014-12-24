@@ -514,6 +514,8 @@ CGFloat const refreshControlTextHeight = 19;
     }
     
     self.storyUpdateInProgress = YES;
+    [self setNewsRefreshInProgress:YES];
+
     if (self.messageView) {
         [self removeNoResultsView];
     }
@@ -524,7 +526,6 @@ CGFloat const refreshControlTextHeight = 19;
         [self updateRefreshStatusWithText:@"Updating..."];
     }
     [self reloadItems:^(NSError *error) {
-        self.storyUpdateInProgress = NO;
         MITNewsViewController *strongSelf = weakSelf;
         UIRefreshControl *strongRefresh = weakRefresh;
         
@@ -535,6 +536,9 @@ CGFloat const refreshControlTextHeight = 19;
             return;
         }
 
+        strongSelf.storyUpdateInProgress = NO;
+        [strongSelf setNewsRefreshInProgress:NO];
+        
         if (error) {
             DDLogWarn(@"update failed; %@",error);
             if (error.code == NSURLErrorNotConnectedToInternet) {
@@ -721,6 +725,16 @@ CGFloat const refreshControlTextHeight = 19;
     }
 }
 
+- (void)setNewsRefreshInProgress:(BOOL)progress
+{
+    if (self.presentationStyle == MITNewsPresentationStyleGrid) {
+        self.gridViewController.storyRefreshInProgress = progress;
+        [self.gridViewController updateLoadingMoreCellString];
+    } else if (self.presentationStyle == MITNewsPresentationStyleList) {
+        self.listViewController.storyRefreshInProgress = progress;
+    }
+}
+
 - (void)updateLoadingCellWithError:(NSError *)error
 {
     MITNewsDataSource *dataSource = nil;
@@ -736,7 +750,13 @@ CGFloat const refreshControlTextHeight = 19;
             [self setNewsStoryUpdateInProgress:self.gridViewController.storyUpdateInProgress];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
-        [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        
+        BOOL cellIsVisible = [[self.listViewController.tableView indexPathsForVisibleRows] containsObject:[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]];
+        BOOL cellIsMoving = self.listViewController.tableView.isDragging || self.listViewController.tableView.isDecelerating;
+        
+        if ((!cellIsMoving && cellIsVisible) || error) {
+            [self.listViewController.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForItem:[dataSource.objects count] inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+        }
     }
 }
 
