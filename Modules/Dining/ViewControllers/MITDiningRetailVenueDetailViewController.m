@@ -388,7 +388,7 @@ static int const kWebViewTag = 4231;
     CGRect boundingRect = [attributedString boundingRectWithSize:constraint
                                                          options:NSStringDrawingUsesLineFragmentOrigin
                                                          context:nil];
-    return CGRectGetHeight(boundingRect);
+    return CGRectGetHeight(boundingRect) + 8.0; // Padding
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
