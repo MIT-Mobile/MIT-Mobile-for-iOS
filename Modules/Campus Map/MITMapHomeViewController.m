@@ -447,6 +447,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
                                                           }];
 }
 
+- (void)getPlaceForObjectID:(NSString *)objectID
+{
+    [[MITMapModelController sharedController] getPlacesForObjectID:objectID loaded:^(NSArray *objects, NSError *error) {
+        if (objects) {
+            [self setPlaces:objects animated:YES];
+            MITMapPlace *place = objects[0];
+            [[MITMapModelController sharedController] addRecentSearch:place.name];
+        }
+    }];
+}
+
 - (void)setPlacesWithQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
@@ -646,6 +657,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         query = [query stringByRemovingPercentEncoding];
         [self performSearchWithQuery:query];
         self.searchBar.text = query;
+    }
+    else if ([queryEndpoint isEqualToString:@"places"]) {
+        [self getPlaceForObjectID:query];
     }
 }
 

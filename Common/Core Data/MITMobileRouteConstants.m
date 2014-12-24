@@ -77,6 +77,10 @@ NSString* const MITMapCategoriesPathPattern = @"apis/map/place_categories/";
 NSString* const MITMapPlacesResourceName = @"MITMapPlacesResourceName";
 NSString* const MITMapPlacesPathPattern = @"apis/map/places/";
 
+#pragma mark maps/places/:objectID
+NSString* const MITMapObjectResourceName = @"MITMapObjectResourceName";
+NSString* const MITMapObjectPathPattern = @"apis/map/places/:objectID";
+
 #pragma mark maps/rooms
 NSString* const MITMapRoomsResourceName = @"MITMapRoomsResourceName";
 NSString* const MITMapRoomsPathPattern = @"apis/map/rooms/";

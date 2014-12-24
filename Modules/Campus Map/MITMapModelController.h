@@ -10,7 +10,9 @@
 @property NSTimeInterval searchExpiryInterval;
 
 + (MITMapModelController*)sharedController;
-+ (NSString *)sanitizeMapSearchString:(NSString *)searchString;
++ (void)openMapWithRoomNumber:(NSString *)roomNumber;
++ (void)openMapWithSearchString:(NSString *)searchString;
++ (void)openMapWithUnsanitizedSearchString:(NSString *)searchString;
 
 - (NSFetchRequest*)categories:(MITMobileManagedResult)block;
 
@@ -20,6 +22,7 @@
 - (void)clearRecentSearchesWithCompletion:(void (^)(NSError* error))block;
 
 - (void)searchMapWithQuery:(NSString*)queryText loaded:(MITMobileResult)block;
+- (void)getPlacesForObjectID:(NSString *)objectID loaded:(MITMobileResult)block;
 - (NSFetchRequest*)places:(MITMobileManagedResult)block;
 - (void)placesInCategory:(MITMapCategory*)categoryId loaded:(MITMobileManagedResult)block;
 

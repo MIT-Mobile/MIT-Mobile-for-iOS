@@ -464,11 +464,11 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeLocation: {
-            NSString *searchString = self.event.location.roomNumber ? [MITMapModelController sanitizeMapSearchString:self.event.location.roomNumber] : self.event.location.locationDescription;
-            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
-            NSURL *url = [NSURL URLWithString:urlString];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
+            if (self.event.location.roomNumber) {
+                [MITMapModelController openMapWithUnsanitizedSearchString:self.event.location.roomNumber];
+            }
+            else {
+                [MITMapModelController openMapWithSearchString:self.event.location.locationDescription];
             }
             break;
         }
