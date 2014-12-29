@@ -4,7 +4,6 @@
 #import "MITShuttleMapViewController.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
-#import "MITShuttleStopPredictionLoader.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITExtendedNavBarView.h"
@@ -109,7 +108,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
     
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self configureLayoutForState:self.state animated:NO];
-        [self configureStopViewControllerRefreshing];
     }
 }
 
@@ -187,7 +185,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
         MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped
                                                                                               stop:stop
                                                                                              route:self.route];
-        stopVC.predictionLoader.shouldRefreshPredictions = NO;
         stopVC.viewOption = MITShuttleStopViewOptionAll;
         [stopViewControllers addObject:stopVC];
     }
@@ -425,24 +422,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
     }
 }
 
-#pragma mark - Stop Refreshing
-
-- (void)configureStopViewControllerRefreshing
-{
-    for (MITShuttleStopViewController *stopViewController in self.stopViewControllers) {
-        NSInteger index = [self.stopViewControllers indexOfObject:stopViewController];
-        MITShuttleStop *stop = self.route.stops[index];
-        stopViewController.predictionLoader.shouldRefreshPredictions = [self shouldRefreshStop:stop];
-    }
-}
-
-- (BOOL)shouldRefreshStop:(MITShuttleStop *)stop
-{
-    NSInteger currentStopIndex = [self.route.stops indexOfObject:self.stop];
-    NSInteger stopIndex = [self.route.stops indexOfObject:stop];
-    return (ABS(currentStopIndex - stopIndex) <= 1);
-}
-
 #pragma mark - Map Tap Gesture Recognizer
 
 - (IBAction)mapContainerViewTapped:(id)sender
@@ -582,8 +561,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
     }
     
     [self.mapViewController centerToShuttleStop:self.stop animated:animated];
-    
-    [self configureStopViewControllerRefreshing];
 }
 
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
@@ -760,7 +737,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 
 - (void)scrollingDidEnd
 {
-    [self configureStopViewControllerRefreshing];
     MITShuttleStopViewController *vcForStop = [self stopViewControllerForStop:self.stop];
     [self displayStopViewControllerInScrollView:vcForStop];
 }

@@ -7,6 +7,10 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "UITableView+MITAdditions.h"
+#import "MITShuttlePrediction.h"
+#import "MITShuttlePredictionList.h"
+#import "MITCoreDataController.h"
+#import "MITShuttlePredictionLoader.h"
 
 static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
@@ -25,7 +29,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
 
@@ -54,8 +57,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     
     _route = route;
     [self configureViewForCurrentRoute];
-    [self stopRefreshingRoute];
-    [self startRefreshingRoute];
 }
 
 #pragma mark - View Lifecycle
@@ -74,13 +75,18 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
-    [self startRefreshingRoute];
+    
+    [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self stopRefreshingRoute];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
+    [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForRoute:self.route];
 }
 
 - (void)didReceiveMemoryWarning
@@ -116,68 +122,31 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
-#pragma mark - Refresh Control
+#pragma mark - Update Data
 
-- (void)refreshControlActivated:(id)sender
+- (void)predictionsWillUpdate
 {
-    [self stopRefreshingRoute];
-    [self startRefreshingRoute];
-}
-
-#pragma mark - Data Refresh Timers
-
-- (void)startRefreshingRoute
-{
-    [self loadRoute];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.routeRefreshTimer invalidate];
-        NSTimer *routeRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteRefreshInterval
-                                                             target:self
-                                                           selector:@selector(loadRoute)
-                                                           userInfo:nil
-                                                            repeats:YES];
-        self.routeRefreshTimer = routeRefreshTimer;
-    });
-}
-
-- (void)stopRefreshingRoute
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.routeRefreshTimer invalidate];
-        self.routeRefreshTimer = nil;
-    });
-}
-
-#pragma mark - Load Route
-
-- (void)loadRoute
-{
-    [self beginRefreshing];
-    [[MITShuttleController sharedController] getRouteDetail:self.route completion:^(MITShuttleRoute *route, NSError *error) {
-        [self endRefreshing];
-        [self.tableView reloadDataAndMaintainSelection];
-    }];
-}
-
-- (void)beginRefreshing
-{
-    [self.refreshControl beginRefreshing];
-    
     self.isUpdating = YES;
     [self refreshLastUpdatedLabel];
 }
 
-- (void)endRefreshing
+- (void)predictionsDidUpdate
 {
-    [self.refreshControl endRefreshing];
-    
     self.isUpdating = NO;
     self.lastUpdatedDate = [NSDate date];
     [self refreshLastUpdatedLabel];
-    
-    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-        [self.delegate routeViewControllerDidRefresh:self];
-    }
+    [self.tableView reloadDataAndMaintainSelection];
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlActivated:(id)sender
+{
+    [self predictionsWillUpdate];
+    [[MITShuttleController sharedController] getPredictionsForRoute:self.route completion:^(NSArray *predictionLists, NSError *error) {
+        [self.refreshControl endRefreshing];
+        [self predictionsDidUpdate];
+    }];
 }
 
 #pragma mark - Stop Highlighting
@@ -279,7 +248,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
         if (routeStatus != MITShuttleRouteStatusPredictionsUnavailable) {
-            MITShuttlePrediction *prediction = [stop nextPredictionForRoute:self.route];
+            MITShuttlePrediction *prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
             [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
         } else {

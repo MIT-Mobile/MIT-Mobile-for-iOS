@@ -33,11 +33,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *routesFetchedResultsController;
-@property (nonatomic, strong) NSFetchedResultsController *stopsFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *vehiclesFetchedResultsController;
 
 @property (nonatomic, readonly) NSArray *routes;
-@property (nonatomic, readonly) NSArray *stops;
+@property (nonatomic, strong) NSArray *stops;
 @property (nonatomic, readonly) NSArray *vehicles;
 
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
@@ -263,11 +262,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     return [self.routesFetchedResultsController fetchedObjects];
 }
 
-- (NSArray *)stops
-{
-    return [self.stopsFetchedResultsController fetchedObjects];
-}
-
 - (NSArray *)vehicles
 {
     return [self.vehiclesFetchedResultsController fetchedObjects];
@@ -305,18 +299,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     return _routesFetchedResultsController;
 }
 
-- (NSFetchedResultsController *)stopsFetchedResultsController
-{
-    if (!_stopsFetchedResultsController) {
-        NSPredicate *predicate = nil;
-        if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"routes contains %@", self.route];
-        }
-        _stopsFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleStop" predicate:predicate];
-    }
-    return _stopsFetchedResultsController;
-}
-
 - (NSFetchedResultsController *)vehiclesFetchedResultsController
 {
     if (!_vehiclesFetchedResultsController) {
@@ -351,7 +333,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)resetFetchedResults
 {
     self.routesFetchedResultsController = nil;
-    self.stopsFetchedResultsController = nil;
     self.vehiclesFetchedResultsController = nil;
     
     [self performFetch];
@@ -491,10 +472,24 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - Private Methods
 
+- (void)updateStops
+{
+    if (self.route != nil) {
+        self.stops = [self.route.stops array];
+    } else {
+        NSMutableArray *newStops = [NSMutableArray array];
+        for (MITShuttleRoute *route in self.routes) {
+            [newStops addObjectsFromArray:[route.stops array]];
+        }
+        self.stops = [NSArray arrayWithArray:newStops];
+    }
+    [self refreshStops];
+}
+
 - (void)performFetch
 {
     [self.routesFetchedResultsController performFetch:nil];
-    [self.stopsFetchedResultsController performFetch:nil];
+    [self updateStops];
     [self.vehiclesFetchedResultsController performFetch:nil];
     [self refreshAll];
 }
@@ -740,7 +735,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     // TODO: Correctly initialize this
     // TODO: Figure out how to correctly add the VC as a child VC
-    MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain stop:stop route:self.route predictionLoader:nil];
+    MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain stop:stop route:self.route];
     stopViewController.tableTitle = stop.title;
     stopViewController.delegate = self;
     
@@ -787,7 +782,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             break;
         }
         case MITShuttleRouteStatusInService: {
-            MITShuttlePrediction *nextPrediction = [stop nextPredictionForRoute:self.route];
+            MITShuttlePrediction *nextPrediction = [stop nextPrediction];
             
             if (nextPrediction == nil) {
                 calloutSubtitle = @"No current predictions";
