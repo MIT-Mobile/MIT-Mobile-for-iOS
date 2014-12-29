@@ -74,8 +74,24 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
     }
     
     buildingNumber = [buildingNumber stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    buildingNumber = [self trimString:buildingNumber byRemovingTrailingCharactersInSet:[NSCharacterSet letterCharacterSet]];
     buildingNumber = [buildingNumber stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     return buildingNumber;
+}
+
++ (NSString *)trimString:(NSString *)string byRemovingTrailingCharactersInSet:(NSCharacterSet *)characterSet {
+    NSUInteger location = 0;
+    NSUInteger length = [string length];
+    unichar charBuffer[length];
+    [string getCharacters:charBuffer];
+    
+    for (length = [string length]; length > 0; length--) {
+        if (![characterSet characterIsMember:charBuffer[length - 1]]) {
+            break;
+        }
+    }
+    
+    return [string substringWithRange:NSMakeRange(location, length - location)];
 }
 
 - (instancetype)init
