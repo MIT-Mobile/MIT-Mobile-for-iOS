@@ -183,11 +183,20 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
 {
     [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
     if (indexPath.section == kMITVenueInfoSectionLocation) {
-        if (self.houseVenue.location.mitRoomNumber) {
-             [MITMapModelController openMapWithRoomNumber:self.houseVenue.location.mitRoomNumber];
-        }
-        else {
-            [MITMapModelController openMapWithSearchString:self.houseVenue.location.locationDescription];
+        
+        void (^openInMapsBlock)(void) = ^{
+            if (self.houseVenue.location.mitRoomNumber) {
+                [MITMapModelController openMapWithRoomNumber:self.houseVenue.location.mitRoomNumber];
+            }
+            else {
+                [MITMapModelController openMapWithSearchString:self.houseVenue.location.locationDescription];
+            }
+        };
+        
+        if (self.navigationController.presentingViewController) {
+            [self.navigationController.presentingViewController dismissViewControllerAnimated:YES completion:openInMapsBlock];
+        } else {
+            openInMapsBlock();
         }
     }
 }

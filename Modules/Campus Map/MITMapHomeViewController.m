@@ -558,10 +558,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self resizeAndAlignSearchBar];
     
     if (!self.isKeyboardVisible && [self.searchBar isFirstResponder] && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
-        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
-        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
-        self.typeAheadViewController.view.frame = CGRectMake(0, navBarHeight, self.view.frame.size.width, tableViewHeight);
+        CGFloat tableViewHeight = self.view.frame.size.height;
+        self.typeAheadViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
     }
 }
 
@@ -577,9 +575,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self.searchBar setShowsCancelButton:YES animated:YES];
         [self resizeAndAlignSearchBar];
         
-        CGFloat navBarHeight = CGRectGetMaxY(self.navigationController.navigationBar.frame);
-        CGFloat toolbarHeight = CGRectGetHeight(self.navigationController.toolbar.bounds);
-        CGFloat tableViewHeight = self.view.frame.size.height - navBarHeight - toolbarHeight;
+        CGFloat tableViewHeight = self.view.frame.size.height;
         self.typeAheadViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
         self.typeAheadViewController.view.hidden = NO;
     }
