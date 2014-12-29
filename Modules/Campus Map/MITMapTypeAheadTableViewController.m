@@ -169,7 +169,7 @@
         if (!cell) {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapRecentSearchCellIdentifier];
         }
-        
+        cell.imageView.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
         MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
         cell.textLabel.text = place.name;
         
