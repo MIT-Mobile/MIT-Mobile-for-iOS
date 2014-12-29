@@ -128,7 +128,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
             break;
         case MITLibraryDetailCellLocation:
         {
-            [MITMapModelController openMapWithUnsanitizedSearchString:self.library.location];
+            [MITMapModelController openMapWithRoomNumber:self.library.location];
         }
             break;
         case MITLibraryDetailCellHoursToday:

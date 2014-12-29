@@ -170,7 +170,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     NSInteger index = [self.sortedMeals indexOfObject:newMealList.meal];
     
     self.mealSelectionView.meal = self.sortedMeals[index];
-    
+    self.currentlyDisplayedMeal = self.sortedMeals[index];
     self.mealSelectionView.nextMealButton.enabled = (index + 1 < self.sortedMeals.count);
     self.mealSelectionView.previousMealButton.enabled = (index > 0);
 }

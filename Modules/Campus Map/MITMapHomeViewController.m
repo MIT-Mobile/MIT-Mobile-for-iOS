@@ -117,6 +117,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self registerForKeyboardNotifications];
+    self.searchBar.text = self.searchQuery;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -452,8 +453,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [[MITMapModelController sharedController] getPlacesForObjectID:objectID loaded:^(NSArray *objects, NSError *error) {
         if (objects) {
             [self setPlaces:objects animated:YES];
-            MITMapPlace *place = objects[0];
-            [[MITMapModelController sharedController] addRecentSearch:place.name];
+            MITMapPlace *place = objects.firstObject;
+            if (place) {
+                [[MITMapModelController sharedController] addRecentSearch:place.name];
+            }
         }
     }];
 }
@@ -652,10 +655,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([queryEndpoint isEqualToString:@"search"]) {
         query = [query stringByRemovingPercentEncoding];
         [self performSearchWithQuery:query];
-        self.searchBar.text = query;
+        self.searchQuery = query;
     }
     else if ([queryEndpoint isEqualToString:@"places"]) {
         [self getPlaceForObjectID:query];
+        // Remove the `object-` prefix for the user visible string
+        NSRange range = [query rangeOfString:@"object-"];
+        query = [query substringFromIndex:range.length];
+        self.searchQuery = query;
     }
 }
 
