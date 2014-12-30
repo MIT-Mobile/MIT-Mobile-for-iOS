@@ -17,6 +17,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "SVProgressHUD.h"
+#import "MITTelephoneHandler.h"
 
 typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
     MITFacilitiesFormFieldEmail = 0,
@@ -213,12 +214,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
         
         if( buttonIndex == actionSheet.destructiveButtonIndex )
         {
-            // call
-            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
-            if ([[UIApplication sharedApplication] canOpenURL:url])
-            {
-                [[UIApplication sharedApplication] openURL:url];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:kFacilitiesPhoneNumber];
         }
         else
         {

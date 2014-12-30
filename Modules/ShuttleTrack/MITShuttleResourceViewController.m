@@ -1,6 +1,7 @@
 #import "MITShuttleResourceViewController.h"
 #import "MITShuttleResourceData.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * const kMITShuttleResourcePhoneNumberCellIdentifier = @"MITShuttleResourcePhoneNumberCell";
 static NSString * const kMITShuttleResourceURLCellIdentifier = @"MITShuttleResourceURLCell";
@@ -162,10 +163,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleResourceSection) {
 - (void)phoneNumberResourceSelected:(NSDictionary *)resource
 {
     NSString *phoneNumber = resource[kResourcePhoneNumberKey];
-    NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
-    if ([[UIApplication sharedApplication] canOpenURL:phoneNumberURL]) {
-        [[UIApplication sharedApplication] openURL:phoneNumberURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:phoneNumber];
 }
 
 - (void)urlResourceSelected:(NSDictionary *)resource

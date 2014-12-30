@@ -482,6 +482,7 @@
 		80598DD71A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DD61A0AC18B0095CEAA /* MITLibrariesFormSheetElementAvailableOption.m */; };
 		80598DDE1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DDD1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m */; };
 		80598DE21A0ACCA60095CEAA /* MITLibrariesTellUsFormSheetViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80598DE11A0ACCA60095CEAA /* MITLibrariesTellUsFormSheetViewController.m */; };
+		806964931A52F58A0095B611 /* MITTelephoneHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 806964921A52F58A0095B611 /* MITTelephoneHandler.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80899D801A421EB0004E4953 /* MITTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 80899D7F1A421EB0004E4953 /* MITTileOverlay.m */; };
 		8089A4A41A422DA7004E4953 /* MITMapTiles in Resources */ = {isa = PBXBuildFile; fileRef = 8089A4A31A422DA7004E4953 /* MITMapTiles */; };
@@ -1654,6 +1655,8 @@
 		80598DDD1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesFormSheetElementStatus.m; path = AskUsTellUs/FormSheetViewController/Models/CustomElements/MITLibrariesFormSheetElementStatus.m; sourceTree = "<group>"; };
 		80598DE01A0ACCA60095CEAA /* MITLibrariesTellUsFormSheetViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesTellUsFormSheetViewController.h; path = AskUsTellUs/TellUsFormSheet/MITLibrariesTellUsFormSheetViewController.h; sourceTree = "<group>"; };
 		80598DE11A0ACCA60095CEAA /* MITLibrariesTellUsFormSheetViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesTellUsFormSheetViewController.m; path = AskUsTellUs/TellUsFormSheet/MITLibrariesTellUsFormSheetViewController.m; sourceTree = "<group>"; };
+		806964911A52F58A0095B611 /* MITTelephoneHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTelephoneHandler.h; path = MITTelephoneHandler/MITTelephoneHandler.h; sourceTree = "<group>"; };
+		806964921A52F58A0095B611 /* MITTelephoneHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITTelephoneHandler.m; path = MITTelephoneHandler/MITTelephoneHandler.m; sourceTree = "<group>"; };
 		80885CB41991410700D6661C /* MITEventsHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsHomeViewControllerPad.h; path = iPad/MITEventsHomeViewControllerPad.h; sourceTree = "<group>"; };
 		80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsHomeViewControllerPad.m; path = iPad/MITEventsHomeViewControllerPad.m; sourceTree = "<group>"; };
 		80899D7E1A421EB0004E4953 /* MITTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTileOverlay.h; path = Model/MITTileOverlay/MITTileOverlay.h; sourceTree = "<group>"; };
@@ -2120,6 +2123,7 @@
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
+				8069648D1A52F5380095B611 /* TelephoneHandler */,
 				277A583E19FD71C800BE134E /* MITActionSheetHandler.h */,
 				277A583F19FD71C800BE134E /* MITActionSheetHandler.m */,
 				A544EEFD1961D1B60046823E /* Views */,
@@ -4248,6 +4252,15 @@
 			name = TellUsFormSheet;
 			sourceTree = "<group>";
 		};
+		8069648D1A52F5380095B611 /* TelephoneHandler */ = {
+			isa = PBXGroup;
+			children = (
+				806964911A52F58A0095B611 /* MITTelephoneHandler.h */,
+				806964921A52F58A0095B611 /* MITTelephoneHandler.m */,
+			);
+			name = TelephoneHandler;
+			sourceTree = "<group>";
+		};
 		80885CAD19913F4E00D6661C /* iPad */ = {
 			isa = PBXGroup;
 			children = (
@@ -5557,6 +5570,7 @@
 				2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */,
 				A541EB871A314D3B00FA7349 /* MITNewsStoriesDataSource.m in Sources */,
 				2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */,
+				806964931A52F58A0095B611 /* MITTelephoneHandler.m in Sources */,
 				80598DC61A0A8A5E0095CEAA /* MITLibrariesFormSheetCellWebLink.m in Sources */,
 				4869CE77170380D800A3662B /* MITDiningMenuComparisonViewController.m in Sources */,
 				A541EBB71A31557900FA7349 /* MKAnnotationView+WebCache.m in Sources */,
