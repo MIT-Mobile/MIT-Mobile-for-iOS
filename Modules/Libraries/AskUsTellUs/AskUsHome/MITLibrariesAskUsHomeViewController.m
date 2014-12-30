@@ -3,6 +3,7 @@
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesConsultationFormSheetViewController.h"
 #import "MITLibrariesTellUsFormSheetViewController.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MITLibrariesAskUsHomeViewControllerCellIdentifier";
 static CGFloat const MITLibrariesAskUsHomeDetailLabelPadding = 6.0;
@@ -171,10 +172,7 @@ static CGFloat const MITLibrariesAskUsHomeCellPadding = 38.0;
                 break;
             }
             case MITLibrariesAskUsOptionGeneral: {
-                NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
-                if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                    [[UIApplication sharedApplication] openURL:url];
-                }
+                [MITTelephoneHandler attemptToCallPhoneNumber:@"16173242275"];
                 break;
             }
             default:

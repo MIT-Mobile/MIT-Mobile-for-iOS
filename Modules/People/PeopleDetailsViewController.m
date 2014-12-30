@@ -10,6 +10,7 @@
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
 #import "MITMapModelController.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -612,10 +613,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (void)phoneIconTapped:(NSString *)phone
 {
-	NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phone]];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL]) {
-		[[UIApplication sharedApplication] openURL:externURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:phone];
 }
 
 - (void)emailIconTapped:(NSString *)email

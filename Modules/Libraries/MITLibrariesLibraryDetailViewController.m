@@ -9,6 +9,7 @@
 #import "MITLocationManager.h"
 #import "MITMapModelController.h"
 #import "MITConstants.h"
+#import "MITTelephoneHandler.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
@@ -20,7 +21,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     MITLibraryDetailCellOther
 };
 
-@interface MITLibrariesLibraryDetailViewController () <UIAlertViewDelegate>
+@interface MITLibrariesLibraryDetailViewController ()
 
 @property (nonatomic, strong) MITTiledMapView *mapView;
 
@@ -120,10 +121,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     switch (indexPath.row) {
         case MITLibraryDetailCellPhone:
         {
-            if ([[UIApplication sharedApplication] canOpenURL:[NSURL URLWithString:@"tel://"]]) {
-                UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", self.library.phoneNumber] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
-                [alert show];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:self.library.phoneNumber];
         }
             break;
         case MITLibraryDetailCellLocation:
@@ -135,14 +133,6 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
         case MITLibraryDetailCellOther:
         default:
             break;
-    }
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    if (buttonIndex == 1) {
-        NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", self.library.phoneNumber]];
-        [[UIApplication sharedApplication] openURL:phoneURL];
     }
 }
 

@@ -16,6 +16,7 @@
 #import "PeopleFavoriteData.h"
 #import "PeopleRecentSearchTerm.h"
 #import "MITPeopleRecentResultsViewController.h"
+#import "MITTelephoneHandler.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -628,10 +629,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)phoneIconTapped
 {
-    NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@",MITPeopleDirectoryAssistancePhone]];
-	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
-		[[UIApplication sharedApplication] openURL:phoneURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:MITPeopleDirectoryAssistancePhone];
 }
 
 @end

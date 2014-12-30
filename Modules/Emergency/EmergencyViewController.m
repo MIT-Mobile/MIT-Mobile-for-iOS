@@ -6,6 +6,7 @@
 #import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
+#import "MITTelephoneHandler.h"
 
 static NSString* const MITEmergencyHTMLFormatString = @"<html>\n<head>\n<style type=\"text/css\" media=\"screen\">\nbody { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; }\n</style>\n</head>\n<body>\n%@\n</body>\n</html>";
 
@@ -249,11 +250,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
-            NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", contact[@"phone"]]];
-            
-            if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
-                [[UIApplication sharedApplication] openURL:phoneURL];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:contact[@"phone"]];
             
             [tableView deselectRowAtIndexPath:indexPath
                                      animated:YES];

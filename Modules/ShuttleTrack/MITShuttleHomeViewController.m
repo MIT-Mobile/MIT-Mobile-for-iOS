@@ -14,6 +14,7 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "UITableView+MITAdditions.h"
 #import "MITShuttlePredictionLoader.h"
+#import "MITTelephoneHandler.h"
 
 static const NSTimeInterval kShuttleHomeAllRoutesRefreshInterval = 60.0;
 
@@ -657,10 +658,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)phoneNumberResourceSelected:(NSDictionary *)resource
 {
     NSString *phoneNumber = resource[kResourcePhoneNumberKey];
-    NSURL *phoneNumberURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phoneNumber]];
-    if ([[UIApplication sharedApplication] canOpenURL:phoneNumberURL]) {
-        [[UIApplication sharedApplication] openURL:phoneNumberURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:phoneNumber];
 }
 
 - (void)urlResourceSelected:(NSDictionary *)resource
