@@ -393,6 +393,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)addNearestStopsPredictionsDependencies
 {
+    if (![MITLocationManager locationServicesAuthorized]) {
+        return;
+    }
+    
     NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
     for (NSArray *stopArray in [self.nearestStops allValues]) {
         for (MITShuttleStop *stop in stopArray) {
