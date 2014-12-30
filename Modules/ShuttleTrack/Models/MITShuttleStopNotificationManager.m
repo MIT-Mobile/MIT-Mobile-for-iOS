@@ -2,7 +2,6 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleRoute.h"
-#import "MITShuttleStopPredictionLoader.h"
 #import "MITCoreDataController.h"
 #import "CoreData+MITAdditions.h"
 #import "MITUnreadNotifications.h"
@@ -16,7 +15,7 @@ static NSString * const kMITShuttleStopNotificationPredictionDateKey = @"kMITShu
 const NSTimeInterval kMITShuttleStopNotificationVariance = 600.0;
 const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
-@interface MITShuttleStopNotificationManager() <MITShuttleStopPredictionLoaderDelegate>
+@interface MITShuttleStopNotificationManager()
 
 @property (nonatomic, strong) NSMutableArray *predictionLoaders;
 @property (nonatomic, strong) MITShuttleStopNotificationBackgroundFetchCompletionBlock backgroundFetchCompletionBlock;
@@ -131,7 +130,9 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
             for (int j = i; j < predictionList.predictions.count && predictionsToInclude.count < 3; j++) {
                 [predictionsToInclude addObject:predictionList.predictions[j]];
             }
-            [self scheduleNotificationForPredictionGroup:predictionsToInclude withRouteTitle:predictionList.routeTitle];
+            //TODORoss: Test this!
+            [self scheduleNotificationForPredictionGroup:predictionsToInclude withRouteTitle:predictionList.stop.route.title];
+            //
         }
     }
 }
@@ -194,23 +195,25 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 - (void)reloadPredictionsForStop:(MITShuttleStop *)stop
 {
-    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:stop];
-    predictionLoader.delegate = self;
-    [self.predictionLoaders addObject:predictionLoader];
-    [predictionLoader reloadPredictions];
+    //TODORoss: use new predictions web call to do this
+//    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:stop];
+//    predictionLoader.delegate = self;
+//    [self.predictionLoaders addObject:predictionLoader];
+//    [predictionLoader reloadPredictions];
 }
 
 #pragma mark - MITShuttleStopPredictionLoaderDelegate
 
-- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
-{
-    if ([self.predictionLoaders containsObject:loader]) {
-        [self.predictionLoaders removeObject:loader];
-    }
-    if ([self.predictionLoaders count] == 0 && self.backgroundFetchCompletionBlock) {
-        self.backgroundFetchCompletionBlock(nil);
-        self.backgroundFetchCompletionBlock = nil;
-    }
-}
+//TODORoss: make sure this happens when predictions are reloaded
+//- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
+//{
+//    if ([self.predictionLoaders containsObject:loader]) {
+//        [self.predictionLoaders removeObject:loader];
+//    }
+//    if ([self.predictionLoaders count] == 0 && self.backgroundFetchCompletionBlock) {
+//        self.backgroundFetchCompletionBlock(nil);
+//        self.backgroundFetchCompletionBlock = nil;
+//    }
+//}
 
 @end

@@ -15,6 +15,7 @@
 @property (nonatomic, retain) MITShuttleStop *stop;
 @property (nonatomic, retain) MITShuttleVehicle *vehicle;
 
++ (RKMapping *)objectMappingFromStop;
 + (RKMapping *)objectMappingFromPredictionList;
 
 @end

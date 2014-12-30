@@ -7,12 +7,12 @@
 #import "MITShuttleVehicleList.h"
 #import <RestKit/RKManagedObjectMappingOperationDataSource.h>
 #import <RestKit/RKManagedObjectStore.h>
+#import "MITShuttlePredictionList.h"
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 @interface MITShuttleController ()
-@property (strong, nonatomic) NSMutableDictionary *lastUpdatedPredictionDataRecord;
-@property (strong, nonatomic) NSMutableArray *retrievedShuttleRoutes;
+
 @end
 
 @implementation MITShuttleController
@@ -36,24 +36,31 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (!error) {
-                                                        self.retrievedShuttleRoutes = [result.array mutableCopy];
-                                                        for (MITShuttleRoute *shuttleRoute in self.retrievedShuttleRoutes) {
-                                                            shuttleRoute.lastUpdatedTimestamp = self.lastUpdatedPredictionDataRecord[shuttleRoute.identifier];
-                                                        }
-                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
 
 - (void)getRouteDetail:(MITShuttleRoute *)route completion:(MITShuttleRouteDetailCompletionBlock)completion
 {
-    [self getObjectForURL:[NSURL URLWithString:route.url] completion:completion];
+    [self getObjectForURL:[NSURL URLWithString:route.url] completion:^(id object, NSError *error) {
+        if (!error) {
+            NSDate *timestamp = [NSDate date];
+            MITShuttleRoute *route = object;
+            for (MITShuttleStop *stop in route.stops) {
+                stop.predictionList.updatedTime = timestamp;
+            }
+        }
+        completion(object, error);
+    }];
 }
 
 - (void)getStopDetail:(MITShuttleStop *)stop completion:(MITShuttleStopDetailCompletionBlock)completion
 {
-    [self getObjectForURL:[NSURL URLWithString:stop.url] completion:completion];
+    [self getObjectForURL:[NSURL URLWithString:stop.url] completion:^(id object, NSError *error) {
+        MITShuttleStop *stop = object;
+        stop.predictionList.updatedTime = [NSDate date];
+        completion(object, error);
+    }];
 }
 
 #pragma mark - Predictions
@@ -62,9 +69,9 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 {
     [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:^(id object, NSError *error) {
         if (!error) {
-            if (route.identifier) {
-                route.lastUpdatedTimestamp = [NSDate date];
-                self.lastUpdatedPredictionDataRecord[route.identifier] = route.lastUpdatedTimestamp;
+            NSDate *timestamp = [NSDate date];
+            for (MITShuttlePredictionList *list in object) {
+                list.updatedTime = timestamp;
             }
         }
         completion(object, error);
@@ -74,10 +81,93 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion
 {
     if (stop.predictionsURL) {
-        [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:completion];
+        [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:^(id object, NSError *error) {
+            NSDate *timestamp = [NSDate date];
+            for (MITShuttlePredictionList *list in object) {
+                list.updatedTime = timestamp;
+            }
+            completion(object, error);
+        }];
     } else {
         completion(nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil]);
     }
+}
+
+- (void)getPredictionsForStops:(NSArray *)stops completion:(MITShuttlePredictionsCompletionBlock)completion
+{
+    MITShuttlePredictionsRequestData *requestData = [[MITShuttlePredictionsRequestData alloc] init];
+    
+    for (MITShuttleStop *stop in stops) {
+        [requestData addStop:stop];
+    }
+    
+    [self getPredictionsForPredictionsRequestData:requestData completion:completion];
+}
+
+- (void)getPredictionsForPredictionsRequestData:(MITShuttlePredictionsRequestData *)requestData completion:(MITShuttlePredictionsCompletionBlock)completion
+{
+    // API can only return predictions for one agency at a time
+    dispatch_group_t agencyRequestGroup = dispatch_group_create();
+    
+    for (NSString *agency in requestData.agencies) {
+        NSArray *tuples = [requestData tuplesForAgency:agency];
+        if (tuples.count > 0) {
+            dispatch_group_enter(agencyRequestGroup);
+        }
+    }
+    
+    BOOL atLeastOneTupleAdded = NO;
+    __block NSMutableArray *aggregatePredictions = [NSMutableArray array];
+    __block NSError *aggregateError = nil;
+    __block NSMutableString *aggregateErrorDescription = [NSMutableString string];
+    
+    for (NSString *agency in requestData.agencies) {
+        NSArray *tuples = [requestData tuplesForAgency:agency];
+        if (tuples.count < 1) {
+            continue;
+        }
+        
+        atLeastOneTupleAdded = YES;
+        
+        NSMutableString *stopAndRouteIdTuples = [NSMutableString stringWithString:tuples[0]];
+        for (NSInteger i = 1; i < tuples.count; i++) {
+            [stopAndRouteIdTuples appendString:@";"];
+            [stopAndRouteIdTuples appendString:tuples[i]];
+        }
+        
+        [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
+                                                    parameters:@{@"agency": agency,
+                                                                 @"stops": [NSString stringWithString:stopAndRouteIdTuples]}
+                                                    completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                        if (!error) {
+                                                            NSDate *timestamp = [NSDate date];
+                                                            for (MITShuttlePredictionList *list in result.array) {
+                                                                list.updatedTime = timestamp;
+                                                            }
+                                                        }
+                                                        [self handleResult:result error:error completion:^(id object, NSError *error) {
+                                                            if (error) {
+                                                                if (aggregateErrorDescription.length > 0) {
+                                                                    [aggregateErrorDescription appendString:@", "];
+                                                                }
+                                                                [aggregateErrorDescription appendFormat:@"Request for agency: %@ failed with info: %@", agency, error.localizedDescription];
+                                                            }
+                                                            [aggregatePredictions addObjectsFromArray:object];
+                                                            dispatch_group_leave(agencyRequestGroup);
+                                                        } returnObjectShouldBeArray:YES];
+                                                    }];
+    }
+    
+    dispatch_group_notify(agencyRequestGroup, dispatch_get_main_queue(), ^{
+        if (!atLeastOneTupleAdded) {
+            completion(nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUnsupportedURL userInfo:@{NSLocalizedDescriptionKey: @"The predictions request must include at least one stop"}]);
+        } else {
+            if (aggregateErrorDescription.length > 0) {
+                aggregateError = [NSError errorWithDomain:@"MITShuttleMultiplePredictionRequestsErrorDomain" code:1 userInfo:@{NSLocalizedDescriptionKey: aggregateErrorDescription}];
+            }
+            completion(aggregatePredictions, aggregateError);
+        }
+    });
 }
 
 #pragma mark - Vehicles
@@ -87,13 +177,6 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    for (MITShuttleVehicleList *vehicleList in result.array) {
-                                                        MITShuttleRoute *route = [self routeForRouteId:vehicleList.routeId];
-                                                        if (route) {
-                                                            route.predictable = @(vehicleList.predictable);
-                                                            route.scheduled = @(vehicleList.scheduled);
-                                                        }
-                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
@@ -104,18 +187,6 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 }
 
 #pragma mark - Helper Methods
-
-- (MITShuttleRoute *)routeForRouteId:(NSString *)routeId
-{
-    MITShuttleRoute *returnRoute;
-    for (MITShuttleRoute *route in self.retrievedShuttleRoutes) {
-        if ([route.identifier isEqualToString:routeId]) {
-            returnRoute = route;
-            break;
-        }
-    }
-    return returnRoute;
-}
 
 - (void)getObjectForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
@@ -177,7 +248,6 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
                 mapper.mappingOperationDataSource = dataSource;
                 [mapper execute:nil];
                 defaultRoutes = mapper.mappingResult.array;
-                self.retrievedShuttleRoutes = [defaultRoutes mutableCopy];
             }
         }
         return defaultRoutes;
@@ -210,22 +280,55 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     
 }
 
-#pragma mark - Getters | Setters
+@end
 
-- (NSMutableDictionary *)lastUpdatedPredictionDataRecord
+@interface MITShuttlePredictionsRequestData ()
+
+@property (nonatomic, strong) NSMutableDictionary *tuplesByAgency;
+@end
+
+@implementation MITShuttlePredictionsRequestData
+
+- (id)init
 {
-    if (!_lastUpdatedPredictionDataRecord) {
-        _lastUpdatedPredictionDataRecord = [NSMutableDictionary dictionary];
+    self = [super init];
+    
+    if (self) {
+        self.tuplesByAgency = [NSMutableDictionary dictionary];
     }
-    return _lastUpdatedPredictionDataRecord;
+    
+    return self;
 }
 
-- (NSMutableArray *)retrievedShuttleRoutes
+- (void)addStop:(MITShuttleStop *)stop
 {
-    if (!_retrievedShuttleRoutes) {
-        _retrievedShuttleRoutes = [NSMutableArray array];
+    NSString *agency = stop.route.agency;
+    NSString *tuple = stop.stopAndRouteIdTuple;
+    
+    [self addTuple:tuple forAgency:agency];
+}
+
+- (void)addTuple:(NSString *)tuple forAgency:(NSString *)agency
+{
+    if (![[self.tuplesByAgency allKeys] containsObject:agency]) {
+        [self.tuplesByAgency setObject:[NSMutableArray arrayWithObject:tuple] forKey:agency];
+    } else {
+        NSMutableArray *tuples = [self.tuplesByAgency objectForKey:agency];
+        if (![tuples containsObject:tuple]) {
+            [tuples addObject:tuple];
+        }
     }
-    return _retrievedShuttleRoutes;
+}
+
+- (NSArray *)tuplesForAgency:(NSString *)agency
+{
+    NSMutableArray *mutableTuples = [self.tuplesByAgency objectForKey:agency];
+    return [NSArray arrayWithArray:mutableTuples];
+}
+
+- (NSArray *)agencies
+{
+    return [self.tuplesByAgency allKeys];
 }
 
 @end

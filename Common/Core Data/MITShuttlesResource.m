@@ -14,7 +14,7 @@
 {
     self = [super initWithName:MITShuttlesRoutesResourceName pathPattern:MITShuttlesRoutesPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttleRoute objectMapping]
+        [self addMapping:[MITShuttleRoute objectMappingFromAllRoutes]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
@@ -45,7 +45,7 @@
 {
     self = [super initWithName:MITShuttlesRouteResourceName pathPattern:MITShuttlesRoutePathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttleRoute objectMapping]
+        [self addMapping:[MITShuttleRoute objectMappingFromDetail]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
@@ -61,7 +61,7 @@
 {
     self = [super initWithName:MITShuttlesStopResourceName pathPattern:MITShuttlesStopPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttleStop objectMapping]
+        [self addMapping:[MITShuttleStop objectMappingFromDetail]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
@@ -77,7 +77,7 @@
 {
     self = [super initWithName:MITShuttlesPredictionsResourceName pathPattern:MITShuttlesPredictionsPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttlePredictionList objectMapping]
+        [self addMapping:[MITShuttlePredictionList objectMappingFromDetail]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
