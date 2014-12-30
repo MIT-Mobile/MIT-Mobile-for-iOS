@@ -120,12 +120,11 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    MITTelephoneHandler *sharedHandler = [MITTelephoneHandler sharedHandler];
     if (buttonIndex == 1) {
-        [[UIApplication sharedApplication] openURL:sharedHandler.phoneURL];
+        [[UIApplication sharedApplication] openURL:self.phoneURL];
     }
-    sharedHandler.phoneURL = nil;
-    sharedHandler.phoneNumber = nil;
+    self.phoneURL = nil;
+    self.phoneNumber = nil;
 }
 
 @end
