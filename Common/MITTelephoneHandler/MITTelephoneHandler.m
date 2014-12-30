@@ -65,8 +65,6 @@
     return phoneNumber;
 }
 
-//+ (NSString *)replaceCharactersInString:(NSString *) withString:
-
 + (void)showConfirmationDialogue
 {
     MITTelephoneHandler *sharedHandler = [self sharedHandler];
@@ -129,6 +127,5 @@
     sharedHandler.phoneURL = nil;
     sharedHandler.phoneNumber = nil;
 }
-
 
 @end
