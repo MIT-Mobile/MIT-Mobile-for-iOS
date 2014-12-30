@@ -25,6 +25,8 @@ static NSString *const kMITDiningHouseVenueInfoCell = @"MITDiningVenueInfoCell";
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
+static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUserDefaultsKey";
+
 @interface MITDiningHouseVenueDetailViewController () <UIScrollViewDelegate, MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate, UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
@@ -56,8 +58,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     MITDiningHouseDay *day = [self.houseVenue houseDayForDate:currentDate];
     self.currentlyDisplayedMeal = [day bestMealForDate:currentDate];
     
-    self.filters = [NSSet set];
-    
     CGFloat height = [MITDiningVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.view.bounds.size.width];
     [self.mealsContainerView addSubview:self.venueInfoView];
     [self.mealsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[venueInfoView(==venueInfoViewHeight)]" options:0 metrics:@{@"venueInfoViewHeight": [NSNumber numberWithFloat:height]} views:@{@"venueInfoView": self.venueInfoView}]];
@@ -75,6 +75,8 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self.mealsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[mealSelectionView]-0-|" options:0 metrics:nil views:@{@"mealSelectionView": self.mealSelectionView}]];
     
     [self setupPageViewController];
+    
+    [self applyFilters:[NSSet setWithArray:[[NSUserDefaults standardUserDefaults] objectForKey:kMITDiningFiltersUserDefaultsKey]]];
 }
 
 - (UIView *)venueInfoView
@@ -286,7 +288,9 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 - (void)applyFilters:(NSSet *)filters
 {
     self.filters = filters;
-    
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    [defaults setObject:filters.allObjects forKey:kMITDiningFiltersUserDefaultsKey];
+    [defaults synchronize];
     MITDiningHouseMealListViewController *currentListViewController = (MITDiningHouseMealListViewController *)[self.mealsPageViewController.viewControllers firstObject];
     [currentListViewController applyFilters:self.filters];
 }

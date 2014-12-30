@@ -440,10 +440,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             //  * In the case of cell reuse, clears out the detail field in case
             //      the person we are currently display does not have values for
             //      the below tags.
-            cell.detailTextLabel.text = @" ";
-            NSString *displayText = nil;
+            cell.detailTextLabel.text = nil;
             for (NSString *tag in @[@"title", @"dept"]) {
-                displayText = [favorite valueForKey:tag];
+                NSString *displayText = [favorite valueForKey:tag];
                 if (displayText) {
                     cell.detailTextLabel.text = displayText;
                     break;
