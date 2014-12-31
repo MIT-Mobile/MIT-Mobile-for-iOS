@@ -11,6 +11,8 @@
 #import "MITShuttlePredictionList.h"
 #import "MITCoreDataController.h"
 #import "MITShuttlePredictionLoader.h"
+#import "MITShuttleVehicleList.h"
+#import "MITShuttleVehicle.h"
 
 static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
@@ -19,6 +21,7 @@ static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
+static const NSTimeInterval kRouteVehiclesRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
@@ -31,6 +34,8 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
+
+@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 
 @end
 
@@ -76,6 +81,10 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self startRefreshingVehicles];
+    }
+    
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -84,6 +93,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    
+    [self stopRefreshingVehicles];
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
     [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForRoute:self.route];
@@ -120,6 +132,35 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 {
     UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
+}
+
+#pragma mark - Vehicles Refresh Timer
+
+- (void)startRefreshingVehicles
+{
+    [self loadVehicles];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.vehiclesRefreshTimer invalidate];
+        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
+                                                                         target:self
+                                                                       selector:@selector(loadVehicles)
+                                                                       userInfo:nil
+                                                                        repeats:YES];
+        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
+    });
+}
+
+- (void)stopRefreshingVehicles
+{
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.vehiclesRefreshTimer invalidate];
+        self.vehiclesRefreshTimer = nil;
+    });
+}
+
+- (void)loadVehicles
+{
+    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicles, NSError *error) {}];
 }
 
 #pragma mark - Update Data
