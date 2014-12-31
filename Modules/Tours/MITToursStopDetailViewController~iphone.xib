@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITToursStopDetailViewController">
@@ -36,7 +36,6 @@
                             <rect key="frame" x="0.0" y="0.0" width="320" height="200"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="200" id="HEU-wF-yy8"/>
-                                <constraint firstAttribute="width" constant="320" id="V26-ec-5jH"/>
                             </constraints>
                         </imageView>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Stop Title" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="3FI-m8-DDe">
@@ -130,6 +129,7 @@
                         <constraint firstAttribute="trailing" secondItem="q74-8a-1TS" secondAttribute="trailing" id="HUc-qU-wYj"/>
                         <constraint firstItem="q74-8a-1TS" firstAttribute="top" secondItem="utD-mE-rH7" secondAttribute="bottom" id="Jg4-Mi-mhD"/>
                         <constraint firstItem="5Qq-dd-txi" firstAttribute="top" secondItem="w3V-59-ysb" secondAttribute="top" id="Kgp-Mn-1g5"/>
+                        <constraint firstItem="5Qq-dd-txi" firstAttribute="width" secondItem="w3V-59-ysb" secondAttribute="width" id="Ngd-Rf-IMw"/>
                         <constraint firstItem="q74-8a-1TS" firstAttribute="trailing" secondItem="vN1-g5-bnm" secondAttribute="trailing" constant="20" id="PYv-nr-exN"/>
                         <constraint firstAttribute="trailing" secondItem="bBh-II-3qI" secondAttribute="trailing" constant="20" id="RKn-F4-vmg"/>
                         <constraint firstAttribute="trailing" secondItem="5Qq-dd-txi" secondAttribute="trailing" id="Rbu-ev-fgl"/>
@@ -166,7 +166,7 @@
                 <constraint firstAttribute="bottom" secondItem="w3V-59-ysb" secondAttribute="bottom" id="YhV-Ix-trO"/>
                 <constraint firstItem="w3V-59-ysb" firstAttribute="leading" secondItem="i5M-Pr-FkT" secondAttribute="leading" id="jlp-Mt-NI4"/>
             </constraints>
-            <point key="canvasLocation" x="123" y="161"/>
+            <point key="canvasLocation" x="216" y="280"/>
         </view>
     </objects>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
