@@ -614,8 +614,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)refreshStops
 {
     [self removeMapAnnotationsForClass:[MITShuttleStop class]];
+    NSMutableArray *addedStopIdentifiers = [NSMutableArray array];
     for (MITShuttleStop *stop in self.stops) {
-        [self addObject:stop];
+        if (![addedStopIdentifiers containsObject:stop.identifier]) {
+            [self addObject:stop];
+            [addedStopIdentifiers addObject:stop.identifier];
+        }
     }
 }
 
