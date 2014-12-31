@@ -38,7 +38,7 @@
     RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
     [mapping addAttributeMappingsFromDictionary:@{@"@parent.stop_id": @"stopId"}];
     [mapping addAttributeMappingsFromDictionary:@{@"@parent.route_id": @"routeId"}];
-//    [mapping addConnectionForRelationship:@"stop" connectedBy:@{@"stopId": @"identifier", @"routeId": @"routeId"}];
+    [mapping addConnectionForRelationship:@"stop" connectedBy:@{@"stopId": @"identifier", @"routeId": @"routeId"}];
     return mapping;
 }
 

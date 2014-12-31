@@ -121,11 +121,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
     
-    [self updateRoutesData];
-    [self beginRefreshing];
-    [self startRefreshingRoutesAndPredictions];
-    [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
-    
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
     }
@@ -138,6 +133,12 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    [self updateRoutesData];
+    [self beginRefreshing];
+    [self startRefreshingRoutesAndPredictions];
+    [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+    
     if (![MITLocationManager locationServicesAuthorized]) {
         [self performSelector:@selector(requestLocationServicesAuthorization) withObject:nil afterDelay:0.75];
     }
@@ -393,6 +394,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)addNearestStopsPredictionsDependencies
 {
+    if (![MITLocationManager locationServicesAuthorized]) {
+        return;
+    }
+    
     NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
     for (NSArray *stopArray in [self.nearestStops allValues]) {
         for (MITShuttleStop *stop in stopArray) {
