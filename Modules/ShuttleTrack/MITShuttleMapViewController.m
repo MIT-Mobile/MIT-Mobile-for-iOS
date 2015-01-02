@@ -281,6 +281,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self.tiledMapView.mapView addAnnotations:annotations];
         }];
     } else {
+        [self.tiledMapView.mapView setRegion:region];
         [self.tiledMapView.mapView addAnnotations:annotations];
     }
 }
