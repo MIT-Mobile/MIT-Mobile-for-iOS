@@ -425,7 +425,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
     
     if (needsRouteChange) {
-        if (needsStopChange && selectedAnnotation) {
+        if (selectedAnnotation) {
             [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
 
@@ -439,7 +439,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         [self setupMapBoundingBoxAnimated:YES];
         
         // TODO: Wait for bounds change
-        if (needsStopChange && stop) {
+        if (stop) {
             // wait until map region change animation completes
             // TODO: Fix this to make it robust and less hacky! E.g. what happens if we mash multiple annotations?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{

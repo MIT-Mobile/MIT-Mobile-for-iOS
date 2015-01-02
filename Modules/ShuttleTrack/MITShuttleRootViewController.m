@@ -200,14 +200,15 @@
 {
     if ([self.selectedStop isEqual:stop]) {
         return;
+    } else if (![self.selectedStop.identifier isEqualToString:stop.identifier]) {
+        self.selectedStop = stop;
     }
-    self.selectedStop = stop;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
-        [self.homeViewController highlightStop:stop];
+        [self.homeViewController highlightStop:self.selectedStop];
     } else if (masterViewController == self.routeViewController) {
-        [self.routeViewController highlightStop:stop];
+        [self.routeViewController highlightStop:self.selectedStop];
     }
 }
 
