@@ -187,15 +187,17 @@ static NSError* MITDispatcherDeallocatedError(void *block) {
 
 - (void)loadFetchedResultsController
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
-
-
-    _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                    managedObjectContext:self.managedObjectContext
-                                                                      sectionNameKeyPath:nil
-                                                                               cacheName:nil];
-    _fetchedResultsController.delegate = self;
+    [self.managedObjectContext performBlockAndWait:^{
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+        
+        
+        _fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                        managedObjectContext:self.managedObjectContext
+                                                                          sectionNameKeyPath:nil
+                                                                                   cacheName:nil];
+        _fetchedResultsController.delegate = self;
+    }];
 }
 
 - (NSFetchedResultsController*)fetchedResultsController
