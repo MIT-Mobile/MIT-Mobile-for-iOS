@@ -921,7 +921,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     MITShuttleStop *stop = self.stop;
-    self.stop = nil;
     
     [self dismissCurrentCallout];
     
