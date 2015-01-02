@@ -233,7 +233,7 @@
         return;
     }
     self.selectedRoute = route;
-    [self setMapViewControllerRoute:self.selectedRoute stop:self.selectedStop];
+    self.selectedStop = nil;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
@@ -241,6 +241,7 @@
     } else if (masterViewController == self.routeViewController) {
         self.routeViewController.route = route;
     }
+    [self setMapViewControllerRoute:self.selectedRoute stop:self.selectedStop];
 }
 
 #pragma mark - UINavigationControllerDelegate
