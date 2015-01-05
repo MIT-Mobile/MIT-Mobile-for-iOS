@@ -3,7 +3,7 @@
 #import "MITShuttlePrediction.h"
 #import "UIKit+MITAdditions.h"
 
-const CGFloat kStopCellDefaultSeparatorLeftInset = 42.0;
+const CGFloat kStopCellDefaultSeparatorLeftInset = 44.0;
 
 NSString * const kMITShuttleStopCellNibName = @"MITShuttleStopCell";
 NSString * const kMITShuttleStopCellIdentifier = @"MITShuttleStopCell";

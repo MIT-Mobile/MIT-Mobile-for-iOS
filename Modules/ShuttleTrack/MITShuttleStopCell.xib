@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="5056" systemVersion="13D65" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,34 +15,29 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Vassar St/Mass Ave" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="8gO-hD-pxv">
-                        <rect key="frame" x="42" y="12" width="145" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                        <rect key="frame" x="44" y="11" width="152.5" height="20.5"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" horizontalCompressionResistancePriority="1000" text="17m" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="slk-Tt-Bvg">
-                        <rect key="frame" x="273" y="12" width="32" height="20"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <fontDescription key="fontDescription" type="boldSystem" pointSize="16"/>
+                        <rect key="frame" x="271" y="11.5" width="34" height="20.5"/>
+                        <fontDescription key="fontDescription" type="boldSystem" pointSize="17"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oq6-l2-Efi">
-                        <rect key="frame" x="0.0" y="0.0" width="41" height="45"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <rect key="frame" x="0.0" y="0.0" width="43" height="45"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="072-f0-g5a">
-                                <rect key="frame" x="20" y="0.0" width="1" height="45"/>
-                                <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                                <rect key="frame" x="21" y="0.0" width="1" height="45"/>
                                 <color key="backgroundColor" white="0.80131678427419351" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="1" id="Q7z-nT-Upk"/>
                                 </constraints>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="4Ad-eT-swq">
-                                <rect key="frame" x="15" y="17" width="11" height="11"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <rect key="frame" x="16" y="17" width="11" height="11"/>
                                 <color key="backgroundColor" white="0.80131678427419351" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="width" constant="11" id="CxA-vg-a7C"/>
@@ -65,7 +60,7 @@
                     <constraint firstItem="Oq6-l2-Efi" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="1gz-hl-qFh"/>
                     <constraint firstItem="slk-Tt-Bvg" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="8gO-hD-pxv" secondAttribute="trailing" constant="10" id="49D-49-SyL"/>
                     <constraint firstItem="Oq6-l2-Efi" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="4v7-tn-zo2"/>
-                    <constraint firstItem="8gO-hD-pxv" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="42" id="VRj-WC-LcK"/>
+                    <constraint firstItem="8gO-hD-pxv" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="44" id="VRj-WC-LcK"/>
                     <constraint firstAttribute="trailing" secondItem="slk-Tt-Bvg" secondAttribute="trailing" constant="15" id="eyC-EL-V4a"/>
                     <constraint firstItem="8gO-hD-pxv" firstAttribute="leading" secondItem="Oq6-l2-Efi" secondAttribute="trailing" constant="1" id="gEE-eb-Lzc"/>
                     <constraint firstAttribute="bottom" secondItem="Oq6-l2-Efi" secondAttribute="bottom" constant="-1" id="hoO-0Y-SAU"/>
@@ -81,4 +76,9 @@
             </connections>
         </tableViewCell>
     </objects>
+    <simulatedMetricsContainer key="defaultSimulatedMetrics">
+        <simulatedStatusBarMetrics key="statusBar"/>
+        <simulatedOrientationMetrics key="orientation"/>
+        <simulatedScreenMetrics key="destination" type="retina4"/>
+    </simulatedMetricsContainer>
 </document>

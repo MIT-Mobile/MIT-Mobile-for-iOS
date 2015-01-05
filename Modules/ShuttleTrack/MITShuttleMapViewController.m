@@ -681,24 +681,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return [UIImage imageNamed:MITImageMapAnnotationPlacePin];
     }
     else {
-        MITShuttleStopState state = MITShuttleStopStateDefault;
-        if ([self.route.nextStops containsObject:stop]) {
-            state = state | MITShuttleStopStateNext;
-        }
-        if ([self.stop isEqual:stop]) {
-            state = state | MITShuttleStopStateSelected;
-        }
-        
-        if (state == MITShuttleStopStateDefault) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
-        } else if (state == MITShuttleStopStateNext) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
-        } else if (state == MITShuttleStopStateSelected) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
-        } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
-        }
-        return nil;
+        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
     }
 }
 
@@ -883,7 +866,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         annotationView.image = [self annotationViewImageForStop:stop];
         if (self.shouldUsePinAnnotations) {
-            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
+            annotationView.centerOffset = CGPointMake(8.0, -15.0);
         } else {
             annotationView.centerOffset = CGPointZero;
         }

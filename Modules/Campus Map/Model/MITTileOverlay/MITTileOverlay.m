@@ -20,10 +20,7 @@ static NSString * const kMITTileOverlayParentDirectoryName = @"MITMapTiles";
 
 - (NSString *)localDirectoryForOverlayPath:(MKTileOverlayPath)overlayPath
 {
-    NSMutableString *directoryPath = [NSMutableString stringWithString:kMITTileOverlayParentDirectoryName];
-    [directoryPath appendFormat:@"/%li", (long)overlayPath.z];
-    [directoryPath appendFormat:@"/%li", (long)overlayPath.y];
-    return directoryPath;
+    return [NSString pathWithComponents:@[kMITTileOverlayParentDirectoryName, [NSString stringWithFormat:@"%li", (long)overlayPath.z], [NSString stringWithFormat:@"%li", (long)overlayPath.y]]];
 }
 
 @end

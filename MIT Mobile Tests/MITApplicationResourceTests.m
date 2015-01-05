@@ -146,17 +146,18 @@
 
 
 #pragma mark - Shuttles
-    MITCheckAsset(MITImageShuttlesRouteInService);
-    MITCheckAsset(MITImageShuttlesRouteNotInService);
-    MITCheckAsset(MITImageShuttlesRoutePredictionsUnavailable);
+    MITCheckAsset(MITImageShuttlesInService);
+    MITCheckAsset(MITImageShuttlesNotInService);
+    MITCheckAsset(MITImageShuttlesUnknown);
+    MITCheckAsset(MITImageShuttlesInServiceSmall);
+    MITCheckAsset(MITImageShuttlesNotInServiceSmall);
+    MITCheckAsset(MITImageShuttlesUnknownSmall);
+    
     MITCheckAsset(MITImageShuttlesBusBubble);
     MITCheckAsset(MITImageShuttlesAlertOn);
     MITCheckAsset(MITImageShuttlesAlertOff);
     MITCheckAsset(MITImageShuttlesAnnotationBus);
-    MITCheckAsset(MITImageShuttlesAnnotationNextStop);
-    MITCheckAsset(MITImageShuttlesAnnotationNextStopSelected);
     MITCheckAsset(MITImageShuttlesAnnotationCurrentStop);
-    MITCheckAsset(MITImageShuttlesAnnotationCurrentStopSelected);
 
 
 #pragma mark - Tours
