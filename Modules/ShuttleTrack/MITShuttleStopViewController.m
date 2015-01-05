@@ -129,12 +129,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     if (self.viewOption == MITShuttleStopViewOptionAll) {
         return 0;
     }
-    CGFloat rowHeight = 44; // TODO: Shouldn't hard-code this
-    NSInteger numberOfRows = MAX(1, self.intersectingRoutes.count);
-    if (self.tableTitle) {
-        numberOfRows++;
-    }
-    return numberOfRows * rowHeight;
+    [self.tableView reloadData];
+    return self.tableView.contentSize.height;
+
 }
 
 - (void)setFixedContentSize:(CGSize)size
