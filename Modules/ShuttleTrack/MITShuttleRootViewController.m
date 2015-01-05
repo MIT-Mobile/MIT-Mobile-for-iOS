@@ -218,7 +218,10 @@
     if (![self.selectedStop.identifier isEqualToString:stop.identifier]) {
         return;
     }
-    if (!self.isSelectingStop) self.selectedStop = nil;
+    
+    if (!self.isSelectingStop) {
+        self.selectedStop = nil;
+    }
 
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
