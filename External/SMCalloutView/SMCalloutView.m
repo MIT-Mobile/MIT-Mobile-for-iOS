@@ -180,6 +180,10 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 }
 
 - (CGFloat)innerContentMarginLeft {
+    if (self.leftRightPaddingOverride) {
+        return [self.leftRightPaddingOverride floatValue];
+    }
+    
     if (self.leftAccessoryView)
         return self.leftAccessoryHorizontalMargin + self.leftAccessoryView.$width + TITLE_HMARGIN;
     else
@@ -187,6 +191,10 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 }
 
 - (CGFloat)innerContentMarginRight {
+    if (self.leftRightPaddingOverride) {
+        return [self.leftRightPaddingOverride floatValue];
+    }
+    
     if (self.rightAccessoryView)
         return self.rightAccessoryHorizontalMargin + self.rightAccessoryView.$width + TITLE_HMARGIN;
     else
