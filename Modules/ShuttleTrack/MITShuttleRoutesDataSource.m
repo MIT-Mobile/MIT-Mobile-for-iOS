@@ -23,7 +23,7 @@ static NSError* MITDispatcherDeallocatedError(void *block) {
     return error;
 }
 
-@interface MITShuttleRoutesDataSource () <NSFetchedResultsControllerDelegate>
+@interface MITShuttleRoutesDataSource ()
 @property(nonatomic,readonly) BOOL didFetchResults;
 @property(nonatomic,strong) NSDate *fetchDate;
 @property(nonatomic,strong) NSError *lastRequestError;
@@ -196,7 +196,6 @@ static NSError* MITDispatcherDeallocatedError(void *block) {
                                                                         managedObjectContext:self.managedObjectContext
                                                                           sectionNameKeyPath:nil
                                                                                    cacheName:nil];
-        _fetchedResultsController.delegate = self;
     }];
 }
 
@@ -207,13 +206,6 @@ static NSError* MITDispatcherDeallocatedError(void *block) {
     }
 
     return _fetchedResultsController;
-}
-
-#pragma mark - Delegation
-#pragma mark NSFetchedResultsControllerDelegate
-- (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
-{
-    [self _performFetch:nil];
 }
 
 @end
