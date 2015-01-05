@@ -94,4 +94,11 @@
 	}
 }
 
+#pragma mark - User Interface Idiom Support
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
+}
+
 @end
