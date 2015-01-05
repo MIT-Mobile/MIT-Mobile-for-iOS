@@ -15,9 +15,8 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITEntityNameDiningHouseVenue = @"MITDiningHouseVenue";
 static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue";
 
-@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate>
+@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate, SMCalloutViewDelegate>
 
-@property (nonatomic, readonly) MKMapView *mapView;
 @property (strong, nonatomic) NSArray *places;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 @property (strong, nonatomic) NSFetchRequest *fetchRequest;
@@ -27,6 +26,9 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *mapBottomConstraint;
 @property (nonatomic, strong) NSArray *toolbarConstraints;
+@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) MKAnnotationView *currentlySelectedPlace;
+@property (nonatomic, readonly) MITCalloutMapView *mapView;
 
 @end
 
@@ -105,6 +107,25 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     [self setupMapBoundingBoxAnimated:NO];
+    
+    [self setupCalloutView];
+}
+
+- (void)setupCalloutView
+{
+    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
+    calloutView.contentViewMargin = 0;
+    calloutView.anchorMargin = 39;
+    calloutView.delegate = self;
+    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
+    }
+    
+    self.calloutView = calloutView;
+    
+    self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -173,7 +194,6 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
         [annotationView setNumber:[(MITDiningPlace *)annotation displayNumber]];
-        annotationView.canShowCallout = YES;
         return annotationView;
     }
     return nil;
@@ -193,26 +213,18 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
         [self showDetailForAnnotationView:view];
         [self.mapView deselectAnnotation:view.annotation animated:NO];
     } else {
-        UITapGestureRecognizer *tap = [[UITapGestureRecognizer alloc] init];
-        [tap addTarget:self action:@selector(calloutTapped:)];
-        [view addGestureRecognizer:tap];
+        if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
+            [self presentIPhoneCalloutForAnnotationView:view];
+        }
     }
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-    for (UIGestureRecognizer *gestureRecognizer in view.gestureRecognizers) {
-        [view removeGestureRecognizer:gestureRecognizer];
+    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
+        [self.calloutView dismissCalloutAnimated:YES];
+        self.currentlySelectedPlace = nil;
     }
-}
-
-- (void)calloutTapped:(UITapGestureRecognizer *)tap
-{
-    [self showDetailForAnnotationView:(MKAnnotationView *)tap.view];
-}
-
-- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control {
-    [self showDetailForAnnotationView:view];
 }
 
 - (void)showDetailForAnnotationView:(MKAnnotationView *)view
@@ -279,6 +291,47 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
         }
         self.annotationViewForPopoverAfterRegionChange = nil;
     }
+}
+
+
+#pragma mark - Callout View
+
+- (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
+{
+    MITDiningPlace *place = annotationView.annotation;
+    
+    self.currentlySelectedPlace = annotationView;
+    self.calloutView.title = place.title;
+    self.calloutView.calloutOffset = annotationView.calloutOffset;
+    
+    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+}
+
+#pragma mark - SMCalloutViewDelegate Methods
+
+- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+{
+    MKMapView *mapView = self.mapView;
+    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
+                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
+    [mapView setCenterCoordinate:newCenter animated:YES];
+    return kSMCalloutViewRepositionDelayForUIScrollView;
+}
+
+- (void)calloutViewClicked:(SMCalloutView *)calloutView
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self showDetailForAnnotationView:self.currentlySelectedPlace];
+    }
+}
+
+- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
+{
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        return YES;
+    }
+    return NO;
 }
 
 - (void)showRetailPopoverForAnnotationView:(MKAnnotationView *)view
