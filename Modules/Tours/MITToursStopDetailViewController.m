@@ -61,7 +61,6 @@
     
     self.scrollView.delegate = self;
     
-    [self setupLabels];
     [self setupCollectionViews];
 }
 
@@ -83,12 +82,6 @@
     
     // Scroll to top
     [self.scrollView setContentOffset:CGPointMake(0, 0) animated:NO];
-}
-
-- (void)setupLabels
-{
-    self.stopTitleLabel.preferredMaxLayoutWidth = self.stopTitleLabel.bounds.size.width;
-    self.bodyTextLabel.preferredMaxLayoutWidth = self.bodyTextLabel.bounds.size.width;
 }
 
 - (void)setupCollectionViews
