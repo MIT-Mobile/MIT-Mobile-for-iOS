@@ -339,7 +339,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
             break;
         }
         case MITEventDetailRowTypeWebsite: {
-            [detailCell setTitle:@"web site"];
+            [detailCell setTitle:@"website"];
             [detailCell setDetailText:self.event.contact.websiteURL];
             detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             break;
