@@ -39,7 +39,6 @@
 
 static NSString* const MITMobileButtonTitleView = @"View";
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate>
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 
@@ -51,13 +50,10 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)updateBasicServerInfo;
 @end
 
-@implementation MIT_MobileAppDelegate {
-    MITCoreDataController *_coreDataController;
-    NSManagedObjectModel *_managedObjectModel;
-    MITMobile *_remoteObjectManager;
-}
-
-@dynamic coreDataController,managedObjectModel,remoteObjectManager;
+@implementation MIT_MobileAppDelegate
+@synthesize coreDataController = _coreDataController;
+@synthesize remoteObjectManager = _remoteObjectManager;
+@synthesize managedObjectModel = _managedObjectModel;
 
 + (void)initialize
 {
@@ -86,8 +82,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     }
 #endif
 
-    [[UIApplication sharedApplication]
-     setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
