@@ -281,6 +281,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self.tiledMapView.mapView addAnnotations:annotations];
         }];
     } else {
+        [self.tiledMapView.mapView setRegion:region];
         [self.tiledMapView.mapView addAnnotations:annotations];
     }
 }
@@ -424,7 +425,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
     
     if (needsRouteChange) {
-        if (needsStopChange && selectedAnnotation) {
+        if (selectedAnnotation) {
             [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
 
@@ -438,11 +439,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         [self setupMapBoundingBoxAnimated:YES];
         
         // TODO: Wait for bounds change
-        if (needsStopChange && stop) {
+        if (stop) {
             // wait until map region change animation completes
             // TODO: Fix this to make it robust and less hacky! E.g. what happens if we mash multiple annotations?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+                [self selectAnnotationForStop:stop];
             });
         }
     } else if (needsStopChange) {
@@ -450,7 +451,24 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
         if (stop) {
-            [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+            [self selectAnnotationForStop:stop];
+        }
+    }
+}
+
+- (void)selectAnnotationForStop:(MITShuttleStop *)stop
+{
+    if ([self.tiledMapView.mapView.annotations containsObject:stop]) {
+        [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+    } else {
+        // It's possible that the annotation hasn't been added since we're filtering duplicates
+        for (id<MKAnnotation>annotation in self.tiledMapView.mapView.annotations) {
+            if ([annotation isKindOfClass:[MITShuttleStop class]]) {
+                if ([[(MITShuttleStop *)annotation identifier] isEqualToString:stop.identifier]) {
+                    [self.tiledMapView.mapView selectAnnotation:annotation animated:YES];
+                    break;
+                }
+            }
         }
     }
 }
@@ -920,7 +938,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     MITShuttleStop *stop = self.stop;
-    self.stop = nil;
     
     [self dismissCurrentCallout];
     

@@ -56,12 +56,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)setRoute:(MITShuttleRoute *)route
 {
-    // clear data and reload table
-    _route = nil;
-    [self.tableView reloadData];
-    
     _route = route;
     [self configureViewForCurrentRoute];
+    [self.tableView reloadData];
 }
 
 #pragma mark - View Lifecycle

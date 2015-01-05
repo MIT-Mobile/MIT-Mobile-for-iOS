@@ -109,8 +109,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 #pragma mark - UIWebView delegation
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     if ([self.infoWebView isEqual:webView]) {
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITEmergencyTableSectionAlerts]
-                      withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView reloadData];
     }
 }
 
