@@ -143,6 +143,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     if ([segue.identifier isEqualToString:MITSlidingViewControllerTopSegueIdentifier]) {
         UIViewController *topViewController = segue.destinationViewController;
 
+        self.panGesture.maximumNumberOfTouches = 1;
         [topViewController.view addGestureRecognizer:self.panGesture];
 
         topViewController.view.layer.shadowOpacity = 1.0;
