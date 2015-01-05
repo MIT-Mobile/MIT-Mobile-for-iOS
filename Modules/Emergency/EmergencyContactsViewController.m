@@ -27,14 +27,6 @@ static CGFloat subtitleFontSize = 14;
     
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.backgroundView = nil;
-    
-    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
-    {
-        UIBarButtonItem *doneButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                    target:self
-                                                                                    action:@selector(done:)];
-        self.navigationItem.rightBarButtonItem = doneButton;
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
