@@ -7,6 +7,7 @@
 #import "MITDiningRetailInfoScheduleCell.h"
 #import "CoreDataManager.h"
 #import "MITAdditions.h"
+#import "MITMapModelController.h"
 
 static NSString * const kDescriptionHTMLKey = @"descriptionHTML";
 static NSString * const kMenuURLKey = @"menuURL";
@@ -387,7 +388,7 @@ static int const kWebViewTag = 4231;
     CGRect boundingRect = [attributedString boundingRectWithSize:constraint
                                                          options:NSStringDrawingUsesLineFragmentOrigin
                                                          context:nil];
-    return CGRectGetHeight(boundingRect);
+    return CGRectGetHeight(boundingRect) + 8.0; // Padding
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -398,9 +399,12 @@ static int const kWebViewTag = 4231;
     if ([rowKey isEqualToString:kMenuURLKey]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.retailVenue.menuURL]];
     } else if ([rowKey isEqualToString:kLocationKey]) {
-        NSString * query = ([self.retailVenue.location.locationDisplayString length]) ? self.retailVenue.location.locationDisplayString : self.retailVenue.location.mitRoomNumber;
-        NSURL *url = [NSURL internalURLWithModuleTag:CampusMapTag path:@"search" query:query];
-        [[UIApplication sharedApplication] openURL:url];
+        if (self.retailVenue.location.mitRoomNumber) {
+            [MITMapModelController openMapWithRoomNumber:self.retailVenue.location.mitRoomNumber];
+        }
+        else {
+            [MITMapModelController openMapWithSearchString:self.retailVenue.location.locationDescription];
+        }
     } else if ([rowKey isEqualToString:kHomePageURLKey]) {
         [[UIApplication sharedApplication] openURL:[NSURL URLWithString:self.retailVenue.homepageURL]];
     } else if ([rowKey isEqualToString:kAddToFavoritesKey]) {

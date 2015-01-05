@@ -1,8 +1,3 @@
-//
-//  MITScannerHistoryViewController.m
-//  MIT Mobile
-//
-
 #import "MITScannerHistoryViewController.h"
 #import "QRReaderHistoryData.h"
 #import "QRReaderResult.h"
@@ -12,6 +7,9 @@
 #import "UIImage+Resize.h"
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
+#import "SVProgressHUD.h"
+
+#define NO_INDEX_TO_OPEN -1
 
 @interface MITScannerHistoryViewController (MITActionSheetHandler) <UIActionSheetDelegate>
 @end
@@ -27,8 +25,6 @@
 @property (nonatomic, weak) UIToolbar *multiEditToolbar;
 @property (nonatomic, weak) UIBarButtonItem *deleteButton;
 
-@property (strong) NSOperationQueue *renderingQueue;
-
 @end
 
 @implementation MITScannerHistoryViewController
@@ -38,9 +34,6 @@
     self = [super initWithNibName:nil bundle:nil];
     if (self)
     {
-        self.renderingQueue = [[NSOperationQueue alloc] init];
-        self.renderingQueue.maxConcurrentOperationCount = 1;
-        
         NSManagedObjectContext *fetchContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
         fetchContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
         fetchContext.undoManager = nil;
@@ -60,14 +53,11 @@
                                                                      sectionNameKeyPath:nil
                                                                               cacheName:nil];
         self.fetchController.delegate = self;
+        
+        self.itemToOpenOnLoadIndex = NO_INDEX_TO_OPEN;
     }
     
     return self;
-}
-
-- (void)dealloc
-{
-    [self.renderingQueue cancelAllOperations];
 }
 
 - (void)viewDidLoad {
@@ -90,14 +80,25 @@
 {
     [super viewWillAppear:animated];
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
-    
     [self.fetchController performFetch:nil];
+    
+    [self.scannerHistory resetHistoryNewScanCounter];
+    
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(applicationDidEnterBackground:) name:UIApplicationDidEnterBackgroundNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+    
+    if( self.itemToOpenOnLoadIndex != NO_INDEX_TO_OPEN )
+    {
+        QRReaderResult *result = [self.fetchController objectAtIndexPath:[NSIndexPath indexPathForRow:self.itemToOpenOnLoadIndex inSection:0]];
+        [self showDetailsForResult:result];
+        
+        // so that it only loads first item on initial launch.
+        self.itemToOpenOnLoadIndex = NO_INDEX_TO_OPEN;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -105,10 +106,6 @@
     [super viewWillDisappear:animated];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
-    
-    [self.renderingQueue cancelAllOperations];
-    
-    [self saveDataModelChanges];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -118,7 +115,6 @@
 
 - (void)applicationDidEnterBackground:(id)sender
 {
-    [self saveDataModelChanges];
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -132,14 +128,11 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)saveDataModelChanges
+- (void)showDetailsForResult:(QRReaderResult *)result
 {
-    NSError *saveError = nil;
-    [self.fetchContext save:&saveError];
-    if (saveError)
-    {
-        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
-    }
+    MITScannerDetailViewController *detailsVC = [[MITScannerDetailViewController alloc] init];
+    detailsVC.scanResult = result;
+    [self.navigationController pushViewController:detailsVC animated:YES];
 }
 
 #pragma mark - UITableViewDataSource
@@ -188,7 +181,7 @@
     QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.scannerHistory deleteScanResult:result];
+        [self deleteScanResults:@[result] withStatusMessage:@"Deleting"];
     }
 }
 
@@ -217,46 +210,11 @@
     cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
                                                                      toDate:[NSDate date]];
-    
-    if (result.thumbnail == nil)
-    {
-        CGRect imageFrame = cell.imageView.frame;
-        imageFrame.size = [QRReaderResult defaultThumbnailSize];
-        
-        cell.imageView.frame = imageFrame;
-        cell.imageView.contentMode = UIViewContentModeScaleToFill;
-        cell.imageView.image = [UIImage imageNamed:MITImageNewsImagePlaceholder];
-        cell.imageView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                           UIViewAutoresizingFlexibleWidth);
-        
-        UIImage *scanImage = result.scanImage;
-        NSManagedObjectID *scanId = [result objectID];
-        if (scanImage)
-        {
-            [self.renderingQueue addOperationWithBlock:^{
-                UIImage *thumbnail = [scanImage resizedImage:[QRReaderResult defaultThumbnailSize]
-                                        interpolationQuality:kCGInterpolationDefault];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    QRReaderResult *scan = (QRReaderResult*)([self.fetchContext objectWithID:scanId]);
-                    
-                    if (scan.isDeleted == NO)
-                    {
-                        scan.thumbnail = thumbnail;
-                        [self.fetchContext save:nil];
-                    }
-                });
-            }];
-        }
-    }
-    else
-    {
-        CGRect frame = cell.imageView.frame;
-        frame.size = result.thumbnail.size;
-        cell.imageView.frame = frame;
-        cell.imageView.image = result.thumbnail;
-        cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    }
+    CGRect frame = cell.imageView.frame;
+    frame.size = result.thumbnail.size;
+    cell.imageView.frame = frame;
+    cell.imageView.image = result.thumbnail;
+    cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
 }
 
 #pragma mark - UITableViewDelegate
@@ -270,12 +228,8 @@
     }
     
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-
-    QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
     
-    MITScannerDetailViewController *detailsVC = [[MITScannerDetailViewController alloc] init];
-    detailsVC.scanResult = result;
-    [self.navigationController pushViewController:detailsVC animated:YES];
+    [self showDetailsForResult:[self.fetchController objectAtIndexPath:indexPath]];
 }
 
 - (void)tableView:(UITableView *)tableView didDeselectRowAtIndexPath:(NSIndexPath *)indexPath
@@ -407,10 +361,36 @@
 
 - (void)deleteItemsAtIndexPaths:(NSArray *)indexPaths
 {
+    NSMutableArray *scanResults = [NSMutableArray array];
     for( NSIndexPath *indexPath in indexPaths )
     {
-        [self.scannerHistory deleteScanResult:[self.fetchController objectAtIndexPath:indexPath]];
+        [scanResults addObject:[self.fetchController objectAtIndexPath:indexPath]];
     }
+    
+    [self deleteScanResults:scanResults withStatusMessage:@"Deleting"];
+}
+
+- (void)deleteScanResults:(NSArray *)results withStatusMessage:(NSString *)message
+{
+    [SVProgressHUD showWithStatus:message maskType:SVProgressHUDMaskTypeGradient];
+    
+    [self.scannerHistory deleteScanResults:results completion:^(NSError *error) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            
+            if( [self.fetchContext hasChanges] )
+            {
+                NSError *error;
+                [self.fetchContext save:&error];
+            }
+            
+            if( self.tableView.isEditing )
+            {
+                [self setEditing:NO animated:YES];
+            }
+            
+            [SVProgressHUD dismiss];
+        });
+    }];
 }
 
 @end
@@ -421,7 +401,7 @@
 {
     if( buttonIndex != actionSheet.cancelButtonIndex )
     {
-        [self.scannerHistory deleteScanResults:[self.fetchController fetchedObjects]];
+        [self deleteScanResults:[self.fetchController fetchedObjects] withStatusMessage:@"Deleting all history"];
     }
 }
 

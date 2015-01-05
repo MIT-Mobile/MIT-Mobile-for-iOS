@@ -53,6 +53,8 @@ static NSString *const kCategoryTableCellIdentifier = @"kCategoryTableCellIdenti
         NSArray *fetchResults = [context executeFetchRequest:fetchRequest error:&fetchError];
         if (!fetchError){
             self.placesInCategory = fetchResults;
+            self.category.places = [NSSet setWithArray:fetchResults];
+            [context save:nil];
             [self.tableView reloadData];
             [self hideRefreshControlLoadingAnimation];
         }

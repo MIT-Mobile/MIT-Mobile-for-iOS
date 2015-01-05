@@ -1,14 +1,6 @@
-//
-//  MITScannerDetailViewController.m
-//  MIT Mobile
-//
-//  Created by Yev Motov on 11/16/14.
-//
-//
-
 #import "MITScannerDetailViewController.h"
 #import "QRReaderResult.h"
-#import "NSDateFormatter+RelativeString.h"
+#import "CoreDataManager.h"
 #import "UIKit+MITAdditions.h"
 #import "MITScannerDetailTableViewCell.h"
 
@@ -50,14 +42,17 @@ NSString * const kActionURL = @"kActionUrl";
     [self.tableView setTableFooterView:[UIView new]];
     [self.tableView registerNib:[UINib nibWithNibName:@"MITScannerDetailTableViewCell" bundle:nil] forCellReuseIdentifier:@"detailCell"];
     
-    self.tableView.estimatedRowHeight = 55.0;
-    self.tableView.rowHeight = UITableViewAutomaticDimension;
+    if( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1 ) {
+        self.tableView.estimatedRowHeight = 55.0;
+        self.tableView.rowHeight = UITableViewAutomaticDimension;
+    }
     
     self.navigationItem.title = @"Scan Detail";
 
-    UIBarButtonItem *shareItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction target:self action:@selector(shareButtonTapped:)];
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonTapped:)];
-    [self setUpNavBarWithShareButton:shareItem andDoneItem:doneItem];
+    UIBarButtonItem *rightItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                                               target:self
+                                                                               action:@selector(shareButtonTapped:)];
+    self.navigationItem.rightBarButtonItem = rightItem;
     
     [self tableViewHeaderDidLoad];
 }
@@ -81,19 +76,6 @@ NSString * const kActionURL = @"kActionUrl";
     [self.urlMappingOperation cancel];
 }
 
-- (void)setUpNavBarWithShareButton:(UIBarButtonItem *)shareItem andDoneItem:(UIBarButtonItem *)doneItem
-{
-    if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
-    {
-        self.navigationItem.rightBarButtonItem = doneItem;
-        self.navigationItem.leftBarButtonItem = shareItem;
-    }
-    else
-    {
-        self.navigationItem.rightBarButtonItem = shareItem;
-    }
-}
-
 - (void)tableViewHeaderDidLoad
 {
     UIImageView *headerView = (UIImageView *)[self.tableView tableHeaderView];
@@ -113,12 +95,6 @@ NSString * const kActionURL = @"kActionUrl";
         [activityItems addObject:self.scanResult.text];
     }
     
-    UIImage *scanImage = self.scanResult.scanImage;
-    if( scanImage != nil )
-    {
-        [activityItems addObject:scanImage];
-    }
-    
     UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:activityItems
                                                                                         applicationActivities:nil];
     sharingViewController.excludedActivityTypes = @[UIActivityTypePrint, UIActivityTypeAssignToContact];
@@ -127,7 +103,7 @@ NSString * const kActionURL = @"kActionUrl";
     {
         UIPopoverController *popoverController = [[UIPopoverController alloc] initWithContentViewController:sharingViewController];
         [popoverController setPopoverContentSize:CGSizeMake(100, 100)];
-        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.leftBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+        [popoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
     }
     else
     {
@@ -142,9 +118,29 @@ NSString * const kActionURL = @"kActionUrl";
     }];
 }
 
+- (NSDateFormatter *)dateFormatter
+{
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd hh:mm a"];
+    }
+    return dateFormatter;
+}
+
 @end
 
 @implementation MITScannerDetailViewController (TableViewDelegate)
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if( NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_7_1 )
+    {
+        return UITableViewAutomaticDimension;
+    }
+    
+    return 80;
+}
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
@@ -185,7 +181,7 @@ NSString * const kActionURL = @"kActionUrl";
         cell.cellHeaderTitle.text = @"scanned";
         [cell.cellHeaderTitle sizeToFit];
         
-        cell.cellDescription.text = [NSDateFormatter relativeDateStringFromDate:self.scanResult.date toDate:[NSDate date]];
+        cell.cellDescription.text = [[self dateFormatter] stringFromDate:self.scanResult.date];
         [cell.cellDescription setFont:[UIFont systemFontOfSize:17.0f]];
         [cell.cellDescription sizeToFit];
         
@@ -205,7 +201,7 @@ NSString * const kActionURL = @"kActionUrl";
             
             cell.cellDescription.text = action[kActionSubtitle];
             [cell.cellDescription setFont:[UIFont systemFontOfSize:14]];
-            [cell.cellDescription setTextColor:[UIColor colorWithWhite:0.7 alpha:1.0]];
+            [cell.cellDescription setTextColor:[UIColor mit_greyTextColor]];
             [cell.cellDescription sizeToFit];
             
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];

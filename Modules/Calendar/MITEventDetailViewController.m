@@ -11,6 +11,7 @@
 #import <EventKit/EventKit.h>
 #import <EventKitUI/EventKitUI.h>
 #import <MessageUI/MFMailComposeViewController.h>
+#import "MITTelephoneHandler.h"
 
 static NSString * const kMITEventHeaderCellNibName = @"MITEventHeaderCell";
 static NSString * const kMITEventHeaderCellIdentifier = @"kMITEventHeaderIdentifier";
@@ -24,7 +25,6 @@ static NSString * const kMITEventWebviewCellIdentifier = @"kMITEventWebviewIdent
 static NSInteger const kMITEventDetailsSection = 0;
 
 static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
-static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 
 #pragma mark - EKEventEditViewController - PreferredContentSize
 /*
@@ -425,10 +425,6 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
 {
     if (alertView.tag == kMITEventDetailsEmailAlertTag && buttonIndex == 1) {
         [UIPasteboard generalPasteboard].string = self.event.contact.email;
-    } else if (alertView.tag == kMITEventDetailsPhoneCallAlertTag && buttonIndex == 1) {
-        NSString *phoneURLString = [NSString stringWithFormat:@"tel:%@", self.event.contact.phone];
-        NSURL *phoneURL = [NSURL URLWithString:phoneURLString];
-        [[UIApplication sharedApplication] openURL:phoneURL];
     }
 }
 
@@ -464,19 +460,16 @@ static NSInteger const kMITEventDetailsPhoneCallAlertTag = 7643;
             break;
         }
         case MITEventDetailRowTypeLocation: {
-            NSString *searchString = self.event.location.roomNumber ? [MITMapModelController sanitizeMapSearchString:self.event.location.roomNumber] : self.event.location.locationDescription;
-            NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
-            NSURL *url = [NSURL URLWithString:urlString];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
+            if (self.event.location.roomNumber) {
+                [MITMapModelController openMapWithUnsanitizedSearchString:self.event.location.roomNumber];
+            }
+            else {
+                [MITMapModelController openMapWithSearchString:self.event.location.locationDescription];
             }
             break;
         }
         case MITEventDetailRowTypePhone: {
-            UIAlertView *alert = [[UIAlertView alloc] initWithTitle:[NSString stringWithFormat:@"Call %@?", self.event.contact.phone] message:nil delegate:self cancelButtonTitle:@"Cancel" otherButtonTitles:@"OK", nil];
-            alert.tag = kMITEventDetailsPhoneCallAlertTag;
-            [alert show];
-            
+            [MITTelephoneHandler attemptToCallPhoneNumber:self.event.contact.phone];
             break;
         }
         case MITEventDetailRowTypeDescription:

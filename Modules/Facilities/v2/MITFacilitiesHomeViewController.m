@@ -1,11 +1,3 @@
-//
-//  MITFacilitiesHomeViewController.m
-//  MIT Mobile
-//
-//  Created by Yev Motov on 9/1/14.
-//
-//
-
 #import "MITFacilitiesHomeViewController.h"
 #import "MITBuildingServicesReportForm.h"
 #import "MITActionSheetHandler.h"
@@ -25,6 +17,7 @@
 #import <AssetsLibrary/AssetsLibrary.h>
 
 #import "SVProgressHUD.h"
+#import "MITTelephoneHandler.h"
 
 typedef NS_ENUM(NSUInteger, MITFacilitiesFormFieldType) {
     MITFacilitiesFormFieldEmail = 0,
@@ -219,14 +212,10 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             return;
         }
         
-        if( buttonIndex == actionSheet.destructiveButtonIndex )
+        NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+        if([title hasPrefix:@"Call"])
         {
-            // call
-            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
-            if ([[UIApplication sharedApplication] canOpenURL:url])
-            {
-                [[UIApplication sharedApplication] openURL:url];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:kFacilitiesPhoneNumber];
         }
         else
         {

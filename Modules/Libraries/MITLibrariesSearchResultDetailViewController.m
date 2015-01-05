@@ -47,9 +47,11 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 
 @implementation MITLibrariesSearchResultDetailViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+    self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self registerCells];
     

@@ -9,13 +9,17 @@
 #import "MITShuttleVehicleList.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "MITShuttleStopNotificationManager.h"
-#import "MITShuttleStopPredictionLoader.h"
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleRouteContainerViewController.h"
+#import "MITShuttlePredictionLoader.h"
+#import "MITCoreDataController.h"
 
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITShuttleStopViewControllerRouteCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerDefaultCellReuseIdentifier = @"kMITShuttleStopViewControllerDefaultCellReuseIdentifier";
+
+static CGFloat const kMITShuttleStopShortTitleSpacing = 20.0;
+static CGFloat const kMITShuttleStopDefaultTitleSpacing = 44.0;
 
 typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleStopViewControllerSectionTypeTitle,
@@ -23,7 +27,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleStopViewControllerSectionTypeRoutes
 };
 
-@interface MITShuttleStopViewController () <MITShuttleStopPredictionLoaderDelegate, MITShuttleStopAlarmCellDelegate>
+@interface MITShuttleStopViewController () <MITShuttleStopAlarmCellDelegate, NSFetchedResultsControllerDelegate>
 
 @property (nonatomic, strong) NSArray *intersectingRoutes;
 @property (nonatomic, strong) NSArray *vehicles;
@@ -33,29 +37,20 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 
 @property (nonatomic, strong) NSArray *sectionTypes;
 
+@property (strong, nonatomic) NSFetchedResultsController *stopsWithSameIdentifierFetchedResultsController;
+
 @end
 
 @implementation MITShuttleStopViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
 {
-    return [self initWithStyle:style stop:stop route:route predictionLoader:nil];
-}
-
-- (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route predictionLoader:(MITShuttleStopPredictionLoader *)predictionLoader
-{
     self = [super initWithStyle:style];
     if (self) {
         _stop = stop;
         _route = route;
-        _predictionLoader = predictionLoader;
         _shouldHideFooter = NO;
         [self refreshIntersectingRoutes];
-        
-        // default to using one prediction loader per view controller
-        if (!predictionLoader) {
-            [self setupPredictionLoader];
-        }
     }
     return self;
 }
@@ -71,31 +66,54 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.predictionLoader startRefreshingPredictions];
+    [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStop:self.stop];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.predictionLoader stopRefreshingPredictions];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
+    [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStop:self.stop];
+}
+
+#pragma mark - FetchedResultsControllers
+
+- (NSFetchedResultsController *)stopsWithSameIdentifierFetchedResultsController
+{
+    if (!_stopsWithSameIdentifierFetchedResultsController) {
+        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+        
+        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+        
+        NSEntityDescription *entity = [NSEntityDescription entityForName:[MITShuttleStop entityName] inManagedObjectContext:managedObjectContext];
+        [fetchRequest setEntity:entity];
+        
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier = %@", self.stop.identifier];
+        [fetchRequest setPredicate:predicate];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+        
+        _stopsWithSameIdentifierFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                            managedObjectContext:managedObjectContext
+                                                                              sectionNameKeyPath:nil
+                                                                                       cacheName:nil];
+        _stopsWithSameIdentifierFetchedResultsController.delegate = self;
+    }
+    return _stopsWithSameIdentifierFetchedResultsController;
 }
 
 #pragma mark - Refresh Control
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self.predictionLoader startRefreshingPredictions];
-    [self.predictionLoader stopRefreshingPredictions];
+    [[MITShuttleController sharedController] getPredictionsForStop:self.stop completion:^(NSArray *predictionLists, NSError *error) {
+        [self predictionsDidUpdate];
+    }];
 }
 
-#pragma mark - Refreshing
+#pragma mark - Predictions Updates
 
-- (void)beginRefreshing
-{
-    [self.refreshControl beginRefreshing];
-}
-
-- (void)endRefreshing
+- (void)predictionsDidUpdate
 {
     [self.refreshControl endRefreshing];
     self.lastUpdatedDate = [NSDate date];
@@ -157,39 +175,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     self.sectionTypes = [sectionTypes copy];
 }
 
-- (void)setupPredictionLoader
-{
-    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:self.stop];
-    predictionLoader.delegate = self;
-    self.predictionLoader = predictionLoader;
-}
-
 - (void)refreshIntersectingRoutes
 {
-    NSMutableOrderedSet *mutableRoutes = [self.stop.routes mutableCopy];
-    if (self.route) {
-        NSInteger index = [mutableRoutes indexOfObject:self.route];
-        if (index < mutableRoutes.count) {
-            [mutableRoutes removeObjectAtIndex:index];
+    [self.stopsWithSameIdentifierFetchedResultsController performFetch:nil];
+    
+    NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
+    for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
+        if (![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
+            [newIntersectingRoutes addObject:stop.route];
         }
     }
-    self.intersectingRoutes = [mutableRoutes array];
-}
-
-#pragma mark - MITShuttleStopPredictionLoaderDelegate
-
-- (void)stopPredictionLoaderWillReloadPredictions:(MITShuttleStopPredictionLoader *)loader
-{
-    if (self.viewOption == MITShuttleStopViewOptionAll) {
-        [self beginRefreshing];
-    }
-}
-
-- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
-{
-    if (self.viewOption == MITShuttleStopViewOptionAll) {
-        [self endRefreshing];
-    }
+    self.intersectingRoutes = [NSArray arrayWithArray:newIntersectingRoutes];
 }
 
 #pragma mark - UITableViewDataSource
@@ -207,8 +203,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             return 1;
         }
         case MITShuttleStopViewControllerSectionTypePredictions: {
-            NSArray *predictionsForRoute = self.predictionLoader.predictionsByRoute[self.route.identifier];
-            return predictionsForRoute.count > 0 ? predictionsForRoute.count : 1;
+            NSOrderedSet *predictions = self.stop.predictionList.predictions;
+            return predictions.count > 0 ? predictions.count : 1;
         }
         case MITShuttleStopViewControllerSectionTypeRoutes: {
             return self.intersectingRoutes.count > 0 ? self.intersectingRoutes.count : 1;
@@ -227,7 +223,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             return [self tableTitleCellForIndexPath:indexPath];
         }
         case MITShuttleStopViewControllerSectionTypePredictions: {
-            return [self selectedRoutePredictionCellAtIndexPath:indexPath];
+            return [self predictionCellAtIndexPath:indexPath];
         }
         case MITShuttleStopViewControllerSectionTypeRoutes: {
             return [self intersectingRouteCellAtIndexPath:indexPath];
@@ -247,19 +243,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     return cell;
 }
 
-- (UITableViewCell *)selectedRoutePredictionCellAtIndexPath:(NSIndexPath *)indexPath
+- (UITableViewCell *)predictionCellAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
+    NSOrderedSet *predictions = self.stop.predictionList.predictions;
     MITShuttlePrediction *prediction = nil;
     
-    if (!predictionsArray) {
+    if (predictions.count < 1) {
         UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
         cell.textLabel.text = @"No current predictions";
         return cell;
     } else {
         MITShuttleStopAlarmCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
         cell.delegate = self;
-        prediction = predictionsArray[indexPath.row];
+        prediction = predictions[indexPath.row];
         [cell updateUIWithPrediction:prediction];
         return cell;
     }
@@ -277,6 +273,28 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleRoute *route = self.intersectingRoutes[indexPath.row];
     [cell setRoute:route];
     return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    MITShuttleStopViewControllerSectionType sectionType = [[self.sectionTypes objectAtIndex:section] integerValue];
+    switch (self.viewOption) {
+        case MITShuttleStopViewOptionAll: {
+            switch (sectionType) {
+                case MITShuttleStopViewControllerSectionTypeTitle:
+                case MITShuttleStopViewControllerSectionTypePredictions: {
+                    return kMITShuttleStopShortTitleSpacing;
+                }
+                case MITShuttleStopViewControllerSectionTypeRoutes:
+                default: {
+                    return kMITShuttleStopDefaultTitleSpacing;
+                }
+            }
+        }
+        case MITShuttleStopViewOptionIntersectingOnly:
+        default:
+            return kMITShuttleStopShortTitleSpacing;
+    }
 }
 
 #pragma mark - UITableViewDelegate
@@ -321,8 +339,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             return @" ";
         }
         case MITShuttleStopViewControllerSectionTypePredictions: {
-            NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
-            if (predictionsArray) {
+            NSOrderedSet *predictions = self.stop.predictionList.predictions;
+            if (predictions) {
                 return @"Tap bell to be notified 5 minutes before arrival.";
             } else {
                 return nil;
@@ -349,6 +367,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:nil];
             [self.navigationController pushViewController:routeVC animated:YES];
         }
+    } else if (sectionType == MITShuttleStopViewControllerSectionTypePredictions) {
+        MITShuttleStopAlarmCell *alarmCell = (MITShuttleStopAlarmCell *)[tableView cellForRowAtIndexPath:indexPath];
+        [self stopAlarmCellDidToggleAlarm:alarmCell];
+        
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
@@ -358,12 +380,12 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 - (void)stopAlarmCellDidToggleAlarm:(MITShuttleStopAlarmCell *)cell
 {
     NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
-    NSArray *predictionsArray = self.predictionLoader.predictionsByRoute[self.route.identifier];
-    MITShuttlePrediction *prediction = predictionsArray[indexPath.row];
+    NSOrderedSet *predictions = self.stop.predictionList.predictions;
+    MITShuttlePrediction *prediction = predictions[indexPath.row];
     
     NSMutableArray *predictionsGroup = [NSMutableArray array];
-    for (NSInteger i = indexPath.row; i < predictionsArray.count && predictionsGroup.count < 3; i++) {
-        [predictionsGroup addObject:predictionsArray[i]];
+    for (NSInteger i = indexPath.row; i < predictions.count && predictionsGroup.count < 3; i++) {
+        [predictionsGroup addObject:predictions[i]];
     }
     [[MITShuttleStopNotificationManager sharedManager] toggleNotificationForPredictionGroup:predictionsGroup withRouteTitle:self.route.title];
     

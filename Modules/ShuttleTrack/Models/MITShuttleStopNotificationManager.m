@@ -2,11 +2,11 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleRoute.h"
-#import "MITShuttleStopPredictionLoader.h"
 #import "MITCoreDataController.h"
 #import "CoreData+MITAdditions.h"
 #import "MITUnreadNotifications.h"
 #import "MITShuttlePredictionList.h"
+#import "MITShuttleController.h"
 
 static NSString * const kMITShuttleStopNotificationStopIdKey = @"kMITShuttleStopNotificationStopIdKey";
 static NSString * const kMITShuttleStopNotificationVehicleIdKey = @"kMITShuttleStopNotificationVehicleIdKey";
@@ -16,7 +16,7 @@ static NSString * const kMITShuttleStopNotificationPredictionDateKey = @"kMITShu
 const NSTimeInterval kMITShuttleStopNotificationVariance = 600.0;
 const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
-@interface MITShuttleStopNotificationManager() <MITShuttleStopPredictionLoaderDelegate>
+@interface MITShuttleStopNotificationManager()
 
 @property (nonatomic, strong) NSMutableArray *predictionLoaders;
 @property (nonatomic, strong) MITShuttleStopNotificationBackgroundFetchCompletionBlock backgroundFetchCompletionBlock;
@@ -131,7 +131,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
             for (int j = i; j < predictionList.predictions.count && predictionsToInclude.count < 3; j++) {
                 [predictionsToInclude addObject:predictionList.predictions[j]];
             }
-            [self scheduleNotificationForPredictionGroup:predictionsToInclude withRouteTitle:predictionList.routeTitle];
+            [self scheduleNotificationForPredictionGroup:predictionsToInclude withRouteTitle:predictionList.stop.route.title];
         }
     }
 }
@@ -184,33 +184,14 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
             NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
             managedObjectContext.persistentStoreCoordinator = coreDataController.persistentStoreCoordinator;
             NSArray *stops = [managedObjectContext objectsWithIDs:[fetchedObjectIDs array]];
-            for (MITShuttleStop *stop in stops) {
-                // Reloading predictions will implicitly update scheduled notifications
-                [self reloadPredictionsForStop:stop];
-            }
+            [[MITShuttleController sharedController] getPredictionsForStops:stops completion:^(NSArray *predictionLists, NSError *error) {
+                if (self.backgroundFetchCompletionBlock) {
+                    self.backgroundFetchCompletionBlock(nil);
+                    self.backgroundFetchCompletionBlock = nil;
+                }
+            }];
         }
     }];
-}
-
-- (void)reloadPredictionsForStop:(MITShuttleStop *)stop
-{
-    MITShuttleStopPredictionLoader *predictionLoader = [[MITShuttleStopPredictionLoader alloc] initWithStop:stop];
-    predictionLoader.delegate = self;
-    [self.predictionLoaders addObject:predictionLoader];
-    [predictionLoader reloadPredictions];
-}
-
-#pragma mark - MITShuttleStopPredictionLoaderDelegate
-
-- (void)stopPredictionLoaderDidReloadPredictions:(MITShuttleStopPredictionLoader *)loader
-{
-    if ([self.predictionLoaders containsObject:loader]) {
-        [self.predictionLoaders removeObject:loader];
-    }
-    if ([self.predictionLoaders count] == 0 && self.backgroundFetchCompletionBlock) {
-        self.backgroundFetchCompletionBlock(nil);
-        self.backgroundFetchCompletionBlock = nil;
-    }
 }
 
 @end

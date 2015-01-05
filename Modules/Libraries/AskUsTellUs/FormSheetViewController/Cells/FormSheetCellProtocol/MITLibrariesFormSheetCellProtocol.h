@@ -11,4 +11,5 @@
 @end
 @protocol MITLibrariesFormSheetTextEntryCellProtocol <MITLibrariesFormSheetCellProtocol>
 @property (weak, nonatomic) id<MITLibrariesFormSheetTextEntryCellDelegate>delegate;
+- (void)makeTextEntryFirstResponder;
 @end

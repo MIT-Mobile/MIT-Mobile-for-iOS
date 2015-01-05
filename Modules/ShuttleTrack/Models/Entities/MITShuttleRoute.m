@@ -7,8 +7,6 @@
 
 @implementation MITShuttleRoute
 
-@synthesize lastUpdatedTimestamp;
-
 @dynamic agency;
 @dynamic identifier;
 @dynamic order;
@@ -39,9 +37,23 @@
                                                   @"predictions_url": @"predictionsURL",
                                                   @"vehicles_url": @"vehiclesURL",
                                                   @"@metadata.mapping.collectionIndex": @"order"}];
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITShuttleStop objectMapping]]];
+    
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"vehicles" toKeyPath:@"vehicles" withMapping:[MITShuttleVehicle objectMapping]]];
     [mapping setIdentificationAttributes:@[@"identifier"]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromAllRoutes
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITShuttleStop objectMappingFromRoutes]]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromDetail
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITShuttleStop objectMappingFromRouteDetail]]];
     return mapping;
 }
 
@@ -74,23 +86,11 @@
 
 - (MITShuttleRouteStatus)status
 {
-    // Data over 1 minute old is considered unavailable
-    if (!self.lastUpdatedTimestamp || [[NSDate date] timeIntervalSince1970] > [self.lastUpdatedTimestamp timeIntervalSince1970] + 60) {
-        return MITShuttleRouteStatusPredictionsUnavailable;
-    }
-
-    // Any route with predictions is considered active, because it has active vehicles
-    if ([self.predictable boolValue]) {
-        return MITShuttleRouteStatusInService;
-    }
-    
-    // Routes with no predictions and not scheduled are considered inactive.
-    if (![self.scheduled boolValue]) {
+    if ([self.scheduled boolValue]) {
+        return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
+    } else {
         return MITShuttleRouteStatusNotInService;
     }
-    
-    // Anything that falls through is scheduled with no vehicles, which means we don't know what's going on.
-    return MITShuttleRouteStatusPredictionsUnavailable;
 }
 
 - (BOOL)isNextStop:(MITShuttleStop *)stop

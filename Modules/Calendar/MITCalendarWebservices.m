@@ -53,6 +53,12 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
                      endDate:(NSDate *)endDate
                   completion:(MITEventsCompletionBlock)completion
 {
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    }
+    
     NSMutableDictionary *params = [[NSMutableDictionary alloc] init];
     
     if (queryString){
@@ -62,10 +68,10 @@ typedef void(^MITCalendarCompletionBlock)(id object, NSError *error);
         [params setObject:category.identifier forKey:@"category"];
     }
     if (startDate) {
-        [params setObject:[startDate ISO8601String] forKey:@"start"];
+        [params setObject:[dateFormatter stringFromDate:startDate] forKey:@"start"];
     }
     if (endDate) {
-        [params setObject:[endDate ISO8601String] forKey:@"end"];
+        [params setObject:[dateFormatter stringFromDate:endDate] forKey:@"end"];
     }
     
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITCalendarEventsResourceName

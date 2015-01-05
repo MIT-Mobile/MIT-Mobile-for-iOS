@@ -1,10 +1,3 @@
-//
-//  PeopleFavoriteData.m
-//  MIT Mobile
-//
-//
-//
-
 #import "PeopleFavoriteData.h"
 #import "CoreDataManager.h"
 

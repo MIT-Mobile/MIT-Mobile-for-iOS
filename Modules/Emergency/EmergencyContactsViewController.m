@@ -3,6 +3,7 @@
 #import "UIKit+MITAdditions.h"
 #import "EmergencyData.h"
 #import "MITModule.h"
+#import "MITTelephoneHandler.h"
 
 static CGFloat titleFontSize = 17;
 static CGFloat subtitleFontSize = 14;
@@ -174,11 +175,7 @@ static CGFloat subtitleFontSize = 14;
     
 	NSDictionary *contactInfo = [self.emergencyContacts objectAtIndex:indexPath.row];
 	
-	// phone numbers that aren't purely numbers should be converted
-	NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", [contactInfo valueForKey:@"phone"]]];
-	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
-		[[UIApplication sharedApplication] openURL:phoneURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:[contactInfo valueForKey:@"phone"]];
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

@@ -36,6 +36,7 @@
 @property (nonatomic) BOOL showSingleCategory;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (nonatomic) BOOL storyUpdateInProgress;
+@property (nonatomic) BOOL storyRefreshInProgress;
 
 @end
 

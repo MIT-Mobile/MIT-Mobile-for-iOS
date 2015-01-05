@@ -10,6 +10,7 @@
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
 #import "MITMapModelController.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -606,21 +607,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)mapIconTapped:(NSString *)room
 {
     if (room) {
-        NSString *searchString = [MITMapModelController sanitizeMapSearchString:room];
-        NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme,MITModuleTagCampusMap, searchString];
-        NSURL *url = [NSURL URLWithString:urlString];
-        if ([[UIApplication sharedApplication] canOpenURL:url]) {
-            [[UIApplication sharedApplication] openURL:url];
-        }
+        [MITMapModelController openMapWithUnsanitizedSearchString:room];
     }
 }
 
 - (void)phoneIconTapped:(NSString *)phone
 {
-	NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phone]];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL]) {
-		[[UIApplication sharedApplication] openURL:externURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:phone];
 }
 
 - (void)emailIconTapped:(NSString *)email
@@ -630,6 +623,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         
         MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
         [composeViewController setToRecipients:@[email]];
+        composeViewController.mailComposeDelegate = self;
         [self presentViewController:composeViewController animated:YES completion:nil];
     }
 }

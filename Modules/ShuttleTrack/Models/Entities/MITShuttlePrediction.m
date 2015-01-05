@@ -21,7 +21,15 @@
                                                   @"timestamp": @"timestamp",
                                                   @"seconds": @"seconds"}];
     [mapping addConnectionForRelationship:@"vehicle" connectedBy:@{@"vehicleId": @"identifier"}];
-    [mapping setIdentificationAttributes:@[@"vehicleId", @"timestamp"]];
+    [mapping setIdentificationAttributes:@[@"vehicleId", @"timestamp", @"stopId", @"routeId"]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromStop
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.id": @"stopId"}];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.route_id": @"routeId"}];
     return mapping;
 }
 
@@ -29,7 +37,8 @@
 {
     RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
     [mapping addAttributeMappingsFromDictionary:@{@"@parent.stop_id": @"stopId"}];
-    [mapping addConnectionForRelationship:@"stop" connectedBy:@{@"stopId": @"identifier"}];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.route_id": @"routeId"}];
+    [mapping addConnectionForRelationship:@"stop" connectedBy:@{@"stopId": @"identifier", @"routeId": @"routeId"}];
     return mapping;
 }
 

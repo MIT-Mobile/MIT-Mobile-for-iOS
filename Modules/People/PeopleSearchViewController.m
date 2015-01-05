@@ -16,6 +16,7 @@
 #import "PeopleFavoriteData.h"
 #import "PeopleRecentSearchTerm.h"
 #import "MITPeopleRecentResultsViewController.h"
+#import "MITTelephoneHandler.h"
 
 typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
     MITPeopleSearchTableViewSectionExample = 0,
@@ -291,11 +292,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (tableView == self.tableView) {
-        if ([self.peopleFavorites count] > 0) {
-            return 3; // Examples + Directory Assistance/Contacts + Favorites
-        } else {
-            return 2; // Examples + Directory Assistance/Contacts, no recents
-        }
+        return 3;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		return 1;
     } else {
@@ -440,10 +437,9 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             //  * In the case of cell reuse, clears out the detail field in case
             //      the person we are currently display does not have values for
             //      the below tags.
-            cell.detailTextLabel.text = @" ";
-            NSString *displayText = nil;
+            cell.detailTextLabel.text = nil;
             for (NSString *tag in @[@"title", @"dept"]) {
-                displayText = [favorite valueForKey:tag];
+                NSString *displayText = [favorite valueForKey:tag];
                 if (displayText) {
                     cell.detailTextLabel.text = displayText;
                     break;
@@ -478,7 +474,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         }
         else if (MITPeopleSearchTableViewSectionFavorites == section)
         {
-            return UITableViewAutomaticDimension;
+            return 44.0;
         }
 	}
     else if (tableView == self.searchDisplayController.searchResultsTableView)
@@ -496,7 +492,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
     if (tableView == self.tableView) {
         if (MITPeopleSearchTableViewSectionFavorites == section) {
-            return @"Favorites";
+            return [self.peopleFavorites count] > 0 ? @"Favorites" : @" ";
         }
     }
 
@@ -629,10 +625,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)phoneIconTapped
 {
-    NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel:%@",MITPeopleDirectoryAssistancePhone]];
-	if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
-		[[UIApplication sharedApplication] openURL:phoneURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:MITPeopleDirectoryAssistancePhone];
 }
 
 @end

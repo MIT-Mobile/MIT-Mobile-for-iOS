@@ -4,7 +4,7 @@
 #import "MITMappedObject.h"
 #import <MapKit/MapKit.h>
 
-@class MITShuttlePrediction, MITShuttleRoute, MITShuttleVehicle;
+@class MITShuttlePredictionList, MITShuttlePrediction, MITShuttleRoute, MITShuttleVehicle;
 
 @interface MITShuttleStop : MITManagedObject <MITMappedObject, MKAnnotation>
 
@@ -16,29 +16,26 @@
 @property (nonatomic, retain) NSString * stopNumber;
 @property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSString * url;
-@property (nonatomic, retain) NSOrderedSet *predictions;
-@property (nonatomic, retain) NSOrderedSet *routes;
+@property (nonatomic, retain) MITShuttlePredictionList *predictionList;
+@property (nonatomic, retain) MITShuttleRoute *route;
+@property (nonatomic, retain) NSString *routeId;
+
++ (RKMapping *)objectMappingFromDetail;
++ (RKMapping *)objectMappingFromRoutes;
++ (RKMapping *)objectMappingFromRouteDetail;
 
 // Computed
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
-- (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route;
+@property (nonatomic, readonly) NSString *stopAndRouteIdTuple;
+
+- (MITShuttlePrediction *)nextPrediction;
 - (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle;
 
 @end
 
 @interface MITShuttleStop (CoreDataGeneratedAccessors)
 
-- (void)insertObject:(MITShuttlePrediction *)value inPredictionsAtIndex:(NSUInteger)idx;
-- (void)removeObjectFromPredictionsAtIndex:(NSUInteger)idx;
-- (void)insertPredictions:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
-- (void)removePredictionsAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInPredictionsAtIndex:(NSUInteger)idx withObject:(MITShuttlePrediction *)value;
-- (void)replacePredictionsAtIndexes:(NSIndexSet *)indexes withPredictions:(NSArray *)values;
-- (void)addPredictionsObject:(MITShuttlePrediction *)value;
-- (void)removePredictionsObject:(MITShuttlePrediction *)value;
-- (void)addPredictions:(NSOrderedSet *)values;
-- (void)removePredictions:(NSOrderedSet *)values;
 - (void)insertObject:(MITShuttleRoute *)value inRoutesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromRoutesAtIndex:(NSUInteger)idx;
 - (void)insertRoutes:(NSArray *)value atIndexes:(NSIndexSet *)indexes;

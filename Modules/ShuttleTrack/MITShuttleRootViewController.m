@@ -24,7 +24,7 @@
 @property (nonatomic, strong) MITShuttleMapViewController *mapViewController;
 
 @property (nonatomic, strong) UIPopoverController *resourcePopoverController;
-
+@property (nonatomic) BOOL isSelectingStop;
 @end
 
 @implementation MITShuttleRootViewController
@@ -91,7 +91,6 @@
 - (void)setupMapViewController
 {
     self.mapViewController = [[MITShuttleMapViewController alloc] initWithNibName:nil bundle:nil];
-    self.mapViewController.shouldUsePinAnnotations = YES;
     self.mapViewController.delegate = self;
     self.detailNavigationController = [[UINavigationController alloc] initWithRootViewController:self.mapViewController];
     if (self.mapViewController.view) { // Make sure the view is loaded so the mapview (and its button) has been created
@@ -157,6 +156,7 @@
 {
     if (self.mapViewController.isViewLoaded) {
         [self.mapViewController setRoute:route stop:stop];
+        self.mapViewController.shouldUsePinAnnotations = (route || stop);
     }
 }
 
@@ -172,6 +172,7 @@
 - (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
     if (stop) {
+        self.isSelectingStop = YES;
         // Selected a stop cell
         if ([self.selectedStop isEqual:stop]) {
             return;
@@ -198,29 +199,34 @@
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop
 {
-    if ([self.selectedStop isEqual:stop]) {
-        return;
+    if (![self.selectedStop.identifier isEqualToString:stop.identifier]) {
+        self.selectedStop = stop;
     }
-    self.selectedStop = stop;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
-        [self.homeViewController highlightStop:stop];
+        [self.homeViewController highlightStop:self.selectedStop];
     } else if (masterViewController == self.routeViewController) {
-        [self.routeViewController highlightStop:stop];
+        [self.routeViewController highlightStop:self.selectedStop];
     }
+    
+    self.isSelectingStop = NO;
 }
 
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didDeselectStop:(MITShuttleStop *)stop
 {
-    if (![self.selectedStop isEqual:stop]) {
+    if (![self.selectedStop.identifier isEqualToString:stop.identifier]) {
         return;
     }
-    self.selectedStop = nil;
     
+    if (!self.isSelectingStop) {
+        self.selectedStop = nil;
+    }
+
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
         [self.homeViewController highlightStop:nil];
+        [self setMapViewControllerRoute:nil stop:nil];
     } else if (masterViewController == self.routeViewController) {
         [self.routeViewController highlightStop:nil];
     }
@@ -232,8 +238,7 @@
         return;
     }
     self.selectedRoute = route;
-    
-    [self.mapViewController setRoute:route stop:self.selectedStop];
+    self.selectedStop = nil;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
@@ -241,6 +246,7 @@
     } else if (masterViewController == self.routeViewController) {
         self.routeViewController.route = route;
     }
+    [self setMapViewControllerRoute:self.selectedRoute stop:self.selectedStop];
 }
 
 #pragma mark - UINavigationControllerDelegate
@@ -251,7 +257,8 @@
         // If popping back to home view controller, clear route and stop state from map
         if (viewController == self.homeViewController) {
             self.selectedRoute = nil;
-            [self setMapViewControllerRoute:nil stop:self.selectedStop];
+            self.selectedStop = nil;
+            [self setMapViewControllerRoute:nil stop:nil];
         }
     }
 }

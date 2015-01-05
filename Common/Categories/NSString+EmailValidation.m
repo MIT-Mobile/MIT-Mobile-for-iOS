@@ -1,9 +1,3 @@
-//
-//  NSString+EmailValidation.m
-//  MIT Mobile
-//
-//
-
 #import "NSString+EmailValidation.h"
 
 @implementation NSString (EmailValidation)

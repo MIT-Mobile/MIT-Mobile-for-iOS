@@ -7,6 +7,7 @@
 @end
 
 @implementation MITScannerOverlayView
+
 @dynamic helpText;
 
 - (id)init
@@ -27,7 +28,7 @@
                                               alpha:0.5];
         
         {
-            UILabel *helpLabel = [[UILabel alloc] initWithFrame:CGRectMake(30., 64., frame.size.width - 60., 100.)];
+            UILabel *helpLabel = [[UILabel alloc] initWithFrame:CGRectMake(0., 64., frame.size.width, 100.)];
             helpLabel.backgroundColor = [UIColor clearColor];
             helpLabel.textColor = [UIColor whiteColor];
             helpLabel.textAlignment = NSTextAlignmentCenter;
@@ -40,17 +41,6 @@
         [self setNeedsLayout];
     }
     return self;
-}
- 
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (CGFloat)rotationForInterfaceOrientation:(int)orient
@@ -80,10 +70,11 @@
         CGRect cropRect = self.qrRect;
         CGRect textFrame = self.helpLabel.frame;
         textFrame.size.height = cropRect.origin.y - textFrame.origin.y;
+        textFrame.origin.x = 0;
+        textFrame.size.width = self.frame.size.width;
         self.helpLabel.frame = textFrame;
     }
 }
-
 
 - (void)drawRect:(CGRect)rect
 {

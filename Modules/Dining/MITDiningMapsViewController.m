@@ -173,7 +173,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
         [annotationView setNumber:[(MITDiningPlace *)annotation displayNumber]];
-        
+        annotationView.canShowCallout = YES;
         return annotationView;
     }
     return nil;

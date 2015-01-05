@@ -197,19 +197,33 @@
         MKMapPoint mapPoint = MKMapPointForCoordinate(coordinate);
         CGPoint destinationPoint = [self.mapView convertCoordinate:coordinate toPointToView:self.mapView];
         
-        CGFloat heading = [vehicle.heading floatValue] * 2 * M_PI / 360;
+        CGFloat rawVehicleHeading = [vehicle.heading floatValue];
         
+        // Convert mapHeading to 360 degree scale.
+        CGFloat mapHeading = self.mapView.camera.heading;
+        if (mapHeading < 0) {
+            mapHeading = fabs(mapHeading);
+        } else if (mapHeading > 0) {
+            mapHeading = 360 - mapHeading;
+        }
+        
+        CGFloat offsetHeading = (rawVehicleHeading + mapHeading);
+        while (offsetHeading > 360.0) {
+            offsetHeading -= 360.0;
+        }
+        
+        CGFloat headingInRadians = offsetHeading * M_PI / 180;
         if (MKMapRectContainsPoint(self.mapView.visibleMapRect, mapPoint)) {
             if (animated) {
                 [UIView animateWithDuration:4.0 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
-                    self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(heading);
+                    self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(headingInRadians);
                 } completion:nil];
                 
                 [UIView animateWithDuration:8.0 delay:0 options:UIViewAnimationOptionCurveLinear animations:^{
                     self.center = destinationPoint;
                 } completion:nil];
             } else {
-                self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(heading);
+                self.busImageLayer.affineTransform = CGAffineTransformMakeRotation(headingInRadians);
                 self.center = destinationPoint;
             }
         }

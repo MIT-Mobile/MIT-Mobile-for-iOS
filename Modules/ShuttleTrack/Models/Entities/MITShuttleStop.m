@@ -1,8 +1,14 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttlePredictionList.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleVehicle.h"
 
+@interface MITShuttleStop ()
+
+@property (nonatomic, strong) NSString *stopAndRouteIdTuple;
+
+@end
 
 @implementation MITShuttleStop
 
@@ -14,8 +20,11 @@
 @dynamic stopNumber;
 @dynamic name;
 @dynamic url;
-@dynamic predictions;
-@dynamic routes;
+@dynamic predictionList;
+@dynamic route;
+@dynamic routeId;
+
+@synthesize stopAndRouteIdTuple = _stopAndRouteIdTuple;
 
 + (RKMapping *)objectMapping
 {
@@ -28,24 +37,44 @@
                                                   @"lat": @"latitude",
                                                   @"lon": @"longitude",
                                                   @"predictions_url": @"predictionsURL"}];
-    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"predictions" toKeyPath:@"predictions" withMapping:[MITShuttlePrediction objectMapping]]];
-    [mapping setIdentificationAttributes:@[@"identifier"]];
+    
+    
+    [mapping setIdentificationAttributes:@[@"identifier", @"routeId"]];
+    [mapping addConnectionForRelationship:@"route" connectedBy:@{@"routeId": @"identifier"}];
     return mapping;
 }
 
-- (MITShuttlePrediction *)nextPredictionForRoute:(MITShuttleRoute *)route
++ (RKMapping *)objectMappingFromDetail
 {
-    for (MITShuttlePrediction *prediction in self.predictions) {
-        if ([route.vehicles containsObject:prediction.vehicle]) {
-            return prediction;
-        }
-    }
-    return nil;
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"predictionList" withMapping:[MITShuttlePredictionList objectMappingFromStop]]];
+    [mapping addAttributeMappingsFromDictionary:@{@"route_id": @"routeId"}];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromRoutes
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.id": @"routeId"}];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromRouteDetail
+{
+    RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"predictionList" withMapping:[MITShuttlePredictionList objectMappingFromStop]]];
+    [mapping addAttributeMappingsFromDictionary:@{@"@parent.id": @"routeId"}];
+    return mapping;
+}
+
+- (MITShuttlePrediction *)nextPrediction
+{
+    return [self.predictionList.predictions firstObject];
 }
 
 - (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
 {
-    for (MITShuttlePrediction *prediction in self.predictions) {
+    for (MITShuttlePrediction *prediction in self.predictionList.predictions) {
         if ([vehicle isEqual:prediction.vehicle]) {
             return prediction;
         }
@@ -63,6 +92,17 @@
 - (NSString *)title
 {
     return self.name;
+}
+
+#pragma mark - Unique ID
+
+- (NSString *)stopAndRouteIdTuple
+{
+    if (_stopAndRouteIdTuple == nil) {
+        _stopAndRouteIdTuple = [NSString stringWithFormat:@"%@,%@", self.routeId, self.identifier];
+    }
+    
+    return _stopAndRouteIdTuple;
 }
 
 @end

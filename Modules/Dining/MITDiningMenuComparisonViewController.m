@@ -329,15 +329,16 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 - (NSInteger) compareView:(MITDiningHallMenuComparisonView *)compareView numberOfItemsInSection:(NSInteger) section
 {
     MITDiningMeal *meal = [compareView.aggregateMeal mealForHouseVenue:compareView.aggregateMeal.venues[section]];
-    return meal.items.count > 0 ? meal.items.count : 1;
+    NSArray *filteredItems = [self filteredItemsForMeal:meal];
+    return filteredItems.count > 0 ? filteredItems.count : 1;
 }
 
 - (UICollectionViewCell *) compareView:(MITDiningHallMenuComparisonView *)compareView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     MITDiningMeal *meal = [compareView.aggregateMeal mealForHouseVenue:compareView.aggregateMeal.venues[indexPath.section]];
-    
-    if (meal) {
-        MITDiningMenuItem *item = meal.items[indexPath.row];
+    NSArray *filteredItems = [self filteredItemsForMeal:meal];
+    if (filteredItems.count > 0) {
+        MITDiningMenuItem *item = filteredItems[indexPath.row];
         
         MITDiningHallMenuComparisonCell *cell = [compareView dequeueReusableCellWithReuseIdentifier:@"DiningMenuCell" forIndexPath:indexPath];
         cell.primaryLabel.text = item.name;
@@ -358,8 +359,9 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 {
     MITDiningMeal *meal = [compareView.aggregateMeal mealForHouseVenue:compareView.aggregateMeal.venues[indexPath.section]];
     
-    if (meal) {
-        MITDiningMenuItem *item = meal.items[indexPath.row];
+    NSArray *filteredItems = [self filteredItemsForMeal:meal];
+    if (filteredItems.count > 0) {
+        MITDiningMenuItem *item = filteredItems[indexPath.row];
         return [MITDiningHallMenuComparisonCell heightForComparisonCellOfWidth:compareView.columnWidth
                                                                withPrimaryText:item.name
                                                                  secondaryText:item.itemDescription
@@ -401,6 +403,27 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
         default:
             return self.dataManager.aggregatedMeals[self.indexOfCurrentAggregateMeal];
             break;
+    }
+}
+
+- (NSArray *)filteredItemsForMeal:(MITDiningMeal *)meal
+{
+    if (self.filtersApplied.count == 0) {
+        return meal.items.array;
+    }
+    else {
+        NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
+        for (MITDiningMenuItem *item in meal.items) {
+            if (item.dietaryFlags) {
+                for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
+                    if ([self.filtersApplied containsObject:dietaryFlag]) {
+                        [filteredItems addObject:item];
+                        break;
+                    }
+                }
+            }
+        }
+        return filteredItems;
     }
 }
 

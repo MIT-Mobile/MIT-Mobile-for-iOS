@@ -8,6 +8,7 @@
 #import "MITMapModelController.h"
 
 @implementation MITMapPlacesResource
+
 + (void)placesWithQuery:(NSString*)queryString loaded:(MITMobileResult)block
 {
     NSParameterAssert(queryString);
@@ -156,6 +157,39 @@
     [placeMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contents" withMapping:contentsMapping]];
 
     [self addMapping:placeMapping atKeyPath:nil forRequestMethod:RKRequestMethodAny];
+}
+
+@end
+
+@implementation MITMapObjectResource
+
++ (void)placesWithObjectID:(NSString *)objectID loaded:(MITMobileResult)block
+{
+    NSParameterAssert(objectID);
+    NSParameterAssert(block);
+    
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapObjectResourceName object:@{@"objectID" : objectID} parameters:nil completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (!error) {
+                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                NSArray *mappedObjects = [mainQueueContext transferManagedObjects:[result array]];
+                block(mappedObjects,nil);
+            } else {
+                block(nil,error);
+            }
+        }];
+    }];
+}
+
+- (NSFetchRequest*)fetchRequestForURL:(NSURL*)url
+{
+    return (NSFetchRequest*)nil;
+}
+
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel
+{
+    self = [super initWithName:MITMapObjectResourceName pathPattern:MITMapObjectPathPattern managedObjectModel:managedObjectModel];
+    return self;
 }
 
 @end

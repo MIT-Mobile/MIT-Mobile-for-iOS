@@ -18,6 +18,8 @@
 
 @property (weak, nonatomic) id<MITBatchScanningAlertViewDelegate> delegate;
 
-- (void)fadeOutWithDuration:(NSTimeInterval)duration andWait:(NSTimeInterval)wait;
+- (void)fadeOutWithDuration:(NSTimeInterval)duration
+                    andWait:(NSTimeInterval)wait
+                 completion:(void (^)(void))completionBlock;
 
 @end

@@ -3,17 +3,19 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttlePrediction;
+@class MITShuttlePrediction, MITShuttleStop;
 
 @interface MITShuttlePredictionList : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * routeId;
-@property (nonatomic, retain) NSString * routeTitle;
-@property (nonatomic, retain) NSString * routeURL;
 @property (nonatomic, retain) NSString * stopId;
-@property (nonatomic, retain) NSString * stopTitle;
-@property (nonatomic, retain) NSString * stopURL;
 @property (nonatomic, retain) NSOrderedSet *predictions;
+@property (nonatomic, retain) NSDate *updatedTime;
+@property (nonatomic, retain) MITShuttleStop *stop;
+
++ (RKMapping *)objectMappingFromDetail;
++ (RKMapping *)objectMappingFromStop;
+
 @end
 
 @interface MITShuttlePredictionList (CoreDataGeneratedAccessors)
@@ -28,4 +30,5 @@
 - (void)removePredictionsObject:(MITShuttlePrediction *)value;
 - (void)addPredictions:(NSOrderedSet *)values;
 - (void)removePredictions:(NSOrderedSet *)values;
+
 @end

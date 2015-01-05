@@ -525,6 +525,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
 
     MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapPlaces];
+    
+    MITMobileResource *mapObjectPlaces = [[MITMapObjectResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:mapObjectPlaces];
 
     MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapCategories];
@@ -753,6 +756,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     [[UITableViewCell appearance] setTintColor:[UIColor mit_tintColor]];
     [[UISegmentedControl appearance] setTintColor:[UIColor mit_tintColor]];
     [[UIToolbar appearance] setBarTintColor:[UIColor mit_navBarColor]];
+    [[UITableView appearance] setSectionIndexColor:[UIColor mit_tintColor]];
 }
 
 @end

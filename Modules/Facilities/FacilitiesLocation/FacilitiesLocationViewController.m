@@ -372,7 +372,7 @@
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {
-        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
     else
     {

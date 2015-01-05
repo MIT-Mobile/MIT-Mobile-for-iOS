@@ -14,6 +14,7 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 {
     [super awakeFromNib];
     self.textView.delegate = self;
+    self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)configureCellForFormSheetElement:(MITLibrariesFormSheetElement *)element
@@ -25,6 +26,13 @@ NSString * const MITLibrariesFormSheetCellMultiLineTextEntryNibName = @"MITLibra
 + (CGFloat)heightForCell
 {
     return 160.0;
+}
+
+#pragma mark - MITLibrariesFormSheetTextEntryCellProtocol
+
+- (void)makeTextEntryFirstResponder
+{
+    [self.textView becomeFirstResponder];
 }
 
 #pragma mark - UITextFiewDelegate

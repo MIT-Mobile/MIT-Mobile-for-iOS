@@ -7,6 +7,12 @@
 #import "UIKit+MITAdditions.h"
 #import "NSDateFormatter+RelativeString.h"
 #import "UITableView+MITAdditions.h"
+#import "MITShuttlePrediction.h"
+#import "MITShuttlePredictionList.h"
+#import "MITCoreDataController.h"
+#import "MITShuttlePredictionLoader.h"
+#import "MITShuttleVehicleList.h"
+#import "MITShuttleVehicle.h"
 
 static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
@@ -15,6 +21,7 @@ static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
+static const NSTimeInterval kRouteVehiclesRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
@@ -25,9 +32,10 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
+
+@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 
 @end
 
@@ -48,14 +56,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)setRoute:(MITShuttleRoute *)route
 {
-    // clear data and reload table
-    _route = nil;
-    [self.tableView reloadData];
-    
     _route = route;
     [self configureViewForCurrentRoute];
-    [self stopRefreshingRoute];
-    [self startRefreshingRoute];
+    [self.tableView reloadData];
 }
 
 #pragma mark - View Lifecycle
@@ -74,13 +77,25 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     }
-    [self startRefreshingRoute];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self startRefreshingVehicles];
+    }
+    
+    [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self stopRefreshingRoute];
+    
+    [self stopRefreshingVehicles];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
+    [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
+    [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForRoute:self.route];
 }
 
 - (void)didReceiveMemoryWarning
@@ -116,68 +131,60 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
-#pragma mark - Refresh Control
+#pragma mark - Vehicles Refresh Timer
 
-- (void)refreshControlActivated:(id)sender
+- (void)startRefreshingVehicles
 {
-    [self stopRefreshingRoute];
-    [self startRefreshingRoute];
-}
-
-#pragma mark - Data Refresh Timers
-
-- (void)startRefreshingRoute
-{
-    [self loadRoute];
+    [self loadVehicles];
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.routeRefreshTimer invalidate];
-        NSTimer *routeRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteRefreshInterval
-                                                             target:self
-                                                           selector:@selector(loadRoute)
-                                                           userInfo:nil
-                                                            repeats:YES];
-        self.routeRefreshTimer = routeRefreshTimer;
+        [self.vehiclesRefreshTimer invalidate];
+        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
+                                                                         target:self
+                                                                       selector:@selector(loadVehicles)
+                                                                       userInfo:nil
+                                                                        repeats:YES];
+        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
     });
 }
 
-- (void)stopRefreshingRoute
+- (void)stopRefreshingVehicles
 {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self.routeRefreshTimer invalidate];
-        self.routeRefreshTimer = nil;
+        [self.vehiclesRefreshTimer invalidate];
+        self.vehiclesRefreshTimer = nil;
     });
 }
 
-#pragma mark - Load Route
-
-- (void)loadRoute
+- (void)loadVehicles
 {
-    [self beginRefreshing];
-    [[MITShuttleController sharedController] getRouteDetail:self.route completion:^(MITShuttleRoute *route, NSError *error) {
-        [self endRefreshing];
-        [self.tableView reloadDataAndMaintainSelection];
-    }];
+    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicles, NSError *error) {}];
 }
 
-- (void)beginRefreshing
+#pragma mark - Update Data
+
+- (void)predictionsWillUpdate
 {
-    [self.refreshControl beginRefreshing];
-    
     self.isUpdating = YES;
     [self refreshLastUpdatedLabel];
 }
 
-- (void)endRefreshing
+- (void)predictionsDidUpdate
 {
-    [self.refreshControl endRefreshing];
-    
     self.isUpdating = NO;
     self.lastUpdatedDate = [NSDate date];
     [self refreshLastUpdatedLabel];
-    
-    if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-        [self.delegate routeViewControllerDidRefresh:self];
-    }
+    [self.tableView reloadDataAndMaintainSelection];
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlActivated:(id)sender
+{
+    [self predictionsWillUpdate];
+    [[MITShuttleController sharedController] getPredictionsForRoute:self.route completion:^(NSArray *predictionLists, NSError *error) {
+        [self.refreshControl endRefreshing];
+        [self predictionsDidUpdate];
+    }];
 }
 
 #pragma mark - Stop Highlighting
@@ -227,6 +234,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if (!_routeStatusCell) {
         _routeStatusCell = [[NSBundle mainBundle] loadNibNamed:kMITShuttleRouteStatusCellNibName owner:self options:nil][0];
         [_routeStatusCell setRoute:self.route];
+        
+        CGRect screenRect = [UIScreen mainScreen].bounds;
+        CGFloat width = CGRectGetWidth(screenRect);
+        CGFloat height = CGRectGetHeight(screenRect);
+        CGFloat longestEdge = height > width ? height : width;
+        _routeStatusCell.separatorInset = UIEdgeInsetsMake(0, longestEdge, 0, 0);
     }
     return _routeStatusCell;
 }
@@ -273,7 +286,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
         if (routeStatus != MITShuttleRouteStatusPredictionsUnavailable) {
-            MITShuttlePrediction *prediction = [stop nextPredictionForRoute:self.route];
+            MITShuttlePrediction *prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
             [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
         } else {

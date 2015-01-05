@@ -1,6 +1,5 @@
 #import "QRReaderImageTransformer.h"
 
-
 @implementation QRReaderImageTransformer
 + (void)initialize
 {

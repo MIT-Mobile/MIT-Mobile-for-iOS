@@ -13,6 +13,7 @@
 #import "MITLibrariesConsultationFormSheetViewController.h"
 #import "MITLibrariesTellUsFormSheetViewController.h"
 #import "MITLibrariesSearchResultsViewController.h"
+#import "MITTelephoneHandler.h"
 
 typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeAccount,
@@ -414,10 +415,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
             break;
         }
         case MITLibrariesAskUsOptionGeneral: {
-            NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:@"16173242275"];
             break;
         }
         default:

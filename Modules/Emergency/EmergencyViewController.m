@@ -6,6 +6,7 @@
 #import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
+#import "MITTelephoneHandler.h"
 
 static NSString* const MITEmergencyHTMLFormatString = @"<html>\n<head>\n<style type=\"text/css\" media=\"screen\">\nbody { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; }\n</style>\n</head>\n<body>\n%@\n</body>\n</html>";
 
@@ -39,13 +40,15 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidLoad {
     [super viewDidLoad];
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemRefresh target:self action:@selector(refreshInfo:)];
     if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
         self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     } else {
         self.tableView.backgroundColor = [UIColor mit_backgroundColor];
     }
 	self.tableView.backgroundView = nil;
+    self.refreshControl = [UIRefreshControl new];
+    [self.tableView addSubview:self.refreshControl];
+    [self.refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
 }
 
 - (void)viewWillAppear:(BOOL)animated {
@@ -92,16 +95,21 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (void)refreshInfo:(id)sender {
-	self.refreshButtonPressed = (sender != nil);
+- (void)refreshControlActivated:(UIRefreshControl *)refreshControl
+{
+    self.refreshButtonPressed = YES;
+    [self refreshInfo];
+}
+
+- (void)refreshInfo
+{
     [[EmergencyData sharedData] checkForEmergencies];
 }
 
 #pragma mark - UIWebView delegation
 - (void)webViewDidFinishLoad:(UIWebView *)webView {
     if ([self.infoWebView isEqual:webView]) {
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITEmergencyTableSectionAlerts]
-                      withRowAnimation:UITableViewRowAnimationFade];
+        [self.tableView reloadData];
     }
 }
 
@@ -241,11 +249,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
-            NSURL *phoneURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", contact[@"phone"]]];
-            
-            if ([[UIApplication sharedApplication] canOpenURL:phoneURL]) {
-                [[UIApplication sharedApplication] openURL:phoneURL];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:contact[@"phone"]];
             
             [tableView deselectRowAtIndexPath:indexPath
                                      animated:YES];
@@ -277,6 +281,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
+    
+    [self.refreshControl endRefreshing];
 }
 
 - (void)infoDidFailToLoad:(NSNotification *)aNotification {
@@ -296,6 +302,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	
 	// touch handled
 	self.refreshButtonPressed = NO;
+    
+    [self.refreshControl endRefreshing];
 }
 
 @end

@@ -81,7 +81,7 @@
 - (void)didReceiveNotification:(NSDictionary *)userInfo
 {
     [super didReceiveNotification:userInfo];
-    [self.rootViewController refreshInfo:nil];
+    [self.rootViewController refreshInfo];
 }
 
 - (void) syncUnreadNotifications {
@@ -92,6 +92,13 @@
 	if(self.emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
 		[MITUnreadNotifications removeNotificationsForModuleTag:self.name];
 	}
+}
+
+#pragma mark - User Interface Idiom Support
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
 }
 
 @end

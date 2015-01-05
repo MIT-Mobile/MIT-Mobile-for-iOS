@@ -3,8 +3,11 @@
 #import "MITLibrariesAskUsFormSheetViewController.h"
 #import "MITLibrariesConsultationFormSheetViewController.h"
 #import "MITLibrariesTellUsFormSheetViewController.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MITLibrariesAskUsHomeViewControllerCellIdentifier";
+static CGFloat const MITLibrariesAskUsHomeDetailLabelPadding = 6.0;
+static CGFloat const MITLibrariesAskUsHomeCellPadding = 38.0;
 
 @interface MITLibrariesAskUsHomeTableViewCell : UITableViewCell
 @end
@@ -17,6 +20,14 @@ static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MI
         self.textLabel.lineBreakMode = NSLineBreakByWordWrapping;
     }
     return self;
+}
+- (void)layoutSubviews {
+    [super layoutSubviews];
+    CGPoint center = self.detailTextLabel.center;
+    center.y += MITLibrariesAskUsHomeDetailLabelPadding;
+    // Subtitle seems to be off by 2pts.  This lines up much better.
+    center.x += 2.0;
+    self.detailTextLabel.center = center;
 }
 @end
 
@@ -161,10 +172,7 @@ static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MI
                 break;
             }
             case MITLibrariesAskUsOptionGeneral: {
-                NSURL *url = [NSURL URLWithString:@"tel://16173242275"];
-                if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                    [[UIApplication sharedApplication] openURL:url];
-                }
+                [MITTelephoneHandler attemptToCallPhoneNumber:@"16173242275"];
                 break;
             }
             default:
@@ -183,9 +191,15 @@ static NSString * const MITLibrariesAskUsHomeViewControllerCellIdentifier = @"MI
     cell.textLabel.text = [self titleTextForIndexPath:indexPath];
     CGSize maxSize = CGSizeMake(CGRectGetWidth(tableView.bounds), CGFLOAT_MAX);
     CGSize titleSize = [cell.textLabel sizeThatFits:maxSize];
-    cell.detailTextLabel.text = [self detailTextForIndexPath:indexPath];
-    CGSize detailSize = [cell.detailTextLabel sizeThatFits:maxSize];
-    return titleSize.height + detailSize.height + 30; // Padding
+    NSString *detailText = [self detailTextForIndexPath:indexPath];
+    CGFloat detailHeight = 0;
+    if (detailText) {
+        cell.detailTextLabel.text = [self detailTextForIndexPath:indexPath];
+        CGSize detailSize = [cell.detailTextLabel sizeThatFits:maxSize];
+        detailHeight += detailSize.height;
+        detailHeight += MITLibrariesAskUsHomeDetailLabelPadding;
+    }
+    return titleSize.height + detailHeight + MITLibrariesAskUsHomeCellPadding;
 }
 
 #pragma mark - Getters | Setters

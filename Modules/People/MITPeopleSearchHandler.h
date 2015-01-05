@@ -1,10 +1,3 @@
-//
-//  PeopleSearchHandler.h
-//  MIT Mobile
-//
-//
-//
-
 #import <Foundation/Foundation.h>
 
 @interface MITPeopleSearchHandler : NSObject
