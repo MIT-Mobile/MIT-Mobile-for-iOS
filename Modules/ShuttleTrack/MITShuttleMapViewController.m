@@ -729,7 +729,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     calloutView.anchorMargin = 39;
     calloutView.delegate = self;
     calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-    
+    calloutView.leftRightPaddingOverride = @(0);
     self.calloutView = calloutView;
     self.tiledMapView.mapView.calloutView = calloutView;
 }
@@ -752,7 +752,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         stopViewController.viewOption = MITShuttleStopViewOptionIntersectingOnly;
         stopViewController.shouldHideFooter = YES;
         stopViewController.tableView.scrollEnabled = NO;
-        size = CGSizeMake(320, [stopViewController preferredContentHeight] + 10);
+        size = CGSizeMake(320, [stopViewController preferredContentHeight]);
     }
     [stopViewController setFixedContentSize:size];
     CGRect frame = stopViewController.view.frame;

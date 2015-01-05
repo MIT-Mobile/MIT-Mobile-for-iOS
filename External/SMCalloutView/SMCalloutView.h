@@ -44,6 +44,7 @@ extern NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView;
 @property (nonatomic, readonly) SMCalloutArrowDirection currentArrowDirection;
 @property (nonatomic, assign) UIEdgeInsets constrainedInsets; // if the UIView you're constraining to has portions that are overlapped by nav bar, tab bar, etc. you'll need to tell us those insets.
 @property (nonatomic, retain) SMCalloutBackgroundView *backgroundView; // default is SMCalloutMaskedBackgroundView, or SMCalloutDrawnBackgroundView when using SMClassicCalloutView
+@property (nonatomic, strong) NSNumber *leftRightPaddingOverride; // Used to override calculated left right margins with a user specified value
 
 // Custom title/subtitle views. if these are set, the respective title/subtitle properties will be ignored.
 // Keep in mind that SMCalloutView calls -sizeThatFits on titleView/subtitleView if defined, so your view
