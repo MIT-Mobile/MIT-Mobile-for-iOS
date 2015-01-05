@@ -301,7 +301,10 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     
     [self.detailPopoverController setPopoverContentSize:CGSizeMake(320, tableHeight) animated:NO];
     
-    [self.detailPopoverController presentPopoverFromRect:view.frame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
+    // Adjust so that popover arrow points to top of pin
+    CGRect viewFrame = view.frame;
+    viewFrame.size.height = viewFrame.size.height / 2.0;
+    [self.detailPopoverController presentPopoverFromRect:viewFrame inView:self.mapView permittedArrowDirections:UIPopoverArrowDirectionAny animated:YES];
 }
 
 - (void)showRetailPopoverForVenueWithoutAnnotation:(MITDiningRetailVenue *)retailVenue
