@@ -12,7 +12,8 @@ NSString *const kMITLibraryClosedMessageString = @"Closed Today";
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITLibrariesLibrary class]];
     
     [mapping addAttributeMappingsFromDictionary:@{@"id" : @"identifier",
-                                                  @"phone" : @"phoneNumber"}];
+                                                  @"phone" : @"phoneNumber",
+                                                  @"coordinates": @"coordinateArray"}];
     [mapping addAttributeMappingsFromArray:@[@"url", @"name", @"location"]];
     [mapping addRelationshipMappingWithSourceKeyPath:@"terms" mapping:[MITLibrariesTerm objectMapping]];
     
@@ -47,6 +48,15 @@ NSString *const kMITLibraryClosedMessageString = @"Closed Today";
         }
     }
     return NO;
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    if (self.coordinateArray.count > 1) {
+        return CLLocationCoordinate2DMake([self.coordinateArray[1] doubleValue], [self.coordinateArray[0] doubleValue]);
+    } else {
+        return CLLocationCoordinate2DMake(0, 0);
+    }
 }
 
 @end

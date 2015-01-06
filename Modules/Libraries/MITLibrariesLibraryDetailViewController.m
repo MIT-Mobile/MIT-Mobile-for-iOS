@@ -10,9 +10,12 @@
 #import "MITMapModelController.h"
 #import "MITConstants.h"
 #import "MITTelephoneHandler.h"
+#import "MITMapPlaceAnnotationView.h"
 
 static NSString *const kMITDefaultCell = @"kMITDefaultCell";
 static NSString *const kMITHoursCell = @"MITLibrariesHoursCell";
+
+static NSString *const kMITLibraryDetailAnnotationViewIdentifier = @"kMITLibraryDetailAnnotationViewIdentifier";
 
 typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     MITLibraryDetailCellPhone,
@@ -21,7 +24,7 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
     MITLibraryDetailCellOther
 };
 
-@interface MITLibrariesLibraryDetailViewController ()
+@interface MITLibrariesLibraryDetailViewController () <MKMapViewDelegate>
 
 @property (nonatomic, strong) MITTiledMapView *mapView;
 
@@ -70,8 +73,11 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (void)setupTableHeader
 {
     self.mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 200)];
+    [self.mapView setMapDelegate:self];
     self.mapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.mapView.userInteractionEnabled = NO;
+    [self.mapView.mapView setRegion:MKCoordinateRegionMakeWithDistance(self.library.coordinate, 750, 750)];
+    [self.mapView.mapView addAnnotation:self.library];
     self.tableView.tableHeaderView = self.mapView;
 }
 
@@ -204,6 +210,19 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     self.mapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
+}
+
+#pragma mark - MKMapViewDelegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if ([annotation isEqual:self.library]) {
+        MITMapPlaceAnnotationView *annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITLibraryDetailAnnotationViewIdentifier];
+        [annotationView setRedColor];
+        return annotationView;
+    }
+    
+    return nil;
 }
 
 @end

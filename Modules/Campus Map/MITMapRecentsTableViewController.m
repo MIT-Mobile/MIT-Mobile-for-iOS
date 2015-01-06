@@ -28,6 +28,7 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 {
     [super viewDidLoad];
     
+    self.tableView.separatorInset = UIEdgeInsetsMake(0, 50, 0, 0);
     [self setupNoResultsView];
     [self reloadAllRecents];
 }
@@ -199,7 +200,7 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 {
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapRecentSearchCellIdentifier];
     if (!cell) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapRecentSearchCellIdentifier];
+        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapRecentSearchCellIdentifier];
     }
     
     switch (indexPath.section) {
@@ -207,12 +208,19 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
             MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
             if (searchItem.searchTerm) {
                 cell.textLabel.text = searchItem.searchTerm;
+                cell.detailTextLabel.text = nil;
                 cell.imageView.image = [UIImage imageNamed:MITImageMapRecentSearch];
             } else if (searchItem.place) {
                 cell.textLabel.text = searchItem.place.name;
+                if ([searchItem.place.buildingNumber length] > 0) {
+                    cell.detailTextLabel.text = [NSString stringWithFormat:@"Building %@", searchItem.place.buildingNumber];
+                } else {
+                    cell.detailTextLabel.text = nil;
+                }
                 cell.imageView.image = [UIImage imageNamed:MITImageMapPinLocation];
             } else if (searchItem.category) {
                 cell.textLabel.text = searchItem.category.name;
+                cell.detailTextLabel.text = nil;
                 cell.imageView.image = [UIImage imageNamed:searchItem.category.iconName];
             }
             break;

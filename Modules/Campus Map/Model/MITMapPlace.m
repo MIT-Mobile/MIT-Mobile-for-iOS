@@ -58,7 +58,7 @@ static NSString* const MITMapPlaceSnippetsKey = @"snippets";
 
 - (NSString*)title
 {
-    if ([self.buildingNumber length]) {
+    if ([self.buildingNumber length] > 0) {
         return [NSString stringWithFormat:@"Building %@", self.buildingNumber];
     } else {
         return self.name;
