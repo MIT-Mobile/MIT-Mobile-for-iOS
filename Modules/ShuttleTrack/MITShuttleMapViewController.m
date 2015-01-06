@@ -111,6 +111,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [super viewWillDisappear:animated];
+    
+    // Prevent crash when an annotation is selected and the view controller is navigated away.
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
+        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
+    }
 }
 
 - (void)prepareForViewAppearance
@@ -651,11 +656,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)removeMapAnnotationsForClass:(Class)class
 {
-    // Leave this to prevent crash when an annotation is selected and the view controller is navigated away.
-    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
-        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
-    }
-    
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:class] && annotation != self.stop) {
@@ -752,7 +752,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         stopViewController.viewOption = MITShuttleStopViewOptionIntersectingOnly;
         stopViewController.shouldHideFooter = YES;
         stopViewController.tableView.scrollEnabled = NO;
-        size = CGSizeMake(320, [stopViewController preferredContentHeight]);
+        size = CGSizeMake(320, [stopViewController preferredContentHeight] + 10);
     }
     [stopViewController setFixedContentSize:size];
     CGRect frame = stopViewController.view.frame;

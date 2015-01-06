@@ -180,17 +180,29 @@ NSTimeInterval kSMCalloutViewRepositionDelayForUIScrollView = 1.0/3.0;
 }
 
 - (CGFloat)innerContentMarginLeft {
+    CGFloat titleMargin = TITLE_HMARGIN;
+    
+    if (self.contentView != nil) { // We ignore default title views if there is a custom content view
+        titleMargin = 0;
+    }
+    
     if (self.leftAccessoryView)
-        return self.leftAccessoryHorizontalMargin + self.leftAccessoryView.$width + TITLE_HMARGIN;
+        return self.leftAccessoryHorizontalMargin + self.leftAccessoryView.$width + titleMargin;
     else
-        return TITLE_HMARGIN;
+        return titleMargin;
 }
 
 - (CGFloat)innerContentMarginRight {
+    CGFloat titleMargin = TITLE_HMARGIN;
+    
+    if (self.contentView != nil) { // We ignore default title views if there is a custom content view
+        titleMargin = 0;
+    }
+    
     if (self.rightAccessoryView)
-        return self.rightAccessoryHorizontalMargin + self.rightAccessoryView.$width + TITLE_HMARGIN;
+        return self.rightAccessoryHorizontalMargin + self.rightAccessoryView.$width + titleMargin;
     else
-        return TITLE_HMARGIN;
+        return titleMargin;
 }
 
 - (CGFloat)calloutHeight {
