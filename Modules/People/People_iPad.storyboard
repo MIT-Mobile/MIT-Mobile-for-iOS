@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="NWW-oP-5J1">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES" initialViewController="NWW-oP-5J1">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -416,7 +416,7 @@
                                 </connections>
                             </tableView>
                             <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="labelHint" textAlignment="center" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="280" translatesAutoresizingMaskIntoConstraints="NO" id="lhW-K5-DbC">
-                                <rect key="frame" x="20" y="415" width="280" height="21"/>
+                                <rect key="frame" x="20" y="502" width="280" height="20.5"/>
                                 <fontDescription key="fontDescription" type="system" pointSize="17"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -428,7 +428,7 @@
                             <constraint firstAttribute="centerY" secondItem="Y87-AR-WhZ" secondAttribute="centerY" id="C0A-FI-LcO"/>
                             <constraint firstAttribute="trailing" secondItem="lhW-K5-DbC" secondAttribute="trailing" constant="20" id="MSg-lP-FCj"/>
                             <constraint firstAttribute="centerX" secondItem="lhW-K5-DbC" secondAttribute="centerX" id="XeZ-cU-xV0"/>
-                            <constraint firstItem="lhW-K5-DbC" firstAttribute="top" secondItem="fsx-Bv-Gl1" secondAttribute="bottom" constant="415" id="f7i-iw-bcw"/>
+                            <constraint firstItem="Y87-AR-WhZ" firstAttribute="centerY" secondItem="lhW-K5-DbC" secondAttribute="centerY" id="k6q-rr-Q7F"/>
                             <constraint firstItem="Y87-AR-WhZ" firstAttribute="height" secondItem="ZuP-B6-qQe" secondAttribute="height" id="uaf-7C-Nzc"/>
                             <constraint firstAttribute="centerX" secondItem="Y87-AR-WhZ" secondAttribute="centerX" id="w8A-nO-e7U"/>
                         </constraints>
@@ -436,7 +436,6 @@
                     <navigationItem key="navigationItem" id="Odk-0I-j6R"/>
                     <connections>
                         <outlet property="hintLabel" destination="lhW-K5-DbC" id="DiA-vR-jwL"/>
-                        <outlet property="hintLabelYConstraint" destination="f7i-iw-bcw" id="458-FW-6gL"/>
                         <outlet property="tableView" destination="Y87-AR-WhZ" id="09v-e0-GE3"/>
                     </connections>
                 </viewController>
