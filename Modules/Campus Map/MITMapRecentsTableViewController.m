@@ -207,10 +207,10 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
             MITMapSearch *searchItem = self.recentSearchItems[indexPath.row];
             if (searchItem.searchTerm) {
                 cell.textLabel.text = searchItem.searchTerm;
-                cell.imageView.image = [UIImage imageNamed:@"global-action-search"];
+                cell.imageView.image = [UIImage imageNamed:MITImageMapRecentSearch];
             } else if (searchItem.place) {
                 cell.textLabel.text = searchItem.place.name;
-                cell.imageView.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
+                cell.imageView.image = [UIImage imageNamed:MITImageMapPinLocation];
             } else if (searchItem.category) {
                 cell.textLabel.text = searchItem.category.name;
                 cell.imageView.image = [UIImage imageNamed:searchItem.category.iconName];
