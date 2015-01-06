@@ -39,4 +39,16 @@
     return YES;
 }
 
+#pragma mark - Rotation
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
 @end
