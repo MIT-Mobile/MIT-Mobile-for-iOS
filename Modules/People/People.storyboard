@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14A389" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
         <!--Master-->
@@ -13,7 +13,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT Directory" id="E5U-BI-S0w">
+                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT People Directory" id="E5U-BI-S0w">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
                             <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
@@ -132,7 +132,7 @@ Phone: '6172531000', '31000'</string>
                             <outlet property="delegate" destination="pGg-6v-bdr" id="h1X-R6-Z1j"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="People" id="tQt-TN-PWz"/>
+                    <navigationItem key="navigationItem" title="People Directory" id="tQt-TN-PWz"/>
                     <connections>
                         <outlet property="searchBar" destination="E5U-BI-S0w" id="txm-r5-5yK"/>
                         <outlet property="searchDisplayController" destination="uPD-xl-cEX" id="xbh-SD-04A"/>

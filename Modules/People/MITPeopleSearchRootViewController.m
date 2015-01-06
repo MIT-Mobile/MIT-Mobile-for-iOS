@@ -96,7 +96,7 @@ typedef NS_ENUM(NSUInteger, MITPeopleSearchQueryType) {
     self.searchBar = [[UISearchBar alloc] init];
     self.searchBar.searchBarStyle = UISearchBarStyleMinimal;
     self.searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-    self.searchBar.placeholder = @"Search People Directory";
+    self.searchBar.placeholder = @"Search MIT People Directory";
     self.searchBar.frame = searchBarWrapperView.bounds;
     self.searchBar.delegate = self;
     [searchBarWrapperView addSubview:self.searchBar];
