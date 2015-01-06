@@ -42,6 +42,8 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 + (void)openMapWithSearchString:(NSString *)searchString
 {
+    searchString = [searchString stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+    searchString = [searchString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
     NSString *urlString = [NSString stringWithFormat:@"%@://%@/search/%@",MITInternalURLScheme, MITModuleTagCampusMap, searchString];
     [MITMapModelController openMapsWithURLString:urlString];
 }

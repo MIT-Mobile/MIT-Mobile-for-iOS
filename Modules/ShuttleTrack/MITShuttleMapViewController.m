@@ -111,6 +111,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationWillEnterForegroundNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:UIApplicationDidEnterBackgroundNotification object:nil];
     [super viewWillDisappear:animated];
+    
+    // Prevent crash when an annotation is selected and the view controller is navigated away.
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
+        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
+    }
 }
 
 - (void)prepareForViewAppearance
@@ -281,6 +286,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self.tiledMapView.mapView addAnnotations:annotations];
         }];
     } else {
+        [self.tiledMapView.mapView setRegion:region];
         [self.tiledMapView.mapView addAnnotations:annotations];
     }
 }
@@ -424,7 +430,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
     
     if (needsRouteChange) {
-        if (needsStopChange && selectedAnnotation) {
+        if (selectedAnnotation) {
             [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
 
@@ -438,11 +444,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         [self setupMapBoundingBoxAnimated:YES];
         
         // TODO: Wait for bounds change
-        if (needsStopChange && stop) {
+        if (stop) {
             // wait until map region change animation completes
             // TODO: Fix this to make it robust and less hacky! E.g. what happens if we mash multiple annotations?
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
-                [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+                [self selectAnnotationForStop:stop];
             });
         }
     } else if (needsStopChange) {
@@ -450,7 +456,24 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             [self.tiledMapView.mapView deselectAnnotation:selectedAnnotation animated:YES];
         }
         if (stop) {
-            [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+            [self selectAnnotationForStop:stop];
+        }
+    }
+}
+
+- (void)selectAnnotationForStop:(MITShuttleStop *)stop
+{
+    if ([self.tiledMapView.mapView.annotations containsObject:stop]) {
+        [self.tiledMapView.mapView selectAnnotation:stop animated:YES];
+    } else {
+        // It's possible that the annotation hasn't been added since we're filtering duplicates
+        for (id<MKAnnotation>annotation in self.tiledMapView.mapView.annotations) {
+            if ([annotation isKindOfClass:[MITShuttleStop class]]) {
+                if ([[(MITShuttleStop *)annotation identifier] isEqualToString:stop.identifier]) {
+                    [self.tiledMapView.mapView selectAnnotation:annotation animated:YES];
+                    break;
+                }
+            }
         }
     }
 }
@@ -633,11 +656,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)removeMapAnnotationsForClass:(Class)class
 {
-    // Leave this to prevent crash when an annotation is selected and the view controller is navigated away.
-    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
-        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
-    }
-    
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:class] && annotation != self.stop) {
@@ -663,24 +681,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         return [UIImage imageNamed:MITImageMapAnnotationPlacePin];
     }
     else {
-        MITShuttleStopState state = MITShuttleStopStateDefault;
-        if ([self.route.nextStops containsObject:stop]) {
-            state = state | MITShuttleStopStateNext;
-        }
-        if ([self.stop isEqual:stop]) {
-            state = state | MITShuttleStopStateSelected;
-        }
-        
-        if (state == MITShuttleStopStateDefault) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
-        } else if (state == MITShuttleStopStateNext) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStop];
-        } else if (state == MITShuttleStopStateSelected) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStopSelected] ;
-        } else if (state == (MITShuttleStopStateNext | MITShuttleStopStateSelected)) {
-            return [UIImage imageNamed:MITImageShuttlesAnnotationNextStopSelected];
-        }
-        return nil;
+        return [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
     }
 }
 
@@ -751,7 +752,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         stopViewController.viewOption = MITShuttleStopViewOptionIntersectingOnly;
         stopViewController.shouldHideFooter = YES;
         stopViewController.tableView.scrollEnabled = NO;
-        size = CGSizeMake(320, [stopViewController preferredContentHeight]);
+        size = CGSizeMake(320, [stopViewController preferredContentHeight] + 10);
     }
     [stopViewController setFixedContentSize:size];
     CGRect frame = stopViewController.view.frame;
@@ -826,9 +827,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)dismissCurrentCallout
 {
     [self.calloutView dismissCalloutAnimated:YES];
-    
-    [self.calloutStopViewController removeFromParentViewController];
-    self.calloutStopViewController = nil;
 }
 
 #pragma mark - SMCalloutViewDelegate Methods
@@ -850,6 +848,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
+- (void)calloutViewDidDisappear:(SMCalloutView *)calloutView
+{
+    [self.calloutStopViewController willMoveToParentViewController:nil];
+    [self.calloutStopViewController removeFromParentViewController];
+    self.calloutStopViewController = nil;
+}
+
 #pragma mark - MKMapViewDelegate Methods
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -865,7 +870,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         annotationView.image = [self annotationViewImageForStop:stop];
         if (self.shouldUsePinAnnotations) {
-            annotationView.centerOffset = CGPointMake(0, -(annotationView.image.size.height / 2.0));
+            annotationView.centerOffset = CGPointMake(8.0, -15.0);
         } else {
             annotationView.centerOffset = CGPointZero;
         }
@@ -920,7 +925,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     MITShuttleStop *stop = self.stop;
-    self.stop = nil;
     
     [self dismissCurrentCallout];
     

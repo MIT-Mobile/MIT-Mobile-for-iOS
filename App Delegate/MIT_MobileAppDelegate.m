@@ -38,12 +38,15 @@
 #import "MITShuttleController.h"
 
 static NSString* const MITMobileButtonTitleView = @"View";
+static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveModuleName";
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate>
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate,MITSlidingViewControllerDelegate >
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 
 @property(nonatomic,strong) NSMutableArray *pendingNotifications;
+
+@property(nonatomic,copy) NSString *lastActiveModuleName;
 @property(nonatomic,copy) NSArray *modules;
 
 @property (nonatomic,strong) NSRecursiveLock *lock;
@@ -51,13 +54,11 @@ static NSString* const MITMobileButtonTitleView = @"View";
 - (void)updateBasicServerInfo;
 @end
 
-@implementation MIT_MobileAppDelegate {
-    MITCoreDataController *_coreDataController;
-    NSManagedObjectModel *_managedObjectModel;
-    MITMobile *_remoteObjectManager;
-}
-
-@dynamic coreDataController,managedObjectModel,remoteObjectManager;
+@implementation MIT_MobileAppDelegate
+@synthesize coreDataController = _coreDataController;
+@synthesize remoteObjectManager = _remoteObjectManager;
+@synthesize managedObjectModel = _managedObjectModel;
+@dynamic lastActiveModuleName;
 
 + (void)initialize
 {
@@ -86,8 +87,7 @@ static NSString* const MITMobileButtonTitleView = @"View";
     }
 #endif
 
-    [[UIApplication sharedApplication]
-     setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
@@ -106,7 +106,9 @@ static NSString* const MITMobileButtonTitleView = @"View";
         }
     }];
 
+    self.rootViewController.delegate = self;
     self.rootViewController.viewControllers = moduleViewControllers;
+    [self.rootViewController setVisibleViewControllerWithModuleName:self.lastActiveModuleName];
 
     [self updateBasicServerInfo];
 
@@ -699,6 +701,22 @@ static NSString* const MITMobileButtonTitleView = @"View";
     [[NSUserDefaults standardUserDefaults] setObject:nil forKey:MITModulesSavedStateKey];
 }
 
+- (void)setLastActiveModuleName:(NSString *)lastActiveModuleName
+{
+    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+    
+    if (lastActiveModuleName) {
+        [standardUserDefaults setObject:lastActiveModuleName forKey:MITMobileLastActiveModuleNameKey];
+    } else {
+        [standardUserDefaults removeObjectForKey:MITMobileLastActiveModuleNameKey];
+    }
+}
+
+- (NSString*)lastActiveModuleName
+{
+    return [[NSUserDefaults standardUserDefaults] stringForKey:MITMobileLastActiveModuleNameKey];
+}
+
 #pragma mark - Delegates
 #pragma mark MITTouchstoneAuthenticationDelegate
 - (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController completion:(void(^)(void))completion
@@ -748,8 +766,14 @@ static NSString* const MITMobileButtonTitleView = @"View";
     }
 }
 
-#pragma mark - Global App Styling
+#pragma mark MITSlidingViewControllerDelegate
+- (void)slidingViewController:(MITSlidingViewController *)slidingViewController didShowTopViewController:(UIViewController *)viewController
+{
+    MITModuleItem *moduleItem = viewController.moduleItem;
+    self.lastActiveModuleName = moduleItem.name;
+}
 
+#pragma mark - Global App Styling
 - (void)addGlobalMITStyling
 {
     [[UINavigationBar appearance] setTintColor:[UIColor mit_tintColor]];

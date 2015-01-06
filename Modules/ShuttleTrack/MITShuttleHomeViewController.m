@@ -49,6 +49,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (copy, nonatomic) NSArray *flatRouteArray;
 @property (copy, nonatomic) NSDictionary *nearestStops;
 @property (nonatomic, strong) NSArray *predictionsDependentStops;
+@property (nonatomic, assign) BOOL shouldAddPredictionsDependencies;
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
 @property (strong, nonatomic) NSDate *lastUpdatedDate;
@@ -125,6 +126,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
+
+    self.shouldAddPredictionsDependencies = YES;
+    
     if (![MITLocationManager locationServicesAuthorized]) {
         [self performSelector:@selector(requestLocationServicesAuthorization) withObject:nil afterDelay:0.75];
     }
@@ -138,6 +142,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
+    self.shouldAddPredictionsDependencies = NO;
     [[MITLocationManager sharedManager] stopUpdatingLocation];
     [self stopRefreshingData];
     [self removeNearestStopsPredictionsDependencies];
@@ -410,6 +415,26 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     return nil;
 }
 
+- (MITShuttleRoute *)routeForStopAtIndexInFlatRouteArray:(NSInteger)index
+{
+    // Start with object before stop, traverse backward until the first route is reached
+    for (NSInteger i = index - 1; i >= 0; --i) {
+        id object = self.flatRouteArray[i];
+        if ([object isKindOfClass:[MITShuttleRoute class]]) {
+            return object;
+        }
+    }
+    return nil;
+}
+
+- (BOOL)isLastNearestStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
+{
+    NSInteger lastNearestStopIndex = kNearestStopDisplayCount - 1;
+    return ([self nearestStopForRoute:route atIndex:lastNearestStopIndex] == stop);
+}
+
+#pragma mark - Predictions Dependencies
+
 - (void)updateNearestStopsPredictionsDependencies
 {
     [self removeNearestStopsPredictionsDependencies];
@@ -418,7 +443,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)addNearestStopsPredictionsDependencies
 {
-    if (![MITLocationManager locationServicesAuthorized]) {
+    if (![MITLocationManager locationServicesAuthorized] || !self.shouldAddPredictionsDependencies) {
         return;
     }
     
@@ -440,24 +465,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStop:stop];
     }
     self.predictionsDependentStops = nil;
-}
-
-- (MITShuttleRoute *)routeForStopAtIndexInFlatRouteArray:(NSInteger)index
-{
-    // Start with object before stop, traverse backward until the first route is reached
-    for (NSInteger i = index - 1; i >= 0; --i) {
-        id object = self.flatRouteArray[i];
-        if ([object isKindOfClass:[MITShuttleRoute class]]) {
-            return object;
-        }
-    }
-    return nil;
-}
-
-- (BOOL)isLastNearestStop:(MITShuttleStop *)stop inRoute:(MITShuttleRoute *)route
-{
-    NSInteger lastNearestStopIndex = kNearestStopDisplayCount - 1;
-    return ([self nearestStopForRoute:route atIndex:lastNearestStopIndex] == stop);
 }
 
 #pragma mark - UITableViewDataSource

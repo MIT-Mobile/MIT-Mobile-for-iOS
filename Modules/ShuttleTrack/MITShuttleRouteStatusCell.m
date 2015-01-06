@@ -22,15 +22,15 @@
     switch ([route status]) {
         case MITShuttleRouteStatusNotInService:
             self.statusLabel.text = @"Not in service";
-            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteNotInService];
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesNotInServiceSmall];
             break;
         case MITShuttleRouteStatusInService:
             self.statusLabel.text = @"In service";
-            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRouteInService];
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesInServiceSmall];
             break;
         case MITShuttleRouteStatusPredictionsUnavailable:
-						self.statusLabel.text = @"No current predictions";
-            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesRoutePredictionsUnavailable];
+            self.statusLabel.text = @"No current predictions";
+            self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesUnknownSmall];
             break;
         default:
             break;

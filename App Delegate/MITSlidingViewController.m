@@ -69,7 +69,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)viewDidLoad {
     [super viewDidLoad];
 
-    self.delegate = self;
     self.drawerViewController.moduleItems = [self _moduleItems];
 }
 
@@ -143,6 +142,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     if ([segue.identifier isEqualToString:MITSlidingViewControllerTopSegueIdentifier]) {
         UIViewController *topViewController = segue.destinationViewController;
 
+        self.panGesture.maximumNumberOfTouches = 1;
         [topViewController.view addGestureRecognizer:self.panGesture];
 
         topViewController.view.layer.shadowOpacity = 1.0;
@@ -244,10 +244,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
                     self.visibleViewController = [_viewControllers firstObject];
                 }
             }
-        } else {
-            self.visibleViewController = [_viewControllers firstObject];
         }
-
     }
 }
 
@@ -272,6 +269,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }
 
     [self presentVisibleViewControllerIfNeeded:animated];
+    
     if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
         [self resetTopViewAnimated:animated];
     }
@@ -280,14 +278,20 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)presentVisibleViewControllerIfNeeded:(BOOL)animated
 {
     if (_currentVisibleViewController != self.visibleViewController) {
+        [self _willHideTopViewController:_currentVisibleViewController];
+        
+        void (^completionBlock)(void) = ^{
+            [self _didShowTopViewController:self.visibleViewController];
+        };
+        
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             if (self.visibleViewController.moduleItem.type == MITModulePresentationFullScreen) {
-                [self _presentTopVisibleViewController:animated completion:nil];
+                [self _presentTopVisibleViewController:animated completion:completionBlock];
             } else if (self.visibleViewController.moduleItem.type == MITModulePresentationModal) {
-                [self _presentModalVisibleViewController:animated completion:nil];
+                [self _presentModalVisibleViewController:animated completion:completionBlock];
             }
         } else if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-            [self _presentTopVisibleViewController:animated completion:nil];
+            [self _presentTopVisibleViewController:animated completion:completionBlock];
         }
     }
 }
@@ -295,7 +299,12 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (void)setVisibleViewControllerWithModuleName:(NSString *)name
 {
     UIViewController *moduleViewController = [self _moduleViewControllerWithName:name];
-    [self setVisibleViewController:moduleViewController];
+    
+    if (!moduleViewController) {
+        self.visibleViewController = [self.viewControllers firstObject];
+    } else {
+        self.visibleViewController = moduleViewController;
+    }
 }
 
 
@@ -447,6 +456,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     UIViewController *moduleViewController = [self _moduleViewControllerWithName:moduleItem.name];
     NSAssert(moduleViewController,@"module with name %@ does not have an associated view controller.",moduleItem.name);
 
+
     [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:animated];
 }
 
@@ -545,25 +555,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     [self _showModuleWithModuleItem:moduleItem animated:YES];
 }
 
-#pragma mark ECSlidingViewControllerLayoutDelegate
-
-- (id<ECSlidingViewControllerLayout>)slidingViewController:(ECSlidingViewController *)slidingViewController
-                        layoutControllerForTopViewPosition:(ECSlidingViewControllerTopViewPosition)topViewPosition
-{
-    return self.animationController;
-}
-
-#pragma mark ECSlidingViewControllerDelegate
-- (id<UIViewControllerAnimatedTransitioning>)slidingViewController:(ECSlidingViewController *)slidingViewController
-                                   animationControllerForOperation:(ECSlidingViewControllerOperation)operation
-                                                 topViewController:(UIViewController *)topViewController
-{
-    MITSlidingAnimationController *slidingAnimationController = [[MITSlidingAnimationController alloc] initWithSlidingViewController:slidingViewController operation:operation];
-    self.animationController = slidingAnimationController;
-
-    return self.animationController;
-}
-
 #pragma mark UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
@@ -627,6 +618,21 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         }
     } else {
         return nil;
+    }
+}
+
+#pragma mark MITSlidingViewControllerDelegate pass-throughs
+- (void)_willHideTopViewController:(UIViewController*)viewController
+{
+    if ([self.delegate respondsToSelector:@selector(slidingViewController:willHideTopViewController:)]) {
+        [self.delegate slidingViewController:self willHideTopViewController:viewController];
+    }
+}
+
+- (void)_didShowTopViewController:(UIViewController*)viewController
+{
+    if ([self.delegate respondsToSelector:@selector(slidingViewController:didShowTopViewController:)]) {
+        [self.delegate slidingViewController:self didShowTopViewController:viewController];
     }
 }
 

@@ -81,6 +81,9 @@ NSString * const MITImageMapPinBallRed = @"map-pin-ball-red";
 NSString * const MITImageMapPinNeedle = @"map-pin-needle";
 NSString * const MITImageMapPinShadow = @"map-pin-shadow";
 
+NSString * const MITImageMapPinLocation = @"pin_location";
+NSString * const MITImageMapRecentSearch = @"recent_search";
+
 NSString * const MITImageMapCategoryAthenaClusters       = @"map-category-clusters";
 NSString * const MITImageMapCategoryBuildings            = @"map-category-buildings";
 NSString * const MITImageMapCategoryCourtsAndGreenspaces = @"map-category-green";
@@ -120,17 +123,19 @@ NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
 
 
 #pragma mark - Shuttles
-NSString * const MITImageShuttlesRouteInService = @"shuttles-shuttle";
-NSString * const MITImageShuttlesRouteNotInService = @"shuttles-shuttle-off";
-NSString * const MITImageShuttlesRoutePredictionsUnavailable = @"shuttles-unavailable";
+NSString * const MITImageShuttlesInService         = @"shuttles-in-service";
+NSString * const MITImageShuttlesNotInService      = @"shuttles-not-in-service";
+NSString * const MITImageShuttlesUnknown           = @"shuttles-unknown";
+NSString * const MITImageShuttlesInServiceSmall    = @"shuttles-in-service-small";
+NSString * const MITImageShuttlesNotInServiceSmall = @"shuttles-not-in-service-small";
+NSString * const MITImageShuttlesUnknownSmall      = @"shuttles-unknown-small";
+
+
 NSString * const MITImageShuttlesBusBubble = @"shuttles-bus_bubble";
 NSString * const MITImageShuttlesAlertOn = @"shuttles-alert_on";
 NSString * const MITImageShuttlesAlertOff = @"shuttles-alert_off";
 NSString * const MITImageShuttlesAnnotationBus = @"shuttles-annotation-bus";
-NSString * const MITImageShuttlesAnnotationNextStop = @"shuttles-annotation-next-stop";
-NSString * const MITImageShuttlesAnnotationNextStopSelected = @"shuttles-annotation-next-stop-selected";
 NSString * const MITImageShuttlesAnnotationCurrentStop = @"shuttles-annotation-current-stop";
-NSString * const MITImageShuttlesAnnotationCurrentStopSelected = @"shuttles-annotation-current-stop-selected";
 
 
 #pragma mark - Tours

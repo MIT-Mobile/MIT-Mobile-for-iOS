@@ -292,11 +292,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     if (tableView == self.tableView) {
-        if ([self.peopleFavorites count] > 0) {
-            return 3; // Examples + Directory Assistance/Contacts + Favorites
-        } else {
-            return 2; // Examples + Directory Assistance/Contacts, no recents
-        }
+        return 3;
     } else if (tableView == self.searchDisplayController.searchResultsTableView) {
 		return 1;
     } else {
@@ -496,7 +492,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 {
     if (tableView == self.tableView) {
         if (MITPeopleSearchTableViewSectionFavorites == section) {
-            return @"Favorites";
+            return [self.peopleFavorites count] > 0 ? @"Favorites" : @" ";
         }
     }
 

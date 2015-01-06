@@ -212,7 +212,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
             return;
         }
         
-        if( buttonIndex == actionSheet.destructiveButtonIndex )
+        NSString *title = [actionSheet buttonTitleAtIndex:buttonIndex];
+        if([title hasPrefix:@"Call"])
         {
             [MITTelephoneHandler attemptToCallPhoneNumber:kFacilitiesPhoneNumber];
         }
