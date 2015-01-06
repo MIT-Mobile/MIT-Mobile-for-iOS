@@ -827,9 +827,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)dismissCurrentCallout
 {
     [self.calloutView dismissCalloutAnimated:YES];
-    
-    [self.calloutStopViewController removeFromParentViewController];
-    self.calloutStopViewController = nil;
 }
 
 #pragma mark - SMCalloutViewDelegate Methods
@@ -849,6 +846,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didClickCalloutForStop:)]) {
         [self.delegate shuttleMapViewController:self didClickCalloutForStop:self.stop];
     }
+}
+
+- (void)calloutViewDidDisappear:(SMCalloutView *)calloutView
+{
+    [self.calloutStopViewController willMoveToParentViewController:nil];
+    [self.calloutStopViewController removeFromParentViewController];
+    self.calloutStopViewController = nil;
 }
 
 #pragma mark - MKMapViewDelegate Methods
