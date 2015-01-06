@@ -16,6 +16,9 @@
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
+static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
+static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
+
 typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeText,
     MITMapSearchQueryTypePlace,
@@ -50,6 +53,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) UIView *searchBarView;
 @property (nonatomic) BOOL isKeyboardVisible;
 
+@property (nonatomic, strong) NSTimer *searchSuggestionsTimer;
 @end
 
 @implementation MITMapHomeViewController
@@ -431,6 +435,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
 }
 
+- (void)searchSuggestionsTimerFired:(NSTimer *)timer
+{
+    NSDictionary *userInfo = timer.userInfo;
+    NSString *searchText = userInfo[kMITMapSearchSuggestionsTimerUserInfoKeySearchText];
+    if (searchText) {
+        [self updateSearchResultsForSearchString:searchText];
+    }
+}
+
 - (void)updateSearchResultsForSearchString:(NSString *)searchString
 {
     [self.typeAheadViewController updateResultsWithSearchTerm:searchString];
@@ -613,7 +626,16 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [self updateSearchResultsForSearchString:searchText];
+    [self.searchSuggestionsTimer invalidate];
+    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
+    if (searchText) {
+        userInfo[kMITMapSearchSuggestionsTimerUserInfoKeySearchText] = searchText;
+    }
+    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:kMITMapSearchSuggestionsTimerWaitDuration
+                                                                   target:self
+                                                                 selector:@selector(searchSuggestionsTimerFired:)
+                                                                 userInfo:userInfo
+                                                                  repeats:NO];
     
     if (searchBar.isFirstResponder) {
         if (!self.typeAheadPopoverController.popoverVisible) {
