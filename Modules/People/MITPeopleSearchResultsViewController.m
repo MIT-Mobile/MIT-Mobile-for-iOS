@@ -41,8 +41,9 @@ NSString * const MITNoResultsHintLabelText = @"No Results";
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    [self setHintLabelWithText:MITDefaultHintLabelText font:[UIFont systemFontOfSize:17]];
+    if (![self.searchHandler.searchResults count]) {
+        [self setHintLabelWithText:MITDefaultHintLabelText font:[UIFont systemFontOfSize:17]];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
