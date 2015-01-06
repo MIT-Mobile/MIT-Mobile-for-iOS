@@ -41,4 +41,7 @@ typedef NS_ENUM(NSInteger, MITMobileErrorCode) {
 - (void)getObjectsForResourceNamed:(NSString *)routeName object:(id)object parameters:(NSDictionary *)parameters completion:(void (^)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error))loaded;
 
 - (void)getObjectsForURL:(NSURL*)url completion:(void (^)(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error))loaded;
+
+- (void)cancelAllRequestOperationsForRequestMethod:(RKRequestMethod)requestMethod atResourcePath:(NSString *)resourcePath;
+
 @end
