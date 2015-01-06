@@ -167,11 +167,19 @@
     } else {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapRecentSearchCellIdentifier];
         if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:kMITMapRecentSearchCellIdentifier];
+            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:kMITMapRecentSearchCellIdentifier];
         }
-        cell.imageView.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
+        
         MITMapPlace *place = self.webserviceSearchItems[indexPath.row];
+        
+        cell.imageView.image = [UIImage imageNamed:MITImageMapPinLocation];
         cell.textLabel.text = place.name;
+        
+        if ([place.buildingNumber length] > 0) {
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"Building %@", place.buildingNumber];
+        } else {
+            cell.detailTextLabel.text = nil;
+        }
         
         return cell;
     }
