@@ -78,6 +78,9 @@ extern NSString * const MITImageMapPinBallRed;
 extern NSString * const MITImageMapPinNeedle;
 extern NSString * const MITImageMapPinShadow;
 
+extern NSString * const MITImageMapPinLocation;
+extern NSString * const MITImageMapRecentSearch;
+
 extern NSString * const MITImageMapCategoryAthenaClusters;
 extern NSString * const MITImageMapCategoryBuildings;
 extern NSString * const MITImageMapCategoryCourtsAndGreenspaces;
