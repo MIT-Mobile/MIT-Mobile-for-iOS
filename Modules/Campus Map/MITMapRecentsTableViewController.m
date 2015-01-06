@@ -28,6 +28,7 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
 {
     [super viewDidLoad];
     
+    self.tableView.separatorInset = UIEdgeInsetsMake(0, 50, 0, 0);
     [self setupNoResultsView];
     [self reloadAllRecents];
 }
