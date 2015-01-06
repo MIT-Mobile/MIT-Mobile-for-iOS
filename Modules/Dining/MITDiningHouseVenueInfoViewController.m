@@ -157,7 +157,7 @@ typedef NS_ENUM(NSInteger, kMITVenueInfoSection) {
     [cell setMealSummary:self.mealSummaries[indexPath.row]];
     if (indexPath.row + 1 < self.mealSummaries.count) {
         // This hides the separator line
-        cell.separatorInset = UIEdgeInsetsMake(0, self.tableView.frame.size.width, 0, 0);
+        cell.separatorInset = UIEdgeInsetsMake(0, 10000, 0, 0);
     }
     return cell;
 }
