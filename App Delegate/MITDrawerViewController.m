@@ -156,6 +156,8 @@ static NSString* const MITDrawerReuseIdentifierItemCell = @"ModuleItemCell";
 
         if (moduleItem.type == MITModulePresentationFullScreen) {
             cell.imageView.image = moduleItem.image;
+        } else {
+            cell.imageView.image = nil;
         }
 
         cell.textLabel.text = moduleItem.title;
