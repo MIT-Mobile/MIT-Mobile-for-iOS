@@ -58,7 +58,6 @@ NSString * const kMITShuttlePredictionLoaderDidUpdateNotification = @"kMITShuttl
 
 - (void)stopTimer
 {
-    NSLog(@"STOPPED TIMER");
     [self.predictionsRefreshTimer invalidate];
     self.predictionsRefreshTimer = nil;
 }
