@@ -43,6 +43,9 @@ typedef NS_ENUM(NSUInteger, MITLeasedFacilitiesFormFieldType) {
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
+static NSInteger const kNumberOfFieldsWithRoom = 6;
+static NSInteger const kNumberOfFieldsWithoutRoom = 5;
+
 @interface MITFacilitiesHomeViewController () <UITableViewDataSource, UITextViewDelegate, UITableViewDelegate, MFMailComposeViewControllerDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate, UIPopoverControllerDelegate, UIGestureRecognizerDelegate>
 
 @property (weak, nonatomic) IBOutlet UITableView *tableView;
@@ -638,6 +641,8 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     cell.titleLabel.text = @"description";
     
     cell.subtitleTextView.delegate = self;
+    cell.subtitleTextView.userInteractionEnabled = YES;
+    
     cell.subtitleTextView.text = self.reportForm.reportDescription;
     cell.subtitleTextView.keyboardType = UIKeyboardTypeDefault;
     
@@ -924,8 +929,16 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     textView.frame = newFrame;
     
     [self.tableView beginUpdates];
+    
+    // if entered custom location, we need to delete room row.
+    if( self.editingIndexPath.row == MITFacilitiesFormFieldLocation && [self.tableView numberOfRowsInSection:0] == kNumberOfFieldsWithRoom )
+    {
+        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:MITFacilitiesFormFieldRoom inSection:0]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
+    
     [self.tableView endUpdates];
     
+    // validate fields
     [self validateFields];
 }
 
@@ -1007,7 +1020,7 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 
 - (NSInteger)numberOfFormFields
 {
-    NSInteger numberOfRows = self.reportForm.shouldSetRoom ? 6 : 5;
+    NSInteger numberOfRows = self.reportForm.shouldSetRoom ? kNumberOfFieldsWithRoom : kNumberOfFieldsWithoutRoom;
     
     return numberOfRows;
 }

@@ -505,6 +505,9 @@
     
     [self handleUpdatedSearchText:customLocationText];
     
+    [MITBuildingServicesReportForm sharedServiceReport].room = nil;
+    [MITBuildingServicesReportForm sharedServiceReport].roomAltName = self.searchString;
+    
     if( customLocationText.length == 0 )
     {
         [self.strongSearchDisplayController.searchResultsTableView reloadData];

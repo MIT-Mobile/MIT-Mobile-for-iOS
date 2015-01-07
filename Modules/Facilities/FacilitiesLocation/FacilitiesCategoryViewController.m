@@ -327,6 +327,8 @@
     
     [self handleUpdatedSearchText:customLocationText];
     
+    [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+    
     if( customLocationText.length == 0 )
     {
         [self.strongSearchDisplayController.searchResultsTableView reloadData];
