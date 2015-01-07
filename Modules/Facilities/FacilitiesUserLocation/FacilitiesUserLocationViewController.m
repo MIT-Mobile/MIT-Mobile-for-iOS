@@ -234,7 +234,7 @@ static const NSUInteger kMaxResultCount = 10;
     
     if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
     {
-        [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+        [self.navigationController popToRootViewControllerAnimated:YES];
     }
     else
     {

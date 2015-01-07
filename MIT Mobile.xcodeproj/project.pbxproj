@@ -212,7 +212,6 @@
 		277A583419FD70C200BE134E /* MITBuildingServicesReportForm.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A583319FD70C200BE134E /* MITBuildingServicesReportForm.m */; };
 		277A583B19FD71B400BE134E /* NSString+EmailValidation.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A583619FD71B400BE134E /* NSString+EmailValidation.m */; };
 		277A583C19FD71B400BE134E /* UIImage+Metadata.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A583819FD71B400BE134E /* UIImage+Metadata.m */; };
-		277A583D19FD71B400BE134E /* UINavigationController+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A583A19FD71B400BE134E /* UINavigationController+MITAdditions.m */; };
 		277A584019FD71C800BE134E /* MITActionSheetHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A583F19FD71C800BE134E /* MITActionSheetHandler.m */; };
 		277A587819FD74F700BE134E /* SVProgressHUD.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 277A587519FD74F700BE134E /* SVProgressHUD.bundle */; };
 		277A587919FD74F700BE134E /* SVProgressHUD.m in Sources */ = {isa = PBXBuildFile; fileRef = 277A587719FD74F700BE134E /* SVProgressHUD.m */; };
@@ -1132,8 +1131,6 @@
 		277A583619FD71B400BE134E /* NSString+EmailValidation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSString+EmailValidation.m"; path = "Categories/NSString+EmailValidation.m"; sourceTree = "<group>"; };
 		277A583719FD71B400BE134E /* UIImage+Metadata.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIImage+Metadata.h"; path = "Categories/UIImage+Metadata.h"; sourceTree = "<group>"; };
 		277A583819FD71B400BE134E /* UIImage+Metadata.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIImage+Metadata.m"; path = "Categories/UIImage+Metadata.m"; sourceTree = "<group>"; };
-		277A583919FD71B400BE134E /* UINavigationController+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UINavigationController+MITAdditions.h"; path = "Categories/UINavigationController+MITAdditions.h"; sourceTree = "<group>"; };
-		277A583A19FD71B400BE134E /* UINavigationController+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UINavigationController+MITAdditions.m"; path = "Categories/UINavigationController+MITAdditions.m"; sourceTree = "<group>"; };
 		277A583E19FD71C800BE134E /* MITActionSheetHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITActionSheetHandler.h; sourceTree = "<group>"; };
 		277A583F19FD71C800BE134E /* MITActionSheetHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITActionSheetHandler.m; sourceTree = "<group>"; };
 		277A587419FD74F700BE134E /* SVProgressHUD-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "SVProgressHUD-Prefix.pch"; sourceTree = "<group>"; };
@@ -3255,8 +3252,6 @@
 				277A583619FD71B400BE134E /* NSString+EmailValidation.m */,
 				277A583719FD71B400BE134E /* UIImage+Metadata.h */,
 				277A583819FD71B400BE134E /* UIImage+Metadata.m */,
-				277A583919FD71B400BE134E /* UINavigationController+MITAdditions.h */,
-				277A583A19FD71B400BE134E /* UINavigationController+MITAdditions.m */,
 				A541EB8E1A31503A00FA7349 /* MITCollectionViewCellSizer.h */,
 				A541EB8F1A31503A00FA7349 /* MITCollectionViewCellSizer.m */,
 				2C2C6F8B18CF58AC00E15D62 /* UITableView+DynamicSizing.h */,
@@ -5462,7 +5457,6 @@
 				80598DB41A0A80FF0095CEAA /* MITLibrariesFormSheetCellOptions.m in Sources */,
 				DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */,
 				22DDADBA198C0A9B003AEF43 /* MITCalendarSelectionViewController.m in Sources */,
-				277A583D19FD71B400BE134E /* UINavigationController+MITAdditions.m in Sources */,
 				2737F34C1A333EC200E728C3 /* MITBatchScanningAlertView.m in Sources */,
 				EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */,
 				2279E17B199AAD5D006BBFC5 /* MITDiningResource.m in Sources */,
