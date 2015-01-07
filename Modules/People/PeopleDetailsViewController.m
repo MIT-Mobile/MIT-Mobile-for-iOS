@@ -255,6 +255,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             if( [cell respondsToSelector:@selector(setSeparatorInset:)] )
             {
                 cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, self.view.frame.size.height);
+                if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
+                    [cell setPreservesSuperviewLayoutMargins:NO];
+                }
+                
+                if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
+                    [cell setLayoutMargins:UIEdgeInsetsZero];
+                }
             }
         }
 		
