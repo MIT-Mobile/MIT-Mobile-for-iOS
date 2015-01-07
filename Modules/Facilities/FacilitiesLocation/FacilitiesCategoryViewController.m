@@ -15,7 +15,6 @@
 #import "FacilitiesLocationSearch.h"
 
 #import "MITBuildingServicesReportForm.h"
-#import "UINavigationController+MITAdditions.h"
 
 
 @interface FacilitiesCategoryViewController ()

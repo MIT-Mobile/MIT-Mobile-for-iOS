@@ -12,7 +12,6 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
-#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesLocationViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;

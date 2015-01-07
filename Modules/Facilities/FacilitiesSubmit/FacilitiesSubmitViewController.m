@@ -7,7 +7,6 @@
 #import "MITBuildingServicesReportForm.h"
 #import "MITUIConstants.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
-#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesSubmitViewController ()
 - (void)setStatusText:(NSString *)string;

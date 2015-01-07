@@ -9,7 +9,6 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
-#import "UINavigationController+MITAdditions.h"
 #import "MITBuildingServicesReportForm.h"
 
 @interface FacilitiesRoomViewController ()
