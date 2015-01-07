@@ -182,4 +182,16 @@ static CGFloat const kWebViewContentMargin = 8;
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
 }
 
+#pragma mark - Rotation
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
+
 @end

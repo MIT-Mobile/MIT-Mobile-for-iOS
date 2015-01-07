@@ -14,6 +14,7 @@
     NSParameterAssert(queryString);
     NSParameterAssert(block);
 
+    [[MITMobile defaultManager] cancelAllRequestOperationsForRequestMethod:RKRequestMethodGET atResourcePath:MITMapPlacesPathPattern];
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
                                                 parameters:@{@"q" : queryString}
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {

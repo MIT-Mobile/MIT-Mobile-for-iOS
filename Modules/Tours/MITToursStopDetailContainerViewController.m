@@ -384,4 +384,21 @@
     [self.pageViewController.view setNeedsLayout];
 }
 
+#pragma mark - Rotation
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    NSUInteger supportedOrientations = UIInterfaceOrientationMaskPortrait;
+    if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
+        supportedOrientations |= UIInterfaceOrientationMaskLandscapeLeft;
+        supportedOrientations |= UIInterfaceOrientationMaskLandscapeRight;
+    }
+    return supportedOrientations;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return [[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad;
+}
+
 @end

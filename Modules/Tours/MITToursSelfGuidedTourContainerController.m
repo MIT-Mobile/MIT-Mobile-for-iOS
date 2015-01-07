@@ -205,4 +205,15 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
     [self.navigationController pushViewController:infoVC animated:YES];
 }
 
+#pragma mark - Rotation
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return NO;
+}
 @end

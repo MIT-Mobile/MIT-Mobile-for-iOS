@@ -256,4 +256,13 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     return objectManager;
 }
 
+- (void)cancelAllRequestOperationsForRequestMethod:(RKRequestMethod)requestMethod atResourcePath:(NSString *)resourcePath
+{
+    NSURL *serverURL = [[NSURL URLWithString:@"/"
+                               relativeToURL:MITMobileWebGetCurrentServerURL()] absoluteURL];
+    
+    RKObjectManager *objectManager = [self objectManagerForURL:serverURL];
+    [objectManager cancelAllObjectRequestOperationsWithMethod:requestMethod matchingPathPattern:resourcePath];
+}
+
 @end

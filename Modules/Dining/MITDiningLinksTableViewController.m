@@ -70,4 +70,9 @@ static NSString *const kMITDiningLinksTableViewControllerCell = @"kMITDiningLink
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:link.url]];
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44.0;
+}
+
 @end
