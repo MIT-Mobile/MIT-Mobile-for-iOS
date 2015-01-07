@@ -32,10 +32,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
-@property (nonatomic, strong) NSFetchedResultsController *routesFetchedResultsController;
 @property (nonatomic, strong) NSFetchedResultsController *vehiclesFetchedResultsController;
+@property (nonatomic, strong) NSFetchRequest *routesFetchRequest;
 
-@property (nonatomic, readonly) NSArray *routes;
+@property (nonatomic, strong) NSArray *routes;
 @property (nonatomic, strong) NSArray *stops;
 @property (nonatomic, readonly) NSArray *vehicles;
 
@@ -185,6 +185,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)startRefreshingVehicles
 {
+    return;
     [self loadVehicles];
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.vehiclesRefreshTimer invalidate];
@@ -262,11 +263,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self refreshStopAnnotationImages];
 }
 
-- (NSArray *)routes
-{
-    return [self.routesFetchedResultsController fetchedObjects];
-}
-
 - (NSArray *)vehicles
 {
     return [self.vehiclesFetchedResultsController fetchedObjects];
@@ -293,16 +289,22 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - NSFetchedResultsController
 
-- (NSFetchedResultsController *)routesFetchedResultsController
+- (NSFetchRequest *)routesFetchRequest
 {
-    if (!_routesFetchedResultsController) {
+    if (!_routesFetchRequest) {
+        _routesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"ShuttleRoute"];
+        
         NSPredicate *predicate = nil;
         if (self.route) {
             predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
         }
-        _routesFetchedResultsController = [self fetchedResultsControllerForEntityWithName:@"ShuttleRoute" predicate:predicate];
+        [_routesFetchRequest setPredicate:predicate];
+        
+        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"identifier" ascending:NO];
+        [_routesFetchRequest setSortDescriptors:@[sortDescriptor]];
     }
-    return _routesFetchedResultsController;
+    
+    return _routesFetchRequest;
 }
 
 - (NSFetchedResultsController *)vehiclesFetchedResultsController
@@ -338,7 +340,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)resetFetchedResults
 {
-    self.routesFetchedResultsController = nil;
     self.vehiclesFetchedResultsController = nil;
     
     [self performFetch];
@@ -511,10 +512,24 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)performFetch
 {
-    [self.routesFetchedResultsController performFetch:nil];
-    [self updateStops];
     [self.vehiclesFetchedResultsController performFetch:nil];
-    [self refreshAll];
+    
+    [[MITCoreDataController defaultController] performBackgroundFetch:self.routesFetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+        NSMutableArray *newRoutes = [NSMutableArray array];
+        NSLog(@"\n\n");
+        NSLog(@"routes updated");
+        for (NSManagedObjectID *objectId in fetchedObjectIDs) {
+            NSManagedObject *route = [[[MITCoreDataController defaultController] mainQueueContext] existingObjectWithID:objectId error:nil];
+            if (route) {
+                [newRoutes addObject:route];
+                MITShuttleRoute *route2 = (MITShuttleRoute *)route;
+                NSLog(@"route: %@", route2.identifier);
+            }
+        }
+        self.routes = [NSArray arrayWithArray:newRoutes];
+        [self updateStops];
+        [self refreshAll];
+    }];
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
