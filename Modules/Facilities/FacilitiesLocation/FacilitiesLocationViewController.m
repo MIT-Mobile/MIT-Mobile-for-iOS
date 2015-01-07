@@ -422,8 +422,14 @@
         }
         
         if (indexPath.row == 0) {
+            
             hlCell.highlightLabel.searchString = nil;
-            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            
+            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+            {
+                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            }
+            
         } else {
             NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
                                                    inSection:indexPath.section];
