@@ -49,7 +49,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
 @property (weak, nonatomic) IBOutlet UIView *headerView;
 @property (weak, nonatomic) IBOutlet UILabel *instructionsLabel;
 @property (weak, nonatomic) IBOutlet UIButton *contactFacilitiesButton;
-@property (weak, nonatomic) IBOutlet UILabel *emailLabel;
 
 @property (nonatomic, strong) UIBarButtonItem *submitButton;
 @property (nonatomic, strong) UIPopoverController *facilitiesPopoverController;
@@ -103,13 +102,6 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
     
     // view title
     self.title = @"Building Services";
-    
-    // this is nil for iPhone
-    if( self.emailLabel != nil )
-    {
-        [self.emailLabel setFont:[UIFont systemFontOfSize:14]];
-        [self.emailLabel setTextColor:[UIColor mit_tintColor]];
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -237,6 +229,23 @@ static NSString* const kFacilitiesPhoneNumber = @"(617) 253-4948";
                                                destructiveButtonTitle:nil
                                                     otherButtonTitles:[NSString stringWithFormat:@"Call %@", kFacilitiesPhoneNumber], [NSString stringWithFormat:@"Email %@", kFacilitiesEmailAddress], nil];
     [actionSheet showInView:self.view];
+}
+
+- (IBAction)phoneAction:(id)sender
+{
+    [MITTelephoneHandler attemptToCallPhoneNumber:kFacilitiesPhoneNumber];
+}
+
+- (IBAction)emailAction:(id)sender
+{
+    if ([MFMailComposeViewController canSendMail])
+    {
+        MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];
+        [mailView setMailComposeDelegate:self];
+        [mailView setSubject:@"Request from Building Services"];
+        [mailView setToRecipients:[NSArray arrayWithObject:kFacilitiesEmailAddress]];
+        [self presentViewController:mailView animated:YES completion:NULL];
+    }
 }
 
 - (void)removePhotoAction:(UIButton *)senderButton
