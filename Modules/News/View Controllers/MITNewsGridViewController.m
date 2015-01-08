@@ -442,13 +442,10 @@
 
 - (BOOL)canLoadMoreStories
 {
-    if (!_errorMessage &&
+    return (!_errorMessage &&
         !_storyUpdateInProgress &&
         !_storyRefreshInProgress &&
-        !_loadMoreFailedProgress) {
-        return YES;
-    }
-    return NO;
+            !_loadMoreFailedProgress);
 }
 
 @end
