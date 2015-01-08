@@ -1,25 +1,35 @@
+#import "MITShuttleVehiclesDataSource.h"
 #import <CoreData/CoreData.h>
-#import "MITShuttleRoutesDataSource.h"
-
 #import "MITCoreData.h"
 #import "MITAdditions.h"
-#import "MITShuttleRoute.h"
+#import "MITShuttleVehicle.h"
 #import "MITShuttleController.h"
 
-@interface MITShuttleRoutesDataSource ()
+@interface MITShuttleVehiclesDataSource ()
 
 @end
 
-@implementation MITShuttleRoutesDataSource
+@implementation MITShuttleVehiclesDataSource
+
+- (instancetype)init
+{
+    self = [super init];
+    
+    if (self) {
+        self.expiryInterval = 5.0;
+    }
+    
+    return self;
+}
 
 - (NSFetchRequest *)fetchRequest
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"order" ascending:YES]];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
     return fetchRequest;
 }
 
-- (NSArray*)routes
+- (NSArray*)vehicles
 {
     NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
     
@@ -30,9 +40,9 @@
     }
 }
 
-- (void)updateRoutes:(void(^)(MITShuttleRoutesDataSource *dataSource, NSError *error))completion
+- (void)updateVehicles:(void(^)(MITShuttleVehiclesDataSource *dataSource, NSError *error))completion
 {
-    __weak MITShuttleRoutesDataSource *weakSelf = self;
+    __weak MITShuttleVehiclesDataSource *weakSelf = self;
     void(^enqueueableCompletionBlock)(void) = ^{
         completion(weakSelf, weakSelf.lastRequestError);
     };
@@ -40,20 +50,20 @@
     if ([self needsUpdateFromServer] && !self.isRequestActive) {
         self.completionQueue.suspended = YES;
         self.requestActive = YES;
-
+        
         // Enquing the block first here because, while it is extremely unlikely
         // for the block to not be enqueued before the request completes,
         // but it's better to be a bit paranoid.
         [self _enqueueRequestCompletionBlock:enqueueableCompletionBlock];
         
-        __unsafe_unretained MITShuttleRoutesDataSource *unsafeSelf = self;
+        __unsafe_unretained MITShuttleVehiclesDataSource *unsafeSelf = self;
         
-        [[MITShuttleController sharedController] getRoutes:^(NSArray *routes, NSError *error) {
-            __strong MITShuttleRoutesDataSource *blockSelf = weakSelf;
+        [[MITShuttleController sharedController] getVehicles:^(NSArray *vehicles, NSError *error) {
+            __strong MITShuttleVehiclesDataSource *blockSelf = weakSelf;
             if (blockSelf) {
                 if (!error) {
                     blockSelf.fetchDate = [NSDate date];
-
+                    
                     [blockSelf _performAsynchronousFetch:^(NSFetchedResultsController *fetchedResultsController, NSError *error) {
                         blockSelf.lastRequestError = error;
                         blockSelf.completionQueue.suspended = NO;
@@ -66,7 +76,7 @@
             } else {
                 DDLogError(@"%@",MITDispatcherDeallocatedError((__bridge void *)(unsafeSelf)));
             }
-
+            
             [blockSelf.completionQueue addOperationWithBlock:^{
                 blockSelf.requestActive = NO;
             }];

@@ -527,6 +527,8 @@
 		A52E0CF119B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52E0CEF19B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib */; };
 		A52E0CF519B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = A52E0CF319B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m */; };
 		A52E0CF619B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */; };
+		A535E1C11A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A535E1C01A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m */; };
+		A535E1C71A5DF5F4009271DF /* MITShuttleDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A535E1C61A5DF5F4009271DF /* MITShuttleDataSource.m */; };
 		A53856CC19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */; };
 		A53856CD19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */; };
 		A541EB7E1A314C2300FA7349 /* MITNavigationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB7D1A314C2300FA7349 /* MITNavigationModule.m */; };
@@ -1737,6 +1739,10 @@
 		A52E0CF219B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningRetailHomeViewControllerPad.h; path = Dining/MITDiningRetailHomeViewControllerPad.h; sourceTree = "<group>"; };
 		A52E0CF319B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailHomeViewControllerPad.m; path = Dining/MITDiningRetailHomeViewControllerPad.m; sourceTree = "<group>"; };
 		A52E0CF419B60D54009A6B07 /* MITDiningRetailHomeViewControllerPad.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningRetailHomeViewControllerPad.xib; path = Dining/MITDiningRetailHomeViewControllerPad.xib; sourceTree = "<group>"; };
+		A535E1BF1A5DF1A3009271DF /* MITShuttleVehiclesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleVehiclesDataSource.h; sourceTree = "<group>"; };
+		A535E1C01A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleVehiclesDataSource.m; sourceTree = "<group>"; };
+		A535E1C51A5DF5F4009271DF /* MITShuttleDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleDataSource.h; sourceTree = "<group>"; };
+		A535E1C61A5DF5F4009271DF /* MITShuttleDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleDataSource.m; sourceTree = "<group>"; };
 		A53856C919E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesYourAccountItemDetailViewController.h; sourceTree = "<group>"; };
 		A53856CA19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountItemDetailViewController.m; sourceTree = "<group>"; };
 		A53856CB19E8229400956160 /* MITLibrariesYourAccountItemDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountItemDetailViewController.xib; sourceTree = "<group>"; };
@@ -4634,6 +4640,10 @@
 				A5918CD11A3F57C700D3190F /* UIKit+MITShuttles.m */,
 				A5918CD41A3F837400D3190F /* MITShuttlePredictionLoader.h */,
 				A5918CD51A3F837400D3190F /* MITShuttlePredictionLoader.m */,
+				A535E1BF1A5DF1A3009271DF /* MITShuttleVehiclesDataSource.h */,
+				A535E1C01A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m */,
+				A535E1C51A5DF5F4009271DF /* MITShuttleDataSource.h */,
+				A535E1C61A5DF5F4009271DF /* MITShuttleDataSource.m */,
 			);
 			name = Shuttles;
 			path = ShuttleTrack;
@@ -5342,6 +5352,7 @@
 				277A587919FD74F700BE134E /* SVProgressHUD.m in Sources */,
 				2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */,
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
+				A535E1C71A5DF5F4009271DF /* MITShuttleDataSource.m in Sources */,
 				3A827081103DAA0500BB4109 /* Reachability.m in Sources */,
 				22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */,
 				A541EBB91A31557900FA7349 /* SDImageCache.m in Sources */,
@@ -5371,6 +5382,7 @@
 				2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */,
 				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
 				80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */,
+				A535E1C11A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m in Sources */,
 				2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */,
 				A541EBBA1A31557900FA7349 /* SDWebImageCompat.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,
