@@ -432,8 +432,8 @@
 - (BOOL)canLoadMoreStories
 {
     return (!_errorMessage &&
-        !_storyUpdateInProgress &&
-        !_storyRefreshInProgress &&
+            !_storyUpdateInProgress &&
+            !_storyRefreshInProgress &&
             !_loadMoreFailedProgress);
 }
 
