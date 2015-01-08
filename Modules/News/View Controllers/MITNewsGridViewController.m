@@ -167,15 +167,12 @@
 {
     UICollectionViewCell *collectionViewCell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]];
     MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
-    if (_errorMessage) {
-        loadMoreCell.textLabel.text = _errorMessage;
-        loadMoreCell.loadingIndicator.hidden = YES;
-    } else if (_storyUpdateInProgress) {
-        loadMoreCell.textLabel.text = @"Loading More...";
-        loadMoreCell.loadingIndicator.hidden = NO;
-    } else {
-        loadMoreCell.textLabel.text = @"Load More...";
-        loadMoreCell.loadingIndicator.hidden = YES;
+    if (self.numberOfCategories > 0 && [loadMoreCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
+        [UIView animateWithDuration:0 animations:^{
+            [self.collectionView performBatchUpdates:^{
+                [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
+            } completion:nil];
+        }];
     }
 }
 
