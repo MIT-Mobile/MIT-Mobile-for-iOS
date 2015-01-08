@@ -860,7 +860,12 @@ CGFloat const refreshControlTextHeight = 19;
     if (self.showSearchStories) {
         return self.searchDataSource;
     } else {
-        return self.dataSources[section];
+        
+        if ([self.dataSources count] <= section) {
+            return nil;
+        } else {
+            return self.dataSources[section];
+        }
     }
 }
 
