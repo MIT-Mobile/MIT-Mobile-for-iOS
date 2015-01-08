@@ -166,14 +166,16 @@
 
 - (void)updateLoadingMoreCellString
 {
-    UICollectionViewCell *collectionViewCell = [self.collectionView cellForItemAtIndexPath:[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]];
-    MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
-    if (self.numberOfCategories > 0 && [loadMoreCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-        [UIView animateWithDuration:0 animations:^{
-            [self.collectionView performBatchUpdates:^{
-                [self.collectionView reloadItemsAtIndexPaths:@[[NSIndexPath indexPathForItem:[self numberOfStoriesForCategoryInSection:0] - 1 inSection:0]]];
-            } completion:nil];
-        }];
+    if ([self.collectionView numberOfSections]) {
+        NSUInteger sectionIndex = 0;
+        NSUInteger loadingMoreCellIndex = [self.collectionView numberOfItemsInSection:sectionIndex] - 1;
+        NSIndexPath *indexPath = [NSIndexPath indexPathForItem:loadingMoreCellIndex inSection:sectionIndex];
+
+        UICollectionViewCell *cell = [self.collectionView cellForItemAtIndexPath:indexPath];
+        if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+            [self configureCell:cell atIndexPath:indexPath];
+            
+        }
     }
 }
 
@@ -183,52 +185,14 @@
     UICollectionViewCell *collectionViewCell = [collectionView dequeueReusableCellWithReuseIdentifier:cellIdentifier forIndexPath:indexPath];
     
     [self configureCell:collectionViewCell atIndexPath:indexPath];
-    
-    if ([collectionViewCell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
-        if ([collectionViewCell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-            MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)collectionViewCell;
-            if (_errorMessage) {
-                loadMoreCell.textLabel.text = _errorMessage;
-                loadMoreCell.loadingIndicator.hidden = YES;
-                _loadMoreFailedProgress = YES;
-                
-            } else if (_storyUpdateInProgress) {
-                loadMoreCell.textLabel.text = @"Loading More...";
-                loadMoreCell.loadingIndicator.hidden = NO;
-                _loadMoreFailedProgress = NO;
-                
-            } else if (_storyRefreshInProgress || _loadMoreFailedProgress) {
-                loadMoreCell.textLabel.text = @"Load More...";
-                loadMoreCell.loadingIndicator.hidden = YES;
-            
-            } else {
-                loadMoreCell.textLabel.text = @"Loading More...";
-                loadMoreCell.loadingIndicator.hidden = NO;
-            }
-            
-            return loadMoreCell;
-        } else {
-            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,collectionViewCell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]),NSStringFromClass([collectionViewCell class]));
-            
-            return collectionViewCell;
-        }
-    }
-    return collectionViewCell;
-}
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath
-{
-    if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
-        if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
-        
-            if ([self canLoadMoreStories]) {
-                [self getMoreStoriesForSection:indexPath.section];
-            }
-            
-        } else {
-            DDLogWarn(@"cell at %@ with identifier %@ expected a cell of type %@, got %@",indexPath,cell.reuseIdentifier,NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]),NSStringFromClass([cell class]));
+    if ([cellIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        if ([self canLoadMoreStories]) {
+            [self getMoreStoriesForSection:indexPath.section];
         }
     }
+
+    return collectionViewCell;
 }
 
 - (UICollectionReusableView*)collectionView:(UICollectionView *)collectionView viewForSupplementaryElementOfKind:(NSString *)kind atIndexPath:(NSIndexPath *)indexPath
@@ -298,9 +262,34 @@
 
 - (void)configureCell:(UICollectionViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
 {
+    NSParameterAssert(cell);
+    NSParameterAssert(indexPath);
+
     if ([cell isKindOfClass:[MITNewsStoryCollectionViewCell class]]) {
         MITNewsStoryCollectionViewCell *storyCell = (MITNewsStoryCollectionViewCell*)cell;
         storyCell.story = [self storyAtIndexPath:indexPath];
+    } else if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
+        NSAssert([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]],@"cell with reuse identifier %@ is kind of %@, expected %@",cell.reuseIdentifier,NSStringFromClass([cell class]),NSStringFromClass([MITNewsLoadMoreCollectionViewCell class]));
+
+        MITNewsLoadMoreCollectionViewCell *loadMoreCell = (MITNewsLoadMoreCollectionViewCell*)cell;
+        if (_errorMessage) {
+            loadMoreCell.textLabel.text = _errorMessage;
+            loadMoreCell.loadingIndicator.hidden = YES;
+            _loadMoreFailedProgress = YES;
+
+        } else if (_storyUpdateInProgress) {
+            loadMoreCell.textLabel.text = @"Loading More...";
+            loadMoreCell.loadingIndicator.hidden = NO;
+            _loadMoreFailedProgress = NO;
+
+        } else if (_storyRefreshInProgress || _loadMoreFailedProgress) {
+            loadMoreCell.textLabel.text = @"Load More...";
+            loadMoreCell.loadingIndicator.hidden = YES;
+
+        } else {
+            loadMoreCell.textLabel.text = @"Loading More...";
+            loadMoreCell.loadingIndicator.hidden = NO;
+        }
     }
 }
 
