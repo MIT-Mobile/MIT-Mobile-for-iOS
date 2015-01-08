@@ -88,9 +88,16 @@ NSString * const kScannerHistoryNewScanCounterKey = @"kScannerHistoryNewScanCoun
     
     if( image )
     {
-        image = [[UIImage imageWithCGImage:image.CGImage
+        image = [UIImage imageWithCGImage:image.CGImage
                                      scale:1.0
-                               orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
+                               orientation:UIImageOrientationUp];
+        
+        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortrait ||
+            [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown )
+        {
+            image = [image imageByRotatingImageInRadians:-M_PI_2];
+        }
+
         result.scanImage = image;
         
         if (generateThumbnail)
