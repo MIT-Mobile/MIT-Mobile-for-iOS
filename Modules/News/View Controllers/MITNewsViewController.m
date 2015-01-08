@@ -709,7 +709,9 @@ CGFloat const refreshControlTextHeight = 19;
     }
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.errorMessage = message;
-        [self.gridViewController updateLoadingMoreCellString];
+        if (self.isSingleDataSource) {
+            [self.gridViewController updateLoadingMoreCellString];
+        }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.errorMessage = message;
     }
@@ -719,7 +721,9 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyUpdateInProgress = progress;
-        [self.gridViewController updateLoadingMoreCellString];
+        if (self.isSingleDataSource) {
+            [self.gridViewController updateLoadingMoreCellString];
+        }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.storyUpdateInProgress = progress;
     }
@@ -729,7 +733,9 @@ CGFloat const refreshControlTextHeight = 19;
 {
     if (self.presentationStyle == MITNewsPresentationStyleGrid) {
         self.gridViewController.storyRefreshInProgress = progress;
-        [self.gridViewController updateLoadingMoreCellString];
+        if (self.isSingleDataSource) {
+            [self.gridViewController updateLoadingMoreCellString];
+        }
     } else if (self.presentationStyle == MITNewsPresentationStyleList) {
         self.listViewController.storyRefreshInProgress = progress;
     }
