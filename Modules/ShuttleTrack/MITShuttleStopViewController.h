@@ -24,9 +24,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
 
-- (void)beginRefreshing;
-- (void)endRefreshing;
-
 - (CGFloat)preferredContentHeight;
 - (void)setFixedContentSize:(CGSize)size;
 

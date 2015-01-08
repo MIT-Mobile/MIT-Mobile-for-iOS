@@ -736,6 +736,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)presentPadCalloutForStop:(MITShuttleStop *)stop
 {
+    [self dismissCurrentCalloutAnimated:NO];
     MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
     // TODO: Correctly initialize this
@@ -824,9 +825,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
 }
 
-- (void)dismissCurrentCallout
+- (void)dismissCurrentCalloutAnimated:(BOOL)animated
 {
-    [self.calloutView dismissCalloutAnimated:YES];
+    [self.calloutView dismissCalloutAnimated:animated];
 }
 
 #pragma mark - SMCalloutViewDelegate Methods
@@ -842,7 +843,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)calloutViewClicked:(SMCalloutView *)calloutView
 {
-    [self dismissCurrentCallout];
+    [self dismissCurrentCalloutAnimated:YES];
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didClickCalloutForStop:)]) {
         [self.delegate shuttleMapViewController:self didClickCalloutForStop:self.stop];
     }
@@ -926,7 +927,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     MITShuttleStop *stop = self.stop;
     
-    [self dismissCurrentCallout];
+    [self dismissCurrentCalloutAnimated:YES];
     
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didDeselectStop:)]) {
         [self.delegate shuttleMapViewController:self didDeselectStop:stop];
