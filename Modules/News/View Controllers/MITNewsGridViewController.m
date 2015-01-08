@@ -221,7 +221,7 @@
     if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
         
-            if (!_errorMessage && !_storyUpdateInProgress && !_storyRefreshInProgress && !_loadMoreFailedProgress) {
+            if ([self canLoadMoreStories]) {
                 [self getMoreStoriesForSection:indexPath.section];
             }
             
@@ -438,6 +438,17 @@
 - (void)getMoreStoriesForSection:(NSInteger)section
 {
     [self.delegate getMoreStoriesForSection:section completion:nil];
+}
+
+- (BOOL)canLoadMoreStories
+{
+    if (!_errorMessage &&
+        !_storyUpdateInProgress &&
+        !_storyRefreshInProgress &&
+        !_loadMoreFailedProgress) {
+        return YES;
+    }
+    return NO;
 }
 
 @end
