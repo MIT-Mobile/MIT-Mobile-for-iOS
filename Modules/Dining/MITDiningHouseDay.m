@@ -18,6 +18,7 @@
     [mapping addAttributeMappingsFromDictionary:@{@"date" : @"dateString"}];
     [mapping addAttributeMappingsFromArray:@[@"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"meals" toKeyPath:@"meals" withMapping:[MITDiningMeal objectMapping]]];
+    mapping.assignsNilForMissingRelationships = YES;
     
     return mapping;
 }

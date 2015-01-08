@@ -19,6 +19,7 @@
                                                   @"end_time" : @"endTimeString"}];
     [mapping addAttributeMappingsFromArray:@[@"name", @"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"items" withMapping:[MITDiningMenuItem objectMapping]]];
+    mapping.assignsNilForMissingRelationships = YES;
     
     return mapping;
 }
