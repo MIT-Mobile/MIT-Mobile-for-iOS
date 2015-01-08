@@ -17,6 +17,7 @@
 @interface MITNewsGridViewController () <MITCollectionViewCellAutosizing>
 @property (nonatomic,strong) NSMapTable *gestureRecognizersByView;
 @property (nonatomic,strong) NSMapTable *categoriesByGestureRecognizer;
+@property (nonatomic) BOOL loadMoreFailedProgress;
 
 @end
 
@@ -189,12 +190,14 @@
             if (_errorMessage) {
                 loadMoreCell.textLabel.text = _errorMessage;
                 loadMoreCell.loadingIndicator.hidden = YES;
+                _loadMoreFailedProgress = YES;
                 
             } else if (_storyUpdateInProgress) {
                 loadMoreCell.textLabel.text = @"Loading More...";
                 loadMoreCell.loadingIndicator.hidden = NO;
-            
-            } else if (_storyRefreshInProgress) {
+                _loadMoreFailedProgress = NO;
+                
+            } else if (_storyRefreshInProgress || _loadMoreFailedProgress) {
                 loadMoreCell.textLabel.text = @"Load More...";
                 loadMoreCell.loadingIndicator.hidden = YES;
             
@@ -218,7 +221,7 @@
     if ([cell.reuseIdentifier isEqualToString:MITNewsCellIdentifierStoryLoadMore]) {
         if ([cell isKindOfClass:[MITNewsLoadMoreCollectionViewCell class]]) {
         
-            if (!_errorMessage && !_storyUpdateInProgress && !_storyRefreshInProgress) {
+            if (!_errorMessage && !_storyUpdateInProgress && !_storyRefreshInProgress && !_loadMoreFailedProgress) {
                 [self getMoreStoriesForSection:indexPath.section];
             }
             
