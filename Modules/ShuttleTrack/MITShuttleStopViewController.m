@@ -176,13 +176,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 {
     [self.stopsWithSameIdentifierFetchedResultsController performFetch:nil];
     
-    NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
-    for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
-        if (![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
-            [newIntersectingRoutes addObject:stop.route];
+    if (self.route) {
+        NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
+        for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
+            if (!self.route || ![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
+                [newIntersectingRoutes addObject:stop.route];
+            }
         }
+        self.intersectingRoutes = [NSArray arrayWithArray:newIntersectingRoutes];
+    } else {
+        self.intersectingRoutes = [self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects valueForKey:@"route"];
     }
-    self.intersectingRoutes = [NSArray arrayWithArray:newIntersectingRoutes];
 }
 
 #pragma mark - UITableViewDataSource
