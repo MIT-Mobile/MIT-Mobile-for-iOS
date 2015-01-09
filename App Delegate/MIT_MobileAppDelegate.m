@@ -112,7 +112,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     NSString *activeModuleName = self.lastActiveModuleName;
     if (activeModuleName) {
         MITModule *module = [self moduleWithTag:self.lastActiveModuleName];
-        if (module) {
+        if (module && (module.viewController.moduleItem.type == MITModulePresentationFullScreen)) {
             self.rootViewController.visibleViewController = module.viewController;
         }
     }
