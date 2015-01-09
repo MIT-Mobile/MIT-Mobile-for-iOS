@@ -294,36 +294,11 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
             return;
         }
         
-        UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+        UIImagePickerControllerSourceType sourceType = buttonIndex == 0 ? UIImagePickerControllerSourceTypeCamera : UIImagePickerControllerSourceTypePhotoLibrary;
         
-        if( buttonIndex == 0 )
-        {
-            // take photo
-            
-            if( ![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera] )
-            {
-                UIAlertView *warningAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                                           message:@"Device has no camera"
-                                                                          delegate:nil
-                                                                 cancelButtonTitle:@"OK"
-                                                                 otherButtonTitles:nil];
-                
-                [warningAlertView show];
-                
-                return;
-            }
-            
-            controller.sourceType = UIImagePickerControllerSourceTypeCamera;
-            controller.showsCameraControls = YES;
-        }
-        else
-        {
-            // choose photo
-            controller.sourceType = UIImagePickerControllerSourceTypePhotoLibrary;
-        }
-        
-        controller.delegate = weakSelf;
-        [weakSelf.navigationController presentViewController:controller animated:YES completion:NULL];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [weakSelf openImagePicker:sourceType];
+        }];
     };
     
     UIActionSheet *actionSheet = [[UIActionSheet alloc] initWithTitle:nil
@@ -341,6 +316,36 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
         CGRect senderFrame = [senderButton convertRect:senderButton.bounds toView:self.view];
         [actionSheet showFromRect:senderFrame inView:self.view animated:YES];
     }
+}
+
+- (void)openImagePicker:(UIImagePickerControllerSourceType)sourceType
+{
+    UIImagePickerController *controller = [[UIImagePickerController alloc] init];
+    controller.sourceType = sourceType;
+    
+    if( sourceType == UIImagePickerControllerSourceTypeCamera )
+    {
+        // take photo
+        
+        if( ![UIImagePickerController isSourceTypeAvailable:sourceType] )
+        {
+            UIAlertView *warningAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                                       message:@"Device has no camera"
+                                                                      delegate:nil
+                                                             cancelButtonTitle:@"OK"
+                                                             otherButtonTitles:nil];
+            
+            [warningAlertView show];
+            
+            return;
+        }
+        
+        controller.showsCameraControls = YES;
+    }
+    
+    controller.delegate = self;
+    
+    [self.navigationController presentViewController:controller animated:YES completion:NULL];
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller
