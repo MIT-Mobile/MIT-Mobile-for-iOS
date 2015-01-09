@@ -531,8 +531,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         
         [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
         [self.tiledMapView.mapView setRegion:region animated:NO]; // Animated to NO to prevent map kit issue where animating the map causes the bounding box to be zoomed out to far sometimes.
-    } else {
-        [self centerToShuttleStop:self.stop animated:animated];
     }
 }
 
