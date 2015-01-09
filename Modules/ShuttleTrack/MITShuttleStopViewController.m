@@ -370,8 +370,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
         }
     } else if (sectionType == MITShuttleStopViewControllerSectionTypePredictions) {
         MITShuttleStopAlarmCell *alarmCell = (MITShuttleStopAlarmCell *)[tableView cellForRowAtIndexPath:indexPath];
-        [self stopAlarmCellDidToggleAlarm:alarmCell];
-        
+        if (!alarmCell.alertButton.hidden) {
+            [self stopAlarmCellDidToggleAlarm:alarmCell];
+        }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }

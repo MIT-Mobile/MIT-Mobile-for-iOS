@@ -6,7 +6,6 @@
 @interface MITShuttleStopAlarmCell ()
 
 @property (nonatomic, weak) IBOutlet UILabel *timeRemainingLabel;
-@property (nonatomic, weak) IBOutlet UIButton *alertButton;
 
 - (IBAction)notificationButtonPressed:(id)sender;
 
