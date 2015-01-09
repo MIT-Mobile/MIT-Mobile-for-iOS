@@ -7,6 +7,7 @@
 @interface MITShuttleStopAlarmCell : UITableViewCell
 
 @property (nonatomic, weak) id <MITShuttleStopAlarmCellDelegate> delegate;
+@property (nonatomic, weak) IBOutlet UIButton *alertButton;
 
 - (void)updateUIWithPrediction:(MITShuttlePrediction *)prediction;
 - (void)updateNotificationButtonWithPrediction:(MITShuttlePrediction *)prediction;
