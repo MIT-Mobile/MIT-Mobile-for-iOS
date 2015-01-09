@@ -756,6 +756,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 {
     MITNotification *notification = [self.pendingNotifications lastObject];
     [self.pendingNotifications removeLastObject];
+    [MITUnreadNotifications removeNotifications:@[notification]];
 
     MITModule *module = [self moduleWithTag:notification.moduleName];
     [module didReceiveNotification:notification.userInfo];
