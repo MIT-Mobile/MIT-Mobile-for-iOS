@@ -123,8 +123,7 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 
 - (void)setCustomLocation:(NSString *)customLocation
 {
-    self.location = nil;
-    self.shouldSetRoom = NO;
+    [self setLocation:nil shouldSetRoom:NO];
     
     _customLocation = customLocation;
 }
