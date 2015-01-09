@@ -8,7 +8,7 @@
 typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
     MITShuttleRouteStatusNotInService = 0,
     MITShuttleRouteStatusInService,
-    MITShuttleRouteStatusPredictionsUnavailable
+    MITShuttleRouteStatusUnknown
 };
 
 @interface MITShuttleRoute : MITManagedObject <MITMappedObject>
