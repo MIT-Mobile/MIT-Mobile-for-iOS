@@ -1,4 +1,4 @@
- #import "MITShuttleRootViewController.h"
+#import "MITShuttleRootViewController.h"
 #import "MITShuttleHomeViewController.h"
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleMapViewController.h"
@@ -156,7 +156,7 @@
 {
     if (self.mapViewController.isViewLoaded) {
         [self.mapViewController setRoute:route stop:stop];
-        self.mapViewController.shouldUsePinAnnotations = (route || stop);
+        self.mapViewController.shouldUsePinAnnotations = (route != nil);
     }
 }
 
