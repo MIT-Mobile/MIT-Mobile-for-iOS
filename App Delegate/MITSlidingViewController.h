@@ -18,7 +18,8 @@
 
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 
-- (void)setVisibleViewControllerWithModuleName:(NSString*)name;
+- (void)setVisibleViewController:(UIViewController*)newVisibleViewController animated:(BOOL)animated;
+- (void)setVisibleViewController:(UIViewController*)newVisibleViewController animated:(BOOL)animated completion:(void(^)(void))completion;
 
 - (void)showModuleSelector:(BOOL)animated completion:(void(^)(void))block;
 - (void)hideModuleSelector:(BOOL)animated completion:(void(^)(void))block;

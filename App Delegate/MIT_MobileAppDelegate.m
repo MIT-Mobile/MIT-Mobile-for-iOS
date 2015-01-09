@@ -108,7 +108,14 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
     self.rootViewController.delegate = self;
     self.rootViewController.viewControllers = moduleViewControllers;
-    [self.rootViewController setVisibleViewControllerWithModuleName:self.lastActiveModuleName];
+
+    NSString *activeModuleName = self.lastActiveModuleName;
+    if (activeModuleName) {
+        MITModule *module = [self moduleWithTag:self.lastActiveModuleName];
+        if (module && (module.viewController.moduleItem.type == MITModulePresentationFullScreen)) {
+            self.rootViewController.visibleViewController = module.viewController;
+        }
+    }
 
     [self updateBasicServerInfo];
 
@@ -182,7 +189,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         MITModule *module = [self moduleWithTag:moduleName];
         [module didReceiveRequestWithURL:url];
 
-        [self.rootViewController setVisibleViewControllerWithModuleName:moduleName];
+        [self showModuleWithTag:module.name animated:YES];
     } else {
         DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
@@ -690,10 +697,14 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
 - (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated
 {
-    NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"%@://%@",MITInternalURLScheme,tag]];
-    if ([[UIApplication sharedApplication] canOpenURL:url]) {
-        [[UIApplication sharedApplication] openURL:url];
-    }
+    MITModule *module = [self moduleWithTag:tag];
+
+    UIViewController *viewController = module.viewController;
+    [self.rootViewController setVisibleViewController:viewController animated:animated completion:^{
+        if (viewController.moduleItem.type == MITModulePresentationFullScreen) {
+            self.lastActiveModuleName = module.name;
+        }
+    }];
 }
 
 #pragma mark Preferences
@@ -704,6 +715,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 - (void)setLastActiveModuleName:(NSString *)lastActiveModuleName
 {
     NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+
+    DDLogVerbose(@"updating last presented module from '%@' to '%@'",self.lastActiveModuleName,lastActiveModuleName);
     
     if (lastActiveModuleName) {
         [standardUserDefaults setObject:lastActiveModuleName forKey:MITMobileLastActiveModuleNameKey];
@@ -762,7 +775,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
     if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
-        [self.rootViewController setVisibleViewControllerWithModuleName:module.name];
+        [self showModuleWithTag:module.name animated:YES];
     }
 }
 
@@ -770,7 +783,9 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 - (void)slidingViewController:(MITSlidingViewController *)slidingViewController didShowTopViewController:(UIViewController *)viewController
 {
     MITModuleItem *moduleItem = viewController.moduleItem;
-    self.lastActiveModuleName = moduleItem.name;
+    if (moduleItem.type == MITModulePresentationFullScreen) {
+        self.lastActiveModuleName = moduleItem.name;
+    }
 }
 
 #pragma mark - Global App Styling
