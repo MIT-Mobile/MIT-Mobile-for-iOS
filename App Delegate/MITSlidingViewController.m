@@ -98,7 +98,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         [self setVisibleViewController:[self.viewControllers firstObject] animated:animated];
     }
 
-    [self presentVisibleViewControllerIfNeeded:animated];
+    [self _presentVisibleViewControllerIfNeeded:animated completion:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -255,6 +255,11 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 - (void)setVisibleViewController:(UIViewController*)newVisibleViewController animated:(BOOL)animated
 {
+    [self setVisibleViewController:newVisibleViewController animated:animated completion:nil];
+}
+
+- (void)setVisibleViewController:(UIViewController*)newVisibleViewController animated:(BOOL)animated completion:(void(^)(void))completion
+{
     NSParameterAssert(newVisibleViewController);
 
     if (_visibleViewController != newVisibleViewController) {
@@ -268,30 +273,30 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         self.drawerViewController.selectedModuleItem = self.visibleViewController.moduleItem;
     }
 
-    [self presentVisibleViewControllerIfNeeded:animated];
-    
-    if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
-        [self resetTopViewAnimated:animated];
-    }
+    [self _presentVisibleViewControllerIfNeeded:animated completion:^{
+        if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+            [self resetTopViewAnimated:animated];
+        }
+
+        if (completion) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                completion();
+            }];
+        }
+    }];
 }
 
-- (void)presentVisibleViewControllerIfNeeded:(BOOL)animated
+- (void)_presentVisibleViewControllerIfNeeded:(BOOL)animated completion:(void(^)(void))completion
 {
     if (_currentVisibleViewController != self.visibleViewController) {
-        [self _willHideTopViewController:_currentVisibleViewController];
-        
-        void (^completionBlock)(void) = ^{
-            [self _didShowTopViewController:self.visibleViewController];
-        };
-        
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             if (self.visibleViewController.moduleItem.type == MITModulePresentationFullScreen) {
-                [self _presentTopVisibleViewController:animated completion:completionBlock];
+                [self _presentTopVisibleViewController:animated completion:completion];
             } else if (self.visibleViewController.moduleItem.type == MITModulePresentationModal) {
-                [self _presentModalVisibleViewController:animated completion:completionBlock];
+                [self _presentModalVisibleViewController:animated completion:completion];
             }
         } else if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-            [self _presentTopVisibleViewController:animated completion:completionBlock];
+            [self _presentTopVisibleViewController:animated completion:completion];
         }
     }
 }
@@ -448,16 +453,15 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     NSParameterAssert(moduleItem);
 
-    // Call the application delegate directly to change the module so we follow the same
-    // event handling as everything else. This is only needed at this point because this class
-    // only deals with view controllers, while the actual module contents exist outside of the
-    // view controller lifecycle. This needs to be reworked.
-    // (bskinner - 2014.11.07, updated 2014.12.01)
     UIViewController *moduleViewController = [self _moduleViewControllerWithName:moduleItem.name];
     NSAssert(moduleViewController,@"module with name %@ does not have an associated view controller.",moduleItem.name);
 
-
-    [[MIT_MobileAppDelegate applicationDelegate] showModuleWithTag:moduleItem.name animated:animated];
+    [self _willHideTopViewController:self.visibleViewController];
+    __weak MITSlidingViewController *weakSelf = self;
+    [self setVisibleViewController:moduleViewController animated:animated completion:^{
+        MITSlidingViewController *blockSelf = weakSelf;
+        [blockSelf _didShowTopViewController:blockSelf.visibleViewController];
+    }];
 }
 
 #pragma mark View Controller management
