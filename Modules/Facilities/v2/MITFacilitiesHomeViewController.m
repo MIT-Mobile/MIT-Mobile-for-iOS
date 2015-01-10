@@ -362,6 +362,8 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
         [self.facilitiesPopoverController dismissPopoverAnimated:YES];
         
         [self.tableView reloadData];
+        
+        [self validateFields];
     }
 }
 
