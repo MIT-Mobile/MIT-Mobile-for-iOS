@@ -21,7 +21,7 @@ static NSString * const PeopleStateDetail = @"detail";
 
 - (id)init
 {
-    self = [super initWithName:MITModuleTagDirectory title:@"Directory"];
+    self = [super initWithName:MITModuleTagDirectory title:@"People Directory"];
     if (self) {
         self.longTitle = @"People Directory";
         self.imageName = MITImagePeopleModuleIcon;

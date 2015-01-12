@@ -197,14 +197,13 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
 - (void)showGeneralRightBarButtonItems
 {
     if (!self.searchMagnifyingGlassBarButtonItem) {
-        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonSearch]
-                                                                                   style:UIBarButtonItemStylePlain
-                                                                                  target:self
-                                                                                  action:@selector(searchButtonPressed:)];
+        self.searchMagnifyingGlassBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemSearch
+                                                                                                target:self
+                                                                                                action:@selector(searchButtonPressed:)];
     }
     
     if (!self.goToDateBarButtonItem) {
-        self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"calendar/day_picker_button"]
+        self.goToDateBarButtonItem = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageEventsDayPickerButton]
                                                                       style:UIBarButtonItemStylePlain
                                                                      target:self
                                                                      action:@selector(showDatePickerButtonPressed:)];

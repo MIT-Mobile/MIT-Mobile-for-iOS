@@ -870,8 +870,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         annotationView.image = [self annotationViewImageForStop:stop];
         if (self.shouldUsePinAnnotations) {
             annotationView.centerOffset = CGPointMake(8.0, -15.0);
+            annotationView.calloutOffset = CGPointMake(-9.0, -1.0);
         } else {
             annotationView.centerOffset = CGPointZero;
+            annotationView.calloutOffset = CGPointMake(0.0, 3.0);
         }
         annotationView.alpha = [self annotationViewAlphaForStop:stop];
         return annotationView;

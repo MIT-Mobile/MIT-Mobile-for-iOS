@@ -765,7 +765,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.place = place;
     
-    detailVC.view.frame = CGRectMake(0, 0, 295, 270);
+    detailVC.view.frame = CGRectMake(0, 0, 295, 500);
     
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = detailVC.view;
@@ -779,10 +779,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
     if (calloutView.currentArrowDirection == SMCalloutArrowDirectionUp) {
-        detailVC.view.frame = CGRectMake(0, 17, 320, 260);
+        detailVC.view.frame = CGRectMake(0, 15, 320, 496);
     }
     else {
-        detailVC.view.frame = CGRectMake(0, 5, 320, 260);
+        detailVC.view.frame = CGRectMake(0, 2, 320, 496);
     }
 }
 
