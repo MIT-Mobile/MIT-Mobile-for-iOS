@@ -70,6 +70,9 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     [super viewDidLoad];
 
     self.drawerViewController.moduleItems = [self _moduleItems];
+    
+    self.panGesture.maximumNumberOfTouches = 1;
+    self.panGesture.delegate = self;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -142,7 +145,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     if ([segue.identifier isEqualToString:MITSlidingViewControllerTopSegueIdentifier]) {
         UIViewController *topViewController = segue.destinationViewController;
 
-        self.panGesture.maximumNumberOfTouches = 1;
         [topViewController.view addGestureRecognizer:self.panGesture];
 
         topViewController.view.layer.shadowOpacity = 1.0;
@@ -567,6 +569,27 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         CGRect modalFrame = [self.view convertRect:_visibleViewController.view.bounds fromView:_visibleViewController.view];
         CGPoint touchLocation = [touch locationInView:self.view];
         return !CGRectContainsPoint(modalFrame, touchLocation) && !_visibleViewController.presentedViewController;
+    } else if (gestureRecognizer == self.panGesture) {
+        UIPanGestureRecognizer *panGesture = self.panGesture;
+        
+        if (panGesture.state != UIGestureRecognizerStatePossible) {
+            return YES;
+        }
+        
+        CGRect navigationBarFrame = CGRectNull;
+        if ([self.visibleViewController isKindOfClass:[UINavigationController class]]) {
+            UINavigationController *navigationController = (UINavigationController*)self.visibleViewController;
+            if (!navigationController.isNavigationBarHidden) {
+                navigationBarFrame = navigationController.navigationBar.bounds;
+                navigationBarFrame = [self.view convertRect:navigationBarFrame fromView:navigationController.navigationBar];
+            }
+        }
+        
+        CGRect screenEdgeRect = [self.view convertRect:self.topViewController.view.bounds fromView:self.topViewController.view];
+        screenEdgeRect.size.width = CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]);
+        
+        CGPoint touchLocation = [touch locationInView:self.view];
+        return (CGRectContainsPoint(screenEdgeRect, touchLocation) || CGRectContainsPoint(navigationBarFrame, touchLocation));
     } else {
         return NO;
     }
@@ -574,12 +597,12 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
 {
-    return (gestureRecognizer == _modalDismissGestureRecognizer);
+    return (gestureRecognizer == _modalDismissGestureRecognizer) || (gestureRecognizer == self.panGesture);
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    return (gestureRecognizer == _modalDismissGestureRecognizer);
+    return ((gestureRecognizer == _modalDismissGestureRecognizer) || (gestureRecognizer == self.panGesture));
 }
 
 #pragma mark - Rotation
