@@ -589,7 +589,9 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         screenEdgeRect.size.width = CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]);
         
         CGPoint touchLocation = [touch locationInView:self.view];
-        return (CGRectContainsPoint(screenEdgeRect, touchLocation) || CGRectContainsPoint(navigationBarFrame, touchLocation));
+        return (CGRectContainsPoint(screenEdgeRect, touchLocation) ||
+                CGRectContainsPoint(navigationBarFrame, touchLocation) ||
+                (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered));
     } else {
         return NO;
     }
