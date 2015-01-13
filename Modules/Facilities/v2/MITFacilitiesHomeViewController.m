@@ -147,6 +147,11 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
     // Dispose of any resources that can be recreated.
 }
 
+- (UIInterfaceOrientation) preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
 - (NSUInteger)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
