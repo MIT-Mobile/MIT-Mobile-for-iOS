@@ -242,7 +242,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
                 NSLog(@"Error parsing default shuttle routes! %@", error);
             } else {
                 NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
-                NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMapping]};
+                NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMappingFromAllRoutes]};
                 RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
                 RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:[MITMobile defaultManager].managedObjectStore.managedObjectCache];
                 mapper.mappingOperationDataSource = dataSource;
