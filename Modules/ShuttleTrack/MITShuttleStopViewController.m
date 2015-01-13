@@ -179,7 +179,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     if (self.route) {
         NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
         for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
-            if (!self.route || ![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
+            if (![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
                 [newIntersectingRoutes addObject:stop.route];
             }
         }
