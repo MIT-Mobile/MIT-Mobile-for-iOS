@@ -9,7 +9,7 @@ typedef void(^MITShuttleRoutesCompletionBlock)(NSArray *routes, NSError *error);
 typedef void(^MITShuttleRouteDetailCompletionBlock)(MITShuttleRoute *route, NSError *error);
 typedef void(^MITShuttleStopDetailCompletionBlock)(MITShuttleStop *stop, NSError *error);
 typedef void(^MITShuttlePredictionsCompletionBlock)(NSArray *predictionLists, NSError *error);
-typedef void(^MITShuttleVehiclesCompletionBlock)(NSArray *vehicles, NSError *error);
+typedef void(^MITShuttleVehiclesCompletionBlock)(NSArray *vehicleLists, NSError *error);
 
 @interface MITShuttleController : NSObject
 

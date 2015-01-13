@@ -232,7 +232,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)updateRoutesData:(void(^)(void))completion
 {
-    [self.routesDataSource routes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
+    [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
         [self refreshFlatRouteArray:^{
             [self.tableView reloadDataAndMaintainSelection];
             if (completion) {
@@ -244,7 +244,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)updatePredictionsData
 {
-    [self.routesDataSource routes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
+    [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
         [self.tableView reloadDataAndMaintainSelection];
     }];
 }
@@ -269,8 +269,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (self.isUpdating) {
         [self.refreshControl endRefreshing];
         self.lastUpdatedDate = [NSDate date];
-        [self refreshLastUpdatedLabel];
         self.updating = NO;
+        [self refreshLastUpdatedLabel];
     }
 }
 

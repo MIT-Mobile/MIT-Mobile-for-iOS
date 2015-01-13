@@ -20,6 +20,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 - (void)routeUpdated;
 - (void)setMapToolBarHidden:(BOOL)hidden;
 - (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated;
+- (void)refreshStopAnnotationImagesAnimated:(BOOL)animated;
 
 @property (nonatomic, weak) IBOutlet MITTiledMapView *tiledMapView;
 @property (strong, nonatomic) MITShuttleRoute *route;

@@ -3,8 +3,6 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttlePrediction.h"
 
-NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttleVehicleCoordinateUpdatedNotification";
-
 @implementation MITShuttleVehicle
 
 @dynamic heading;
@@ -40,11 +38,6 @@ NSString * const kMITShuttleVehicleCoordinateUpdatedNotification = @"kMITShuttle
 }
 
 #pragma mark - MKAnnotation
-
-- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate
-{
-    [[NSNotificationCenter defaultCenter] postNotificationName:kMITShuttleVehicleCoordinateUpdatedNotification object:self];
-}
 
 - (CLLocationCoordinate2D)coordinate
 {

@@ -1,8 +1,10 @@
 #import <Foundation/Foundation.h>
+#import "MITShuttleDataSource.h"
 
-@interface MITShuttleRoutesDataSource : NSObject <NSCopying>
+@interface MITShuttleRoutesDataSource : MITShuttleDataSource
+
 @property(nonatomic,copy,readonly) NSArray *routes;
-@property(nonatomic) NSTimeInterval expiryInterval;
 
-- (void)routes:(void(^)(MITShuttleRoutesDataSource *dataSource, NSError *error))completion;
+- (void)updateRoutes:(void(^)(MITShuttleRoutesDataSource *dataSource, NSError *error))completion;
+
 @end
