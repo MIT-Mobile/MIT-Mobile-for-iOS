@@ -6,7 +6,7 @@
 
 @property (nonatomic, weak) MKMapView *mapView;
 
-- (void)startAnimating;
+- (void)updateViewAnimated:(BOOL)animated;
 - (void)stopAnimating;
 - (void)setRouteTitle:(NSString *)routeTitle;
 

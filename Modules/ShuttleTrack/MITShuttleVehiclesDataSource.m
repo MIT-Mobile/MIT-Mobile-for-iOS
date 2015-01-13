@@ -4,6 +4,7 @@
 #import "MITAdditions.h"
 #import "MITShuttleVehicle.h"
 #import "MITShuttleController.h"
+#import "MITShuttleRoute.h"
 
 @interface MITShuttleVehiclesDataSource ()
 
@@ -22,10 +23,27 @@
     return self;
 }
 
+- (void)setRoute:(MITShuttleRoute *)route
+{
+    if ([route isEqual:_route]) {
+        return;
+    }
+    
+    _route = route;
+    
+    // Force recreate fetch results controller next time we fetch
+    self.fetchedResultsController = nil;
+}
+
 - (NSFetchRequest *)fetchRequest
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+    NSPredicate *predicate = nil;
+    if (self.route) {
+        predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
+    }
+    fetchRequest.predicate = predicate;
     return fetchRequest;
 }
 
@@ -58,7 +76,7 @@
         
         __unsafe_unretained MITShuttleVehiclesDataSource *unsafeSelf = self;
         
-        [[MITShuttleController sharedController] getVehicles:^(NSArray *vehicles, NSError *error) {
+        void(^vehiclesRequestCompletion)(NSArray *vehicleLists, NSError *error) = ^void(NSArray *vehicleLists, NSError *error) {
             __strong MITShuttleVehiclesDataSource *blockSelf = weakSelf;
             if (blockSelf) {
                 if (!error) {
@@ -80,10 +98,31 @@
             [blockSelf.completionQueue addOperationWithBlock:^{
                 blockSelf.requestActive = NO;
             }];
-        }];
+        };
+        
+        if (self.route == nil || self.forceUpdateAllVehicles) {
+            [[MITShuttleController sharedController] getVehicles:^(NSArray *vehicleLists, NSError *error) {
+                vehiclesRequestCompletion(vehicleLists, error);
+            }];
+        } else {
+            [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {
+                vehiclesRequestCompletion(vehicleLists, error);
+            }];
+        }
     } else {
         [self _enqueueRequestCompletionBlock:enqueueableCompletionBlock];
     }
+}
+
+- (void)fetchVehiclesWithoutUpdating:(void(^)(MITShuttleVehiclesDataSource *dataSource, NSError *error))completion
+{
+    if (completion == nil) {
+        return;
+    }
+    
+    [self _performAsynchronousFetch:^(NSFetchedResultsController *fetchedResultsController, NSError *error) {
+        completion(self, error);
+    }];
 }
 
 @end

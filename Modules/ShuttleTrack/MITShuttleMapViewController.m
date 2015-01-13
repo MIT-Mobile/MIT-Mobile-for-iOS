@@ -17,6 +17,7 @@
 #import "MITTileOverlay.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MITShuttleVehiclesDataSource.h"
+#import "MITShuttleVehicleList.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
@@ -34,7 +35,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
 @property (nonatomic, strong) NSFetchRequest *routesFetchRequest;
-@property (nonatomic, strong) NSFetchRequest *vehiclesFetchRequest;
 @property (nonatomic, strong) MITShuttleVehiclesDataSource *vehiclesDataSource;
 
 @property (nonatomic, strong) NSArray *routes;
@@ -45,7 +45,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic) BOOL hasSetUpMapRect;
 @property (nonatomic, strong) NSArray *routeSegmentPolylines;
 
-@property (nonatomic) BOOL shouldAnimateBusUpdate;
 @property (nonatomic) BOOL shouldRepositionMapOnRotate;
 @property (nonatomic) BOOL touchesActive;
 
@@ -81,8 +80,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.tiledMapView setMapDelegate:self];
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
-    
-    self.vehiclesDataSource = [[MITShuttleVehiclesDataSource alloc] init];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self setState:self.state animated:NO];
@@ -134,7 +131,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 
     [self setupTileOverlays];
-    self.shouldAnimateBusUpdate = NO;
     [self performFetch];
 }
 
@@ -209,13 +205,19 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     });
 }
 
-#pragma mark - Load Route
+#pragma mark - Load Vehicles
 
 - (void)loadVehicles
 {
+    if (self.vehiclesDataSource == nil) {
+        self.vehiclesDataSource = [[MITShuttleVehiclesDataSource alloc] init];
+        // iPad always wants to load all vehicles so there isn't a significant delay to display them when returning to "all routes" mode
+        self.vehiclesDataSource.forceUpdateAllVehicles = YES;
+        self.vehiclesDataSource.route = self.route;
+    }
+    
     [self.vehiclesDataSource updateVehicles:^(MITShuttleVehiclesDataSource *dataSource, NSError *error) {
         self.vehicles = dataSource.vehicles;
-        self.shouldAnimateBusUpdate = YES;
         [self refreshVehicles];
     }];
 }
@@ -258,16 +260,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
-- (void)setStop:(MITShuttleStop *)stop
-{
-    if ([_stop isEqual:stop]) {
-        return;
-    }
-    
-    _stop = stop;
-    [self refreshStopAnnotationImages];
-}
-
 #pragma mark - Stop Centering
 
 - (void)centerToShuttleStop:(MITShuttleStop *)stop animated:(BOOL)animated
@@ -307,29 +299,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     return _routesFetchRequest;
 }
 
-- (NSFetchRequest *)vehiclesFetchRequest
-{
-    if (!_vehiclesFetchRequest) {
-        _vehiclesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITShuttleVehicle entityName]];
-        
-        NSPredicate *predicate = nil;
-        if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
-        }
-        [_vehiclesFetchRequest setPredicate:predicate];
-        
-        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"identifier" ascending:YES];
-        [_vehiclesFetchRequest setSortDescriptors:@[sortDescriptor]];
-    }
-    
-    return _vehiclesFetchRequest;
-}
-
 - (void)resetFetchedResults
 {
     self.routesFetchRequest = nil;
-    self.vehiclesFetchRequest = nil;
-    
     [self performFetch];
 }
 
@@ -357,12 +329,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     if ([anObject conformsToProtocol:@protocol(MKAnnotation)]) {
         if ([anObject isKindOfClass:[MITShuttleVehicle class]]) {
-            if (self.shouldAnimateBusUpdate) {
-                [anObject setCoordinate:((MITShuttleVehicle *)anObject).coordinate];
-            } else {
-                [self removeObject:anObject];
-                [self addObject:anObject];
-            }
+            MITShuttleMapBusAnnotationView *annotationView = (MITShuttleMapBusAnnotationView *)[self.tiledMapView.mapView viewForAnnotation:anObject];
+            [annotationView updateViewAnimated:NO];
         } else if (anObject == self.stop) {
             // do nothing, otherwise callout will be dismissed
         } else {
@@ -393,13 +361,16 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
 
         // TODO: Wait until deselect is complete
-        self.route = route;
-        self.stop = stop;
-        [self resetFetchedResults];
+        [self.tiledMapView.mapView removeAnnotations:self.tiledMapView.mapView.annotations];
         self.shouldRepositionMapOnRotate = YES;
-     
+        
         // TODO: Modify bounding box to include space for callout, ie center the annotation
         [self setupMapBoundingBoxAnimated:YES];
+        
+        self.route = route;
+        self.stop = stop;
+        self.vehiclesDataSource.route = route;
+        [self resetFetchedResults];
         
         // TODO: Wait for bounds change
         if (stop) {
@@ -438,8 +409,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)routeUpdated
 {
-    [self refreshStopAnnotationImages];
-    self.shouldAnimateBusUpdate = YES;
+    [self refreshStopAnnotationImagesAnimated:YES];
 }
 
 - (void)setMapToolBarHidden:(BOOL)hidden
@@ -464,7 +434,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
         self.stops = [NSArray arrayWithArray:newStops];
     }
-    [self refreshStops];
 }
 
 - (void)performFetch
@@ -505,15 +474,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)fetchVehicles:(void(^)(void))completion
 {
-    [[MITCoreDataController defaultController] performBackgroundFetch:self.vehiclesFetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
-        NSMutableArray *newVehicles = [NSMutableArray array];
-        for (NSManagedObjectID *objectId in fetchedObjectIDs) {
-            NSManagedObject *vehicle = [[[MITCoreDataController defaultController] mainQueueContext] existingObjectWithID:objectId error:nil];
-            if (vehicle) {
-                [newVehicles addObject:vehicle];
-            }
-        }
-        self.vehicles = [NSArray arrayWithArray:newVehicles];
+    [self.vehiclesDataSource fetchVehiclesWithoutUpdating:^(MITShuttleVehiclesDataSource *dataSource, NSError *error) {
+        self.vehicles = dataSource.vehicles;
         if (completion) {
             completion();
         }
@@ -676,13 +638,20 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.tiledMapView.mapView removeAnnotations:annotationsToRemove];
 }
 
-- (void)refreshStopAnnotationImages
+- (void)refreshStopAnnotationImagesAnimated:(BOOL)animated
 {
-    for (MITShuttleStop *stop in self.stops) {
-        MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
-        [UIView transitionWithView:annotationView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+    if (animated) {
+        for (MITShuttleStop *stop in self.stops) {
+            MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
+            [UIView transitionWithView:annotationView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
+                annotationView.image = [self annotationViewImageForStop:stop];
+            } completion:nil];
+        }
+    } else {
+        for (MITShuttleStop *stop in self.stops) {
+            MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
             annotationView.image = [self annotationViewImageForStop:stop];
-        } completion:nil];
+        }
     }
 }
 
@@ -713,16 +682,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - Bus Annotation Animations
 
-- (void)startAnimatingBusAnnotations
-{
-    for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
-            [(MITShuttleMapBusAnnotationView *)[self.tiledMapView.mapView viewForAnnotation:annotation] startAnimating];
-        }
-    }
-}
-
-- (void)stopAnimatingBusAnnotations
+- (void)cancelBusAnnotationAnimations
 {
     for (id <MKAnnotation> annotation in self.tiledMapView.mapView.annotations) {
         if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
@@ -965,17 +925,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)mapView:(MKMapView *)mapView regionWillChangeAnimated:(BOOL)animated
 {
-    [self stopAnimatingBusAnnotations];
+    [self cancelBusAnnotationAnimations];
     
     if (self.touchesActive) { // The user is touching and almost certainly manually repositioning the map
         self.shouldRepositionMapOnRotate = NO;
     }
-}
-
-- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
-{
-    [self startAnimatingBusAnnotations];
-    [self refreshVehicles];
 }
 
 #pragma mark - MITShuttleStopViewControllerDelegate
@@ -992,18 +946,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
 {
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
-}
-
-#pragma mark - Map Pins Update
-
-- (void)setShouldUsePinAnnotations:(BOOL)shouldUsePinAnnotations
-{
-    if (_shouldUsePinAnnotations != shouldUsePinAnnotations) {
-        _shouldUsePinAnnotations = shouldUsePinAnnotations;
-        NSArray *annotations = self.tiledMapView.mapView.annotations;
-        [self.tiledMapView.mapView removeAnnotations:annotations];
-        [self.tiledMapView.mapView addAnnotations:annotations];
-    }
 }
 
 @end

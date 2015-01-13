@@ -6,8 +6,6 @@
 
 @class MITShuttleRoute, MITShuttleVehicleList, MITShuttlePrediction;
 
-extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
-
 @interface MITShuttleVehicle : MITManagedObject <MITMappedObject, MKAnnotation>
 
 @property (nonatomic, retain) NSNumber * heading;
@@ -20,8 +18,6 @@ extern NSString * const kMITShuttleVehicleCoordinateUpdatedNotification;
 @property (nonatomic, retain) MITShuttleRoute *route;
 @property (nonatomic, retain) MITShuttleVehicleList *vehicleList;
 @property (nonatomic, retain) NSSet *predictions;
-
-- (void)setCoordinate:(CLLocationCoordinate2D)newCoordinate;
 
 + (RKMapping *)objectMappingFromVehicleList;
 

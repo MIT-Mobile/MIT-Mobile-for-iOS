@@ -157,7 +157,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)loadVehicles
 {
-    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicles, NSError *error) {}];
+    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {}];
 }
 
 #pragma mark - Update Data

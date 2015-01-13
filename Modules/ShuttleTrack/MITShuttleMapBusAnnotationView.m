@@ -10,6 +10,7 @@
 @property (nonatomic, strong) UILabel *routeTitleLabel;
 @property (nonatomic, strong) CALayer *busImageLayer;
 @property (nonatomic, strong) CALayer *bubbleLayer;
+@property (nonatomic, readonly) MITShuttleVehicle *vehicle;
 
 @end
 
@@ -35,6 +36,26 @@
         }
     }
     return self;
+}
+
+- (void)setAnnotation:(id <MKAnnotation>)anAnnotation
+{
+    if (!anAnnotation) {
+        [self cleanup];
+    } else {
+        NSAssert([anAnnotation isKindOfClass:[MITShuttleVehicle class]], @"Annotations for MITShuttleMapButAnnotationView must be of class MITShuttleVehicle");
+    }
+    
+    [super setAnnotation:anAnnotation];
+    
+    if (self.mapView && anAnnotation) {
+        [self updateViewAnimated:NO];
+    }
+}
+
+- (MITShuttleVehicle *)vehicle
+{
+    return (MITShuttleVehicle *)self.annotation;
 }
 
 #pragma mark - Setup
@@ -152,52 +173,15 @@
 
 #pragma mark - Animations
 
-- (void)startAnimating
+- (void)updateViewAnimated:(BOOL)animated
 {
-    [self startAnimatingWithAnnotation:self.annotation];
-}
-
-- (void)startAnimatingWithAnnotation:(id<MKAnnotation>)annotation
-{
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(didMoveAnnotation:) name:kMITShuttleVehicleCoordinateUpdatedNotification object:annotation];
-}
-
-- (void)stopAnimating
-{
-    [self cleanup];
-}
-
-- (void)setAnnotation:(id <MKAnnotation>)anAnnotation
-{
-    if (anAnnotation) {
-        if (anAnnotation != self.annotation) {
-            [self startAnimatingWithAnnotation:anAnnotation];
-        }
-    } else {
-        [self cleanup];
-    }
-    
-    [super setAnnotation:anAnnotation];
-    
-    if (self.mapView && anAnnotation) {
-        [self updateVehicle:(MITShuttleVehicle *)anAnnotation animated:NO];
-    }
-}
-
-- (void)didMoveAnnotation:(NSNotification *)notification
-{
-    [self updateVehicle:[notification object] animated:NO];
-}
-
-- (void)updateVehicle:(MITShuttleVehicle *)vehicle animated:(BOOL)animated
-{
-    CLLocationCoordinate2D coordinate = CLLocationCoordinate2DMake([vehicle.latitude doubleValue], [vehicle.longitude doubleValue]);
+    CLLocationCoordinate2D coordinate = self.annotation.coordinate;
     
     if (CLLocationCoordinate2DIsValid(coordinate)) {
         MKMapPoint mapPoint = MKMapPointForCoordinate(coordinate);
         CGPoint destinationPoint = [self.mapView convertCoordinate:coordinate toPointToView:self.mapView];
         
-        CGFloat rawVehicleHeading = [vehicle.heading floatValue];
+        CGFloat rawVehicleHeading = [self.vehicle.heading floatValue];
         
         // Convert mapHeading to 360 degree scale.
         CGFloat mapHeading = self.mapView.camera.heading;
@@ -230,9 +214,13 @@
     }
 }
 
+- (void)stopAnimating
+{
+    [self cleanup];
+}
+
 - (void)cleanup
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
     [self.layer removeAllAnimations];
     [self.busImageLayer removeAllAnimations];
 }

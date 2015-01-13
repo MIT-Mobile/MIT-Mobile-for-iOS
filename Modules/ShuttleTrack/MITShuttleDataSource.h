@@ -24,6 +24,6 @@ extern NSError* MITDispatcherDeallocatedError(void *block);
 
 - (BOOL)needsUpdateFromServer;
 - (void)_enqueueRequestCompletionBlock:(void (^)(void))block;
-- (void)_performAsynchronousFetch:(void(^)(NSFetchedResultsController *fetchedResultsController,NSError *error))fetchCompletion;
+- (void)_performAsynchronousFetch:(void(^)(NSFetchedResultsController *fetchedResultsController, NSError *error))fetchCompletion;
 
 @end
