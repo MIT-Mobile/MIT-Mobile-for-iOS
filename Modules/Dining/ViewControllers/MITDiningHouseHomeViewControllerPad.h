@@ -6,5 +6,6 @@
 @property (nonatomic, strong) NSArray *dietaryFlagFilters;
 
 - (void)setDietaryFlagFilters:(NSArray *)filters;
+- (void)refreshForNewData;
 
 @end

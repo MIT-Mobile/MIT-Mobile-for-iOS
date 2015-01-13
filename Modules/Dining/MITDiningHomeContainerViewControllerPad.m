@@ -54,13 +54,13 @@
     [self showDiningHouseViewController];
     
     [self setupFetchedResultsController];
-    [MITDiningWebservices getDiningWithCompletion:NULL];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
+    [MITDiningWebservices getDiningWithCompletion:NULL];
 }
 
 - (void)didReceiveMemoryWarning
@@ -266,19 +266,22 @@
     _fetchedResultsController.delegate = self;
     
     [self.fetchedResultsController performFetch:nil];
-    if (self.fetchedResultsController.fetchedObjects.count > 0) {
-        self.diningData = self.fetchedResultsController.fetchedObjects[0];
-        self.diningHouseViewController.diningHouses = [self.diningData.venues.house array];
-        self.diningRetailViewController.retailVenues = [self.diningData.venues.retail array];
-    }
+    [self diningDataDidUpdate];
 }
 
 - (void)controllerDidChangeContent:(NSFetchedResultsController *)controller
 {
+    [self diningDataDidUpdate];
+}
+
+- (void)diningDataDidUpdate
+{
     if (self.fetchedResultsController.fetchedObjects.count > 0) {
         self.diningData = self.fetchedResultsController.fetchedObjects[0];
         self.diningHouseViewController.diningHouses = [self.diningData.venues.house array];
+        [self.diningHouseViewController refreshForNewData];
         self.diningRetailViewController.retailVenues = [self.diningData.venues.retail array];
+        [self.diningRetailViewController refreshForNewData];
     }
 }
 

@@ -43,8 +43,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     
     cellNib = [UINib nibWithNibName:kMITDiningFiltersCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningFiltersCell];
-    
-    self.tableView.showsVerticalScrollIndicator = NO;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
