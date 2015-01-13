@@ -83,7 +83,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
 - (void)setupNavigationBar
 {
     self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Submit"
-                                                                              style:UIBarButtonItemStylePlain
+                                                                              style:UIBarButtonItemStyleDone
                                                                              target:self
                                                                              action:@selector(submitButtonPressed:)];
     self.navigationItem.rightBarButtonItem.enabled = NO;
