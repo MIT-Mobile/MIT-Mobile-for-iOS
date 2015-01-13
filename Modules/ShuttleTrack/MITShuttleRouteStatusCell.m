@@ -28,7 +28,7 @@
             self.statusLabel.text = @"In service";
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesInServiceSmall];
             break;
-        case MITShuttleRouteStatusPredictionsUnavailable:
+        case MITShuttleRouteStatusUnknown:
             self.statusLabel.text = @"No current predictions";
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesUnknownSmall];
             break;
