@@ -4,6 +4,10 @@
 #import "Foundation+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 
+@interface MITDiningHouseMealSelectionView ()
+@property (nonatomic, strong) MITDiningMeal *meal;
+@end
+
 @implementation MITDiningHouseMealSelectionView
 
 - (void)awakeFromNib
@@ -14,11 +18,16 @@
     [self.nextMealButton setImage:[UIImage imageNamed:@"global/action-arrow-right.png"] forState:UIControlStateNormal];
 }
 
-- (void)setMeal:(MITDiningMeal *)meal
+- (void)setMeal:(MITDiningMeal *)meal forDay:(MITDiningHouseDay *)day
 {
-    _meal = meal;
-    self.dateLabel.text = [meal.houseDay.date todayTomorrowYesterdayString];
-    self.mealTimeLabel.text = [self.meal nameAndHoursDescription];
+    if (meal) {
+        self.meal = meal;
+        self.dateLabel.text = [meal.houseDay.date todayTomorrowYesterdayString];
+        self.mealTimeLabel.text = [self.meal nameAndHoursDescription];
+    } else {
+        self.dateLabel.text = [day.date todayTomorrowYesterdayString];
+        self.mealTimeLabel.text = day.message;
+    }
 }
 
 @end

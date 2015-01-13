@@ -49,15 +49,20 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (void)updateNotificationLabel
 {
-    if (self.currentlyDisplayedItems.count == 0) {
-        if (self.meal.items.count > 0) {
-            self.notificationLabel.text = @"No Matching Items";
+    if (self.meal) {
+        if (self.currentlyDisplayedItems.count == 0) {
+            if (self.meal.items.count > 0) {
+                self.notificationLabel.text = @"No Matching Items";
+            } else {
+                self.notificationLabel.text = @"No Items";
+            }
+            self.notificationLabel.hidden = NO;
         } else {
-            self.notificationLabel.text = @"No Items";
+            self.notificationLabel.hidden = YES;
         }
-        self.notificationLabel.hidden = NO;
     } else {
-        self.notificationLabel.hidden = YES;
+        self.notificationLabel.text = @"Closed";
+        self.notificationLabel.hidden = NO;
     }
 }
 
@@ -135,26 +140,31 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (void)updateCurrentlyDisplayedItems
 {
-    if (self.filters.count == 0) {
-        self.currentlyDisplayedItems = [self.meal.items array];
-        [self updateNotificationLabel];
-    }
-    else {
-        NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
-        for (MITDiningMenuItem *item in self.meal.items) {
-            if (item.dietaryFlags) {
-                for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
-                    if ([self.filters containsObject:dietaryFlag]) {
-                        [filteredItems addObject:item];
-                        break;
+    if (self.meal) {
+        if (self.filters.count == 0) {
+            self.currentlyDisplayedItems = [self.meal.items array];
+        }
+        else {
+            NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
+            for (MITDiningMenuItem *item in self.meal.items) {
+                if (item.dietaryFlags) {
+                    for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
+                        if ([self.filters containsObject:dietaryFlag]) {
+                            [filteredItems addObject:item];
+                            break;
+                        }
                     }
                 }
             }
+            self.currentlyDisplayedItems = filteredItems;
         }
-        self.currentlyDisplayedItems = filteredItems;
-        [self updateNotificationLabel];
+        [self.tableView reloadData];
+        self.tableView.tableFooterView = nil;
+    } else {
+        self.tableView.tableFooterView = [UIView new];
     }
-    [self.tableView reloadData];
+    
+    [self updateNotificationLabel];
 }
 
 - (BOOL)hasFiltersApplied
