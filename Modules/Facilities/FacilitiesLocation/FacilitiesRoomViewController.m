@@ -9,7 +9,6 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
-#import "UINavigationController+MITAdditions.h"
 #import "MITBuildingServicesReportForm.h"
 
 @interface FacilitiesRoomViewController ()
@@ -466,7 +465,11 @@
         if (indexPath.row == 0)
         {
             hlCell.highlightLabel.searchString = nil;
-            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            
+            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+            {
+                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            }
         }
         else
         {
@@ -504,6 +507,9 @@
     NSString *customLocationText = userInfo[@"customText"];
     
     [self handleUpdatedSearchText:customLocationText];
+    
+    [MITBuildingServicesReportForm sharedServiceReport].room = nil;
+    [MITBuildingServicesReportForm sharedServiceReport].roomAltName = self.searchString;
     
     if( customLocationText.length == 0 )
     {

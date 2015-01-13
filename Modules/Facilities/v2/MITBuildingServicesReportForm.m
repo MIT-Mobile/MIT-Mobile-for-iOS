@@ -123,8 +123,7 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 
 - (void)setCustomLocation:(NSString *)customLocation
 {
-    self.location = nil;
-    self.shouldSetRoom = NO;
+    [self setLocation:nil shouldSetRoom:NO];
     
     _customLocation = customLocation;
 }
@@ -179,7 +178,9 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
 
 - (BOOL)isValidEmail
 {
-    return [self.email isValidEmail];
+    // Email address should not be validated in this request form.
+    // Just verify that some text was entered.
+    return self.email != nil && self.email.length > 0;
 }
 
 // persist email when user submits a form, so that email can be reused next time.

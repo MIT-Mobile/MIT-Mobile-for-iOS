@@ -164,6 +164,8 @@ NSString * const kActionURL = @"kActionUrl";
     
     cell.accessoryView = nil;
     
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    
     if( indexPath.row == 0 )
     {
         cell.cellHeaderTitle.text = self.scannerCodeParams[kCodeDisplayType];
@@ -206,6 +208,8 @@ NSString * const kActionURL = @"kActionUrl";
             
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
         }
+        
+        cell.selectionStyle = UITableViewCellSelectionStyleGray;
         
         [cell removeLineSeparator];
     }
