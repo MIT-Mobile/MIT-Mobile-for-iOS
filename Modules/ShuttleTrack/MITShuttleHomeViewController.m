@@ -269,8 +269,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (self.isUpdating) {
         [self.refreshControl endRefreshing];
         self.lastUpdatedDate = [NSDate date];
-        [self refreshLastUpdatedLabel];
         self.updating = NO;
+        [self refreshLastUpdatedLabel];
     }
 }
 
