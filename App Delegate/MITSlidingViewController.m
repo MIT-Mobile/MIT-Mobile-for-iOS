@@ -578,17 +578,6 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    if (gestureRecognizer == self.panGesture) {
-        return NO;
-    } else if (gestureRecognizer == _modalDismissGestureRecognizer) {
-        return NO;
-    } else {
-        return NO;
-    }
-}
-
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer == self.panGesture) {
