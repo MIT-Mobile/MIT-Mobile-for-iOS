@@ -49,9 +49,8 @@
 
 - (NSArray*)vehicles
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-    
     if (self.fetchedResultsController.fetchedObjects) {
+        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
         return [managedObjectContext transferManagedObjects:self.fetchedResultsController.fetchedObjects];
     } else {
         return nil;

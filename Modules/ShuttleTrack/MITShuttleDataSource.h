@@ -3,7 +3,6 @@
 
 @class MITShuttleDataSource;
 
-//typedef void(^MITShuttleDataSourceCompletionBlock)(MITShuttleDataSource *dataSource, NSError *error);
 extern NSString* const MITMobileErrorOwnerDeallocatedErrorFormat;
 extern NSUInteger const MITMobileOwnerDeallocatedError;
 extern NSError* MITDispatcherDeallocatedError(void *block);
