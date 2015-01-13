@@ -92,10 +92,17 @@ NSString * const kScannerHistoryNewScanCounterKey = @"kScannerHistoryNewScanCoun
                                      scale:1.0
                                orientation:UIImageOrientationUp];
         
-        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortrait ||
-            [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown )
+        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortrait )
         {
             image = [image imageByRotatingImageInRadians:-M_PI_2];
+        }
+        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown )
+        {
+            image = [image imageByRotatingImageInRadians:M_PI_2];
+        }
+        else if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeRight )
+        {
+            image = [image imageByRotatingImageInRadians:M_PI];
         }
 
         result.scanImage = image;
