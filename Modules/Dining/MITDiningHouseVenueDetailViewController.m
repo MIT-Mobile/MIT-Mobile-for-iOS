@@ -43,7 +43,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 @property (nonatomic, strong) MITDiningMenuComparisonViewController *comparisonViewController;
 
 @property (nonatomic, strong) UIPageViewController *mealsPageViewController;
-
+@property (nonatomic, strong) MITDiningHouseDay *currentDiningHouseDay;
 @end
 
 @implementation MITDiningHouseVenueDetailViewController
@@ -67,7 +67,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     self.mealSelectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.mealSelectionView.nextMealButton addTarget:self action:@selector(nextMealPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.mealSelectionView.previousMealButton addTarget:self action:@selector(previousMealPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal];
+    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal forDay:self.currentDiningHouseDay];
     [self.mealsContainerView addSubview:self.mealSelectionView];
     
     [self.mealsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[venueInfoView]-0-[mealSelectionView(==mealSelectionViewHeight)]" options:0 metrics:@{@"mealSelectionViewHeight": @(54)} views:@{@"venueInfoView": self.venueInfoView,
@@ -171,7 +171,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     MITDiningHouseMealListViewController *newMealList = (MITDiningHouseMealListViewController *)[pageViewController.viewControllers firstObject];
     NSInteger index = [self.sortedMeals indexOfObject:newMealList.meal];
     
-    self.mealSelectionView.meal = self.sortedMeals[index];
+    [self.mealSelectionView setMeal:self.sortedMeals[index] forDay:self.currentDiningHouseDay];
     self.currentlyDisplayedMeal = self.sortedMeals[index];
     self.mealSelectionView.nextMealButton.enabled = (index + 1 < self.sortedMeals.count);
     self.mealSelectionView.previousMealButton.enabled = (index > 0);
@@ -204,7 +204,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 
 - (void)updateMealSelection
 {
-    self.mealSelectionView.meal = self.currentlyDisplayedMeal;
+    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal forDay:self.currentDiningHouseDay];
     
     self.mealSelectionView.nextMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1 < self.sortedMeals.count);
     self.mealSelectionView.previousMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] > 0);
@@ -350,6 +350,17 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
                             [self updateMealSelection];
                         }];
     }
+}
+
+#pragma mark - Getters
+
+- (MITDiningHouseDay *)currentDiningHouseDay
+{
+    if (!_currentDiningHouseDay) {
+        NSDate *currentDate = [NSDate date];
+        _currentDiningHouseDay = [self.houseVenue houseDayForDate:currentDate];
+    }
+    return _currentDiningHouseDay;
 }
 
 @end
