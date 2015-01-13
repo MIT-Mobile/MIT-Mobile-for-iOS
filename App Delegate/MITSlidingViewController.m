@@ -72,6 +72,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     self.drawerViewController.moduleItems = [self _moduleItems];
     
     self.panGesture.maximumNumberOfTouches = 1;
+    self.panGesture.cancelsTouchesInView = YES;
     self.panGesture.delegate = self;
 }
 
