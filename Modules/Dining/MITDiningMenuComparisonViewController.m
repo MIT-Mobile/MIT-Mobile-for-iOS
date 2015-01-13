@@ -317,7 +317,7 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 
 - (NSString *) compareView:(MITDiningHallMenuComparisonView *)compareView titleForSection:(NSInteger)section
 {
-    return [compareView.aggregateMeal.venues[section] name];
+    return [compareView.aggregateMeal.venues[section] shortName];
 }
 
 - (NSString *) compareView:(MITDiningHallMenuComparisonView *)compareView subtitleForSection:(NSInteger)section
