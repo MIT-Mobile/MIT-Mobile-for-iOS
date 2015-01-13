@@ -25,7 +25,7 @@
         self.dateLabel.text = [meal.houseDay.date todayTomorrowYesterdayString];
         self.mealTimeLabel.text = [self.meal nameAndHoursDescription];
     } else {
-        self.dateLabel.text = [[NSDate date] todayTomorrowYesterdayString];
+        self.dateLabel.text = [day.date todayTomorrowYesterdayString];
         self.mealTimeLabel.text = day.message;
     }
 }
