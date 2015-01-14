@@ -237,9 +237,10 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
                 // Setup the fetch request generators so we can have nice things like orphaned object
                 // deletion.
                 __weak MITMobileManagedResource *weakResource = managedResource;
-                [objectManager addFetchRequestBlock:^(NSURL *URL) {
-                    return [weakResource fetchRequestForURL:URL];
-                }];
+                for (NSFetchRequest *(^fetchRequestBlock)(NSURL *URL) in [weakResource fetchRequestForURLBlocks]) {
+                    [objectManager addFetchRequestBlock:fetchRequestBlock];
+                }
+                
             }
         }];
         

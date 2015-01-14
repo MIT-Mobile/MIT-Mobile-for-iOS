@@ -16,5 +16,6 @@ typedef void (^MITMobileManagedResult)(NSFetchRequest *fetchRequest, NSDate *las
 
 - (instancetype)initWithName:(NSString *)name pathPattern:(NSString *)pathPattern managedObjectModel:(NSManagedObjectModel*)managedObjectModel;
 - (NSFetchRequest*)fetchRequestForURL:(NSURL *)url;
+- (NSArray*)fetchRequestForURLBlocks;
 
 @end

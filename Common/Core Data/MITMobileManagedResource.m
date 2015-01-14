@@ -31,4 +31,14 @@
 {
     return nil;
 }
+
+- (NSArray*)fetchRequestForURLBlocks
+{
+    // If not overridden, assume there is only one fetch request and return that in a block in an array
+    NSFetchRequest *(^fetchRequestBlock)(NSURL *URL) = ^NSFetchRequest *(NSURL *URL) {
+        return [self fetchRequestForURL:URL];
+    };
+    return @[fetchRequestBlock];
+}
+
 @end

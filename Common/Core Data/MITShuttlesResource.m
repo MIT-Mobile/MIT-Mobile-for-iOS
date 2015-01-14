@@ -22,19 +22,39 @@
     return self;
 }
 
-- (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
+- (NSArray *)fetchRequestForURLBlocks
 {
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[url relativePath] stringByAppendingString:@"/"]];
+    NSFetchRequest *(^fetchRequestForRouteBlock)(NSURL *URL) = ^NSFetchRequest *(NSURL *URL) {
+        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[URL relativePath] stringByAppendingString:@"/"]];
+        
+        NSDictionary *parameters = nil;
+        BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+        
+        if (matches) {
+            NSFetchRequest *fetchRequestForRoute = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
+            fetchRequestForRoute.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+            return fetchRequestForRoute;
+        }
+        
+        return nil;
+    };
     
-    NSDictionary *parameters = nil;
-    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+    NSFetchRequest *(^fetchRequestForChildStopsBlock)(NSURL *URL) = ^NSFetchRequest *(NSURL *URL) {
+        RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[URL relativePath] stringByAppendingString:@"/"]];
+        
+        NSDictionary *parameters = nil;
+        BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+        
+        if (matches) {
+            NSFetchRequest *fetchRequestForChildStops = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleStop entityName]];
+            fetchRequestForChildStops.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+            return fetchRequestForChildStops;
+        }
+        
+        return nil;
+    };
     
-    if (matches) {
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-        return fetchRequest;
-    }
-    return nil;
+    return @[fetchRequestForRouteBlock, fetchRequestForChildStopsBlock];
 }
 
 @end
