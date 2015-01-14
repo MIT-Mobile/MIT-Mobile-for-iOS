@@ -26,14 +26,15 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self setupNotificationLabel];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self updateCurrentlyDisplayedItems];
+}
+
 - (void)setMeal:(MITDiningMeal *)meal
 {
-    if ([_meal isEqual:meal]) {
-        return;
-    }
-    
     _meal = meal;
-    
     [self updateCurrentlyDisplayedItems];
 }
 
@@ -49,15 +50,20 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (void)updateNotificationLabel
 {
-    if (self.currentlyDisplayedItems.count == 0) {
-        if (self.meal.items.count > 0) {
-            self.notificationLabel.text = @"No Matching Items";
+    if (self.meal) {
+        if (self.currentlyDisplayedItems.count == 0) {
+            if (self.meal.items.count > 0) {
+                self.notificationLabel.text = @"No Matching Items";
+            } else {
+                self.notificationLabel.text = @"No Items";
+            }
+            self.notificationLabel.hidden = NO;
         } else {
-            self.notificationLabel.text = @"No Items";
+            self.notificationLabel.hidden = YES;
         }
-        self.notificationLabel.hidden = NO;
     } else {
-        self.notificationLabel.hidden = YES;
+        self.notificationLabel.text = @"Closed";
+        self.notificationLabel.hidden = NO;
     }
 }
 
@@ -137,7 +143,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 {
     if (self.filters.count == 0) {
         self.currentlyDisplayedItems = [self.meal.items array];
-        [self updateNotificationLabel];
     }
     else {
         NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
@@ -152,9 +157,19 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
             }
         }
         self.currentlyDisplayedItems = filteredItems;
-        [self updateNotificationLabel];
     }
+    
+    if (self.currentlyDisplayedItems.count > 0) {
+        // Show empty cells -- normal tableView behavior
+        self.tableView.tableFooterView = nil;
+    } else {
+        // Hide empty cells so label is more visible -- Can't hide tableview or filters will be hidden as well.
+        self.tableView.tableFooterView = [UIView new];
+    }
+
     [self.tableView reloadData];
+    
+    [self updateNotificationLabel];
 }
 
 - (BOOL)hasFiltersApplied

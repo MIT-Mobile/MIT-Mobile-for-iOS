@@ -30,6 +30,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 @interface MITDiningHouseVenueDetailViewController () <UIScrollViewDelegate, MITDiningHouseVenueInfoCellDelegate, MITDiningFilterDelegate, UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
 @property (nonatomic, strong) MITDiningMeal *currentlyDisplayedMeal;
+@property (nonatomic, strong) MITDiningHouseDay *currentlyDisplayedDay;
 
 @property (nonatomic, strong) NSArray *currentlyDisplayedItems;
 @property (nonatomic, strong) NSArray *sortedMeals;
@@ -43,7 +44,6 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 @property (nonatomic, strong) MITDiningMenuComparisonViewController *comparisonViewController;
 
 @property (nonatomic, strong) UIPageViewController *mealsPageViewController;
-
 @end
 
 @implementation MITDiningHouseVenueDetailViewController
@@ -57,6 +57,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     NSDate *currentDate = [NSDate date];
     MITDiningHouseDay *day = [self.houseVenue houseDayForDate:currentDate];
     self.currentlyDisplayedMeal = [day bestMealForDate:currentDate];
+    self.currentlyDisplayedDay = [self.houseVenue houseDayForDate:currentDate];
     
     CGFloat height = [MITDiningVenueInfoCell heightForHouseVenue:self.houseVenue tableViewWidth:self.view.bounds.size.width];
     [self.mealsContainerView addSubview:self.venueInfoView];
@@ -67,7 +68,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     self.mealSelectionView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.mealSelectionView.nextMealButton addTarget:self action:@selector(nextMealPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.mealSelectionView.previousMealButton addTarget:self action:@selector(previousMealPressed:) forControlEvents:UIControlEventTouchUpInside];
-    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal];
+    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal forDay:self.currentlyDisplayedDay];
     [self.mealsContainerView addSubview:self.mealSelectionView];
     
     [self.mealsContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[venueInfoView]-0-[mealSelectionView(==mealSelectionViewHeight)]" options:0 metrics:@{@"mealSelectionViewHeight": @(54)} views:@{@"venueInfoView": self.venueInfoView,
@@ -121,6 +122,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     
     MITDiningHouseMealListViewController *currentMealListViewController = [[MITDiningHouseMealListViewController alloc] init];
     currentMealListViewController.meal = currentMeal;
+    currentMealListViewController.day = day;
     
     [self.mealsPageViewController setViewControllers:@[currentMealListViewController] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
 }
@@ -133,35 +135,49 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     return viewController;
 }
 
+#pragma mark - PageView
+
+- (void)replaceCurrentPageViewMealListControllerWithNewMealListController:(MITDiningHouseMealListViewController *)newMealListVC
+{
+    // I swear this is necessary or UIPageViewController breaks when swiping/clicking buttons too fast
+    // See: http://stackoverflow.com/a/17330606/1260141
+    __block MITDiningHouseVenueDetailViewController *blockSelf = self;
+    NSArray *listViewControllers = @[newMealListVC];
+    [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
+        });
+    }];
+}
+
 #pragma mark - UIPageViewDataSource Methods
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-    MITDiningHouseMealListViewController *rightNeighbor = (MITDiningHouseMealListViewController *)[self.mealsPageViewController.viewControllers firstObject];
-    NSInteger index = [self.sortedMeals indexOfObject:rightNeighbor.meal];
-    
-    if (index == NSNotFound || index <= 0) {
-        return nil;
-    } else {
-        return [self listViewControllerAtIndex:index - 1];
-    }
+    MITDiningHouseMealListViewController *current = (MITDiningHouseMealListViewController *)[self.mealsPageViewController.viewControllers firstObject];
+    MITDiningHouseMealListViewController *previous = [self previousViewControllerForCurrentMeal:current.meal andCurrentDay:current.day];
+    return previous;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    MITDiningHouseMealListViewController *leftNeighbor = (MITDiningHouseMealListViewController *)[self.mealsPageViewController.viewControllers firstObject];
-    NSInteger index = [self.sortedMeals indexOfObject:leftNeighbor.meal];
-    
-    if (index == NSNotFound || index >= (self.sortedMeals.count - 1)) {
-        return nil;
-    } else {
-        return [self listViewControllerAtIndex:index + 1];
-    }
+    MITDiningHouseMealListViewController *current = (MITDiningHouseMealListViewController *)[self.mealsPageViewController.viewControllers firstObject];
+    MITDiningHouseMealListViewController *next = [self nextViewControllerForCurrentMeal:current.meal andCurrentDay:current.day];
+    return next;
 }
 
 - (NSInteger)presentationCountForPageViewController:(UIPageViewController *)pageViewController
 {
-    return self.sortedMeals.count;
+    NSUInteger count = 0;
+    for (MITDiningHouseDay *day in self.houseVenue.mealsByDay) {
+        if (day.meals.count > 0) {
+            count += day.meals.count;
+        } else {
+            // If there's no meals, an empty day still shows which means any day counts for at least one.
+            count += 1;
+        }
+    }
+    return count;
 }
 
 #pragma mark - UIPageViewDelegate Methods
@@ -169,12 +185,31 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
 {
     MITDiningHouseMealListViewController *newMealList = (MITDiningHouseMealListViewController *)[pageViewController.viewControllers firstObject];
-    NSInteger index = [self.sortedMeals indexOfObject:newMealList.meal];
     
-    self.mealSelectionView.meal = self.sortedMeals[index];
-    self.currentlyDisplayedMeal = self.sortedMeals[index];
-    self.mealSelectionView.nextMealButton.enabled = (index + 1 < self.sortedMeals.count);
-    self.mealSelectionView.previousMealButton.enabled = (index > 0);
+    self.currentlyDisplayedMeal = newMealList.meal;
+    self.currentlyDisplayedDay = newMealList.day;
+    
+    [self updateMealSelectionView];
+}
+
+- (BOOL)shouldEnableNextMealButton
+{
+    MITDiningHouseDay *lastDay = self.houseVenue.mealsByDay.lastObject;
+    if (self.currentlyDisplayedMeal) {
+        return ![lastDay.meals.lastObject isEqual:self.currentlyDisplayedMeal];
+    } else {
+        return ![lastDay isEqual:self.currentlyDisplayedDay];
+    }
+}
+
+- (BOOL)shouldEnablePreviousMealButton
+{
+    MITDiningHouseDay *firstDay = self.houseVenue.mealsByDay.firstObject;
+    if (self.currentlyDisplayedDay) {
+        return ![firstDay.meals.firstObject isEqual:self.currentlyDisplayedMeal];
+    } else {
+        return ![firstDay isEqual:self.currentlyDisplayedDay];
+    }
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
@@ -202,58 +237,100 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 
 #pragma mark - Meal Selection View
 
-- (void)updateMealSelection
+- (void)updateMealSelectionView
 {
-    self.mealSelectionView.meal = self.currentlyDisplayedMeal;
+    [self.mealSelectionView setMeal:self.currentlyDisplayedMeal forDay:self.currentlyDisplayedDay];
     
-    self.mealSelectionView.nextMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] + 1 < self.sortedMeals.count);
-    self.mealSelectionView.previousMealButton.enabled = ([self.sortedMeals indexOfObject:self.currentlyDisplayedMeal] > 0);
+    self.mealSelectionView.nextMealButton.enabled = [self shouldEnableNextMealButton];
+    self.mealSelectionView.previousMealButton.enabled = [self shouldEnablePreviousMealButton];
 }
 
 - (void)nextMealPressed:(id)sender
 {
-    NSInteger index = [self.sortedMeals indexOfObject:self.currentlyDisplayedMeal];
-    
-    if (index == NSNotFound || index >= (self.sortedMeals.count - 1)) {
+    MITDiningHouseMealListViewController *next = [self nextViewControllerForCurrentMeal:self.currentlyDisplayedMeal andCurrentDay:self.currentlyDisplayedDay];
+    if (!next) {
         return;
     }
+    self.currentlyDisplayedMeal = next.meal;
+    self.currentlyDisplayedDay = next.day;
+    [self updateMealSelectionView];
     
-    self.currentlyDisplayedMeal = self.sortedMeals[index + 1];
-    
-    [self updateMealSelection];
-    
-    // I swear this is necessary or UIPageViewController breaks when swiping/clicking buttons too fast
-    // See: http://stackoverflow.com/a/17330606/1260141
-    __block MITDiningHouseVenueDetailViewController *blockSelf = self;
-    NSArray *listViewControllers = @[[self listViewControllerAtIndex:index + 1]];
-    [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:YES completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
-        });
-    }];
+    [self replaceCurrentPageViewMealListControllerWithNewMealListController:next];
 }
 
 - (void)previousMealPressed:(id)sender
 {
-    NSInteger index = [self.sortedMeals indexOfObject:self.currentlyDisplayedMeal];
-    
-    if (index == NSNotFound || index <= 0) {
+    MITDiningHouseMealListViewController *previous = [self previousViewControllerForCurrentMeal:self.currentlyDisplayedMeal andCurrentDay:self.currentlyDisplayedDay];
+    if (!previous) {
         return;
     }
+    self.currentlyDisplayedMeal = previous.meal;
+    self.currentlyDisplayedDay = previous.day;
+    [self updateMealSelectionView];
     
-    self.currentlyDisplayedMeal = self.sortedMeals[index - 1];
-    
-    [self updateMealSelection];
-    
-    // I swear this is necessary or UIPageViewController breaks when swiping/clicking buttons too fast
-    // See: http://stackoverflow.com/a/17330606/1260141
-    __block MITDiningHouseVenueDetailViewController *blockSelf = self;
-    NSArray *listViewControllers = @[[self listViewControllerAtIndex:index - 1]];
-    [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
-        });
-    }];
+    [self replaceCurrentPageViewMealListControllerWithNewMealListController:previous];
+}
+
+#pragma mark - Previous / Next Meal List View Controllers
+
+- (MITDiningHouseMealListViewController *)nextViewControllerForCurrentMeal:(MITDiningMeal *)meal andCurrentDay:(MITDiningHouseDay *)day
+{
+    MITDiningHouseMealListViewController *next = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
+    if (meal) {
+        if ([day.meals.lastObject isEqual:meal]) {
+            if ([self.houseVenue.mealsByDay.lastObject isEqual:day]) {
+                next = nil;
+            } else {
+                NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+                next.day = self.houseVenue.mealsByDay[idx + 1];
+                next.meal = next.day.meals.firstObject;
+            }
+        } else {
+            NSUInteger idx = [day.meals indexOfObject:meal];
+            next.meal = day.meals[idx + 1];
+            next.day = day;
+        }
+    } else {
+        if ([self.houseVenue.mealsByDay.lastObject isEqual:day]) {
+            next = nil;
+        } else {
+            NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+            next.day = self.houseVenue.mealsByDay[idx + 1];
+            next.meal = next.day.meals.firstObject;
+        }
+    }
+    [next applyFilters:self.filters];
+    return next;
+}
+
+- (MITDiningHouseMealListViewController *)previousViewControllerForCurrentMeal:(MITDiningMeal *)meal andCurrentDay:(MITDiningHouseDay *)day
+{
+    MITDiningHouseMealListViewController *previous = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
+    if (meal) {
+        if ([day.meals.firstObject isEqual:meal]) {
+            if ([self.houseVenue.mealsByDay.firstObject isEqual:day]) {
+                previous = nil;
+            } else {
+                NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+                previous.day = self.houseVenue.mealsByDay[idx - 1];
+                previous.meal = previous.day.meals.lastObject;
+            }
+        } else {
+            NSUInteger idx = [day.meals indexOfObject:meal];
+            previous.meal = day.meals[idx - 1];
+            previous.day = day;
+        }
+    } else {
+        if ([self.houseVenue.mealsByDay.firstObject isEqual:day]) {
+            previous = nil;
+        } else {
+            NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+            previous.day = self.houseVenue.mealsByDay[idx - 1];
+            previous.meal = previous.day.meals.lastObject;
+        }
+    }
+    [previous applyFilters:self.filters];
+    return previous;
 }
 
 #pragma mark - Setters/Getters
@@ -264,7 +341,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     self.title = self.houseVenue.shortName;
     self.sortedMeals = nil; // Force Recalculation
     
-    [self updateMealSelection];
+    [self updateMealSelectionView];
 }
 
 - (NSArray *)sortedMeals
@@ -334,7 +411,26 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
                             [self.comparisonViewController didMoveToParentViewController:self];
                         }];
     } else {
+        
         self.currentlyDisplayedMeal = [self.comparisonViewController.dataManager mealForAggregatedMeal:self.comparisonViewController.visibleAggregatedMeal inVenue:self.houseVenue];
+        
+        // Can't reliably set from self.currentlyDisplayedMeal.houseDay because meal might be nil
+        for (MITDiningHouseDay *houseDay in self.houseVenue.mealsByDay) {
+            if ([houseDay.date isEqualToDateIgnoringTime:self.comparisonViewController.visibleAggregatedMeal.date]) {
+                self.currentlyDisplayedDay = houseDay;
+                break;
+            }
+        }
+        
+        MITDiningHouseMealListViewController *currentMealList = self.mealsPageViewController.viewControllers.firstObject;
+        if (![currentMealList.meal isEqual:self.currentlyDisplayedMeal] || ![currentMealList.day isEqual:self.currentlyDisplayedDay]) {
+            MITDiningHouseMealListViewController *new = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
+            new.meal = self.currentlyDisplayedMeal;
+            new.day = self.currentlyDisplayedDay;
+            
+            [self replaceCurrentPageViewMealListControllerWithNewMealListController:new];
+        }
+        
         
         [self.comparisonViewController willMoveToParentViewController:nil];
         [self.navigationController setNavigationBarHidden:NO animated:YES];
@@ -347,7 +443,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
                             [self.comparisonViewController.view removeFromSuperview];
                             [self.comparisonViewController removeFromParentViewController];
                             self.comparisonViewController = nil;
-                            [self updateMealSelection];
+                            [self updateMealSelectionView];
                         }];
     }
 }
