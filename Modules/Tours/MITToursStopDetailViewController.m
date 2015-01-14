@@ -103,6 +103,10 @@
     
     self.nearHereCollectionView.dataSource = self.nearHereCollectionViewManager;
     self.nearHereCollectionView.delegate = self.nearHereCollectionViewManager;
+    
+    self.mainLoopCollectionView.scrollsToTop = NO;
+    self.nearHereCollectionView.scrollsToTop = NO;
+
 }
 
 - (void)setCollectionViewScrollInsets
