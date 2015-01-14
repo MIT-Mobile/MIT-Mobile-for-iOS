@@ -160,8 +160,10 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     }
     
     if (self.currentlyDisplayedItems.count > 0) {
+        // Show empty cells -- normal tableView behavior
         self.tableView.tableFooterView = nil;
     } else {
+        // Hide empty cells so label is more visible -- Can't hide tableview or filters will be hidden as well.
         self.tableView.tableFooterView = [UIView new];
     }
 
