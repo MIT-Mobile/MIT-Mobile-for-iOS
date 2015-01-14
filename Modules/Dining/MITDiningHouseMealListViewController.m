@@ -141,33 +141,31 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
 - (void)updateCurrentlyDisplayedItems
 {
-    if (self.meal) {
-        if (self.filters.count == 0) {
-            self.currentlyDisplayedItems = [self.meal.items array];
-        }
-        else {
-            NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
-            for (MITDiningMenuItem *item in self.meal.items) {
-                if (item.dietaryFlags) {
-                    for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
-                        if ([self.filters containsObject:dietaryFlag]) {
-                            [filteredItems addObject:item];
-                            break;
-                        }
+    if (self.filters.count == 0) {
+        self.currentlyDisplayedItems = [self.meal.items array];
+    }
+    else {
+        NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
+        for (MITDiningMenuItem *item in self.meal.items) {
+            if (item.dietaryFlags) {
+                for (NSString *dietaryFlag in (NSArray *)item.dietaryFlags) {
+                    if ([self.filters containsObject:dietaryFlag]) {
+                        [filteredItems addObject:item];
+                        break;
                     }
                 }
             }
-            self.currentlyDisplayedItems = filteredItems;
         }
-        [self.tableView reloadData];
-        if (self.currentlyDisplayedItems.count == 0) {
-            self.tableView.tableFooterView = [UIView new];
-        } else {
-            self.tableView.tableFooterView = nil;
-        }
+        self.currentlyDisplayedItems = filteredItems;
+    }
+    
+    if (self.currentlyDisplayedItems.count > 0) {
+        self.tableView.tableFooterView = nil;
     } else {
         self.tableView.tableFooterView = [UIView new];
     }
+
+    [self.tableView reloadData];
     
     [self updateNotificationLabel];
 }
