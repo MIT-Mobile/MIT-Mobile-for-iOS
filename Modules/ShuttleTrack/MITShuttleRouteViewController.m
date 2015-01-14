@@ -259,7 +259,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
-        if (routeStatus != MITShuttleRouteStatusUnknown) {
+        if (routeStatus != MITShuttleRouteStatusUnknown && [stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
             MITShuttlePrediction *prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
             [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
