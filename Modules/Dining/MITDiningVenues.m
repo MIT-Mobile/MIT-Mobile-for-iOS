@@ -20,19 +20,4 @@
     return mapping;
 }
 
-- (NSOrderedSet *)house
-{
-    [self willAccessValueForKey:@"house"];
-    NSOrderedSet *house = [self primitiveValueForKey:@"house"];
-    [self didAccessValueForKey:@"house"];
-    
-    NSArray *array = [house sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-        NSString *first = [(MITDiningHouseVenue*)obj1 shortName];
-        NSString *second = [(MITDiningHouseVenue*)obj2 shortName];
-        return [first compare:second];
-    }];
-    
-    return [NSOrderedSet orderedSetWithArray:array];
-}
-
 @end

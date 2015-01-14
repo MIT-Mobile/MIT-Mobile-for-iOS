@@ -196,6 +196,9 @@
     if (self.fetchedResultsController.fetchedObjects.count > 0) {
         // We should only ever have one dining object in the fetched results
         self.masterDiningData = self.fetchedResultsController.fetchedObjects[0];
+        NSArray *orderedVenues = [self.masterDiningData.venues.house sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES]]];
+        self.masterDiningData.venues.house = [NSOrderedSet orderedSetWithArray:orderedVenues];
+
         [self updateDataInSubViewControllers];
     }
 }

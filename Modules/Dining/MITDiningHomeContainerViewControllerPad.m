@@ -278,6 +278,10 @@
 {
     if (self.fetchedResultsController.fetchedObjects.count > 0) {
         self.diningData = self.fetchedResultsController.fetchedObjects[0];
+        
+        NSArray *orderedVenues = [self.diningData.venues.house sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"shortName" ascending:YES]]];
+        self.diningData.venues.house = [NSOrderedSet orderedSetWithArray:orderedVenues];
+        
         self.diningHouseViewController.diningHouses = [self.diningData.venues.house array];
         [self.diningHouseViewController refreshForNewData];
         self.diningRetailViewController.retailVenues = [self.diningData.venues.retail array];
