@@ -49,7 +49,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
 
-@property (strong, nonatomic) NSTimer *routesAndPredictionsRefreshTimer;
+@property (strong, nonatomic) NSTimer *routesRefreshTimer;
 
 @property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
@@ -100,7 +100,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     [super viewWillAppear:animated];
     
-    [self startRefreshingRoutesAndPredictions];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    }
+    
+    self.shouldAddPredictionsDependencies = YES;
+    [self startRefreshingRoutes];
     
     [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
     
@@ -116,8 +123,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
-    self.shouldAddPredictionsDependencies = YES;
     
     if (![MITLocationManager locationServicesAuthorized]) {
         [self performSelector:@selector(requestLocationServicesAuthorization) withObject:nil afterDelay:0.75];
@@ -183,15 +188,15 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)stopRefreshingData
 {
-    [self.routesAndPredictionsRefreshTimer invalidate];
-    self.routesAndPredictionsRefreshTimer = nil;
+    [self.routesRefreshTimer invalidate];
+    self.routesRefreshTimer = nil;
 }
 
 #pragma mark - Data Refresh
 
-- (void)startRefreshingRoutesAndPredictions
+- (void)startRefreshingRoutes
 {
-    if (!self.routesAndPredictionsRefreshTimer) {
+    if (!self.routesRefreshTimer) {
         [self fetchRoutes];
         
         NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
@@ -200,7 +205,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                                                                    userInfo:nil
                                                                     repeats:YES];
         [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
-        self.routesAndPredictionsRefreshTimer = routesAndPredictionsTimer;
+        self.routesRefreshTimer = routesAndPredictionsTimer;
     }
 }
 
@@ -226,9 +231,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)updatePredictionsData
 {
-    [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
-        [self.tableView reloadDataAndMaintainSelection];
-    }];
+    [self.tableView reloadDataAndMaintainSelection];
 }
 
 - (void)beginRefreshing
@@ -511,7 +514,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
     NSInteger row = indexPath.row;
     MITShuttleStop *stop = self.flatRouteArray[row];
-    MITShuttlePrediction *prediction = [stop nextPrediction];
+    MITShuttlePrediction *prediction = nil;
+    if ([stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
+        prediction = [stop nextPrediction];
+    }
     [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];
     cell.separatorInset = [self stopCellSeparatorEdgeInsetsForStop:stop];

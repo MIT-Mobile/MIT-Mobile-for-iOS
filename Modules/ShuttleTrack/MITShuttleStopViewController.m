@@ -190,7 +190,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             return 1;
         }
         case MITShuttleStopViewControllerSectionTypePredictions: {
-            NSOrderedSet *predictions = self.stop.predictionList.predictions;
+            NSOrderedSet *predictions = nil;
+            if ([self.stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
+                predictions = self.stop.predictionList.predictions;
+            }
             return predictions.count > 0 ? predictions.count : 1;
         }
         case MITShuttleStopViewControllerSectionTypeRoutes: {

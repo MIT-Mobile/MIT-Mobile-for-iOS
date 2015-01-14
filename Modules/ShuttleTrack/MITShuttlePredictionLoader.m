@@ -79,7 +79,7 @@ NSString * const kMITShuttlePredictionLoaderDidUpdateNotification = @"kMITShuttl
         
         [[NSNotificationCenter defaultCenter] postNotificationName:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
         MITShuttlePredictionsRequestData *requestData = [[MITShuttlePredictionsRequestData alloc] init];
-        
+                
         for (NSString *agency in [self.stopDependencyTuplesByAgency allKeys]) {
             for (NSString *tuple in [[self.stopDependencyTuplesByAgency objectForKey:agency] allKeys]) {
                 [requestData addTuple:tuple forAgency:agency];
