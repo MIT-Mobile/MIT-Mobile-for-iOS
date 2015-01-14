@@ -274,11 +274,13 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 
 - (void)captureBarcodeImageWithCompletionHandler:(void(^)(UIImage *))completionBlock
 {
-    __block UIImage *image;
-    
-    if( !self.isCaptureActive || self.isAdjustingFocus )
-    {
-        if( completionBlock ) completionBlock( nil );
+    if (!self.isCaptureActive || self.isAdjustingFocus) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (completionBlock) {
+                completionBlock(nil);
+            }
+        }];
+
         return;
     }
     
@@ -287,24 +289,29 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     [self.stillImageOutput captureStillImageAsynchronouslyFromConnection:videoConnection
                                                        completionHandler:^(CMSampleBufferRef imageSampleBuffer, NSError *error)
      {
-         if( CMSampleBufferIsValid( imageSampleBuffer ) )
-         {
-             NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
-             image = [[UIImage alloc] initWithData:imageData];
-         }
-         
-         if( image == nil )
-         {
-             NSLog(@"warn: missing screenshot");
-         }
-         
-         if( completionBlock )
-         {
-             completionBlock( image );
-         }
-     }];
+         if (error) {
+             DDLogWarn(@"failed to capture image: %@",error);
+         } else {
+             UIImage *image = nil;
     
-    [self stopSessionCapture];
+             if (CMSampleBufferIsValid(imageSampleBuffer)) {
+                 NSData *imageData = [AVCaptureStillImageOutput jpegStillImageNSDataRepresentation:imageSampleBuffer];
+                 image = [[UIImage alloc] initWithData:imageData];
+             }
+
+             if (!image) {
+                 NSLog(@"warn: missing screenshot");
+             }
+
+             if (image) {
+                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                     completionBlock(image);
+                 }];
+             }
+         }
+
+         [self stopSessionCapture];
+     }];
 }
 
 
