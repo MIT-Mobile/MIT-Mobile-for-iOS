@@ -71,7 +71,7 @@
         return;
     }
     
-    _venues = venues;
+    _venues = [NSArray arrayWithArray:venues];
     
     [self refreshDateKeyedMeals];
     [self refreshViews];
@@ -102,10 +102,6 @@
 
 - (void)deselectLetterView:(UILabel *)letterView
 {
-    if (![self.currentlySelectedLetterView isEqual:letterView]) {
-        return;
-    }
-    
     letterView.textColor = [UIColor blackColor];
     self.selectedMealBackground.hidden = YES;
     self.selectedMealNameLabel.hidden = YES;
@@ -178,6 +174,8 @@
 - (void)refreshViews
 {
     for (NSDate *dateKey in [self.letterViewsByDate allKeys]) {
+        UILabel *dateLabel = [self.dateLabelsByDate objectForKey:dateKey];
+        [dateLabel removeFromSuperview];
         NSOrderedSet *letterViews = [self.letterViewsByDate objectForKey:dateKey];
         for (UILabel *letterView in letterViews) {
             [letterView removeFromSuperview];
