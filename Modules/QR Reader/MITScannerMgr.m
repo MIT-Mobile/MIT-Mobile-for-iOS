@@ -67,12 +67,15 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
         return;
     }
     
-    [self.captureDevice lockForConfiguration:&error];
-    CGPoint point = CGPointMake(0.5,0.5);
-    [self.captureDevice setFocusPointOfInterest:point];
-    [self.captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
-    [self.captureDevice unlockForConfiguration];
-    [self.captureDevice addObserver:self forKeyPath:@"adjustingFocus" options:NSKeyValueObservingOptionNew context:nil];
+    if( [self.captureDevice isFocusPointOfInterestSupported] )
+    {
+        [self.captureDevice lockForConfiguration:&error];
+        CGPoint point = CGPointMake(0.5,0.5);
+        [self.captureDevice setFocusPointOfInterest:point];
+        [self.captureDevice setFocusMode:AVCaptureFocusModeContinuousAutoFocus];
+        [self.captureDevice unlockForConfiguration];
+        [self.captureDevice addObserver:self forKeyPath:@"adjustingFocus" options:NSKeyValueObservingOptionNew context:nil];
+    }
     
     // 2.
     self.captureSession = [[AVCaptureSession alloc] init];

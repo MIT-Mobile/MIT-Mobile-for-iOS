@@ -2,7 +2,7 @@
 
 @class MITDiningMeal;
 
-@interface MITDiningHouseMealListViewController : UITableViewController
+@interface MITDiningHouseMealListViewController : UIViewController
 
 @property (nonatomic, strong) MITDiningMeal *meal;
 

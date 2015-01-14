@@ -70,12 +70,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     if ([_diningHouses isEqualToArray:diningHouses]) {
         return;
     }
-    
     _diningHouses = diningHouses;
-    
-    [self.mealSelector setVenues:self.diningHouses];
-    
-    [self selectBestMealForCurrentDate];
 }
 
 - (void)selectDate:(NSDate *)date mealName:(NSString *)mealName
@@ -205,6 +200,14 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     navController.modalPresentationStyle = UIModalPresentationFormSheet;
     
     [self presentViewController:navController animated:YES completion:nil];
+}
+
+#pragma mark - Refresh
+
+- (void)refreshForNewData
+{
+    [self.mealSelector setVenues:self.diningHouses];
+    [self selectBestMealForCurrentDate];
 }
 
 #pragma mark - UICollectionViewDataSource Methods

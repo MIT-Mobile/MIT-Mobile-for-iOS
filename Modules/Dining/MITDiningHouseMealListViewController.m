@@ -7,10 +7,12 @@
 static NSString *const kMITDiningMenuItemCell = @"MITDiningMenuItemCell";
 static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 
-@interface MITDiningHouseMealListViewController ()
+@interface MITDiningHouseMealListViewController () <UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSSet *filters;
 @property (nonatomic, strong) NSArray *currentlyDisplayedItems;
+@property (weak, nonatomic) IBOutlet UITableView *tableView;
+@property (weak, nonatomic) IBOutlet UILabel *notificationLabel;
 
 @end
 
@@ -21,6 +23,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [super viewDidLoad];
     
     [self setupTableView];
+    [self setupNotificationLabel];
 }
 
 - (void)setMeal:(MITDiningMeal *)meal
@@ -34,6 +37,30 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self updateCurrentlyDisplayedItems];
 }
 
+#pragma mark - NotificationLabel
+
+- (void)setupNotificationLabel
+{
+    self.notificationLabel.font = [UIFont systemFontOfSize:24.0];
+    self.notificationLabel.textColor = [UIColor grayColor];
+    self.notificationLabel.hidden = YES;
+    [self.notificationLabel sizeToFit];
+}
+
+- (void)updateNotificationLabel
+{
+    if (self.currentlyDisplayedItems.count == 0) {
+        if (self.meal.items.count > 0) {
+            self.notificationLabel.text = @"No Matching Items";
+        } else {
+            self.notificationLabel.text = @"No Items";
+        }
+        self.notificationLabel.hidden = NO;
+    } else {
+        self.notificationLabel.hidden = YES;
+    }
+}
+
 #pragma mark - Table view data source
 
 - (void)setupTableView
@@ -43,8 +70,6 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     
     cellNib = [UINib nibWithNibName:kMITDiningFiltersCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITDiningFiltersCell];
-    
-    self.tableView.showsVerticalScrollIndicator = NO;
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -112,6 +137,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
 {
     if (self.filters.count == 0) {
         self.currentlyDisplayedItems = [self.meal.items array];
+        [self updateNotificationLabel];
     }
     else {
         NSMutableArray *filteredItems = [[NSMutableArray alloc] init];
@@ -126,6 +152,7 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
             }
         }
         self.currentlyDisplayedItems = filteredItems;
+        [self updateNotificationLabel];
     }
     [self.tableView reloadData];
 }

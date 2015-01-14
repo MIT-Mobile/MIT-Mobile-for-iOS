@@ -98,6 +98,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self setupTableView];
     [self setupToolbar];
     [self setupResourceData];
+    
+    self.tableView.rowHeight = 44.0;
 }
 
 - (void)viewWillAppear:(BOOL)animated

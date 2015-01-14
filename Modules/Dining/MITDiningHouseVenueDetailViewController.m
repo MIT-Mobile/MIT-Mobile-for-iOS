@@ -127,7 +127,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 
 - (MITDiningHouseMealListViewController *)listViewControllerAtIndex:(NSInteger)index
 {
-    MITDiningHouseMealListViewController *viewController = [[MITDiningHouseMealListViewController alloc] initWithStyle:UITableViewStylePlain];
+    MITDiningHouseMealListViewController *viewController = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
     viewController.meal = self.sortedMeals[index];
     [viewController applyFilters:self.filters];
     return viewController;

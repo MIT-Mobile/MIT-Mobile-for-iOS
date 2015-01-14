@@ -49,10 +49,7 @@
     if ([_retailVenues isEqualToArray:retailVenues]) {
         return;
     }
-    
     _retailVenues = retailVenues;
-    self.listViewController.retailVenues = retailVenues;
-    [self.mapsViewController updateMapWithDiningPlaces:retailVenues];
 }
 
 - (void)setupListViewController
@@ -75,6 +72,14 @@
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[listView][mapView]|" options:0 metrics:nil views:@{@"mapView": self.mapsViewController.view,
                                                                                                                                       @"listView": self.listViewController.view}]];
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[mapView]-0-|" options:0 metrics:nil views:@{@"mapView": self.mapsViewController.view}]];
+    [self.mapsViewController updateMapWithDiningPlaces:self.retailVenues];
+}
+
+#pragma mark - Refresh
+
+- (void)refreshForNewData
+{
+    self.listViewController.retailVenues = self.retailVenues;
     [self.mapsViewController updateMapWithDiningPlaces:self.retailVenues];
 }
 

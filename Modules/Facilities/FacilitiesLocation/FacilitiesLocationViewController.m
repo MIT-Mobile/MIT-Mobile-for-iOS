@@ -12,7 +12,6 @@
 #import "HighlightTableViewCell.h"
 #import "MITLoadingActivityView.h"
 #import "UIKit+MITAdditions.h"
-#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesLocationViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -321,6 +320,8 @@
         
     [self handleUpdatedSearchText:customLocationText];
     
+    [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+        
     if( customLocationText.length == 0 )
     {
         [self.strongSearchDisplayController.searchResultsTableView reloadData];
@@ -421,8 +422,14 @@
         }
         
         if (indexPath.row == 0) {
+            
             hlCell.highlightLabel.searchString = nil;
-            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            
+            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+            {
+                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            }
+            
         } else {
             NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
                                                    inSection:indexPath.section];

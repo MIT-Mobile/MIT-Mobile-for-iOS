@@ -49,10 +49,14 @@
     
     [self setupFetchedResultsController];
     [self performFetch];
-    
-    [self performWebserviceCall];
 
     [self setupSegmentedControl];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self performWebserviceCall];
 }
 
 - (void)didReceiveMemoryWarning

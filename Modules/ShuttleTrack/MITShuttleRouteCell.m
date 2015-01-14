@@ -47,7 +47,7 @@ static const UILayoutPriority kAlertContainerViewHeightConstraintPriorityHidden 
         case MITShuttleRouteStatusInService:
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesInService];
             break;
-        case MITShuttleRouteStatusPredictionsUnavailable:
+        case MITShuttleRouteStatusUnknown:
             self.statusIconImageView.image = [UIImage imageNamed:MITImageShuttlesUnknown];
             break;
         default:

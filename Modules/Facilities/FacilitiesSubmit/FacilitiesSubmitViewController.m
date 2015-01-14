@@ -7,7 +7,6 @@
 #import "MITBuildingServicesReportForm.h"
 #import "MITUIConstants.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
-#import "UINavigationController+MITAdditions.h"
 
 @interface FacilitiesSubmitViewController ()
 - (void)setStatusText:(NSString *)string;
@@ -218,7 +217,7 @@
     // clear the form after succesful submition
     [reportForm clearAll];
     
-    [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+    [self.navigationController popToRootViewControllerAnimated:YES];
 }
 
 - (void)setStatusText:(NSString *)string {

@@ -13,6 +13,7 @@ NSString * const MITSlidingViewControllerUnderLeftSegueIdentifier = @"MITSliding
 NSString * const MITSlidingViewControllerTopSegueIdentifier = @"MITSlidingViewControllerTopSegue";
 
 static CGFloat const MITSlidingViewControllerDefaultAnchorLeftRevealAmountPad = 270.;
+static CGFloat const MITSlidingViewControllerPanGestureMaximumHorizontalTriggerDistance = 44.;
 
 // This number was picked in order to have an equal amount of whitespace on either
 // side of the leftBarButtonIcon. 54pt results in having 14pt of whitespace on either side.
@@ -72,6 +73,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     self.drawerViewController.moduleItems = [self _moduleItems];
     
     self.panGesture.maximumNumberOfTouches = 1;
+    self.panGesture.cancelsTouchesInView = YES;
     self.panGesture.delegate = self;
 }
 
@@ -570,41 +572,30 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         CGPoint touchLocation = [touch locationInView:self.view];
         return !CGRectContainsPoint(modalFrame, touchLocation) && !_visibleViewController.presentedViewController;
     } else if (gestureRecognizer == self.panGesture) {
-        UIPanGestureRecognizer *panGesture = self.panGesture;
-        
-        if (panGesture.state != UIGestureRecognizerStatePossible) {
-            return YES;
-        }
-        
-        CGRect navigationBarFrame = CGRectNull;
-        if ([self.visibleViewController isKindOfClass:[UINavigationController class]]) {
-            UINavigationController *navigationController = (UINavigationController*)self.visibleViewController;
-            if (!navigationController.isNavigationBarHidden) {
-                navigationBarFrame = navigationController.navigationBar.bounds;
-                navigationBarFrame = [self.view convertRect:navigationBarFrame fromView:navigationController.navigationBar];
-            }
-        }
-        
-        CGRect screenEdgeRect = [self.view convertRect:self.topViewController.view.bounds fromView:self.topViewController.view];
-        screenEdgeRect.size.width = CGRectGetHeight([[UIApplication sharedApplication] statusBarFrame]);
-        
-        CGPoint touchLocation = [touch locationInView:self.view];
-        return (CGRectContainsPoint(screenEdgeRect, touchLocation) ||
-                CGRectContainsPoint(navigationBarFrame, touchLocation) ||
-                (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered));
+        return YES;
     } else {
         return NO;
     }
 }
 
-- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
-{
-    return (gestureRecognizer == _modalDismissGestureRecognizer) || (gestureRecognizer == self.panGesture);
-}
-
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-    return ((gestureRecognizer == _modalDismissGestureRecognizer) || (gestureRecognizer == self.panGesture));
+    if (gestureRecognizer == self.panGesture) {
+        if (self.currentTopViewPosition != ECSlidingViewControllerTopViewPositionCentered) {
+            return YES;
+        } else {
+            CGPoint locationInView = [gestureRecognizer locationInView:self.view];
+            if (locationInView.x <= MITSlidingViewControllerPanGestureMaximumHorizontalTriggerDistance) {
+                return YES;
+            } else {
+                return NO;
+            }
+        }
+    } else if (gestureRecognizer == _modalDismissGestureRecognizer) {
+        return YES;
+    } else {
+        return NO;
+    }
 }
 
 #pragma mark - Rotation

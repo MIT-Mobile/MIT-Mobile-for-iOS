@@ -44,8 +44,16 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     [self adjustTableViewInsets];
     
     [self updateTableViewHeaderView];
-	   
-    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (!self.tableView.tableFooterView) {
+        UIView *tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 1)];
+        tableFooterView.backgroundColor = [UIColor clearColor];
+        self.tableView.tableFooterView = tableFooterView;
+    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -250,18 +258,6 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             else
             {
                 cell.textLabel.text = @"Add to Favorites";
-            }
-            
-            if( [cell respondsToSelector:@selector(setSeparatorInset:)] )
-            {
-                cell.separatorInset = UIEdgeInsetsMake(0.f, 0.f, 0.f, self.view.frame.size.height);
-                if ([cell respondsToSelector:@selector(setPreservesSuperviewLayoutMargins:)]) {
-                    [cell setPreservesSuperviewLayoutMargins:NO];
-                }
-                
-                if ([cell respondsToSelector:@selector(setLayoutMargins:)]) {
-                    [cell setLayoutMargins:UIEdgeInsetsZero];
-                }
             }
         }
 		

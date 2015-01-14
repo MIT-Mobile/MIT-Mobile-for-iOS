@@ -15,7 +15,6 @@
 #import "FacilitiesLocationSearch.h"
 
 #import "MITBuildingServicesReportForm.h"
-#import "UINavigationController+MITAdditions.h"
 
 
 @interface FacilitiesCategoryViewController ()
@@ -327,6 +326,8 @@
     
     [self handleUpdatedSearchText:customLocationText];
     
+    [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+    
     if( customLocationText.length == 0 )
     {
         [self.strongSearchDisplayController.searchResultsTableView reloadData];
@@ -397,7 +398,7 @@
         
         if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
         {
-            [self.navigationController popToViewController:[self.navigationController moduleRootViewController] animated:YES];
+            [self.navigationController popToRootViewControllerAnimated:YES];
         }
         else
         {
@@ -458,8 +459,14 @@
         }
         
         if (indexPath.row == 0) {
+            
             hlCell.highlightLabel.searchString = nil;
-            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            
+            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+            {
+                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            }
+            
         } else {
             NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1) inSection:indexPath.section];
             [self configureSearchCell:hlCell forIndexPath:path];

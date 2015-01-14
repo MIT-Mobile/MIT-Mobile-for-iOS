@@ -3,7 +3,6 @@
 #import "FacilitiesConstants.h"
 #import "FacilitiesLocationData.h"
 #import "UIKit+MITAdditions.h"
-#import "UINavigationController+MITAdditions.h"
 #import "FacilitiesRepairType.h"
 #import "MITBuildingServicesReportForm.h"
 #import <QuartzCore/QuartzCore.h>

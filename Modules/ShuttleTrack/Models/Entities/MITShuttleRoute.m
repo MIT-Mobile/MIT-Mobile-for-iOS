@@ -86,11 +86,16 @@
 
 - (MITShuttleRouteStatus)status
 {
-    if ([self.scheduled boolValue]) {
-        return self.predictable ? MITShuttleRouteStatusInService : MITShuttleRouteStatusPredictionsUnavailable;
-    } else {
-        return MITShuttleRouteStatusNotInService;
+    // `predictable == true` trumps all. If the route has predictable vehicles, consider it in service regardless of the `scheduled` flag.
+    if ([self.predictable boolValue]) {
+        return MITShuttleRouteStatusInService;
     }
+    // `scheduled` but not `predictable` means it should be running but it's not, which is the unknown status.
+    if ([self.scheduled boolValue]) {
+        return MITShuttleRouteStatusUnknown;
+    }
+    // If not `predictable` or `scheduled` then it's not in service, as expected.
+    return MITShuttleRouteStatusNotInService;
 }
 
 - (BOOL)isNextStop:(MITShuttleStop *)stop

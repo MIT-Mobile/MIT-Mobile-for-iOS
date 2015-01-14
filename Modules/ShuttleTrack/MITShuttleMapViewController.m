@@ -803,7 +803,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
             calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
             break;
         }
-        case MITShuttleRouteStatusPredictionsUnavailable: {
+        case MITShuttleRouteStatusUnknown: {
             calloutSubtitle = @"No current predictions";
             break;
         }

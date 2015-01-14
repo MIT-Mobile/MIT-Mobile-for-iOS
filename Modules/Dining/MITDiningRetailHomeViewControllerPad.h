@@ -7,4 +7,6 @@
 @property (nonatomic, strong) NSArray *retailVenues;
 @property (nonatomic, strong) MITDiningMapsViewController *mapsViewController;
 
+- (void)refreshForNewData;
+
 @end

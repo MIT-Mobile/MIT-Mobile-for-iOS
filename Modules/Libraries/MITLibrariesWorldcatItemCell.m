@@ -15,7 +15,6 @@
 - (void)awakeFromNib
 {
     _showsSeparator = YES;
-    self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
     [self.yearAndAuthorLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
 }
