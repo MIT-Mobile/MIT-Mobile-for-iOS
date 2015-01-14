@@ -252,6 +252,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     if (predictions.count < 1) {
         UITableViewCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
         cell.textLabel.text = @"No current predictions";
+        cell.userInteractionEnabled = NO;
         return cell;
     } else {
         MITShuttleStopAlarmCell *cell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier forIndexPath:indexPath];
@@ -267,6 +268,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     if (self.intersectingRoutes.count < 1) {
         UITableViewCell *noIntersectionsCell = [self.tableView dequeueReusableCellWithIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier forIndexPath:indexPath];
         noIntersectionsCell.textLabel.text = @"No intersecting routes";
+        noIntersectionsCell.userInteractionEnabled = NO;
         return noIntersectionsCell;
     }
     
@@ -370,8 +372,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
         }
     } else if (sectionType == MITShuttleStopViewControllerSectionTypePredictions) {
         MITShuttleStopAlarmCell *alarmCell = (MITShuttleStopAlarmCell *)[tableView cellForRowAtIndexPath:indexPath];
-        if (!alarmCell.alertButton.hidden) {
-            [self stopAlarmCellDidToggleAlarm:alarmCell];
+        if ([alarmCell isKindOfClass:[MITShuttleStopAlarmCell class]]) {
+            if (!alarmCell.alertButton.hidden) {
+                [self stopAlarmCellDidToggleAlarm:alarmCell];
+            }
         }
     }
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
