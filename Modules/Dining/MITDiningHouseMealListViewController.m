@@ -26,14 +26,15 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
     [self setupNotificationLabel];
 }
 
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    [self updateCurrentlyDisplayedItems];
+}
+
 - (void)setMeal:(MITDiningMeal *)meal
 {
-    if ([_meal isEqual:meal]) {
-        return;
-    }
-    
     _meal = meal;
-    
     [self updateCurrentlyDisplayedItems];
 }
 
