@@ -8,6 +8,7 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 @property (nonatomic, strong) AVCaptureDevice *captureDevice;
 @property (nonatomic, strong) AVCaptureDeviceInput *deviceInput;
 @property (nonatomic, strong) AVCaptureMetadataOutput *metadataOutput;
+@property (nonatomic, strong) AVCaptureVideoPreviewLayer *previewLayer;
 
 @property (nonatomic, strong) AVCaptureStillImageOutput *stillImageOutput;
 

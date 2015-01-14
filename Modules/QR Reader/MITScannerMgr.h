@@ -14,7 +14,7 @@ extern NSString * const kBatchScanningSettingKey;
 
 @interface MITScannerMgr : NSObject
 
-@property (nonatomic, readonly) AVCaptureVideoPreviewLayer *previewLayer;
+@property (nonatomic, strong, readonly) AVCaptureVideoPreviewLayer *previewLayer;
 @property (nonatomic, weak) id <MITScannerMgrDelegate> delegate;
 
 - (instancetype)initWithScannerData:(QRReaderHistoryData *)scannerData;
