@@ -160,7 +160,11 @@ static NSString *const kMITDiningFiltersCell = @"MITDiningFiltersCell";
             self.currentlyDisplayedItems = filteredItems;
         }
         [self.tableView reloadData];
-        self.tableView.tableFooterView = nil;
+        if (self.currentlyDisplayedItems.count == 0) {
+            self.tableView.tableFooterView = [UIView new];
+        } else {
+            self.tableView.tableFooterView = nil;
+        }
     } else {
         self.tableView.tableFooterView = [UIView new];
     }
