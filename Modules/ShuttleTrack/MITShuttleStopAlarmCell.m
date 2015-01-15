@@ -53,6 +53,7 @@
 
 - (void)updateNotificationButtonWithPrediction:(MITShuttlePrediction *)prediction
 {
+    self.selectionStyle = UITableViewCellSelectionStyleDefault;
     NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
     UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForPrediction:prediction];
     if (scheduledNotification) {
@@ -60,6 +61,7 @@
         self.alertButton.hidden = NO;
     } else if ([predictionDate timeIntervalSinceDate:[NSDate date]] < 305) { // No sense in letting a user schedule a notification if it's only going to fire immediately
         self.alertButton.hidden = YES;
+        self.selectionStyle = UITableViewCellSelectionStyleNone;
     } else {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOff] forState:UIControlStateNormal];
         self.alertButton.hidden = NO;
