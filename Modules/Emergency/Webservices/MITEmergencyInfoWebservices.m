@@ -14,7 +14,7 @@
                                                 }];
 }
 
-+ (void)getEmergencyAnnouncements:(void (^)(NSDictionary *announcements, NSError *error))completion
++ (void)getEmergencyAnnouncement:(void (^)(NSDictionary *announcement, NSError *error))completion
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITEmergencyInfoAnnouncementResourceName
                                                 parameters:nil
