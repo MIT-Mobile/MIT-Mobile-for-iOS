@@ -25,6 +25,7 @@
 @property (nonatomic, strong) MITDiningHouseVenueListViewController *houseListViewController;
 @property (nonatomic, strong) MITDiningRetailVenueListViewController *retailListViewController;
 @property (nonatomic, strong) MITDiningMapsViewController *mapViewController;
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
 
 @end
 
@@ -42,7 +43,8 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
- 
+    [self.activityIndicator startAnimating];
+    
     [self setupNavigationBar];
     
     [self setupViewControllers];
@@ -106,6 +108,8 @@
     [self.view addSubview:self.houseListViewController.view];
     [self.view addSubview:self.retailListViewController.view];
     [self.view addSubview:self.mapViewController.view];
+    
+    [self.view bringSubviewToFront:self.activityIndicator];
     
     [self.houseListViewController didMoveToParentViewController:self];
     [self.retailListViewController didMoveToParentViewController:self];
@@ -202,6 +206,7 @@
 
 - (void)updateDataInSubViewControllers
 {
+    [self.activityIndicator stopAnimating];
     self.houseListViewController.diningData = self.masterDiningData;
     self.retailListViewController.retailVenues = [self.masterDiningData.venues.retail array];
 }
