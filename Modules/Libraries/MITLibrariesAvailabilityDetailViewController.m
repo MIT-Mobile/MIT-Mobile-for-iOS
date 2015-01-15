@@ -147,6 +147,7 @@ static NSString * const kAvailabilityCellIdentifier = @"kAvailabilityCellIdentif
     switch (indexPath.section) {
         case kItemHeaderSection: {
             MITLibrariesWorldcatItemCell *itemHeaderCell = [self.tableView dequeueReusableCellWithIdentifier:kItemHeaderCellIdentifier];
+            itemHeaderCell.selectionStyle = UITableViewCellSelectionStyleNone;
             [itemHeaderCell setContent:self.worldcatItem];
             return itemHeaderCell;
         }

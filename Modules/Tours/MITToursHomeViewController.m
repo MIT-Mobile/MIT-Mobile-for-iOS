@@ -8,6 +8,7 @@
 #import "MITToursAboutMITViewController.h"
 #import "MITToursSelfGuidedTourContainerController.h"
 #import "MITToursLinksDataSourceDelegate.h"
+#import "MITCoreData.h"
 #import <MessageUI/MessageUI.h>
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
@@ -36,18 +37,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
     [self setupTableView];
-    
-    [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
-        if ([object isKindOfClass:[NSArray class]]) {
-            MITToursTour *tour = object[0];
-            [MITToursWebservices getTourDetailForTour:tour completion:^(id object, NSError *error) {
-                if ([object isKindOfClass:[MITToursTour class]]) {
-                    self.selfGuidedTour = object;
-                    [self.tableView reloadData];
-                }
-            }];
-        }
-    }];
+    [self loadCachedTourDataAndFetchUpdate];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -64,6 +54,49 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
         [c dismissViewControllerAnimated:NO completion:nil];
         [self.tableView reloadData];
     }
+}
+
+- (void)loadCachedTourDataAndFetchUpdate
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"MITToursTour"
+                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"title"
+                                                                   ascending:YES];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    
+    NSFetchedResultsController *fetchedResultsController =
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
+                                          sectionNameKeyPath:nil
+                                                   cacheName:nil];
+    
+    [fetchedResultsController performFetch:nil];
+    
+    if (fetchedResultsController.fetchedObjects.count > 0) {
+        self.selfGuidedTour = fetchedResultsController.fetchedObjects.firstObject;
+        [self.tableView reloadData];
+    }
+    
+    [self fetchRemoteToursUpdate];
+}
+
+- (void)fetchRemoteToursUpdate
+{
+    [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
+        if ([object isKindOfClass:[NSArray class]]) {
+            MITToursTour *tour = object[0];
+            [MITToursWebservices getTourDetailForTour:tour completion:^(id object, NSError *error) {
+                if ([object isKindOfClass:[MITToursTour class]]) {
+                    self.selfGuidedTour = object;
+                    [self.tableView reloadData];
+                }
+            }];
+        }
+    }];
 }
 
 - (void)setupTableView

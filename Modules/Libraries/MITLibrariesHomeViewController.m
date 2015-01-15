@@ -386,6 +386,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 
 - (void)librariesSearchResultsViewController:(MITLibrariesSearchResultsViewController *)searchResultsViewController didSelectItem:(MITLibrariesWorldcatItem *)item
 {
+    [self.searchBar resignFirstResponder];
     [self.navigationController setNavigationBarHidden:NO animated:NO];
     MITLibrariesSearchResultDetailViewController *detailVC = [[MITLibrariesSearchResultDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.worldcatItem = item;

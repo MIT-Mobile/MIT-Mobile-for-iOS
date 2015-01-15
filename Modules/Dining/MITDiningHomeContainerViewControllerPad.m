@@ -29,6 +29,8 @@
 @property (nonatomic, strong) MITDiningHouseHomeViewControllerPad *diningHouseViewController;
 @property (nonatomic, strong) MITDiningRetailHomeViewControllerPad *diningRetailViewController;
 
+@property (weak, nonatomic) IBOutlet UIActivityIndicatorView *activityIndicator;
+
 @end
 
 @implementation MITDiningHomeContainerViewControllerPad
@@ -45,7 +47,10 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    // Do any additional setup after loading the view from its nib.
+    
+    [self.activityIndicator startAnimating];
+    // Bring subview to front isn't working.
+    self.activityIndicator.layer.zPosition = 1;
     
     [self setupNavBar];
     [self setupToolbar];
@@ -282,6 +287,7 @@
         [self.diningHouseViewController refreshForNewData];
         self.diningRetailViewController.retailVenues = [self.diningData.venues.retail array];
         [self.diningRetailViewController refreshForNewData];
+        [self.activityIndicator stopAnimating];
     }
 }
 
