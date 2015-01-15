@@ -35,7 +35,7 @@
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vehiclesURL" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleStop" inverseName="route" inverseEntity="ShuttleStop" syncable="YES"/>
+        <relationship name="stops" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShuttleStop" inverseName="route" inverseEntity="ShuttleStop" syncable="YES"/>
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="route" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <entity name="ShuttleStop" representedClassName="MITShuttleStop" syncable="YES">
@@ -75,7 +75,7 @@
     <elements>
         <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="165"/>
         <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="178"/>
-        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="268"/>
+        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="270"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="223"/>
         <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
         <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="135"/>
