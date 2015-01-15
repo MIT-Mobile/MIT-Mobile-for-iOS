@@ -302,6 +302,10 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
         } else if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
             [self _presentTopVisibleViewController:animated completion:completion];
         }
+    } else if (completion) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            completion();
+        }];
     }
 }
 
