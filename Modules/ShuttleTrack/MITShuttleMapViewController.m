@@ -519,6 +519,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)exitMapStateButtonTapped:(id)sender
 {
+    for (id<MKAnnotation> annotation in self.tiledMapView.mapView.selectedAnnotations) {
+        [self.tiledMapView.mapView deselectAnnotation:annotation animated:NO];
+    }
+    
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewControllerExitFullscreenButtonPressed:)]) {
         [self.delegate shuttleMapViewControllerExitFullscreenButtonPressed:self];
     }

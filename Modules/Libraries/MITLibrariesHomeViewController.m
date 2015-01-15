@@ -41,7 +41,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 @property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
 @property (nonatomic, strong) MITLibrariesSearchResultsListViewController *searchResultsViewController;
 @property (nonatomic, strong) IBOutlet UITableView *mainTableView;
-
+@property (nonatomic, strong) MITLibrariesLocationsHoursViewController *locationsHoursVC;
 @end
 
 @implementation MITLibrariesHomeViewController
@@ -297,10 +297,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
-            {
-                MITLibrariesLocationsHoursViewController *locationsVC = [[MITLibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStylePlain];
-                [self.navigationController pushViewController:locationsVC animated:YES];
-            }
+            [self.navigationController pushViewController:self.locationsHoursVC animated:YES];
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
@@ -392,6 +389,16 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     detailVC.worldcatItem = item;
     [detailVC hydrateCurrentItem];
     [self.navigationController pushViewController:detailVC animated:YES];
+}
+
+#pragma mark - Getters
+
+- (MITLibrariesLocationsHoursViewController *)locationsHoursVC
+{
+    if (!_locationsHoursVC) {
+        _locationsHoursVC = [[MITLibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStylePlain];
+    }
+    return _locationsHoursVC;
 }
 
 @end
