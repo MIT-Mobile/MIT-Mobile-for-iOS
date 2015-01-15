@@ -282,10 +282,11 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [self.refreshControl endRefreshing];
 }
 
-- (void)infoDidFailToLoad:(NSNotification *)aNotification {
-		// Since emergency has never loaded successfully report failure
-		self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
-	
+- (void)infoDidFailToLoad:(NSNotification *)aNotification
+{
+    // Since emergency has never loaded successfully report failure
+    self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
+    [self.tableView reloadData];
 	if (self.refreshButtonPressed) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
                                                             message:@"Failed to load notice from server."
