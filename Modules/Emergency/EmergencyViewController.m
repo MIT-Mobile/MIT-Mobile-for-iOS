@@ -68,11 +68,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([[[EmergencyData sharedData] lastUpdated] compare:[NSDate distantPast]] == NSOrderedDescending) {
-		[self infoDidLoad:nil];
-	}
+    [self infoDidLoad:nil];
     
-    [[EmergencyData sharedData] setLastRead:[NSDate date]];
 	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
 }
@@ -277,7 +274,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     self.htmlString = [[EmergencyData sharedData] htmlString];
     
     if (self.navigationController.visibleViewController == self) {
-        [[EmergencyData sharedData] setLastRead:[NSDate date]];
         EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
@@ -286,10 +282,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 - (void)infoDidFailToLoad:(NSNotification *)aNotification {
-	if ([[EmergencyData sharedData] hasNeverLoaded]) {
 		// Since emergency has never loaded successfully report failure
 		self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
-	}
 	
 	if (self.refreshButtonPressed) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Failed"

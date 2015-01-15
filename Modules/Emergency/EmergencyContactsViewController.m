@@ -4,12 +4,13 @@
 #import "EmergencyData.h"
 #import "MITModule.h"
 #import "MITTelephoneHandler.h"
+#import "MITEmergencyInfoContact.h"
 
 static CGFloat titleFontSize = 17;
 static CGFloat subtitleFontSize = 14;
 
 @interface EmergencyContactsViewController ()
-- (NSString *)detailText:(NSManagedObject*)contactInfo;
+- (NSString *)detailText:(MITEmergencyInfoContact*)contactInfo;
 @end
 
 @implementation EmergencyContactsViewController
@@ -91,9 +92,9 @@ static CGFloat subtitleFontSize = 14;
     static UIEdgeInsets labelInsets;
     labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
     
-    NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-    NSString *title = [contactInfo valueForKey:@"title"];
-    NSString *detail = [self detailText:contactInfo];
+    MITEmergencyInfoContact *contact= self.emergencyContacts[indexPath.row];
+    NSString *title = contact.name;
+    NSString *detail = contact.descriptionText;
     
     CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
     CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:titleFontSize] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
@@ -136,19 +137,20 @@ static CGFloat subtitleFontSize = 14;
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-	cell.textLabel.text = [contactInfo valueForKey:@"title"];
+	MITEmergencyInfoContact *contactInfo = self.emergencyContacts[indexPath.row];
+    cell.textLabel.text = contactInfo.name;
 	cell.detailTextLabel.text = [self detailText:contactInfo];
 }
 
-- (NSString *)detailText:(NSManagedObject*)contactInfo {
-	NSString *phoneString = [contactInfo valueForKey:@"phone"];
+- (NSString *)detailText:(MITEmergencyInfoContact*)contactInfo
+{
+    NSString *phoneString = contactInfo.phone;
 	phoneString = [NSString stringWithFormat:@"%@-%@-%@",
 				   [phoneString substringToIndex:3], 
 				   [phoneString substringWithRange:NSMakeRange(3, 3)], 
 				   [phoneString substringFromIndex:6]];
 	
-    NSString *descriptionString = [contactInfo valueForKey:@"summary"];
+    NSString *descriptionString = contactInfo.descriptionText;
     
 	if ([descriptionString length]) {
 		return [NSString stringWithFormat:@"%@ (%@)", descriptionString, phoneString];
@@ -156,7 +158,6 @@ static CGFloat subtitleFontSize = 14;
 		return phoneString;
 	}
 }
-	
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -172,8 +173,4 @@ static CGFloat subtitleFontSize = 14;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
-
-
 @end
-

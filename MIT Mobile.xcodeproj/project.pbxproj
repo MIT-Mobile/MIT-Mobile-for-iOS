@@ -706,7 +706,6 @@
 		DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
-		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
@@ -2033,7 +2032,6 @@
 		DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderTextView.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
-		DEE283E910F5109000B39531 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
 		DEE6AF1F1117477E0037F03C /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Resources/credits.html; sourceTree = "<group>"; };
@@ -4647,7 +4645,6 @@
 				DE70549A103FB79D003B5F41 /* EmergencyViewController.m */,
 				EBCB4DEC10D30AA1001219FD /* EmergencyContactsViewController.h */,
 				EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */,
-				DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */,
 			);
 			path = Emergency;
 			sourceTree = "<group>";
@@ -5209,7 +5206,6 @@
 				80C5D9CF1A11155200E63FDD /* MITLibrariesFormSheetElementSubject.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				A541EBC31A31557900FA7349 /* UIImage+WebP.m in Sources */,
-				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */,
 				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
 				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
@@ -6153,16 +6149,6 @@
 			);
 			currentVersion = 0B385D3819631733009A3A4B /* News v4.xcdatamodel */;
 			path = News.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-		DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				DEE283E910F5109000B39531 /* Emergency.xcdatamodel */,
-			);
-			currentVersion = DEE283E910F5109000B39531 /* Emergency.xcdatamodel */;
-			path = Emergency.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

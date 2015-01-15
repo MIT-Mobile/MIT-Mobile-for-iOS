@@ -7,8 +7,8 @@
 {
     RKObjectMapping *mapping = [[RKObjectMapping alloc] initWithClass:[MITEmergencyInfoAnnouncement class]];
     
-    [mapping addAttributeMappingsFromDictionary:@{@"announcement_html" : @"announcement_html",
-                                                  @"announcement_text" : @"announcement_text",
+    [mapping addAttributeMappingsFromDictionary:@{@"announcement_html" : @"announcementHTML",
+                                                  @"announcement_text" : @"announcementText",
                                                   @"published_at" : @"published_at",
                                                   @"url" : @"url"}];
     return mapping;

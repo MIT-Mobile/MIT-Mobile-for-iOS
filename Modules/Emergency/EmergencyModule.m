@@ -89,7 +89,7 @@
 	// and the emergency module has received data from the server (does not have to be new data)
 	// since the last time it was on screen, we tell the server to clear the emergency badge
 	
-	if(self.emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
+	if(self.emergencyMessageLoaded) {
 		[MITUnreadNotifications removeNotificationsForModuleTag:self.name];
 	}
 }

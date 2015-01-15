@@ -1,7 +1,5 @@
 #import "EmergencyData.h"
-#import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
-#import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 #import "EmergencyModule.h"
 #import "MITEmergencyInfoWebservices.h"
@@ -12,13 +10,12 @@
 @property (nonatomic,copy) NSArray *allPhoneNumbers;
 @property (nonatomic, copy) NSArray *primaryPhoneNumbers;
 @property (copy) NSArray *contacts;
-@property (strong) NSManagedObject *info;
+@property (nonatomic, strong) NSString *announcementHTML;
+@property (nonatomic, strong) NSDate *lastUpdated;
 @end
 
 @implementation EmergencyData
 @dynamic htmlString;
-@dynamic lastUpdated;
-@dynamic lastFetched;
 
 NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
@@ -46,8 +43,6 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
                                        @"phone" : @"617.253.1311"},
                                      @{@"title" : @"Emergency Status",
                                        @"phone" : @"617.253.7669"}];
-        [self fetchEmergencyInfo];
-        [self fetchContacts];
         
         [self checkForEmergencies];
         [self reloadContacts];
@@ -55,63 +50,12 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     return self;
 }
 
-- (void)fetchEmergencyInfo {
-    self.info = [[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject];
-    
-    if (!self.info) {
-        self.info = [CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName];
-        [self.info setValue:@"" forKey:@"htmlString"];
-        [self.info setValue:[NSDate distantPast] forKey:@"lastUpdated"];
-        [self.info setValue:[NSDate distantPast] forKey:@"lastFetched"];
-    }
-}
-
-- (void)fetchContacts {
-    NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES];
-    self.allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
-                                      matchingPredicate:predicate
-                                        sortDescriptors:@[sortDescriptor]];
-}
-
-
 #pragma mark -
 #pragma mark Accessors
 
-- (BOOL) didReadMessage {
-    NSDate *lastUpdate = [self lastUpdated];
-    NSDate *lastRead = [self lastRead];
-#ifdef DEBUG
-    NSTimeInterval timeout = 60 * 30;
-#else
-    NSTimeInterval timeout = 24 * 60 * 60 * 7;
-#endif
-    // return YES if this is a first install, lastUpdate is over a week old, or user has read the message since lastUpdate
-    return ([self hasNeverLoaded] || -[lastUpdate timeIntervalSinceNow] > timeout || [lastRead timeIntervalSinceDate:lastUpdate] > 0);
-}
-
-- (NSDate *)lastRead {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:EmergencyMessageLastRead];
-}
-
-- (void)setLastRead:(NSDate *)date {
-    [[NSUserDefaults standardUserDefaults] setObject:date forKey:EmergencyMessageLastRead];
-}
-
-- (BOOL) hasNeverLoaded {
-	return ([[self.info valueForKey:@"htmlString"] length] == 0);
-}
-
-- (NSDate *)lastUpdated {
-    return [self.info valueForKey:@"lastUpdated"];
-}
-
-- (NSDate *)lastFetched {
-    return [self.info valueForKey:@"lastFetched"];
-}
-
-- (NSString *)htmlString {
-    NSDate *lastUpdated = [self.info valueForKey:@"lastUpdated"];
+- (NSString *)htmlString
+{
+    NSDate *lastUpdated = self.lastUpdated;
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
@@ -127,7 +71,7 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
         return nil;
     }
     
-    NSDictionary *templates = @{@"__BODY__" : [self.info valueForKey:@"htmlString"],
+    NSDictionary *templates = @{@"__BODY__" : self.announcementHTML,
                                 @"__POST_DATE__" : lastUpdatedString};
     [htmlString replaceOccurrencesOfStrings:[templates allKeys] withStrings:[templates allValues] options:NSLiteralSearch];
     
@@ -151,23 +95,12 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
         } else {
             
-            NSDate *lastUpdated = announcement.published_at;
-            NSDate *previouslyUpdated = [blockSelf.info valueForKey:@"lastUpdated"];
+            self.lastUpdated = announcement.published_at;
             
-            if (!previouslyUpdated) { // user has never opened the app, set a baseline date
-                [blockSelf setLastRead:[NSDate date]];
-            }
+            self.announcementHTML = announcement.announcementHTML;
             
-            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                [blockSelf.info setValue:lastUpdated forKey:@"lastUpdated"];
-                [blockSelf.info setValue:[NSDate date] forKey:@"lastFetched"];
-                [blockSelf.info setValue:announcement.announcement_html forKey:@"htmlString"];
-                [CoreDataManager saveData];
-                
-                [blockSelf fetchEmergencyInfo];
-                // notify listeners that this is a new emergency
-                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:blockSelf];
-            }
+            // notify listeners that this is a new emergency
+            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:blockSelf];
             
             // notify listeners that the info is done loading, regardless of whether it's changed
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:blockSelf];
@@ -187,24 +120,9 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
             DDLogWarn(@"request failed for :%@/%@ with error %@",@"emergency",@"contacts",[error localizedDescription]);
         } else {
             // delete all of the old numbers
-            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
-            if ([oldContacts count]) {
-                [CoreDataManager deleteObjects:oldContacts];
-            }
             
-            [contacts enumerateObjectsUsingBlock:^(MITEmergencyInfoContact *contact, NSUInteger idx, BOOL *stop) {
-                NSLog(@"%@",contact);
-                NSManagedObject *contactObject = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
-                
-
-                [contactObject setValue:contact.name forKey:@"title"];
-                [contactObject setValue:contact.descriptionText forKey:@"summary"];
-                [contactObject setValue:contact.phone forKey:@"phone"];
-                [contactObject setValue:@(idx) forKey:@"ordinality"];
-            }];
+            blockSelf.allPhoneNumbers = contacts;
             
-            [CoreDataManager saveData];
-            [self fetchContacts];
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
         }
     }];
