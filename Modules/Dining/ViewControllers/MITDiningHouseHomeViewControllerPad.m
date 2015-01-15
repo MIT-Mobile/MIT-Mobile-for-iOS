@@ -128,13 +128,15 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     
     for (MITDiningHouseVenue *venue in self.diningHouses) {
         for (MITDiningHouseDay *day in venue.mealsByDay) {
-            if ([[day.date dateWithoutTime] isEqualToDate:[[NSDate date] dateWithoutTime]]) {
+            if ([[day.date dateWithoutTime] isEqualToDate:[currentDate dateWithoutTime]]) {
                 MITDiningMeal *bestMealInDay = [day bestMealForDate:currentDate];
-                NSTimeInterval bestMealInDayTimeDifference = [bestMealInDay startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
-                NSTimeInterval closestMealTimeDifference = [closestMeal startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
-                if (!closestMeal || bestMealInDayTimeDifference < closestMealTimeDifference) {
-                    closestMeal = bestMealInDay;
-                    dayToSelect = day;
+                if (bestMealInDay) {
+                    NSTimeInterval bestMealInDayTimeDifference = [bestMealInDay startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
+                    NSTimeInterval closestMealTimeDifference = [closestMeal startTime].timeIntervalSince1970 - currentDate.timeIntervalSince1970;
+                    if (!closestMeal || bestMealInDayTimeDifference < closestMealTimeDifference) {
+                        closestMeal = bestMealInDay;
+                        dayToSelect = day;
+                    }
                 }
             }
         }
