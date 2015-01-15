@@ -14,12 +14,12 @@
                                                 }];
 }
 
-+ (void)getEmergencyAnnouncements:(void (^)(NSArray *announcements, NSError *error))completion
++ (void)getEmergencyAnnouncements:(void (^)(NSDictionary *announcements, NSError *error))completion
 {
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITEmergencyInfoAnnouncementResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    completion(result.array, error);
+                                                    completion(result.dictionary, error);
                                                 }];
 }
 

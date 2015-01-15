@@ -2,11 +2,11 @@
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
 #import "MITUIConstants.h"
-#import "EmergencyData.h"
 #import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "MITTelephoneHandler.h"
+#import "MITEmergencyInfoWebservices.h"
 
 static NSString* const MITEmergencyHTMLFormatString = @"<html>\n<head>\n<style type=\"text/css\" media=\"screen\">\nbody { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 17px; }\n</style>\n</head>\n<body>\n%@\n</body>\n</html>";
 
@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 @property (nonatomic,copy) NSString *htmlString;
 @property BOOL refreshButtonPressed;
 @property UIEdgeInsets webViewInsets;
+@property (nonatomic,copy) NSArray *primaryPhoneNumbers;
 @end
 
 @implementation EmergencyViewController
@@ -29,6 +30,12 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"Emergency Info";
+        self.primaryPhoneNumbers = @[@{@"title" : @"Campus Police",
+                                       @"phone" : @"617.253.1212"},
+                                     @{@"title" : @"MIT Medical",
+                                       @"phone" : @"617.253.1311"},
+                                     @{@"title" : @"Emergency Status",
+                                       @"phone" : @"617.253.7669"}];
         if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
             _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
         } else {
@@ -55,24 +62,23 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [super viewWillAppear:animated];
     
     // register for emergencydata notifications
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
-	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidFailToLoad:) name:EmergencyInfoDidFailToLoadNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
+	//[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidFailToLoad:) name:EmergencyInfoDidFailToLoadNotification object:nil];
 
 }
 
 - (void)viewDidDisappear:(BOOL)animated
 {
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
-	[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
+    //[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
+	//[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
 }
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([[[EmergencyData sharedData] lastUpdated] compare:[NSDate distantPast]] == NSOrderedDescending) {
-		[self infoDidLoad:nil];
-	}
     
-    [[EmergencyData sharedData] setLastRead:[NSDate date]];
+    [self refreshInfo];
+    
+    //[[EmergencyData sharedData] setLastRead:[NSDate date]];
 	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
 }
@@ -103,7 +109,12 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)refreshInfo
 {
-    [[EmergencyData sharedData] checkForEmergencies];
+    [MITEmergencyInfoWebservices getEmergencyAnnouncements:^(NSDictionary *announcements, NSError *error) {
+        if (!error) {
+            [self infoDidLoad:announcements];
+        }
+    }];
+    //[[EmergencyData sharedData] checkForEmergencies];
 }
 
 #pragma mark - UIWebView delegation
@@ -137,7 +148,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             return 1;
         }
         case MITEmergencyTableSectionContacts: {
-            NSArray *numbers = [[EmergencyData sharedData] primaryPhoneNumbers];
+            NSArray *numbers = self.primaryPhoneNumbers;
             return [numbers count] + 1;
         }
         default: {
@@ -148,7 +159,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+    NSArray *contacts = self.primaryPhoneNumbers;
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
         CGFloat height = self.infoWebView.scrollView.contentSize.height + self.webViewInsets.bottom + self.webViewInsets.top;
         return height;
@@ -225,7 +236,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             cell.detailTextLabel.textColor = [UIColor darkGrayColor];
         }
         
-        NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+        NSArray *contacts = self.primaryPhoneNumbers;
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
@@ -246,7 +257,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == MITEmergencyTableSectionContacts) {
-        NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+        NSArray *contacts = self.primaryPhoneNumbers;
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
             [MITTelephoneHandler attemptToCallPhoneNumber:contact[@"phone"]];
@@ -269,15 +280,14 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     return indexPath;
 }
 
-
-#pragma mark - Emergency Info Data Delegate
-- (void)infoDidLoad:(NSNotification *)aNotification {
+- (void)infoDidLoad:(NSDictionary *)announcementDictionary
+{
 	self.refreshButtonPressed = NO;
     
-    self.htmlString = [[EmergencyData sharedData] htmlString];
+    self.htmlString = announcementDictionary[@"announcement_html"];
     
     if (self.navigationController.visibleViewController == self) {
-        [[EmergencyData sharedData] setLastRead:[NSDate date]];
+        //[[EmergencyData sharedData] setLastRead:[NSDate date]];
         EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
@@ -285,8 +295,9 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [self.refreshControl endRefreshing];
 }
 
-- (void)infoDidFailToLoad:(NSNotification *)aNotification {
-	if ([[EmergencyData sharedData] hasNeverLoaded]) {
+- (void)infoDidFailToLoad
+{
+	if (!self.htmlString) {
 		// Since emergency has never loaded successfully report failure
 		self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
 	}

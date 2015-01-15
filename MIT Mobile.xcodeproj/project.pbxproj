@@ -39,6 +39,9 @@
 		0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */; };
 		0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C4121975B95900961025 /* MITNewsSearchController.xib */; };
 		0BE653DF1A68225800F9FA51 /* MITEmergencyInfoWebservices.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653DE1A68225800F9FA51 /* MITEmergencyInfoWebservices.m */; };
+		0BE653E31A68287A00F9FA51 /* MITEmergencyInfoResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */; };
+		0BE653EA1A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */; };
+		0BE653ED1A682B2400F9FA51 /* MITEmergencyInfoContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */; };
 		0BF44E811A38DB5600D0C49C /* MITScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* MITScannerModule.m */; };
 		0BFBCA20195DD6940064D02C /* MITNewsSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */; };
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; };
@@ -832,6 +835,12 @@
 		0BE0C4121975B95900961025 /* MITNewsSearchController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITNewsSearchController.xib; sourceTree = "<group>"; };
 		0BE653DD1A68225800F9FA51 /* MITEmergencyInfoWebservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyInfoWebservices.h; sourceTree = "<group>"; };
 		0BE653DE1A68225800F9FA51 /* MITEmergencyInfoWebservices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyInfoWebservices.m; sourceTree = "<group>"; };
+		0BE653E11A68287A00F9FA51 /* MITEmergencyInfoResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyInfoResource.h; sourceTree = "<group>"; };
+		0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyInfoResource.m; sourceTree = "<group>"; };
+		0BE653E81A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoAnnouncement.h; path = Models/MITEmergencyInfoAnnouncement.h; sourceTree = "<group>"; };
+		0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoAnnouncement.m; path = Models/MITEmergencyInfoAnnouncement.m; sourceTree = "<group>"; };
+		0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoContact.h; path = Models/MITEmergencyInfoContact.h; sourceTree = "<group>"; };
+		0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoContact.m; path = Models/MITEmergencyInfoContact.m; sourceTree = "<group>"; };
 		0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsSearchController.h; sourceTree = "<group>"; };
 		0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsSearchController.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -2293,6 +2302,17 @@
 			path = Webservices;
 			sourceTree = "<group>";
 		};
+		0BE653E71A68296F00F9FA51 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0BE653E81A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.h */,
+				0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */,
+				0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */,
+				0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */,
+			);
+			name = Models;
+			sourceTree = "<group>";
+		};
 		0BF44ED81A3A1DEF00D0C49C /* XIBs */ = {
 			isa = PBXGroup;
 			children = (
@@ -3536,6 +3556,8 @@
 				2258CBE319CB67090067E35C /* MITLibrariesResource.m */,
 				2247B77019F6F445000E1725 /* MITToursResource.h */,
 				2247B77119F6F445000E1725 /* MITToursResource.m */,
+				0BE653E11A68287A00F9FA51 /* MITEmergencyInfoResource.h */,
+				0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -4619,13 +4641,13 @@
 				DE705495103FB79D003B5F41 /* EmergencyData.h */,
 				DE705496103FB79D003B5F41 /* EmergencyData.m */,
 				DE705497103FB79D003B5F41 /* EmergencyModule.h */,
+				0BE653E71A68296F00F9FA51 /* Models */,
 				DE705498103FB79D003B5F41 /* EmergencyModule.m */,
 				DE705499103FB79D003B5F41 /* EmergencyViewController.h */,
 				DE70549A103FB79D003B5F41 /* EmergencyViewController.m */,
 				EBCB4DEC10D30AA1001219FD /* EmergencyContactsViewController.h */,
 				EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */,
 				DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */,
-				0BE653C71A6816E600F9FA51 /* Model */,
 			);
 			path = Emergency;
 			sourceTree = "<group>";
@@ -5211,11 +5233,13 @@
 				22D90305199BA90D00AEBC7D /* MITDiningRetailDay.m in Sources */,
 				225A22C119829D2300276F27 /* MITDatePickerViewController.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
+				0BE653ED1A682B2400F9FA51 /* MITEmergencyInfoContact.m in Sources */,
 				2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */,
 				22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */,
 				277A583419FD70C200BE134E /* MITBuildingServicesReportForm.m in Sources */,
 				A50884E919D1E7150047A21B /* MITLibrariesItemHoldCell.m in Sources */,
 				80598DBA1A0A81460095CEAA /* MITLibrariesFormSheetCellSingleLineTextEntry.m in Sources */,
+				0BE653EA1A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m in Sources */,
 				2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */,
 				22D9BB9C19D1CC280065A2E7 /* MITLibrariesCitation.m in Sources */,
 				AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */,
@@ -5299,7 +5323,6 @@
 				AF9282CD1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m in Sources */,
 				2247B77B19F98C69000E1725 /* UIFont+MITTours.m in Sources */,
 				22D9031F199BE2CC00AEBC7D /* MITDiningWebservices.m in Sources */,
-				0BE653C61A6815FB00F9FA51 /* EmergencyInfo.xcdatamodeld in Sources */,
 				0BF44E811A38DB5600D0C49C /* MITScannerModule.m in Sources */,
 				DEA3B6F810CB126200BDA774 /* MITConstants.m in Sources */,
 				A5A303CA19804F0B00C9C273 /* MITEventDetailViewController.m in Sources */,
@@ -5513,6 +5536,7 @@
 				AFECAE221A06D37300562B97 /* MITCalloutMapView.m in Sources */,
 				22CE600A1A11182E00C0E24B /* MITToursLinksDataSourceDelegate.m in Sources */,
 				0B7602621A3A236B0061AC3B /* MITNewsGridHeaderView.m in Sources */,
+				0BE653E31A68287A00F9FA51 /* MITEmergencyInfoResource.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				277A584019FD71C800BE134E /* MITActionSheetHandler.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
@@ -5656,7 +5680,6 @@
 				A56390E619E07F67001DE763 /* MITLibrariesAvailabilityDetailCell.m in Sources */,
 				5E6DEDF31924F49100BA54BE /* MITLocationManager.m in Sources */,
 				224F6B2619D484EC0062D340 /* MITLibrariesCoverImage.m in Sources */,
-				0BE653CD1A68175300F9FA51 /* EmergencyInfoAnnouncment.m in Sources */,
 				80C5D9C31A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m in Sources */,
 				224BAC3819F00B96004A6477 /* MITLibrariesSearchResultsContainerViewControllerPad.m in Sources */,
 				2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */,
@@ -5675,7 +5698,6 @@
 				27CBE99E1A197CDB00B85F67 /* MITScannerDetailViewController.m in Sources */,
 				8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */,
 				5E70E393192F7F7F00165B41 /* MITShuttleRouteViewController.m in Sources */,
-				0BE653CA1A68175200F9FA51 /* EmergencyInfoContact.m in Sources */,
 				DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */,
 				22D9030E199BA90E00AEBC7D /* MITDiningMenuItem.m in Sources */,
 				224E1AAE1A003D4100913D99 /* MITToursTourDetailsViewController.m in Sources */,
@@ -6047,17 +6069,6 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
-		0BE653C41A6815FB00F9FA51 /* EmergencyInfo.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				0BE653C51A6815FB00F9FA51 /* EmergencyInfo.xcdatamodel */,
-			);
-			currentVersion = 0BE653C51A6815FB00F9FA51 /* EmergencyInfo.xcdatamodel */;
-			name = EmergencyInfo.xcdatamodeld;
-			path = Model/EmergencyInfo.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
 		223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
