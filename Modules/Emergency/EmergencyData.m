@@ -11,7 +11,7 @@
 @property (nonatomic, copy) NSArray *primaryPhoneNumbers;
 @property (copy) NSArray *contacts;
 @property (nonatomic, strong) NSString *announcementHTML;
-@property (nonatomic, strong) NSDate *lastUpdated;
+@property (nonatomic, strong) NSDate *published_at;
 @end
 
 @implementation EmergencyData
@@ -55,11 +55,10 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
 - (NSString *)htmlString
 {
-    NSDate *lastUpdated = self.lastUpdated;
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
-    NSString *lastUpdatedString = [formatter stringFromDate:lastUpdated];
+    NSString *lastUpdatedString = [formatter stringFromDate:self.published_at];
     
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"emergency_template.html" relativeToURL:baseURL];
@@ -69,6 +68,12 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     if (!htmlString) {
         DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
         return nil;
+    }
+    if (!self.announcementHTML) {
+        return nil;
+    }
+    if (!lastUpdatedString) {
+        lastUpdatedString = @"";
     }
     
     NSDictionary *templates = @{@"__BODY__" : self.announcementHTML,
@@ -95,7 +100,7 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
         } else {
             
-            self.lastUpdated = announcement.published_at;
+            self.published_at = announcement.published_at;
             
             self.announcementHTML = announcement.announcementHTML;
             
