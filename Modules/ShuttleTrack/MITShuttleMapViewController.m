@@ -81,6 +81,8 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.tiledMapView.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     self.tiledMapView.mapView.tintColor = [UIColor mit_systemTintColor];
     
+    [self setupVehiclesDataSource];
+    
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self setState:self.state animated:NO];
         [self setupToolbar];
@@ -207,15 +209,20 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - Load Vehicles
 
-- (void)loadVehicles
+- (void)setupVehiclesDataSource
 {
-    if (self.vehiclesDataSource == nil) {
-        self.vehiclesDataSource = [[MITShuttleVehiclesDataSource alloc] init];
+    self.vehiclesDataSource = [[MITShuttleVehiclesDataSource alloc] init];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         // iPad always wants to load all vehicles so there isn't a significant delay to display them when returning to "all routes" mode
         self.vehiclesDataSource.forceUpdateAllVehicles = YES;
-        self.vehiclesDataSource.route = self.route;
     }
     
+    self.vehiclesDataSource.route = self.route;
+}
+
+- (void)loadVehicles
+{
     [self.vehiclesDataSource updateVehicles:^(MITShuttleVehiclesDataSource *dataSource, NSError *error) {
         self.vehicles = dataSource.vehicles;
         [self refreshVehicles];
@@ -410,6 +417,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)routeUpdated
 {
     [self refreshStopAnnotationImagesAnimated:YES];
+    [self fetchVehicles:^{
+        [self refreshVehicles];
+    }];
 }
 
 - (void)setMapToolBarHidden:(BOOL)hidden
