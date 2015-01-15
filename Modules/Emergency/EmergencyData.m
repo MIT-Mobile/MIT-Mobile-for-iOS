@@ -148,7 +148,6 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
             }];
             [CoreDataManager saveData];
             [self fetchContacts];
-            blockSelf.allPhoneNumbers = contacts;
             
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
         }

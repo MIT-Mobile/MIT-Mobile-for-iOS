@@ -42,6 +42,7 @@
 		0BE653E31A68287A00F9FA51 /* MITEmergencyInfoResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */; };
 		0BE653EA1A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */; };
 		0BE653ED1A682B2400F9FA51 /* MITEmergencyInfoContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */; };
+		0BE653FC1A686CBD00F9FA51 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */; };
 		0BF44E811A38DB5600D0C49C /* MITScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* MITScannerModule.m */; };
 		0BFBCA20195DD6940064D02C /* MITNewsSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */; };
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; };
@@ -840,6 +841,7 @@
 		0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoAnnouncement.m; path = Models/MITEmergencyInfoAnnouncement.m; sourceTree = "<group>"; };
 		0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoContact.h; path = Models/MITEmergencyInfoContact.h; sourceTree = "<group>"; };
 		0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoContact.m; path = Models/MITEmergencyInfoContact.m; sourceTree = "<group>"; };
+		0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsSearchController.h; sourceTree = "<group>"; };
 		0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsSearchController.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -4635,6 +4637,7 @@
 		DE715447102FE468005E6111 /* Emergency */ = {
 			isa = PBXGroup;
 			children = (
+				0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */,
 				0BE653DC1A68225800F9FA51 /* Webservices */,
 				DE705495103FB79D003B5F41 /* EmergencyData.h */,
 				DE705496103FB79D003B5F41 /* EmergencyData.m */,
@@ -5202,6 +5205,7 @@
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				0B7311931A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
+				0BE653FC1A686CBD00F9FA51 /* Emergency.xcdatamodeld in Sources */,
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
 				80C5D9CF1A11155200E63FDD /* MITLibrariesFormSheetElementSubject.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
@@ -6065,6 +6069,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */,
+			);
+			currentVersion = 0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */;
+			path = Emergency.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
