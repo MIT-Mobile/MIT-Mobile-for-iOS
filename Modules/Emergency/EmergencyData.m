@@ -1,5 +1,6 @@
 #import "EmergencyData.h"
 #import "MIT_MobileAppDelegate.h"
+#import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 #import "EmergencyModule.h"
 #import "MITEmergencyInfoWebservices.h"
@@ -43,11 +44,20 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
                                        @"phone" : @"617.253.1311"},
                                      @{@"title" : @"Emergency Status",
                                        @"phone" : @"617.253.7669"}];
+        [self fetchContacts];
         
         [self checkForEmergencies];
         [self reloadContacts];
     }
     return self;
+}
+
+- (void)fetchContacts {
+    NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES];
+    self.allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
+                                           matchingPredicate:predicate
+                                             sortDescriptors:@[sortDescriptor]];
 }
 
 #pragma mark -
@@ -118,14 +128,26 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 {
     __weak EmergencyData *weakSelf = self;
     [MITEmergencyInfoWebservices getEmergencyContacts:^(NSArray *contacts, NSError *error) {
-    EmergencyData *blockSelf = weakSelf;
+        EmergencyData *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
         } else if (error) {
             DDLogWarn(@"request failed for :%@/%@ with error %@",@"emergency",@"contacts",[error localizedDescription]);
         } else {
             // delete all of the old numbers
-            
+            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
+            if ([oldContacts count]) {
+                [CoreDataManager deleteObjects:oldContacts];
+            }
+            [contacts enumerateObjectsUsingBlock:^(MITEmergencyInfoContact *contact, NSUInteger idx, BOOL *stop) {
+                NSManagedObject *contactObject = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
+                [contactObject setValue:contact.name forKey:@"title"];
+                [contactObject setValue:contact.descriptionText forKey:@"summary"];
+                [contactObject setValue:contact.phone forKey:@"phone"];
+                [contactObject setValue:@(idx) forKey:@"ordinality"];
+            }];
+            [CoreDataManager saveData];
+            [self fetchContacts];
             blockSelf.allPhoneNumbers = contacts;
             
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
