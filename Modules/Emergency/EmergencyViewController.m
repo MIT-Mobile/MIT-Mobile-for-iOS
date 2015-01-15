@@ -76,11 +76,15 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)setHtmlString:(NSString *)htmlString
 {
-    if (![_htmlString isEqualToString:htmlString]) {
+    //  Commenting this out.  This effects iOS 7 devices because heightForRowAtIndexPath
+    //  is not called again after cellForRowAtIndexPath in iOS7 but in iOS8 it does.
+    //  Remove when no longer supporting iOS 7.
+    //  1-15-2015 Mark Novak MXN
+    //if (![_htmlString isEqualToString:htmlString]) {
         _htmlString = [htmlString copy];
         [self.infoWebView loadHTMLString:self.htmlString
                                  baseURL:nil];
-    }
+    //}
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
@@ -210,7 +214,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             }
         }
         
-        
         return cell;
     } else if (indexPath.section == MITEmergencyTableSectionContacts) {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:contactCellId];
@@ -240,7 +243,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	return nil;
 }
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == MITEmergencyTableSectionContacts) {
         NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
@@ -265,7 +267,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     
     return indexPath;
 }
-
 
 #pragma mark - Emergency Info Data Delegate
 - (void)infoDidLoad:(NSNotification *)aNotification {
@@ -301,4 +302,3 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 @end
-
