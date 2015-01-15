@@ -6,6 +6,7 @@
 #import "MITToursAboutMITViewController.h"
 #import "MITToursLinksTableViewController.h"
 #import "MITToursSelfGuidedTourContainerControllerPad.h"
+#import "MITCoreData.h"
 
 static NSString *const kMITSelfGuidedTourCell = @"MITToursSelfGuidedTourCell";
 static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCell";
@@ -35,6 +36,39 @@ static NSString *const kMITToursInfoCollectionCell = @"MITToursInfoCollectionCel
     
     self.edgesForExtendedLayout = UIRectEdgeNone;
     
+    [self loadCachedTourDataAndFetchUpdate];
+}
+
+- (void)loadCachedTourDataAndFetchUpdate
+{
+    NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+    
+    NSEntityDescription *entity = [NSEntityDescription entityForName:@"MITToursTour"
+                                              inManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
+    [fetchRequest setEntity:entity];
+    
+    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"title"
+                                                                   ascending:YES];
+    [fetchRequest setSortDescriptors:@[sortDescriptor]];
+    
+    NSFetchedResultsController *fetchedResultsController =
+    [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                        managedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]
+                                          sectionNameKeyPath:nil
+                                                   cacheName:nil];
+    
+    [fetchedResultsController performFetch:nil];
+    
+    if (fetchedResultsController.fetchedObjects.count > 0) {
+        self.selfGuidedTour = fetchedResultsController.fetchedObjects.firstObject;
+        [self updateDisplayedTour];
+    }
+    
+    [self fetchRemoteToursUpdate];
+}
+
+- (void)fetchRemoteToursUpdate
+{
     [MITToursWebservices getToursWithCompletion:^(id object, NSError *error) {
         if ([object isKindOfClass:[NSArray class]]) {
             MITToursTour *tour = object[0];
