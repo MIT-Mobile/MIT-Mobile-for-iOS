@@ -438,18 +438,13 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (IBAction)_handleModalDismissGesture:(UIGestureRecognizer*)sender
 {
     if (sender.state == UIGestureRecognizerStateEnded) {
-        CGPoint point = [sender locationInView:sender.view.window];
-        CGRect modalFrame = [self.visibleViewController.view convertRect:self.visibleViewController.view.bounds toView:sender.view.window];
+        MITModuleItem *primaryModuleItem = _lastPrimaryVisibleViewController.moduleItem;
+        _lastPrimaryVisibleViewController = nil;
 
-        if (!CGRectContainsPoint(modalFrame, point)) {
-            MITModuleItem *primaryModuleItem = _lastPrimaryVisibleViewController.moduleItem;
-            _lastPrimaryVisibleViewController = nil;
+        [_modalDismissGestureRecognizer.view removeGestureRecognizer:_modalDismissGestureRecognizer];
+        _modalDismissGestureRecognizer = nil;
 
-            [_modalDismissGestureRecognizer.view removeGestureRecognizer:_modalDismissGestureRecognizer];
-            _modalDismissGestureRecognizer = nil;
-
-            [self _showModuleWithModuleItem:primaryModuleItem animated:YES];
-        }
+        [self _showModuleWithModuleItem:primaryModuleItem animated:YES];
     }
 }
 
@@ -568,10 +563,24 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldReceiveTouch:(UITouch *)touch
 {
     if (gestureRecognizer == _modalDismissGestureRecognizer) {
-        CGRect modalFrame = [self.view convertRect:_visibleViewController.view.bounds fromView:_visibleViewController.view];
-        CGPoint touchLocation = [touch locationInView:self.view];
-        return !CGRectContainsPoint(modalFrame, touchLocation) && !_visibleViewController.presentedViewController;
+        UIView *parentView = gestureRecognizer.view;
+        UIView *view = _visibleViewController.view;
+
+        CGRect modalFrame = [parentView convertRect:view.bounds fromView:view];
+        CGPoint touchLocation = [touch locationInView:parentView];
+
+        BOOL shouldReceiveTouch = !CGRectContainsPoint(modalFrame, touchLocation) && !_visibleViewController.presentedViewController;
+        return shouldReceiveTouch;
     } else if (gestureRecognizer == self.panGesture) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer
+{
+    if (gestureRecognizer == _modalDismissGestureRecognizer) {
         return YES;
     } else {
         return NO;
