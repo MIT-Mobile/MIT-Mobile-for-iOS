@@ -953,10 +953,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - MITShuttleStopViewControllerDelegate
 
-- (void)shuttleStopViewController:(MITShuttleStopViewController *)shuttleStopViewController didSelectRoute:(MITShuttleRoute *)route
+- (void)shuttleStopViewController:(MITShuttleStopViewController *)shuttleStopViewController didSelectRoute:(MITShuttleRoute *)route withStop:(MITShuttleStop *)stop
 {
-    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:)]) {
-        [self.delegate shuttleMapViewController:self didSelectRoute:route];
+    if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didSelectRoute:withStop:)]) {
+        [self.delegate shuttleMapViewController:self didSelectRoute:route withStop:stop];
     }
 }
 

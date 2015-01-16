@@ -239,13 +239,13 @@
     }
 }
 
-- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route withStop:(MITShuttleStop *)stop
 {
     if ([self.selectedRoute isEqual:route]) {
         return;
     }
     self.selectedRoute = route;
-    self.selectedStop = nil;
+    self.selectedStop = stop;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {
