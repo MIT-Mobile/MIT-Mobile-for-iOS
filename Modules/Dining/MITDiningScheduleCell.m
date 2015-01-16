@@ -40,9 +40,13 @@ static CGFloat const kMITDiningScheduleCellEstimatedHeight = 67.0;
 - (void)setMealSummary:(MITDiningMealSummary *)mealSummary
 {
     self.dateRangesLabel.text = mealSummary.dateRangesString;
-    self.mealNamesLabel.text = mealSummary.mealNamesStringsOnSeparateLines;
-    self.mealTimesLabel.text = mealSummary.mealTimesStringsOnSeparateLines;
-    
+    if (![mealSummary.meals count]) {
+        self.mealNamesLabel.text = @"Closed";
+        self.mealTimesLabel.text = @"";
+    } else {
+        self.mealNamesLabel.text = mealSummary.mealNamesStringsOnSeparateLines;
+        self.mealTimesLabel.text = mealSummary.mealTimesStringsOnSeparateLines;
+    }
     [self layoutIfNeeded];
 }
 
