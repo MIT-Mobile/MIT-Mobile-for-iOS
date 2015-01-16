@@ -39,7 +39,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 @interface MITShuttleHomeViewController ()
 
-@property (weak, nonatomic) IBOutlet UIView *toolbarLabelView;
 @property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
 @property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
 
@@ -96,7 +95,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     self.routesDataSource = [[MITShuttleRoutesDataSource alloc] init];
     
     [self setupTableView];
-    [self setupToolbar];
     [self setupResourceData];
     
     self.tableView.rowHeight = 44.0;
@@ -105,12 +103,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self.navigationController setToolbarHidden:YES animated:animated];
-    } else {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
     
     [self startRefreshingRoutesAndPredictions];
     
@@ -177,12 +169,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
-}
-
-- (void)setupToolbar
-{
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
 - (void)setupResourceData
