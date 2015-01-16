@@ -654,15 +654,30 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         for (MITShuttleStop *stop in self.stops) {
             MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
             [UIView transitionWithView:annotationView duration:0.3 options:UIViewAnimationOptionTransitionCrossDissolve animations:^{
-                annotationView.image = [self annotationViewImageForStop:stop];
+                [self setupStopAnnotationView:annotationView];
             } completion:nil];
         }
     } else {
         for (MITShuttleStop *stop in self.stops) {
             MKAnnotationView *annotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
-            annotationView.image = [self annotationViewImageForStop:stop];
+            [self setupStopAnnotationView:annotationView];
         }
     }
+}
+
+- (void)setupStopAnnotationView:(MKAnnotationView *)annotationView
+{
+    if (self.shouldUsePinAnnotations) {
+        annotationView.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
+        annotationView.centerOffset = CGPointMake(8.0, -15.0);
+        annotationView.calloutOffset = CGPointMake(-9.0, -1.0);
+    }
+    else {
+        annotationView.image = [UIImage imageNamed:MITImageShuttlesAnnotationCurrentStop];
+        annotationView.centerOffset = CGPointZero;
+        annotationView.calloutOffset = CGPointMake(0.0, 3.0);
+    }
+    annotationView.alpha = kMapAnnotationAlphaDefault;
 }
 
 - (UIImage *)annotationViewImageForStop:(MITShuttleStop *)stop
@@ -844,21 +859,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     if ([annotation isKindOfClass:[MKUserLocation class]]) {
         return nil;
     } else if ([annotation isKindOfClass:[MITShuttleStop class]]) {
-        MITShuttleStop *stop = (MITShuttleStop *)annotation;
-        
         MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
         if (annotationView == nil) {
             annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITShuttleMapAnnotationViewReuseIdentifier];
         }
-        annotationView.image = [self annotationViewImageForStop:stop];
-        if (self.shouldUsePinAnnotations) {
-            annotationView.centerOffset = CGPointMake(8.0, -15.0);
-            annotationView.calloutOffset = CGPointMake(-9.0, -1.0);
-        } else {
-            annotationView.centerOffset = CGPointZero;
-            annotationView.calloutOffset = CGPointMake(0.0, 3.0);
-        }
-        annotationView.alpha = [self annotationViewAlphaForStop:stop];
+        [self setupStopAnnotationView:annotationView];
         return annotationView;
     } else if ([annotation isKindOfClass:[MITShuttleVehicle class]]) {
         MITShuttleVehicle *vehicle = (MITShuttleVehicle *)annotation;
