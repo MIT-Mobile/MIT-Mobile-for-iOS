@@ -1,5 +1,6 @@
 #import <Foundation/Foundation.h>
-#import "MITEmergencyInfoAnnouncement.h"
+
+@class MITEmergencyInfoAnnouncement;
 
 @interface MITEmergencyInfoWebservices : NSObject
 

@@ -2,6 +2,7 @@
 #import "MITMobileRouteConstants.h"
 #import "MITCoreData.h"
 #import "MITMobileResources.h"
+#import "MITEmergencyInfoAnnouncement.h"
 
 @implementation MITEmergencyInfoWebservices
 
