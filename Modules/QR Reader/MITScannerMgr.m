@@ -249,7 +249,11 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
                    forBarCode:(AVMetadataMachineReadableCodeObject *)code
                    completion:(void (^)(void))completionBlock
 {
-    [self.scannerHistory insertScanResult:code.stringValue
+    NSString *decodedString = code.stringValue;
+    if (!decodedString) {
+        decodedString = @"Unable to decode";
+    }
+    [self.scannerHistory insertScanResult:decodedString
                                  withDate:[NSDate date]
                                 withImage:image
                   shouldGenerateThumbnail:YES
