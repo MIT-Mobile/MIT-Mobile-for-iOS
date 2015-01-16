@@ -33,6 +33,7 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
 @interface MITMapPlaceDetailViewController ()
 
+@property (strong, nonatomic) MITMapPlaceNameCell *placeNameCell;
 @property (strong, nonatomic) MITMapPlaceContentCell *placeContentCell;
 @property (strong, nonatomic) MITMapPlacePhotoCell *placePhotoCell;
 
@@ -122,6 +123,14 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
 
 #pragma mark - Custom Cells
 
+- (MITMapPlaceNameCell *)placeNameCell
+{
+    if (!_placeNameCell) {
+        _placeNameCell = [[NSBundle mainBundle] loadNibNamed:kMITMapPlaceNameCellNibName owner:self options:nil][0];
+    }
+    return _placeNameCell;
+}
+
 - (MITMapPlaceContentCell *)placeContentCell
 {
     if (!_placeContentCell) {
@@ -146,7 +155,20 @@ static NSInteger const kMITMapPlaceBottomButtonOpenInGoogleMapsRow = 2;
         case kMITMapPlaceNameAndImageSection: {
             switch (indexPath.row) {
                 case kMITMapPlaceNameRow: {
-                    return 60;
+                    self.placeNameCell.nameLabel.text = self.place.name;
+                    self.placeNameCell.addressLabel.text = self.place.streetAddress;
+                    
+                    self.placeNameCell.nameLabel.preferredMaxLayoutWidth = self.tableView.frame.size.width;
+                    self.placeNameCell.addressLabel.preferredMaxLayoutWidth = self.tableView.frame.size.width;
+                    [self.placeNameCell setNeedsUpdateConstraints];
+                    [self.placeNameCell updateConstraintsIfNeeded];
+                    self.placeNameCell.bounds = CGRectMake(0, 0, self.tableView.bounds.size.width, self.placeNameCell.bounds.size.height);
+                    [self.placeNameCell setNeedsLayout];
+                    [self.placeNameCell layoutIfNeeded];
+                    
+                    CGFloat height = [self.placeNameCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+                    ++height;   // add pt for cell separator;
+                    return height;
                     break;
                 }
                 case kMITMapPlaceImageRow: {

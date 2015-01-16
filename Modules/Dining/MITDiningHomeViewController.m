@@ -143,7 +143,7 @@
 
 - (void)setupSegmentedControl
 {
-    self.houseRetailSelectorSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
+    self.houseRetailSelectorSegmentedControl = [[UISegmentedControl alloc] initWithItems:@[@"House Dining", @"Retail"]];
     self.houseRetailSelectorSegmentedControl.selectedSegmentIndex = 0;
     [self.houseRetailSelectorSegmentedControl addTarget:self action:@selector(segmentedControlValueChanged:) forControlEvents:UIControlEventValueChanged];
     self.navigationItem.titleView = self.houseRetailSelectorSegmentedControl;

@@ -130,7 +130,7 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
     
     self.tableView.backgroundView = nil;
     self.tableView.scrollEnabled = NO;
-    self.title = @"Touchstone";
+    self.title = @"Touchstone Settings";
 
     UISwipeGestureRecognizer *showGesture = [[UISwipeGestureRecognizer alloc] initWithTarget:self
                                                                                       action:@selector(didRecognizeAdvancedSettingsGesture:)];
