@@ -79,11 +79,9 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)setHtmlString:(NSString *)htmlString
 {
-    if (![_htmlString isEqualToString:htmlString]) {
-        _htmlString = [htmlString copy];
-        [self.infoWebView loadHTMLString:self.htmlString
-                                 baseURL:nil];
-    }
+    _htmlString = [htmlString copy];
+    [self.infoWebView loadHTMLString:self.htmlString
+                             baseURL:nil];
 }
 
 - (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
