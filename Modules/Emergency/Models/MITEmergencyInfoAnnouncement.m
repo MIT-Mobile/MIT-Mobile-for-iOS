@@ -9,7 +9,7 @@
     
     [mapping addAttributeMappingsFromDictionary:@{@"announcement_html" : @"announcementHTML",
                                                   @"announcement_text" : @"announcementText",
-                                                  @"published_at" : @"published_at",
+                                                  @"published_at" : @"publishedAt",
                                                   @"url" : @"url"}];
     return mapping;
 }
