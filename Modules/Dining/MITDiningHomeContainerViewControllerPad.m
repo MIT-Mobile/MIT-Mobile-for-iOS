@@ -78,7 +78,7 @@
 {
     [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor whiteColor]];
     
-    self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"Dining Halls", @"Other"]];
+    self.diningVenueTypeControl = [[UISegmentedControl alloc] initWithItems:@[@"House Dining", @"Retail"]];
     [self.diningVenueTypeControl setSelectedSegmentIndex:0];
     [self.diningVenueTypeControl addTarget:self action:@selector(diningSegmentedControlChanged) forControlEvents:UIControlEventValueChanged];
     self.navigationItem.titleView = self.diningVenueTypeControl;
