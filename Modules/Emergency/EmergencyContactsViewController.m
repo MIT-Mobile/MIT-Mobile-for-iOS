@@ -1,10 +1,11 @@
+#import <CoreData/CoreData.h>
+
 #import "EmergencyContactsViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "UIKit+MITAdditions.h"
 #import "EmergencyData.h"
 #import "MITModule.h"
 #import "MITTelephoneHandler.h"
-#import "CoreDataManager.h"
 
 static CGFloat titleFontSize = 17;
 static CGFloat subtitleFontSize = 14;
