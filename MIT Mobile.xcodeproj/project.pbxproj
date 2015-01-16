@@ -38,6 +38,11 @@
 		0BE0C4101975B42B00961025 /* MITViewWithCenterTextAndIndicator.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE0C40C1975B42B00961025 /* MITViewWithCenterTextAndIndicator.m */; };
 		0BE0C4111975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */; };
 		0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BE0C4121975B95900961025 /* MITNewsSearchController.xib */; };
+		0BE653DF1A68225800F9FA51 /* MITEmergencyInfoWebservices.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653DE1A68225800F9FA51 /* MITEmergencyInfoWebservices.m */; };
+		0BE653E31A68287A00F9FA51 /* MITEmergencyInfoResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */; };
+		0BE653EA1A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */; };
+		0BE653ED1A682B2400F9FA51 /* MITEmergencyInfoContact.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */; };
+		0BE653FC1A686CBD00F9FA51 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */; };
 		0BF44E811A38DB5600D0C49C /* MITScannerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB6459E134CAF1A00E85E64 /* MITScannerModule.m */; };
 		0BFBCA20195DD6940064D02C /* MITNewsSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */; };
 		1D3623260D0F684500981E51 /* MIT_MobileAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* MIT_MobileAppDelegate.m */; };
@@ -702,7 +707,6 @@
 		DEA8768118AAE9AD00327823 /* DDMultiFormatter.m in Sources */ = {isa = PBXBuildFile; fileRef = DEA8767E18AAE9AD00327823 /* DDMultiFormatter.m */; };
 		DEAF6EF013B3C7B40078AB8F /* PlaceholderTextView.m in Sources */ = {isa = PBXBuildFile; fileRef = DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DEC02F9D110578240054BE32 /* AboutTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = DEC02F9C110578240054BE32 /* AboutTableViewController.m */; };
-		DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */; };
 		DEE6AECF111740BF0037F03C /* AboutCreditsVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */; };
 		DEE6AF201117477E0037F03C /* credits.html in Resources */ = {isa = PBXBuildFile; fileRef = DEE6AF1F1117477E0037F03C /* credits.html */; };
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
@@ -829,6 +833,15 @@
 		0BE0C40C1975B42B00961025 /* MITViewWithCenterTextAndIndicator.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITViewWithCenterTextAndIndicator.m; sourceTree = "<group>"; };
 		0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITViewWithCenterTextAndIndicator.xib; sourceTree = "<group>"; };
 		0BE0C4121975B95900961025 /* MITNewsSearchController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITNewsSearchController.xib; sourceTree = "<group>"; };
+		0BE653DD1A68225800F9FA51 /* MITEmergencyInfoWebservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyInfoWebservices.h; sourceTree = "<group>"; };
+		0BE653DE1A68225800F9FA51 /* MITEmergencyInfoWebservices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyInfoWebservices.m; sourceTree = "<group>"; };
+		0BE653E11A68287A00F9FA51 /* MITEmergencyInfoResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITEmergencyInfoResource.h; sourceTree = "<group>"; };
+		0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITEmergencyInfoResource.m; sourceTree = "<group>"; };
+		0BE653E81A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoAnnouncement.h; path = Models/MITEmergencyInfoAnnouncement.h; sourceTree = "<group>"; };
+		0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoAnnouncement.m; path = Models/MITEmergencyInfoAnnouncement.m; sourceTree = "<group>"; };
+		0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoContact.h; path = Models/MITEmergencyInfoContact.h; sourceTree = "<group>"; };
+		0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoContact.m; path = Models/MITEmergencyInfoContact.m; sourceTree = "<group>"; };
+		0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsSearchController.h; sourceTree = "<group>"; };
 		0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsSearchController.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -2021,7 +2034,6 @@
 		DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PlaceholderTextView.m; sourceTree = "<group>"; };
 		DEC02F9B110578240054BE32 /* AboutTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutTableViewController.h; sourceTree = "<group>"; };
 		DEC02F9C110578240054BE32 /* AboutTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutTableViewController.m; sourceTree = "<group>"; };
-		DEE283E910F5109000B39531 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
 		DEE6AECD111740BF0037F03C /* AboutCreditsVC.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsVC.h; sourceTree = "<group>"; };
 		DEE6AECE111740BF0037F03C /* AboutCreditsVC.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsVC.m; sourceTree = "<group>"; };
 		DEE6AF1F1117477E0037F03C /* credits.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; name = credits.html; path = Resources/credits.html; sourceTree = "<group>"; };
@@ -2279,6 +2291,26 @@
 				0BE0C40D1975B42B00961025 /* MITViewWithCenterTextAndIndicator.xib */,
 			);
 			path = MITViewWithCenterTextAndIndicator;
+			sourceTree = "<group>";
+		};
+		0BE653DC1A68225800F9FA51 /* Webservices */ = {
+			isa = PBXGroup;
+			children = (
+				0BE653DD1A68225800F9FA51 /* MITEmergencyInfoWebservices.h */,
+				0BE653DE1A68225800F9FA51 /* MITEmergencyInfoWebservices.m */,
+			);
+			path = Webservices;
+			sourceTree = "<group>";
+		};
+		0BE653E71A68296F00F9FA51 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				0BE653E81A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.h */,
+				0BE653E91A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m */,
+				0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */,
+				0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */,
+			);
+			name = Models;
 			sourceTree = "<group>";
 		};
 		0BF44ED81A3A1DEF00D0C49C /* XIBs */ = {
@@ -3524,6 +3556,8 @@
 				2258CBE319CB67090067E35C /* MITLibrariesResource.m */,
 				2247B77019F6F445000E1725 /* MITToursResource.h */,
 				2247B77119F6F445000E1725 /* MITToursResource.m */,
+				0BE653E11A68287A00F9FA51 /* MITEmergencyInfoResource.h */,
+				0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */,
 			);
 			name = Resources;
 			sourceTree = "<group>";
@@ -4603,15 +4637,17 @@
 		DE715447102FE468005E6111 /* Emergency */ = {
 			isa = PBXGroup;
 			children = (
+				0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */,
+				0BE653DC1A68225800F9FA51 /* Webservices */,
 				DE705495103FB79D003B5F41 /* EmergencyData.h */,
 				DE705496103FB79D003B5F41 /* EmergencyData.m */,
 				DE705497103FB79D003B5F41 /* EmergencyModule.h */,
+				0BE653E71A68296F00F9FA51 /* Models */,
 				DE705498103FB79D003B5F41 /* EmergencyModule.m */,
 				DE705499103FB79D003B5F41 /* EmergencyViewController.h */,
 				DE70549A103FB79D003B5F41 /* EmergencyViewController.m */,
 				EBCB4DEC10D30AA1001219FD /* EmergencyContactsViewController.h */,
 				EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */,
-				DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */,
 			);
 			path = Emergency;
 			sourceTree = "<group>";
@@ -5169,11 +5205,11 @@
 				44C1A2A811A2F49B000FD653 /* CampusMap.xcdatamodeld in Sources */,
 				0B7311931A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.m in Sources */,
 				DEA8768018AAE9AD00327823 /* DDDispatchQueueLogFormatter.m in Sources */,
+				0BE653FC1A686CBD00F9FA51 /* Emergency.xcdatamodeld in Sources */,
 				22D90331199BFEFD00AEBC7D /* MITDiningRetailVenueListViewController.m in Sources */,
 				80C5D9CF1A11155200E63FDD /* MITLibrariesFormSheetElementSubject.m in Sources */,
 				2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */,
 				A541EBC31A31557900FA7349 /* UIImage+WebP.m in Sources */,
-				DEE283EE10F5109800B39531 /* Emergency.xcdatamodeld in Sources */,
 				2253E46C196DCD8800D04069 /* MITMapDefaultCategoryViewController.m in Sources */,
 				2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */,
 				DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */,
@@ -5197,11 +5233,13 @@
 				22D90305199BA90D00AEBC7D /* MITDiningRetailDay.m in Sources */,
 				225A22C119829D2300276F27 /* MITDatePickerViewController.m in Sources */,
 				4463CC9810D6F4A50048CA83 /* CMModule.m in Sources */,
+				0BE653ED1A682B2400F9FA51 /* MITEmergencyInfoContact.m in Sources */,
 				2CD4F69D188ED4EB003F2C46 /* MITManagedObject.m in Sources */,
 				22DDADB0198C00A4003AEF43 /* MITMasterCalendar.m in Sources */,
 				277A583419FD70C200BE134E /* MITBuildingServicesReportForm.m in Sources */,
 				A50884E919D1E7150047A21B /* MITLibrariesItemHoldCell.m in Sources */,
 				80598DBA1A0A81460095CEAA /* MITLibrariesFormSheetCellSingleLineTextEntry.m in Sources */,
+				0BE653EA1A6829C000F9FA51 /* MITEmergencyInfoAnnouncement.m in Sources */,
 				2C7EEB021871C811009ED73D /* MITMobileRouteConstants.m in Sources */,
 				22D9BB9C19D1CC280065A2E7 /* MITLibrariesCitation.m in Sources */,
 				AF9282CA1A0BBCB400CCC25A /* MITInfiniteScrollCollectionView.m in Sources */,
@@ -5464,6 +5502,7 @@
 				274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
+				0BE653DF1A68225800F9FA51 /* MITEmergencyInfoWebservices.m in Sources */,
 				A5A9A99019CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m in Sources */,
 				2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
@@ -5497,6 +5536,7 @@
 				AFECAE221A06D37300562B97 /* MITCalloutMapView.m in Sources */,
 				22CE600A1A11182E00C0E24B /* MITToursLinksDataSourceDelegate.m in Sources */,
 				0B7602621A3A236B0061AC3B /* MITNewsGridHeaderView.m in Sources */,
+				0BE653E31A68287A00F9FA51 /* MITEmergencyInfoResource.m in Sources */,
 				48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */,
 				277A584019FD71C800BE134E /* MITActionSheetHandler.m in Sources */,
 				2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */,
@@ -6029,6 +6069,16 @@
 /* End XCConfigurationList section */
 
 /* Begin XCVersionGroup section */
+		0BE653FA1A686CBD00F9FA51 /* Emergency.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */,
+			);
+			currentVersion = 0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */;
+			path = Emergency.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
 		223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
@@ -6113,16 +6163,6 @@
 			);
 			currentVersion = 0B385D3819631733009A3A4B /* News v4.xcdatamodel */;
 			path = News.xcdatamodeld;
-			sourceTree = "<group>";
-			versionGroupType = wrapper.xcdatamodel;
-		};
-		DEE283ED10F5109800B39531 /* Emergency.xcdatamodeld */ = {
-			isa = XCVersionGroup;
-			children = (
-				DEE283E910F5109000B39531 /* Emergency.xcdatamodel */,
-			);
-			currentVersion = DEE283E910F5109000B39531 /* Emergency.xcdatamodel */;
-			path = Emergency.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

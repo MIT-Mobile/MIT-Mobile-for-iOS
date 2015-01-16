@@ -610,6 +610,12 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:toursTourResource];
 
+    MITMobileResource *emergencyInfoContactResource = [[MITEmergencyInfoContactsResource alloc] init];
+    [remoteObjectManager addResource:emergencyInfoContactResource];
+    
+    MITMobileResource *emergencyInfoAnnouncementResource =[[MITEmergencyInfoAnnouncementResource alloc] init];
+    [remoteObjectManager addResource:emergencyInfoAnnouncementResource];
+    
     _remoteObjectManager = remoteObjectManager;
 }
 

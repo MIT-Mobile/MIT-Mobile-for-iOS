@@ -21,6 +21,14 @@ NSString* const MITCalendarEventPathPattern = @"apis/calendars/:calendar/events/
 NSString* const MITDiningResourceName = @"MITDiningResourceName";
 NSString* const MITDiningPathPattern = @"apis/dining/";
 
+#pragma mark emergency/announcement
+NSString* const MITEmergencyInfoAnnouncementResourceName = @"MITEmergencyInfoAnnouncementResourceName";
+NSString* const MITEmergencyInfoAnnouncementPathPattern = @"apis/emergency_info/announcement";
+
+#pragma mark emergency/contacts
+NSString* const MITEmergencyInfoContactsResourceName = @"MITEmergencyInfoContactsResourceName";
+NSString* const MITEmergencyInfoContactsPathPattern = @"apis/emergency_info/contacts";
+
 #pragma mark libraries
 NSString* const MITLibrariesResourceName = @"MITLibrariesResourceName";
 NSString* const MITLibrariesPathPattern = @"apis/libraries/locations";

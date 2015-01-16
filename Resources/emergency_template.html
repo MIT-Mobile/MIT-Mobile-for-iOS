@@ -10,7 +10,9 @@ body { margin: 0; padding: 0; overflow: hidden; font-family: "Helvetica Neue", H
 <body>
 <div id="something_unique">
 __BODY__
-<p class="stamp">Posted __POST_DATE__</p>
+<p class="stamp">
+<span class="postedText">Posted <span class="postedDate">__POST_DATE__</span></span>
+</p>
 </div>
 </body>
 </html>
@@ -21,5 +23,10 @@ __BODY__
         if (/\S+/.test(allParagraphs[i].innerText) == false) {
             allParagraphs[i].className = "emptyParagraph";
         }
+    }
+    var postedIsEmpty = (document.getElementsByClassName("postedDate")[0].childNodes.length == 0);
+    if (postedIsEmpty) {
+        var creditNode = document.getElementsByClassName("postedText")[0];
+        creditNode.parentElement.removeChild(creditNode);
     }
 </script>

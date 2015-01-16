@@ -6,6 +6,5 @@
 
 - (instancetype)init;
 
-@property BOOL didReadMessage DEPRECATED_ATTRIBUTE;
 - (void)syncUnreadNotifications DEPRECATED_ATTRIBUTE;
 @end

@@ -1,22 +1,23 @@
 #import "EmergencyData.h"
-#import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "Foundation+MITAdditions.h"
 #import "EmergencyModule.h"
-#import "MITTouchstoneRequestOperation+MITMobileV2.h"
+#import "MITEmergencyInfoWebservices.h"
+#import "MITEmergencyInfoAnnouncement.h"
+#import "MITEmergencyInfoContact.h"
+#import "MITCoreData.h"
 
 @interface EmergencyData ()
 @property (nonatomic,copy) NSArray *allPhoneNumbers;
 @property (nonatomic, copy) NSArray *primaryPhoneNumbers;
 @property (copy) NSArray *contacts;
-@property (strong) NSManagedObject *info;
+@property (nonatomic, strong) NSString *announcementHTML;
+@property (nonatomic, strong) NSDate *publishedAt;
 @end
 
 @implementation EmergencyData
 @dynamic htmlString;
-@dynamic lastUpdated;
-@dynamic lastFetched;
 
 NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 
@@ -44,7 +45,6 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
                                        @"phone" : @"617.253.1311"},
                                      @{@"title" : @"Emergency Status",
                                        @"phone" : @"617.253.7669"}];
-        [self fetchEmergencyInfo];
         [self fetchContacts];
         
         [self checkForEmergencies];
@@ -53,67 +53,33 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     return self;
 }
 
-- (void)fetchEmergencyInfo {
-    self.info = [[CoreDataManager fetchDataForAttribute:EmergencyInfoEntityName] lastObject];
-    
-    if (!self.info) {
-        self.info = [CoreDataManager insertNewObjectForEntityForName:EmergencyInfoEntityName];
-        [self.info setValue:@"" forKey:@"htmlString"];
-        [self.info setValue:[NSDate distantPast] forKey:@"lastUpdated"];
-        [self.info setValue:[NSDate distantPast] forKey:@"lastFetched"];
-    }
-}
-
 - (void)fetchContacts {
-    NSPredicate *predicate = [NSPredicate predicateWithValue:YES];
-    NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES];
-    self.allPhoneNumbers = [CoreDataManager objectsForEntity:EmergencyContactEntityName
-                                      matchingPredicate:predicate
-                                        sortDescriptors:@[sortDescriptor]];
+    NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
+    
+    [context performBlockAndWait:^{
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:EmergencyContactEntityName];
+        fetchRequest.sortDescriptors = @[[[NSSortDescriptor alloc] initWithKey:@"ordinality" ascending:YES]];
+        
+        NSError *error = nil;
+        NSArray *contacts = [context executeFetchRequest:fetchRequest error:&error];
+        
+        if (!contacts) {
+            DDLogError(@"failed to fetch emergency contacts: %@",error);
+        } else {
+            self.allPhoneNumbers = contacts;
+        }
+    }];
 }
-
 
 #pragma mark -
 #pragma mark Accessors
 
-- (BOOL) didReadMessage {
-    NSDate *lastUpdate = [self lastUpdated];
-    NSDate *lastRead = [self lastRead];
-#ifdef DEBUG
-    NSTimeInterval timeout = 60 * 30;
-#else
-    NSTimeInterval timeout = 24 * 60 * 60 * 7;
-#endif
-    // return YES if this is a first install, lastUpdate is over a week old, or user has read the message since lastUpdate
-    return ([self hasNeverLoaded] || -[lastUpdate timeIntervalSinceNow] > timeout || [lastRead timeIntervalSinceDate:lastUpdate] > 0);
-}
-
-- (NSDate *)lastRead {
-    return [[NSUserDefaults standardUserDefaults] objectForKey:EmergencyMessageLastRead];
-}
-
-- (void)setLastRead:(NSDate *)date {
-    [[NSUserDefaults standardUserDefaults] setObject:date forKey:EmergencyMessageLastRead];
-}
-
-- (BOOL) hasNeverLoaded {
-	return ([[self.info valueForKey:@"htmlString"] length] == 0);
-}
-
-- (NSDate *)lastUpdated {
-    return [self.info valueForKey:@"lastUpdated"];
-}
-
-- (NSDate *)lastFetched {
-    return [self.info valueForKey:@"lastFetched"];
-}
-
-- (NSString *)htmlString {
-    NSDate *lastUpdated = [self.info valueForKey:@"lastUpdated"];
+- (NSString *)htmlString
+{
     NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
     [formatter setDateFormat:@"M/d/y h:mm a zz"];
     [formatter setTimeZone:[NSTimeZone localTimeZone]];
-    NSString *lastUpdatedString = [formatter stringFromDate:lastUpdated];
+    NSString *lastUpdatedString = [formatter stringFromDate:self.publishedAt];
     
     NSURL *baseURL = [NSURL fileURLWithPath:[[NSBundle mainBundle] resourcePath] isDirectory:YES];
     NSURL *fileURL = [NSURL URLWithString:@"emergency_template.html" relativeToURL:baseURL];
@@ -124,8 +90,14 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
         DDLogError(@"Failed to load template at %@. %@", fileURL, [error userInfo]);
         return nil;
     }
+    if (!self.announcementHTML) {
+        return nil;
+    }
+    if (!lastUpdatedString) {
+        lastUpdatedString = @"";
+    }
     
-    NSDictionary *templates = @{@"__BODY__" : [self.info valueForKey:@"htmlString"],
+    NSDictionary *templates = @{@"__BODY__" : self.announcementHTML,
                                 @"__POST_DATE__" : lastUpdatedString};
     [htmlString replaceOccurrencesOfStrings:[templates allKeys] withStrings:[templates allValues] options:NSLiteralSearch];
     
@@ -136,96 +108,76 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 #pragma mark Server requests
 
 // Send request
-- (void)checkForEmergencies {
-    NSURLRequest *request = [NSURLRequest requestForModule:@"emergency" command:nil parameters:nil];
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-
+- (void)checkForEmergencies
+{
     __weak EmergencyData *weakSelf = self;
-    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *emergencyObjects, NSString *contentType, NSError *error) {
+    [MITEmergencyInfoWebservices getEmergencyAnnouncement:^(MITEmergencyInfoAnnouncement *announcement, NSError *error) {
         EmergencyData *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
         } else if (error) {
-            DDLogWarn(@"request for v2:%@ failed with error %@",@"emergency",[error localizedDescription]);
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
-        } else if (![emergencyObjects isKindOfClass:[NSArray class]]) {
-            NSString *message = [NSString stringWithFormat:@"request for v2:%@ failed, got response object of class %@, expected %@",@"emergency",NSStringFromClass([emergencyObjects class]),NSStringFromClass([NSArray class])];
-            DDLogWarn(@"%@",message);
-
+            DDLogWarn(@"emergency announcement request failed with error %@",error);
             [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidFailToLoadNotification object:blockSelf];
         } else {
-            NSArray *sortedEmergencyObjects = [emergencyObjects sortedArrayUsingComparator:^NSComparisonResult(NSDictionary *object1, NSDictionary *object2) {
-
-                NSNumber *lastUpdated1 = object1[@"unixtime"];
-                NSNumber *lastUpdated2 = object2[@"unixtime"];
-
-                return [lastUpdated1 compare:lastUpdated2];
-            }];
-
-            NSDictionary *mostRecentEmergency = [sortedEmergencyObjects lastObject];
-            NSDate *lastUpdated = [NSDate dateWithTimeIntervalSince1970:[mostRecentEmergency[@"unixtime"] doubleValue]];
-            NSDate *previouslyUpdated = [blockSelf.info valueForKey:@"lastUpdated"];
-
-            if (!previouslyUpdated) { // user has never opened the app, set a baseline date
-                [blockSelf setLastRead:[NSDate date]];
-            }
-
-            if (!previouslyUpdated || [lastUpdated timeIntervalSinceDate:previouslyUpdated] > 0) {
-                [blockSelf.info setValue:lastUpdated forKey:@"lastUpdated"];
-                [blockSelf.info setValue:[NSDate date] forKey:@"lastFetched"];
-                [blockSelf.info setValue:mostRecentEmergency[@"text"] forKey:@"htmlString"];
-                [CoreDataManager saveData];
-
-                [blockSelf fetchEmergencyInfo];
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                self.publishedAt = announcement.publishedAt;
+            
+                self.announcementHTML = announcement.announcementHTML;
+            
                 // notify listeners that this is a new emergency
                 [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidChangeNotification object:blockSelf];
-            }
-
-            // notify listeners that the info is done loading, regardless of whether it's changed
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:blockSelf];
+            
+                // notify listeners that the info is done loading, regardless of whether it's changed
+                [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyInfoDidLoadNotification object:blockSelf];
+            }];
         }
     }];
-
-    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 // request contacts
-- (void)reloadContacts {
-    NSURLRequest *request = [NSURLRequest requestForModule:@"emergency" command:@"contacts" parameters:nil];
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-
+- (void)reloadContacts
+{
     __weak EmergencyData *weakSelf = self;
-    [requestOperation setCompleteBlock:^(MITTouchstoneRequestOperation *operation, NSArray *contacts, NSString *contentType, NSError *error) {
+    [MITEmergencyInfoWebservices getEmergencyContacts:^(NSArray *contacts, NSError *error) {
         EmergencyData *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
         } else if (error) {
-            DDLogWarn(@"request failed for v2:%@/%@ with error %@",@"emergency",@"contacts",[error localizedDescription]);
-        } else if (![contacts isKindOfClass:[NSArray class]]) {
-            DDLogWarn(@"request failed for v2:%@/%@: z",@"emergency",@"contacts");
+            DDLogWarn(@"request failed for :%@/%@ with error %@",@"emergency",@"contacts",error);
         } else {
-            // delete all of the old numbers
-            NSArray *oldContacts = [CoreDataManager fetchDataForAttribute:EmergencyContactEntityName];
-            if ([oldContacts count]) {
-                [CoreDataManager deleteObjects:oldContacts];
-            }
+            NSManagedObjectContext *updateContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
             
-            [contacts enumerateObjectsUsingBlock:^(NSDictionary *contact, NSUInteger idx, BOOL *stop) {
-                NSManagedObject *contactObject = [CoreDataManager insertNewObjectForEntityForName:EmergencyContactEntityName];
-                [contactObject setValue:contact[@"contact"] forKey:@"title"];
-                [contactObject setValue:contact[@"description"] forKey:@"summary"];
-                [contactObject setValue:contact[@"phone"] forKey:@"phone"];
-                [contactObject setValue:@(idx) forKey:@"ordinality"];
+            [updateContext performBlock:^{
+                NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:EmergencyContactEntityName];
+                
+                NSError *error = nil;
+                NSArray *existingContacts = [updateContext executeFetchRequest:fetchRequest error:&error];
+                if (!existingContacts) {
+                    DDLogError(@"failed to remove existing emergency contacts from persistent store: %@", error);
+                } else {
+                    [existingContacts enumerateObjectsUsingBlock:^(NSManagedObject *contact, NSUInteger idx, BOOL *stop) {
+                        [updateContext deleteObject:contact];
+                    }];
+                }
+                
+                [contacts enumerateObjectsUsingBlock:^(MITEmergencyInfoContact *contact, NSUInteger idx, BOOL *stop) {
+                    NSManagedObject *contactObject = [updateContext insertNewObjectForEntityForName:EmergencyContactEntityName];
+                    [contactObject setValue:contact.name forKey:@"title"];
+                    [contactObject setValue:contact.descriptionText forKey:@"summary"];
+                    [contactObject setValue:contact.phone forKey:@"phone"];
+                    [contactObject setValue:@(idx) forKey:@"ordinality"];
+                }];
+                
+                BOOL success = [updateContext save:&error];
+                if (!success) {
+                    DDLogError(@"failed to update emergency contacts: %@",error);
+                } else {
+                    [self fetchContacts];
+                    [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
+                }
             }];
-            
-            [CoreDataManager saveData];
-            [self fetchContacts];
-            [[NSNotificationCenter defaultCenter] postNotificationName:EmergencyContactsDidLoadNotification object:self];
         }
     }];
-
-    [[NSOperationQueue mainQueue] addOperation:requestOperation];
-
 }
 
 @end

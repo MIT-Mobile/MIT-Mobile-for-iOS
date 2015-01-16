@@ -22,6 +22,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 @property (nonatomic,copy) NSString *htmlString;
 @property BOOL refreshButtonPressed;
 @property UIEdgeInsets webViewInsets;
+@property (nonatomic) CGFloat webViewCellHeight;
 @end
 
 @implementation EmergencyViewController
@@ -68,11 +69,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    if ([[[EmergencyData sharedData] lastUpdated] compare:[NSDate distantPast]] == NSOrderedDescending) {
-		[self infoDidLoad:nil];
-	}
+    [self infoDidLoad:nil];
     
-    [[EmergencyData sharedData] setLastRead:[NSDate date]];
 	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
 }
@@ -103,12 +101,20 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)refreshInfo
 {
+    self.webViewCellHeight = 0;
     [[EmergencyData sharedData] checkForEmergencies];
 }
 
 #pragma mark - UIWebView delegation
-- (void)webViewDidFinishLoad:(UIWebView *)webView {
+- (void)webViewDidFinishLoad:(UIWebView *)webView
+{
     if ([self.infoWebView isEqual:webView]) {
+        CGRect frame = webView.frame;
+        frame.size.height = 1;
+        webView.frame = frame;
+        CGSize size = [webView sizeThatFits:CGSizeZero];
+        self.webViewCellHeight = size.height;
+
         [self.tableView reloadData];
     }
 }
@@ -150,7 +156,8 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
-        CGFloat height = self.infoWebView.scrollView.contentSize.height + self.webViewInsets.bottom + self.webViewInsets.top;
+        
+        CGFloat height = self.webViewCellHeight + self.webViewInsets.bottom + self.webViewInsets.top;
         return height;
     } else if (indexPath.section == MITEmergencyTableSectionContacts && indexPath.row < [contacts count]) {
         // There's probably a better way to do this —
@@ -158,11 +165,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         
         // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
         static UIEdgeInsets labelInsets;
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
-        } else {
-            labelInsets = UIEdgeInsetsMake(11., 10. + 10., 11., 10. + 39.);
-        }
+        labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
         
         NSString *title = contacts[indexPath.row][@"title"];
         NSString *phone = contacts[indexPath.row][@"phone"];
@@ -197,6 +200,11 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             webView.backgroundColor = [UIColor clearColor];
             webView.dataDetectorTypes = UIDataDetectorTypeAll;
             webView.delegate = self;
+            if (!self.webViewCellHeight) {
+                webView.delegate = self;
+            } else {
+                webView.delegate = nil;
+            }
             webView.opaque = NO;
             
             webView.scrollView.scrollEnabled = NO;
@@ -205,14 +213,13 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             webView.userInteractionEnabled = NO;
             [cell.contentView addSubview:webView];
             self.infoWebView = webView;
-
+            
             if ([self.htmlString length]) {
                 NSString *htmlString = self.htmlString;
                 [webView loadHTMLString:htmlString
                                 baseURL:nil];
             }
         }
-        
         
         return cell;
     } else if (indexPath.section == MITEmergencyTableSectionContacts) {
@@ -243,7 +250,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	return nil;
 }
 
-
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == MITEmergencyTableSectionContacts) {
         NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
@@ -269,15 +275,14 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     return indexPath;
 }
 
-
 #pragma mark - Emergency Info Data Delegate
-- (void)infoDidLoad:(NSNotification *)aNotification {
+- (void)infoDidLoad:(NSNotification *)aNotification
+{
 	self.refreshButtonPressed = NO;
     
     self.htmlString = [[EmergencyData sharedData] htmlString];
-    
+    [self.tableView reloadData];
     if (self.navigationController.visibleViewController == self) {
-        [[EmergencyData sharedData] setLastRead:[NSDate date]];
         EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
         [emergencyModule syncUnreadNotifications];
     }
@@ -285,12 +290,11 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [self.refreshControl endRefreshing];
 }
 
-- (void)infoDidFailToLoad:(NSNotification *)aNotification {
-	if ([[EmergencyData sharedData] hasNeverLoaded]) {
-		// Since emergency has never loaded successfully report failure
-		self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
-	}
-	
+- (void)infoDidFailToLoad:(NSNotification *)aNotification
+{
+    // Since emergency has never loaded successfully report failure
+    self.htmlString = [NSString stringWithFormat:MITEmergencyHTMLFormatString, @"Failed to load notice."];
+    [self.tableView reloadData];
 	if (self.refreshButtonPressed) {
 		UIAlertView *alertView = [[UIAlertView alloc] initWithTitle:@"Connection Failed"
                                                             message:@"Failed to load notice from server."
@@ -307,4 +311,3 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 @end
-

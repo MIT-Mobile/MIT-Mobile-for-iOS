@@ -21,6 +21,14 @@ FOUNDATION_EXTERN NSString* const MITCalendarEventPathPattern;
 FOUNDATION_EXTERN NSString* const MITDiningResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningPathPattern;
 
+#pragma mark emergency/announcement
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoAnnouncementResourceName;
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoAnnouncementPathPattern;
+
+#pragma mark emergency/contacts
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoContactsResourceName;
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoContactsPathPattern;
+
 #pragma mark libraries
 FOUNDATION_EXTERN NSString* const MITLibrariesResourceName;
 FOUNDATION_EXTERN NSString* const MITLibrariesPathPattern;

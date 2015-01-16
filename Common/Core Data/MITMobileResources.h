@@ -22,3 +22,5 @@
 #import "MITLibrariesResource.h"
 
 #import "MITToursResource.h"
+
+#import "MITEmergencyInfoResource.h"

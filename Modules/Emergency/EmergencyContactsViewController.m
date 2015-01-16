@@ -1,3 +1,5 @@
+#import <CoreData/CoreData.h>
+
 #import "EmergencyContactsViewController.h"
 #import "MIT_MobileAppDelegate.h"
 #import "UIKit+MITAdditions.h"
@@ -136,27 +138,27 @@ static CGFloat subtitleFontSize = 14;
 
 - (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath forTableView:(UITableView*)tableView
 {
-	NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
-	cell.textLabel.text = [contactInfo valueForKey:@"title"];
-	cell.detailTextLabel.text = [self detailText:contactInfo];
+    NSManagedObject *contactInfo = self.emergencyContacts[indexPath.row];
+    cell.textLabel.text = [contactInfo valueForKey:@"title"];
+    cell.detailTextLabel.text = [self detailText:contactInfo];
 }
 
-- (NSString *)detailText:(NSManagedObject*)contactInfo {
+- (NSString *)detailText:(NSManagedObject*)contactInfo
+{
 	NSString *phoneString = [contactInfo valueForKey:@"phone"];
-	phoneString = [NSString stringWithFormat:@"%@-%@-%@",
+    phoneString = [NSString stringWithFormat:@"%@-%@-%@",
 				   [phoneString substringToIndex:3], 
 				   [phoneString substringWithRange:NSMakeRange(3, 3)], 
 				   [phoneString substringFromIndex:6]];
 	
     NSString *descriptionString = [contactInfo valueForKey:@"summary"];
-    
-	if ([descriptionString length]) {
+	
+    if ([descriptionString length]) {
 		return [NSString stringWithFormat:@"%@ (%@)", descriptionString, phoneString];
 	} else {
 		return phoneString;
 	}
 }
-	
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
@@ -172,8 +174,4 @@ static CGFloat subtitleFontSize = 14;
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
 }
 
-
-
-
 @end
-
