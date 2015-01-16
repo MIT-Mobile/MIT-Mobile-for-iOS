@@ -100,8 +100,7 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
 - (void)checkForEmergencies
 {
     __weak EmergencyData *weakSelf = self;
-    [MITEmergencyInfoWebservices getEmergencyAnnouncement:^(NSArray *announce, NSError *error) {
-        MITEmergencyInfoAnnouncement *announcement = (MITEmergencyInfoAnnouncement *)announce[0];
+    [MITEmergencyInfoWebservices getEmergencyAnnouncement:^(MITEmergencyInfoAnnouncement *announcement, NSError *error) {
         EmergencyData *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
