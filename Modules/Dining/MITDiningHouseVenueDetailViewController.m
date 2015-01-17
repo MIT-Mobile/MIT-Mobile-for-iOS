@@ -137,13 +137,13 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 
 #pragma mark - PageView
 
-- (void)replaceCurrentPageViewMealListControllerWithNewMealListController:(MITDiningHouseMealListViewController *)newMealListVC
+- (void)replaceCurrentPageViewMealListControllerWithNewMealListController:(MITDiningHouseMealListViewController *)newMealListVC direction:(UIPageViewControllerNavigationDirection)direction
 {
     // I swear this is necessary or UIPageViewController breaks when swiping/clicking buttons too fast
     // See: http://stackoverflow.com/a/17330606/1260141
     __block MITDiningHouseVenueDetailViewController *blockSelf = self;
     NSArray *listViewControllers = @[newMealListVC];
-    [self.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionReverse animated:YES completion:^(BOOL finished) {
+    [self.mealsPageViewController setViewControllers:listViewControllers direction:direction animated:YES completion:^(BOOL finished) {
         dispatch_async(dispatch_get_main_queue(), ^{
             [blockSelf.mealsPageViewController setViewControllers:listViewControllers direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:NULL];
         });
@@ -255,7 +255,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     self.currentlyDisplayedDay = next.day;
     [self updateMealSelectionView];
     
-    [self replaceCurrentPageViewMealListControllerWithNewMealListController:next];
+    [self replaceCurrentPageViewMealListControllerWithNewMealListController:next direction:UIPageViewControllerNavigationDirectionForward];
 }
 
 - (void)previousMealPressed:(id)sender
@@ -268,7 +268,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
     self.currentlyDisplayedDay = previous.day;
     [self updateMealSelectionView];
     
-    [self replaceCurrentPageViewMealListControllerWithNewMealListController:previous];
+    [self replaceCurrentPageViewMealListControllerWithNewMealListController:previous direction:UIPageViewControllerNavigationDirectionReverse];
 }
 
 #pragma mark - Previous / Next Meal List View Controllers
@@ -428,7 +428,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
             new.meal = self.currentlyDisplayedMeal;
             new.day = self.currentlyDisplayedDay;
             
-            [self replaceCurrentPageViewMealListControllerWithNewMealListController:new];
+            [self replaceCurrentPageViewMealListControllerWithNewMealListController:new direction:UIPageViewControllerNavigationDirectionForward];
         }
         
         
