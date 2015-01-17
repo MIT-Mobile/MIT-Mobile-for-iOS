@@ -61,7 +61,7 @@
 {
     static NSMutableAttributedString *readyIconString;
     if (!readyIconString) {
-        UIImage *readyIcon = [UIImage imageNamed:@"libraries/status-ready"];
+        UIImage *readyIcon = [UIImage imageNamed:MITImageLibrariesStatusReady];
         NSTextAttachment *readyIconAttachment = [[NSTextAttachment alloc] init];
         readyIconAttachment.image = readyIcon;
         readyIconAttachment.bounds = CGRectMake(0, -2, readyIcon.size.width, readyIcon.size.height);
