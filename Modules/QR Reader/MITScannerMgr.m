@@ -58,6 +58,14 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
         return;
     }
     
+    // verify whether user has granted access to the camera
+    AVAuthorizationStatus avAuthStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if( avAuthStatus == AVAuthorizationStatusRestricted || avAuthStatus == AVAuthorizationStatusDenied )
+    {
+        [self provideErrorAlertWithMessage:@"Failed to start camera. Please, verify that permission was granted in device settings."];
+        return;
+    }
+    
     NSError *error;
     
     // 1.
@@ -88,7 +96,7 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     self.deviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:self.captureDevice error:&error];
     if( self.deviceInput == nil )
     {
-        [self provideErrorAlertWithMessage:@"Failed to start camera. Please, verify that permission was granted in device settings."];
+        [self provideErrorAlertWithMessage:@"Failed to start camera."];
         
         DDLogWarn(@"%@", [error localizedDescription]);
         return;
