@@ -202,6 +202,9 @@ extern NSString * const MITImageNameRightArrow;
 extern NSString * const MITImageNameUpArrow;
 extern NSString * const MITImageNameDownArrow;
 
+extern NSString * const MITImageActionArrowLeft;
+extern NSString * const MITImageActionArrowRight;
+
 extern NSString * const MITImageNameSearch;
 extern NSString * const MITImageNameBookmark;
 extern NSString * const MITImageDisclosureRight;

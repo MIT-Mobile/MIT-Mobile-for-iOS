@@ -205,6 +205,9 @@ NSString * const MITImageNameRightArrow = @"global-arrow-white-right";
 NSString * const MITImageNameUpArrow = @"global-arrow-white-up";
 NSString * const MITImageNameDownArrow = @"global-arrow-white-down";
 
+NSString * const MITImageActionArrowLeft = @"global-action-arrow_left";
+NSString * const MITImageActionArrowRight = @"global-action-arrow_right";
+
 NSString * const MITImageNameSearch = @"global-search";
 NSString * const MITImageNameBookmark = @"global-bookmark";
 NSString * const MITImageDisclosureRight = @"global-disclosure_right";
