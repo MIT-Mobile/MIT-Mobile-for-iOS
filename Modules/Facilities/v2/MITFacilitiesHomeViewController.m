@@ -15,6 +15,7 @@
 #import "NSString+EmailValidation.h"
 #import <MessageUI/MFMailComposeViewController.h>
 #import <AssetsLibrary/AssetsLibrary.h>
+#import <AVFoundation/AVFoundation.h>
 
 #import "SVProgressHUD.h"
 #import "MITTelephoneHandler.h"
@@ -343,13 +344,16 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
         
         if( ![UIImagePickerController isSourceTypeAvailable:sourceType] )
         {
-            UIAlertView *warningAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
-                                                                       message:@"Device has no camera"
-                                                                      delegate:nil
-                                                             cancelButtonTitle:@"OK"
-                                                             otherButtonTitles:nil];
+            [self provideErrorAlertWithMessage:@"Device has no camera"];
             
-            [warningAlertView show];
+            return;
+        }
+        
+        // verify whether user has granted access to the camera
+        AVAuthorizationStatus avAuthStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+        if( avAuthStatus == AVAuthorizationStatusRestricted || avAuthStatus == AVAuthorizationStatusDenied )
+        {
+            [self provideErrorAlertWithMessage:@"Failed to start camera. Please, verify that permission was granted in device settings."];
             
             return;
         }
@@ -360,6 +364,17 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
     controller.delegate = self;
     
     [self.navigationController presentViewController:controller animated:YES completion:NULL];
+}
+
+- (void)provideErrorAlertWithMessage:(NSString *)errorMessage
+{
+    UIAlertView *warningAlertView = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                               message:errorMessage
+                                                              delegate:nil
+                                                     cancelButtonTitle:@"OK"
+                                                     otherButtonTitles:nil];
+    
+    [warningAlertView show];
 }
 
 - (void)mailComposeController:(MFMailComposeViewController *)controller

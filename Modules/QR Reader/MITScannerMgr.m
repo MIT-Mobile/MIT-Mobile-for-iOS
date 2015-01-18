@@ -58,13 +58,23 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
         return;
     }
     
+    // verify whether user has granted access to the camera
+    AVAuthorizationStatus avAuthStatus = [AVCaptureDevice authorizationStatusForMediaType:AVMediaTypeVideo];
+    if( avAuthStatus == AVAuthorizationStatusRestricted || avAuthStatus == AVAuthorizationStatusDenied )
+    {
+        [self provideErrorAlertWithMessage:@"Failed to start camera. Please, verify that permission was granted in device settings."];
+        return;
+    }
+    
     NSError *error;
     
     // 1.
     self.captureDevice = [AVCaptureDevice defaultDeviceWithMediaType:AVMediaTypeVideo];
     if( self.captureDevice == nil )
     {
-        NSLog(@"No video camera on this device!");
+        [self provideErrorAlertWithMessage:@"No video camera on this device!"];
+        
+        DDLogWarn(@"No video camera on this device!");
         return;
     }
     
@@ -86,7 +96,9 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
     self.deviceInput = [[AVCaptureDeviceInput alloc] initWithDevice:self.captureDevice error:&error];
     if( self.deviceInput == nil )
     {
-        NSLog(@"%@", [error localizedDescription]);
+        [self provideErrorAlertWithMessage:@"Failed to start camera."];
+        
+        DDLogWarn(@"%@", [error localizedDescription]);
         return;
     }
     
@@ -117,35 +129,6 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 {
     AVCaptureVideoOrientation newOrientation = [self videoOrientationFromDeviceOrientation];
     [self.previewLayer.connection setVideoOrientation:newOrientation];
-}
-
-- (AVCaptureVideoOrientation)videoOrientationFromDeviceOrientation
-{
-    AVCaptureVideoOrientation videoOrientation;
-    
-    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
-    switch (deviceOrientation) {
-        case UIDeviceOrientationPortrait:
-            videoOrientation = AVCaptureVideoOrientationPortrait;
-            break;
-        case UIDeviceOrientationPortraitUpsideDown:
-            videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
-            break;
-        case UIDeviceOrientationLandscapeLeft:
-            // Not clear why but the landscape orientations are reversed
-            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
-            videoOrientation = AVCaptureVideoOrientationLandscapeRight;
-            break;
-        case UIDeviceOrientationLandscapeRight:
-            // Not clear why but the landscape orientations are reversed
-            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
-            videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
-            break;
-        default:
-            videoOrientation = AVCaptureVideoOrientationPortrait;
-    }
-    
-    return videoOrientation;
 }
 
 - (void)startSessionCapture
@@ -185,26 +168,6 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
 - (BOOL)isCaptureActive
 {
     return (self->_isCaptureActive && self.isScanningSupported);
-}
-
-- (NSMutableArray *)allowedBarcodeTypes
-{
-    if( _allowedBarcodeTypes == nil )
-    {
-        _allowedBarcodeTypes = [NSMutableArray new];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeQRCode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypePDF417Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeUPCECode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeAztecCode];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Mod43Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN13Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN8Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode93Code];
-        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode128Code];
-    }
-    
-    return _allowedBarcodeTypes;
 }
 
 - (void)captureOutput:(AVCaptureOutput *)captureOutput didOutputMetadataObjects:(NSArray *)metadataObjects fromConnection:(AVCaptureConnection *)connection
@@ -318,6 +281,68 @@ NSString * const kBatchScanningSettingKey = @"kBatchScanningSettingKey";
      }];
 }
 
+#pragma mark - helpers
 
+- (NSMutableArray *)allowedBarcodeTypes
+{
+    if( _allowedBarcodeTypes == nil )
+    {
+        _allowedBarcodeTypes = [NSMutableArray new];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeQRCode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypePDF417Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeUPCECode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeAztecCode];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode39Mod43Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN13Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeEAN8Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode93Code];
+        [_allowedBarcodeTypes addObject:AVMetadataObjectTypeCode128Code];
+    }
+    
+    return _allowedBarcodeTypes;
+}
+
+- (AVCaptureVideoOrientation)videoOrientationFromDeviceOrientation
+{
+    AVCaptureVideoOrientation videoOrientation;
+    
+    UIDeviceOrientation deviceOrientation = [[UIDevice currentDevice] orientation];
+    switch (deviceOrientation) {
+        case UIDeviceOrientationPortrait:
+            videoOrientation = AVCaptureVideoOrientationPortrait;
+            break;
+        case UIDeviceOrientationPortraitUpsideDown:
+            videoOrientation = AVCaptureVideoOrientationPortraitUpsideDown;
+            break;
+        case UIDeviceOrientationLandscapeLeft:
+            // Not clear why but the landscape orientations are reversed
+            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
+            videoOrientation = AVCaptureVideoOrientationLandscapeRight;
+            break;
+        case UIDeviceOrientationLandscapeRight:
+            // Not clear why but the landscape orientations are reversed
+            // if I use AVCaptureVideoOrientationLandscapeRight here the pic ends up upside down
+            videoOrientation = AVCaptureVideoOrientationLandscapeLeft;
+            break;
+        default:
+            videoOrientation = AVCaptureVideoOrientationPortrait;
+    }
+    
+    return videoOrientation;
+}
+
+- (void)provideErrorAlertWithMessage:(NSString *)errorMessage
+{
+    // using main queue here to make sure it always is executed on the main thread.
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        UIAlertView *errorAlert = [[UIAlertView alloc] initWithTitle:@"Error"
+                                                             message:errorMessage
+                                                            delegate:nil
+                                                   cancelButtonTitle:@"OK"
+                                                   otherButtonTitles:nil];
+        [errorAlert show];
+    }];
+}
 
 @end
