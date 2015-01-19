@@ -739,11 +739,12 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self dismissCurrentCalloutAnimated:NO];
     MKAnnotationView *stopAnnotationView = [self.tiledMapView.mapView viewForAnnotation:stop];
     
-    // TODO: Correctly initialize this
-    // TODO: Figure out how to correctly add the VC as a child VC
-    MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStylePlain stop:stop route:self.route];
-    stopViewController.tableTitle = stop.title;
+    MITShuttleStopViewController *stopViewController = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped stop:stop route:self.route];
+    stopViewController.title = stop.title;
     stopViewController.delegate = self;
+    
+    UINavigationController *nav = [[UINavigationController alloc] initWithRootViewController:stopViewController];
+    nav.navigationBar.translucent = NO;
     
     CGSize size = CGSizeZero;
     if (self.route) {
@@ -757,19 +758,30 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
     [stopViewController setFixedContentSize:size];
     CGRect frame = stopViewController.view.frame;
+    
+    // Adjust nav height to accomodate nav bar
+    size.height += CGRectGetHeight(nav.navigationBar.bounds);
     frame.size = size;
-    stopViewController.view.frame = frame;
+    nav.view.frame = frame;
+    
     self.calloutStopViewController = stopViewController;
     
-    [self addChildViewController:stopViewController];
-    [stopViewController didMoveToParentViewController:self];
+    [nav willMoveToParentViewController:self];
+    [self addChildViewController:nav];
+    [nav didMoveToParentViewController:self];
     
     [self setupCalloutView];
     
-    self.calloutView.contentView = stopViewController.view;
+    self.calloutView.contentView = nav.view;
     self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
     
     [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    
+    // Need to set again after presenting because it readjusts itself. (Needs Both!)
+    if (self.calloutView.currentArrowDirection == SMCalloutArrowDirectionDown) {
+        frame.origin.y = 0;
+    }
+    nav.view.frame = frame;
 }
 
 - (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
