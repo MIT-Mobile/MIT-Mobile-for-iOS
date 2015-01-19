@@ -19,6 +19,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     UIWebView *webview = [[UIWebView alloc] initWithFrame:self.view.bounds];
     webview.delegate = self;
     webview.autoresizingMask = UIViewAutoresizingFlexibleWidth | UIViewAutoresizingFlexibleHeight;

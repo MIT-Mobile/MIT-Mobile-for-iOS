@@ -219,6 +219,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [self.scannerMgr stopSessionCapture];
     
     [self.scannerHistory saveDataModelChanges];

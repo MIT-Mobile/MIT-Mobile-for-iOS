@@ -42,6 +42,7 @@ static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmark
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self updateBookmarkedPlaces];
     [self updateTableState];
 }

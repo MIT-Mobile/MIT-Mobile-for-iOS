@@ -49,6 +49,7 @@ static NSString *const kMITAcademicCalendarCell = @"MITAcademicCalendarCell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self scrollToToday];
 }
 

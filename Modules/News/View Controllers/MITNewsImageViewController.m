@@ -58,6 +58,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [self.imageView cancelCurrentImageLoad];
 }
 

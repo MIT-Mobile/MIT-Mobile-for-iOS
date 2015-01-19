@@ -68,6 +68,7 @@
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     // Call this to force an update of the image caption
     // for the first view controller
     [self didChangeSelectedIndex];

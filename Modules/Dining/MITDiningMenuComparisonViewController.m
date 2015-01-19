@@ -154,6 +154,7 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
