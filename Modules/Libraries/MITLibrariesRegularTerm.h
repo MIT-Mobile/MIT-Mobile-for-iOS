@@ -3,7 +3,7 @@
 
 @class MITLibrariesDate;
 
-@interface MITLibrariesRegularTerm : NSObject <MITMappedObject>
+@interface MITLibrariesRegularTerm : NSObject <MITMappedObject, NSCoding>
 
 @property (nonatomic, strong) NSString *days;
 @property (nonatomic, strong) MITLibrariesDate *hours;

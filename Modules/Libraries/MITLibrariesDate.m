@@ -1,6 +1,11 @@
 #import "MITLibrariesDate.h"
 #import "Foundation+MITAdditions.h"
 
+static NSString * MITLibrariesDateCodingKeyStart = @"MITLibrariesDateCodingKeyStart";
+static NSString * MITLibrariesDateCodingKeyEnd = @"MITLibrariesDateCodingKeyEnd";
+static NSString * MITLibrariesDateCodingKeyStartDate = @"MITLibrariesDateCodingKeyStartDate";
+static NSString * MITLibrariesDateCodingKeyEndDate = @"MITLibrariesDateCodingKeyEndDate";
+
 @interface MITLibrariesDate ()
 
 @property (nonatomic, readwrite, strong) NSDate *startDate;
@@ -128,6 +133,28 @@
         dateFormatter = [[NSDateFormatter alloc] init];
     }
     return dateFormatter;
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.start = [aDecoder decodeObjectForKey:MITLibrariesDateCodingKeyStart];
+        self.end = [aDecoder decodeObjectForKey:MITLibrariesDateCodingKeyEnd];
+        self.startDate = [aDecoder decodeObjectForKey:MITLibrariesDateCodingKeyStartDate];
+        self.endDate = [aDecoder decodeObjectForKey:MITLibrariesDateCodingKeyEndDate];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.start forKey:MITLibrariesDateCodingKeyStart];
+    [aCoder encodeObject:self.end forKey:MITLibrariesDateCodingKeyEnd];
+    [aCoder encodeObject:self.startDate forKey:MITLibrariesDateCodingKeyStartDate];
+    [aCoder encodeObject:self.endDate forKey:MITLibrariesDateCodingKeyEndDate];
 }
 
 @end

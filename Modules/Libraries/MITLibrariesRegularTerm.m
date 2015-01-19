@@ -2,6 +2,9 @@
 #import "MITLibrariesDate.h"
 #import "Foundation+MITAdditions.h"
 
+static NSString * const MITLibrariesRegularTermCodingKeyDays = @"MITLibrariesRegularTermCodingKeyDays";
+static NSString * const MITLibrariesRegularTermCodingKeyHours = @"MITLibrariesRegularTermCodingKeyHours";
+
 @interface MITLibrariesRegularTerm ()
 
 @property (nonatomic, strong) NSArray *sortedDateCodesArray;
@@ -117,6 +120,24 @@
         dateFormatter = [[NSDateFormatter alloc] init];
     }
     return dateFormatter;
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.days = [aDecoder decodeObjectForKey:MITLibrariesRegularTermCodingKeyDays];
+        self.hours = [aDecoder decodeObjectForKey:MITLibrariesRegularTermCodingKeyHours];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.days forKey:MITLibrariesRegularTermCodingKeyDays];
+    [aCoder encodeObject:self.hours forKey:MITLibrariesRegularTermCodingKeyHours];
 }
 
 @end

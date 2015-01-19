@@ -5,6 +5,7 @@
 #import "MITLibrariesLibraryDetailViewController.h"
 
 static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
+static NSString * const kMITLibraryUserDefaultsKeyLocationAndHours = @"kMITLibraryUserDefaultsKeyLocationAndHours";
 
 @interface MITLibrariesLocationsHoursViewController ()
 
@@ -22,9 +23,21 @@ static NSString *const kMITLibraryCell = @"MITLibrariesLibraryCell";
     
     [self setupTableView];
     
+    NSUserDefaults *defaults = [NSUserDefaults standardUserDefaults];
+    NSData *rawLibraries = [defaults objectForKey:kMITLibraryUserDefaultsKeyLocationAndHours];
+    if (rawLibraries) {
+        self.libraries = [NSKeyedUnarchiver unarchiveObjectWithData:rawLibraries];
+        [self.tableView reloadData];
+    }
+    
     [MITLibrariesWebservices getLibrariesWithCompletion:^(NSArray *libraries, NSError *error) {
         if (libraries) {
             self.libraries = libraries;
+            
+            NSData *libraryData = [NSKeyedArchiver archivedDataWithRootObject:libraries];
+            [defaults setObject:libraryData forKey:kMITLibraryUserDefaultsKeyLocationAndHours];
+            [defaults synchronize];
+            
             [self.tableView reloadData];
         }
         [self.refreshControl endRefreshing];

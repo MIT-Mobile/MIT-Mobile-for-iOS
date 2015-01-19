@@ -5,7 +5,7 @@
 
 extern NSString *const kMITLibraryClosedMessageString;
 
-@interface MITLibrariesLibrary : NSObject <MITMappedObject, MKAnnotation>
+@interface MITLibrariesLibrary : NSObject <MITMappedObject, MKAnnotation, NSCoding>
 
 @property (nonatomic, strong) NSString *identifier;
 @property (nonatomic, strong) NSString *name;
