@@ -778,6 +778,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
     
     // Need to set again after presenting because it readjusts itself. (Needs Both!)
+    if (self.calloutView.currentArrowDirection == SMCalloutArrowDirectionDown) {
+        frame.origin.y = 0;
+    }
     nav.view.frame = frame;
 }
 
