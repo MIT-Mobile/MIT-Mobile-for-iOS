@@ -268,9 +268,7 @@ static NSString * const MITLibrariesFormSheetViewControllerNibName = @"MITLibrar
     if ([responseObject isKindOfClass:[NSDictionary class]]) {
         NSString *thankYou = responseObject[@"thank_you_text"];
         NSString *email = responseObject[@"email"];
-        if (thankYou) {
-            message = thankYou;
-        }
+
         if (thankYou && email) {
             message = [NSString stringWithFormat:@"%@\n\nYou will be contacted at %@.", thankYou, email];
         } else if (thankYou) {

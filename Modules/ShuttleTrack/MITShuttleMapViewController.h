@@ -38,7 +38,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleMapState) {
 - (void)shuttleMapViewControllerExitFullscreenButtonPressed:(MITShuttleMapViewController *)mapViewController;
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didDeselectStop:(MITShuttleStop *)stop;
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectStop:(MITShuttleStop *)stop;
-- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route;
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route withStop:(MITShuttleStop *)stop;
 - (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didClickCalloutForStop:(MITShuttleStop *)stop;
 
 @end

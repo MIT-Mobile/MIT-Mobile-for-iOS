@@ -33,6 +33,7 @@ static CGFloat subtitleFontSize = 14;
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
 	self.emergencyContacts = [[EmergencyData sharedData] allPhoneNumbers];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(contactsDidLoad:)
@@ -47,6 +48,7 @@ static CGFloat subtitleFontSize = 14;
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyContactsDidLoadNotification object:nil];
 }
 

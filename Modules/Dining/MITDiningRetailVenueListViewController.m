@@ -26,6 +26,8 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
+    
     if (self.shouldUpdateTableData)
     {
         [self.dataManager updateSectionsAndVenueArrays];

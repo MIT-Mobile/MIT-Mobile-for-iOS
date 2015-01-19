@@ -3,7 +3,7 @@
 
 @class MITLibrariesDate;
 
-@interface MITLibrariesTerm : NSObject <MITMappedObject>
+@interface MITLibrariesTerm : NSObject <MITMappedObject, NSCoding>
 
 @property (nonatomic, strong) NSString *name;
 @property (nonatomic, strong) MITLibrariesDate *dates;

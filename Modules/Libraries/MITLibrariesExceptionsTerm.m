@@ -2,6 +2,10 @@
 #import "MITLibrariesDate.h"
 #import "Foundation+MITAdditions.h"
 
+static NSString * const MITLibrariesExceptionTermCodingKeyDates = @"MITLibrariesExceptionTermCodingKeyDates";
+static NSString * const MITLibrariesExceptionTermCodingKeyHours = @"MITLibrariesExceptionTermCodingKeyHours";
+static NSString * const MITLibrariesExceptionTermCodingKeyReason = @"MITLibrariesExceptionTermCodingKeyReason";
+
 @implementation MITLibrariesExceptionsTerm
 
 + (RKMapping *)objectMapping
@@ -53,6 +57,26 @@
         dateFormatter = [[NSDateFormatter alloc] init];
     }
     return dateFormatter;
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.dates = [aDecoder decodeObjectForKey:MITLibrariesExceptionTermCodingKeyDates];
+        self.hours = [aDecoder decodeObjectForKey:MITLibrariesExceptionTermCodingKeyHours];
+        self.reason = [aDecoder decodeObjectForKey:MITLibrariesExceptionTermCodingKeyReason];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.dates forKey:MITLibrariesExceptionTermCodingKeyDates];
+    [aCoder encodeObject:self.hours forKey:MITLibrariesExceptionTermCodingKeyHours];
+    [aCoder encodeObject:self.reason forKey:MITLibrariesExceptionTermCodingKeyReason];
 }
 
 @end

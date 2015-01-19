@@ -16,6 +16,7 @@
 @implementation AboutTableViewController
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
     [self.tableView applyStandardColors];
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.backgroundView = nil;

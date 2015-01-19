@@ -4,7 +4,7 @@
 
 @class MITLibrariesDate;
 
-@interface MITLibrariesExceptionsTerm : NSObject <MITMappedObject, MITLibrariesTermProtocol>
+@interface MITLibrariesExceptionsTerm : NSObject <MITMappedObject, MITLibrariesTermProtocol, NSCoding>
 
 @property (nonatomic, strong) MITLibrariesDate *dates;
 @property (nonatomic, strong) MITLibrariesDate *hours;

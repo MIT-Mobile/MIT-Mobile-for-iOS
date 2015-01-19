@@ -172,13 +172,21 @@
 - (void)shuttleHomeViewController:(MITShuttleHomeViewController *)viewController didSelectRoute:(MITShuttleRoute *)route stop:(MITShuttleStop *)stop
 {
     if (stop) {
-        self.isSelectingStop = YES;
+        
         // Selected a stop cell
         if ([self.selectedStop isEqual:stop]) {
             return;
         }
+        
+        self.isSelectingStop = YES;
+        
+        if (route) {
+            [self pushRouteViewControllerWithRoute:route];
+        }
+        
         self.selectedStop = stop;
-        [self setMapViewControllerRoute:nil stop:stop];
+        [self setMapViewControllerRoute:route stop:stop];
+        
     } else {
         // Deselected a cell, or selected a route cell
         if (route) {
@@ -231,13 +239,13 @@
     }
 }
 
-- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route
+- (void)shuttleMapViewController:(MITShuttleMapViewController *)mapViewController didSelectRoute:(MITShuttleRoute *)route withStop:(MITShuttleStop *)stop
 {
     if ([self.selectedRoute isEqual:route]) {
         return;
     }
     self.selectedRoute = route;
-    self.selectedStop = nil;
+    self.selectedStop = stop;
     
     UIViewController *masterViewController = self.masterViewController;
     if (masterViewController == self.homeViewController) {

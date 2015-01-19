@@ -1,7 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "MITMappedObject.h"
 
-@interface MITLibrariesDate : NSObject <MITMappedObject>
+@interface MITLibrariesDate : NSObject <MITMappedObject, NSCoding>
 
 @property (nonatomic, strong) NSString *start;
 @property (nonatomic, strong) NSString *end;

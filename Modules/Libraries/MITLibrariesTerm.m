@@ -7,6 +7,12 @@
 #import "Foundation+MITAdditions.h"
 #import "MITLibrariesTermProtocol.h"
 
+static NSString * const MITLibraryTermCoderKeyName = @"MITLibraryTermCoderKeyName";
+static NSString * const MITLibraryTermCoderKeyDates = @"MITLibraryTermCoderKeyDates";
+static NSString * const MITLibraryTermCoderKeyRegularTerm = @"MITLibraryTermCoderKeyRegularTerm";
+static NSString * const MITLibraryTermCoderKeyClosingsTerm = @"MITLibraryTermCoderKeyClosingsTerm";
+static NSString * const MITLibraryTermCoderKeyExceptionsTerm = @"MITLibraryTermCoderKeyExceptionsTerm";
+
 @implementation MITLibrariesTerm
 
 + (RKMapping *)objectMapping
@@ -180,6 +186,30 @@
         dateFormatter = [[NSDateFormatter alloc] init];
     }
     return dateFormatter;
+}
+
+#pragma mark - NSCoding
+
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    self = [super init];
+    if (self) {
+        self.name = [aDecoder decodeObjectForKey:MITLibraryTermCoderKeyName];
+        self.dates = [aDecoder decodeObjectForKey:MITLibraryTermCoderKeyDates];
+        self.regularTerm = [aDecoder decodeObjectForKey:MITLibraryTermCoderKeyRegularTerm];
+        self.closingsTerm = [aDecoder decodeObjectForKey:MITLibraryTermCoderKeyClosingsTerm];
+        self.exceptionsTerm = [aDecoder decodeObjectForKey:MITLibraryTermCoderKeyExceptionsTerm];
+    }
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.name forKey:MITLibraryTermCoderKeyName];
+    [aCoder encodeObject:self.dates forKey:MITLibraryTermCoderKeyDates];
+    [aCoder encodeObject:self.regularTerm forKey:MITLibraryTermCoderKeyRegularTerm];
+    [aCoder encodeObject:self.closingsTerm forKey:MITLibraryTermCoderKeyClosingsTerm];
+    [aCoder encodeObject:self.exceptionsTerm forKey:MITLibraryTermCoderKeyExceptionsTerm];
 }
 
 @end

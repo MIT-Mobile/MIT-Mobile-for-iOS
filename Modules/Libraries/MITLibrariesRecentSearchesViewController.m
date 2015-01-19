@@ -22,6 +22,7 @@ static NSString *const kMITLibrariesRecentsCell = @"kMITLibrariesRecentsCell";
 
 - (void)viewWillAppear:(BOOL)animated
 {
+    [super viewWillAppear:animated];
     [self updateRecentSearchStrings];
 }
 

@@ -4,7 +4,7 @@
 
 @class MITLibrariesDate;
 
-@interface MITLibrariesClosingsTerm : NSObject <MITMappedObject, MITLibrariesTermProtocol>
+@interface MITLibrariesClosingsTerm : NSObject <MITMappedObject, MITLibrariesTermProtocol, NSCoding>
 
 @property (nonatomic, strong) MITLibrariesDate *dates;
 @property (nonatomic, strong) NSString *reason;

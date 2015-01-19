@@ -32,6 +32,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 @protocol MITShuttleStopViewControllerDelegate <NSObject>
 
 @optional
-- (void)shuttleStopViewController:(MITShuttleStopViewController *)shuttleStopViewController didSelectRoute:(MITShuttleRoute *)route;
+- (void)shuttleStopViewController:(MITShuttleStopViewController *)shuttleStopViewController didSelectRoute:(MITShuttleRoute *)route withStop:(MITShuttleStop *)stop;
 
 @end

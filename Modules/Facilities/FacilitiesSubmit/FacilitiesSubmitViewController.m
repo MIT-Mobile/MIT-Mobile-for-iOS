@@ -17,6 +17,7 @@
 @implementation FacilitiesSubmitViewController
 #pragma mark - View lifecycle
 - (void)viewDidLoad {
+    [super viewDidLoad];
     self.title = @"Submit Report";
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
@@ -99,6 +100,7 @@
 }
 
 - (void)viewWillAppear:(BOOL)animated {
+    [super viewWillAppear:animated];
     self.navigationItem.hidesBackButton = NO;
     self.navigationItem.backBarButtonItem.title = @"Cancel";
     [self setStatusText:@"Preparing report..."];

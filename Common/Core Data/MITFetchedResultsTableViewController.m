@@ -35,6 +35,7 @@
 
 - (void)viewDidAppear:(BOOL)animated
 {
+    [super viewDidAppear:animated];
     NSError *error = nil;
     [self.fetchedResultsController performFetch:&error];
     

@@ -120,6 +120,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [self.navigationController.navigationBar restoreShadow];
 }
 

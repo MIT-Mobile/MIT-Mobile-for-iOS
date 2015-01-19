@@ -63,6 +63,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidDisappear:(BOOL)animated
 {
+    [super viewDidDisappear:animated];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidLoadNotification object:nil];
 	[[NSNotificationCenter defaultCenter] removeObserver:self name:EmergencyInfoDidFailToLoadNotification object:nil];
 }
