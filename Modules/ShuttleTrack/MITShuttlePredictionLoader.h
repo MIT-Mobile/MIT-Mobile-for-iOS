@@ -15,6 +15,9 @@ extern NSString * const kMITShuttlePredictionLoaderDidUpdateNotification;
 - (void)addPredictionDependencyForStop:(MITShuttleStop *)stop;
 - (void)removePredictionDependencyForStop:(MITShuttleStop *)stop;
 
+- (void)addPredictionDependencyForStops:(NSArray *)stops;
+- (void)removePredictionDependencyForStops:(NSArray *)stops;
+
 - (void)addPredictionDependencyForRoute:(MITShuttleRoute *)route;
 - (void)removePredictionDependencyForRoute:(MITShuttleRoute *)route;
 
