@@ -13,6 +13,7 @@
 		0B34E4291A081F45002CF7F1 /* MITNewsCategoryDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C7F752E19B0E14F00DF3AFC /* MITNewsCategoryDataSource.m */; };
 		0B394CE819E3358B00B48F17 /* MITNewsRecentSearchController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */; };
 		0B4F9D9119912A3F0047354E /* MITNewsCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B4F9D9019912A3F0047354E /* MITNewsCategoryViewController.m */; };
+		0B5D299F1A6ED96F001A55D3 /* MartyModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B5D299E1A6ED96F001A55D3 /* MartyModule.m */; };
 		0B73117D1A30F38600C1CA01 /* AboutCreditsTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B73117B1A30F38600C1CA01 /* AboutCreditsTableViewCell.m */; };
 		0B73117E1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B73117C1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib */; };
 		0B73118B1A30FF3C00C1CA01 /* credits_current.html in Resources */ = {isa = PBXBuildFile; fileRef = 0B7311891A30FF3C00C1CA01 /* credits_current.html */; };
@@ -795,6 +796,8 @@
 		0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsRecentSearchController.m; sourceTree = "<group>"; };
 		0B4F9D8F19912A3F0047354E /* MITNewsCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoryViewController.h; sourceTree = "<group>"; };
 		0B4F9D9019912A3F0047354E /* MITNewsCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoryViewController.m; sourceTree = "<group>"; };
+		0B5D299D1A6ED96F001A55D3 /* MartyModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MartyModule.h; path = Marty/MartyModule.h; sourceTree = "<group>"; };
+		0B5D299E1A6ED96F001A55D3 /* MartyModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MartyModule.m; path = Marty/MartyModule.m; sourceTree = "<group>"; };
 		0B73117A1A30F38600C1CA01 /* AboutCreditsTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AboutCreditsTableViewCell.h; sourceTree = "<group>"; };
 		0B73117B1A30F38600C1CA01 /* AboutCreditsTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AboutCreditsTableViewCell.m; sourceTree = "<group>"; };
 		0B73117C1A30F38600C1CA01 /* AboutCreditsTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = AboutCreditsTableViewCell.xib; sourceTree = "<group>"; };
@@ -2224,6 +2227,15 @@
 			);
 			name = "View Layouts";
 			path = ../..;
+			sourceTree = "<group>";
+		};
+		0B5D29991A6ED8DF001A55D3 /* Marty */ = {
+			isa = PBXGroup;
+			children = (
+				0B5D299D1A6ED96F001A55D3 /* MartyModule.h */,
+				0B5D299E1A6ED96F001A55D3 /* MartyModule.m */,
+			);
+			name = Marty;
 			sourceTree = "<group>";
 		};
 		0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */ = {
@@ -4610,6 +4622,7 @@
 				DE715447102FE468005E6111 /* Emergency */,
 				4B66705F1403304300714C6A /* Libraries */,
 				48B8129315E428DA00E791F9 /* Links */,
+				0B5D29991A6ED8DF001A55D3 /* Marty */,
 				DE81CF5F10C6BC390085573D /* News */,
 				EB7F326610CD6C5B00188BCD /* People Directory */,
 				2CB6459C134CAF1A00E85E64 /* Scanner */,
@@ -5290,6 +5303,7 @@
 				22830A501A03D12C00B514D1 /* MITToursHomeViewControllerPad.m in Sources */,
 				22B2890419B63E780093DE9E /* MITDiningFilterViewController.m in Sources */,
 				80C5D9F51A111F8D00E63FDD /* MITLibrariesFormSheetGroupConsultationBottomGroup.m in Sources */,
+				0B5D299F1A6ED96F001A55D3 /* MartyModule.m in Sources */,
 				224E1A9719FFE0A100913D99 /* MITToursAboutMITViewController.m in Sources */,
 				2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */,
 				DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */,

@@ -53,6 +53,7 @@ extern NSString * const MITModuleTagLinks;
 extern NSString * const MITModuleTagQRReader;
 extern NSString * const MITModuleTagFacilities;
 extern NSString * const MITModuleTagLibraries;
+extern NSString * const MITModuleTagMarty;
 
 // notification names
 extern NSString * const EmergencyInfoDidLoadNotification;
