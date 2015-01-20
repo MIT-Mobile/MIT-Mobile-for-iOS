@@ -94,43 +94,72 @@ NSString * const kMITShuttlePredictionLoaderDidUpdateNotification = @"kMITShuttl
 
 #pragma mark - Managing Stop Dependencies
 
-- (void)addPredictionDependencyForStop:(MITShuttleStop *)stop
+- (void)incrementDependencyInternal:(MITShuttleStop *)stop
 {
     NSString *agency = stop.route.agency;
     NSString *idTuple = stop.stopAndRouteIdTuple;
     
-    @synchronized(self) {
-        NSMutableDictionary *agencyDictionary = [self.stopDependencyTuplesByAgency objectForKey:agency];
-        if (!agencyDictionary) {
-            agencyDictionary = [NSMutableDictionary dictionary];
-            [self.stopDependencyTuplesByAgency setObject:agencyDictionary forKey:agency];
-        }
-        
+    NSMutableDictionary *agencyDictionary = [self.stopDependencyTuplesByAgency objectForKey:agency];
+    if (!agencyDictionary) {
+        agencyDictionary = [NSMutableDictionary dictionary];
+        [self.stopDependencyTuplesByAgency setObject:agencyDictionary forKey:agency];
+    }
+    
+    NSNumber *numberOfDependencies = [agencyDictionary objectForKey:idTuple];
+    NSInteger newNumber = [numberOfDependencies integerValue] + 1;
+    [agencyDictionary setObject:@(newNumber) forKey:idTuple];
+}
+
+- (void)decrementDependencyInternal:(MITShuttleStop *)stop
+{
+    NSString *agency = stop.route.agency;
+    NSString *idTuple = stop.stopAndRouteIdTuple;
+    
+    NSMutableDictionary *agencyDictionary = [self.stopDependencyTuplesByAgency objectForKey:agency];
+    if (agencyDictionary) {
         NSNumber *numberOfDependencies = [agencyDictionary objectForKey:idTuple];
-        NSInteger newNumber = [numberOfDependencies integerValue] + 1;
-        [agencyDictionary setObject:@(newNumber) forKey:idTuple];
+        if ([numberOfDependencies integerValue] > 1) {
+            NSInteger newNumber = [numberOfDependencies integerValue] - 1;
+            [agencyDictionary setObject:@(newNumber) forKey:idTuple];
+        } else {
+            [agencyDictionary removeObjectForKey:idTuple];
+            if (agencyDictionary.allKeys.count < 1) {
+                [self.stopDependencyTuplesByAgency removeObjectForKey:agency];
+            }
+        }
+    }
+}
+
+- (void)addPredictionDependencyForStop:(MITShuttleStop *)stop
+{
+    @synchronized(self) {
+        [self incrementDependencyInternal:stop];
         [self startTimerIfNeeded];
     }
 }
 
 - (void)removePredictionDependencyForStop:(MITShuttleStop *)stop
 {
-    NSString *agency = stop.route.agency;
-    NSString *idTuple = stop.stopAndRouteIdTuple;
-    
     @synchronized(self) {
-        NSMutableDictionary *agencyDictionary = [self.stopDependencyTuplesByAgency objectForKey:agency];
-        if (agencyDictionary) {
-            NSNumber *numberOfDependencies = [agencyDictionary objectForKey:idTuple];
-            if ([numberOfDependencies integerValue] > 1) {
-                NSInteger newNumber = [numberOfDependencies integerValue] - 1;
-                [agencyDictionary setObject:@(newNumber) forKey:idTuple];
-            } else {
-                [agencyDictionary removeObjectForKey:idTuple];
-                if (agencyDictionary.allKeys.count < 1) {
-                    [self.stopDependencyTuplesByAgency removeObjectForKey:agency];
-                }
-            }
+        [self decrementDependencyInternal:stop];
+    }
+}
+
+- (void)addPredictionDependencyForStops:(NSArray *)stops
+{
+    @synchronized(self) {
+        for (MITShuttleStop *stop in stops) {
+            [self incrementDependencyInternal:stop];
+        }
+        [self startTimerIfNeeded];
+    }
+}
+
+- (void)removePredictionDependencyForStops:(NSArray *)stops
+{
+    @synchronized(self) {
+        for (MITShuttleStop *stop in stops) {
+            [self decrementDependencyInternal:stop];
         }
     }
 }

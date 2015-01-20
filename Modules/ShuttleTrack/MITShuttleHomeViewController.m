@@ -46,6 +46,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (copy, nonatomic) NSDictionary *nearestStops;
 @property (nonatomic, strong) NSArray *predictionsDependentStops;
 @property (nonatomic, assign) BOOL shouldAddPredictionsDependencies;
+@property (nonatomic, assign) BOOL forceRefreshForNextDependencies;
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
 
@@ -107,9 +108,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     }
     
     self.shouldAddPredictionsDependencies = YES;
+    self.forceRefreshForNextDependencies = YES;
     [self startRefreshingRoutes];
-    
-    [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
     
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
@@ -259,6 +259,18 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)locationManagerDidUpdateLocation:(NSNotification *)notification
 {
+    CLLocation *currentLocation = [MITLocationManager sharedManager].currentLocation;
+    if (!currentLocation) {
+        return;
+    }
+
+    // If the location is too old, we want to a) Not update the UI, and b) Refresh the location
+    if ([currentLocation.timestamp timeIntervalSinceNow] < -60) {
+        [[MITLocationManager sharedManager] stopUpdatingLocation];
+        [[MITLocationManager sharedManager] startUpdatingLocation];
+        return;
+    }
+    
     [self refreshFlatRouteArray:^{
         [self.tableView reloadData];
     }];
@@ -268,9 +280,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
-        [self refreshFlatRouteArray:^{
-            [self.tableView reloadData];
-        }];
     } else {
         [self.tableView reloadData];
     }
@@ -413,19 +422,28 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         for (MITShuttleStop *stop in stopArray) {
             if (stop.route.status == MITShuttleRouteStatusInService) {
                 [newPredictionsDependentStops addObject:stop];
-                [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStop:stop];
             }
         }
     }
-    self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+    
+    if (newPredictionsDependentStops.count > 0) {
+        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
+        if (self.forceRefreshForNextDependencies) {
+            self.forceRefreshForNextDependencies = NO;
+            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+        }
+    } else {
+        self.predictionsDependentStops = nil;
+    }
 }
 
 - (void)removeNearestStopsPredictionsDependencies
 {
-    for (MITShuttleStop *stop in self.predictionsDependentStops) {
-        [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStop:stop];
+    if (self.predictionsDependentStops != nil) {
+        [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStops:self.predictionsDependentStops];
+        self.predictionsDependentStops = nil;
     }
-    self.predictionsDependentStops = nil;
 }
 
 #pragma mark - UITableViewDataSource
