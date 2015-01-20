@@ -1,6 +1,6 @@
-#import "MartyModule.h"
+#import "MITMartyModule.h"
 
-@implementation MartyModule
+@implementation MITMartyModule
 - (instancetype)init {
     self = [super initWithName:MITModuleTagMarty title:@"Marty"];
     if (self) {
