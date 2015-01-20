@@ -31,8 +31,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
-@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-@property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
 
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
@@ -68,15 +66,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [super viewDidLoad];
     [self configureViewForCurrentRoute];
     [self setupTableView];
-    [self setupToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self startRefreshingVehicles];
@@ -125,12 +119,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     self.refreshControl = refreshControl;
 }
 
-- (void)setupToolbar
-{
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
-}
-
 #pragma mark - Vehicles Refresh Timer
 
 - (void)startRefreshingVehicles
@@ -169,14 +157,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)predictionsWillUpdate
 {
     self.isUpdating = YES;
-    [self refreshLastUpdatedLabel];
 }
 
 - (void)predictionsDidUpdate
 {
     self.isUpdating = NO;
-    self.lastUpdatedDate = [NSDate date];
-    [self refreshLastUpdatedLabel];
     [self.tableView reloadDataAndMaintainSelection];
 }
 
@@ -200,21 +185,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     } else {
         [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
     }
-}
-
-#pragma mark - Last Updated
-
-- (void)refreshLastUpdatedLabel
-{
-    NSString *lastUpdatedText;
-    if (self.isUpdating) {
-        lastUpdatedText = @"Updating...";
-    } else {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
-                                                                            toDate:[NSDate date]];
-        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    }
-    self.lastUpdatedLabel.text = lastUpdatedText;
 }
 
 #pragma mark - Embedded Map Placeholder Cell

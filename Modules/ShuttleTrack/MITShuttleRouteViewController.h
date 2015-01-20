@@ -12,8 +12,6 @@
 @property (weak, nonatomic) id <MITShuttleRouteViewControllerDataSource> dataSource;
 @property (weak, nonatomic) id <MITShuttleRouteViewControllerDelegate> delegate;
 
-@property (weak, nonatomic) IBOutlet UIView *toolbarLabelView;
-
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
 - (void)highlightStop:(MITShuttleStop *)stop;
 
