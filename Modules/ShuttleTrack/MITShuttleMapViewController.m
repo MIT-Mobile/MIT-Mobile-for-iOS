@@ -756,7 +756,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         stopViewController.tableView.scrollEnabled = NO;
         size = CGSizeMake(320, [stopViewController preferredContentHeight] + 10);
     }
-    [stopViewController setFixedContentSize:size];
     CGRect frame = stopViewController.view.frame;
     
     // Adjust nav height to accomodate nav bar
@@ -780,6 +779,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     // Need to set again after presenting because it readjusts itself. (Needs Both!)
     if (self.calloutView.currentArrowDirection == SMCalloutArrowDirectionDown) {
         frame.origin.y = 0;
+    } else {
+        // Top 20 px will be masked to an arrow, offset the frame down to prevent clipping our view.
+        frame.origin.y = 20;
     }
     nav.view.frame = frame;
 }
