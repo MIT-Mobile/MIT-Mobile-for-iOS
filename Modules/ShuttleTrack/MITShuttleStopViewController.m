@@ -27,7 +27,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleStopViewControllerSectionTypeRoutes
 };
 
-@interface MITShuttleStopViewController () <MITShuttleStopAlarmCellDelegate, NSFetchedResultsControllerDelegate>
+@interface MITShuttleStopViewController () <MITShuttleStopAlarmCellDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSArray *intersectingRoutes;
 @property (nonatomic, strong) NSArray *vehicles;
@@ -39,13 +39,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 
 @property (strong, nonatomic) NSFetchedResultsController *stopsWithSameIdentifierFetchedResultsController;
 
+@property (strong, nonatomic) UIRefreshControl *refreshControl;
 @end
 
 @implementation MITShuttleStopViewController
 
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route
 {
-    self = [super initWithStyle:style];
+    self = [super init];
     if (self) {
         _stop = stop;
         _route = route;
@@ -134,27 +135,14 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 
 }
 
-- (void)setFixedContentSize:(CGSize)size
-{
-    NSDictionary *views = @{@"tableView": self.tableView};
-    NSDictionary *metrics = @{@"width": @(size.width),
-                              @"height": @(size.height)};
-    self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[tableView(width)]" options:0 metrics:metrics views:views]];
-    [self.tableView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[tableView(height)]" options:0 metrics:metrics views:views]];
-}
-
 #pragma mark - Private Methods
 
 - (void)setupTableView
 {
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleStopAlarmCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerRouteCellReuseIdentifier];
-    
     [self configureTableSections];
     
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [self.tableView addSubview:refreshControl];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
 }
@@ -396,6 +384,30 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     [[MITShuttleStopNotificationManager sharedManager] toggleNotificationForPredictionGroup:predictionsGroup withRouteTitle:self.route.title];
     
     [cell updateNotificationButtonWithPrediction:prediction];
+}
+
+#pragma mark - Getters
+
+- (UITableView *)tableView
+{
+    if (!_tableView) {
+        _tableView = [[UITableView alloc] initWithFrame:self.view.bounds style:UITableViewStyleGrouped];
+        _tableView.delegate = self;
+        _tableView.dataSource = self;
+        [self.view addSubview:_tableView];
+        
+        self.tableView.translatesAutoresizingMaskIntoConstraints = NO;
+        NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeLeft relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeLeft multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeBottom relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeBottom multiplier:1.0 constant:0.0];
+        NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.tableView attribute:NSLayoutAttributeRight relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeRight multiplier:1.0 constant:0.0];
+        [self.view addConstraints:@[top, left, bottom, right]];
+        
+        [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleStopAlarmCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerAlarmCellReuseIdentifier];
+        [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:kMITShuttleStopViewControllerDefaultCellReuseIdentifier];
+        [self.tableView registerNib:[UINib nibWithNibName:NSStringFromClass([MITShuttleRouteCell class]) bundle:nil] forCellReuseIdentifier:kMITShuttleStopViewControllerRouteCellReuseIdentifier];
+    }
+    return _tableView;
 }
 
 @end
