@@ -39,9 +39,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 @interface MITShuttleHomeViewController ()
 
-@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
-
 @property(nonatomic,strong) MITShuttleRoutesDataSource *routesDataSource;
 @property (nonatomic, readonly) NSArray *routes;
 
@@ -51,7 +48,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (nonatomic, assign) BOOL shouldAddPredictionsDependencies;
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
-@property (strong, nonatomic) NSDate *lastUpdatedDate;
 
 @property (strong, nonatomic) NSTimer *routesAndPredictionsRefreshTimer;
 
@@ -245,8 +241,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             // Necessary because tableview doesn't automatically scroll to show refreshControl
             [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
         }
-        
-        [self refreshLastUpdatedLabel];
     }
 }
 
@@ -254,30 +248,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     if (self.isUpdating) {
         [self.refreshControl endRefreshing];
-        self.lastUpdatedDate = [NSDate date];
         self.updating = NO;
-        [self refreshLastUpdatedLabel];
     }
-}
-
-#pragma mark - Toolbar Labels
-
-- (void)refreshLastUpdatedLabel
-{
-    NSString *lastUpdatedText;
-    if (self.isUpdating) {
-        lastUpdatedText = @"Updating...";
-    } else {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
-                                                                            toDate:[NSDate date]];
-        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    }
-    self.lastUpdatedLabel.text = lastUpdatedText;
-}
-
-- (void)refreshLocationStatusLabel
-{
-    self.locationStatusLabel.text = [MITLocationManager locationServicesAuthorized] ? @"Showing nearest stops" : @"Location couldn't be determined";
 }
 
 #pragma mark - Location Notifications
@@ -294,11 +266,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
         [self refreshFlatRouteArray:^{
-            [self refreshLocationStatusLabel];
             [self.tableView reloadData];
         }];
     } else {
-        [self refreshLocationStatusLabel];
         [self.tableView reloadData];
     }
 }

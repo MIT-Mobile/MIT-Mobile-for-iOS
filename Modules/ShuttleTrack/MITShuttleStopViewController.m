@@ -33,7 +33,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 @property (nonatomic, strong) NSArray *vehicles;
 @property (nonatomic, strong) UILabel *helpLabel;
 @property (nonatomic, strong) UILabel *statusFooterLabel;
-@property (nonatomic, strong) NSDate *lastUpdatedDate;
 
 @property (nonatomic, strong) NSArray *sectionTypes;
 
@@ -117,7 +116,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 - (void)predictionsDidUpdate
 {
     [self.refreshControl endRefreshing];
-    self.lastUpdatedDate = [NSDate date];
     [self configureTableSections];
     [self.tableView reloadData];
 }

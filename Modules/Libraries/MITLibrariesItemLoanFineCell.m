@@ -76,7 +76,7 @@
 {
     static NSMutableAttributedString *warningSignString;
     if (!warningSignString) {
-        UIImage *warningSign = [UIImage imageNamed:@"libraries/status-alert"];
+        UIImage *warningSign = [UIImage imageNamed:MITImageLibrariesStatusAlert];
         NSTextAttachment *warningSignAttachment = [[NSTextAttachment alloc] init];
         warningSignAttachment.image = warningSign;
         warningSignAttachment.bounds = CGRectMake(0, -2, warningSign.size.width, warningSign.size.height);
