@@ -93,8 +93,3 @@ NSString * const MITBuildDescriptionKey = @"MITBuildDescription";
 NSString * const MITErrorDomain = @"edu.mit.mobile.Error";
 
 NSString* const MobileLoginKeychainIdentifier = @"edu.mit.mobile.MobileWebLogin";
-
-
-//TableViewCells
-NSString * const kMITActionCellNibName = @"MITActionCell";
-NSString * const kMITActionCellIdentifier = @"kMITActionIdentifier";

@@ -1,5 +1,6 @@
 #import "MITActionCell.h"
 #import "UIKit+MITAdditions.h"
+#import "MITConstants.h"
 
 @interface MITActionCell ()
 
@@ -17,6 +18,19 @@
     // Initialization code
     self.titleLabel.textColor = [UIColor mit_tintColor];
     self.iconActionButton.backgroundColor = [UIColor greenColor];
+}
+
++ (UINib *)actionCellNib
+{
+    return [UINib nibWithNibName:self.actionCellNibName bundle:nil];
+}
+
++ (NSString *)actionCellNibName {
+    return @"MITActionCell";
+}
+
++ (NSString *)actionCellIdentifier {
+    return @"MITActionCellIdentifier";
 }
 
 - (void)layoutSubviews

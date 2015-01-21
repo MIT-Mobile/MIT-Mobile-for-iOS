@@ -67,7 +67,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventHeaderCellNibName bundle:nil] forCellReuseIdentifier:kMITEventHeaderCellIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:kMITActionCellNibName bundle:nil] forCellReuseIdentifier:kMITActionCellIdentifier];
+    [self.tableView registerNib:[MITActionCell actionCellNib] forCellReuseIdentifier:[MITActionCell actionCellIdentifier]];
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventWebviewCellNibName bundle:nil] forCellReuseIdentifier:kMITEventWebviewCellIdentifier];
     
     // To prevent showing empty cells
@@ -361,7 +361,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 {
     static MITActionCell *detailCell;
     if (!detailCell) {
-        detailCell = [[NSBundle mainBundle] loadNibNamed:kMITActionCellNibName owner:self options:nil][0];
+        detailCell = [[NSBundle mainBundle] loadNibNamed:[MITActionCell actionCellNibName] owner:self options:nil][0];
     }
     
     if (type == MITEventDetailRowTypeDescription) {
@@ -536,7 +536,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
                 cell.delegate = self;
                 return cell;
             } else {
-                MITActionCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITActionCellIdentifier];
+                MITActionCell *cell = [tableView dequeueReusableCellWithIdentifier:[MITActionCell actionCellIdentifier]];
                 [self configureDetailCell:cell ofType:rowType];
                 return cell;
             }
