@@ -135,54 +135,15 @@ extern NSString * const MITImageShuttlesAnnotationCurrentStop;
 
 
 #pragma mark - Tours
+extern NSString * const MITImageToursSelfGuidedBackground;
+extern NSString * const MITImageToursTemplateWhiteActionArrow;
+extern NSString * const MITImageToursCircleRed;
+extern NSString * const MITImageToursCircleBlue;
 extern NSString * const MITImageToursWBRogers;
 extern NSString * const MITImageToursKillian;
 extern NSString * const MITImageToursMITSeal;
-extern NSString * const MITImageToursSideTripArrow;
-extern NSString * const MITImageToursScrimNotSure;
-extern NSString * const MITImageToursScrimNotSureTop;
-
-extern NSString * const MITImageToursWallpaperKillian;
-extern NSString * const MITImageToursWallpaperStata;
-extern NSString * const MITImageToursWallpaperGreatSail;
-
-extern NSString * const MITImageToursTemplateWhiteActionArrow;
-
-#pragma mark Current Tour Progress Bar
-extern NSString * const MITImageToursProgressBarBackground;
-extern NSString * const MITImageToursProgressBarCurrent;
-extern NSString * const MITImageToursProgressBarDivider;
-extern NSString * const MITImageToursProgressBarPast;
-extern NSString * const MITImageToursProgressBarTrench;
-
-#pragma mark Toolbar Icons
-extern NSString * const MITImageToursToolbarArrowLeft;
-extern NSString * const MITImageToursToolbarArrowRight;
-extern NSString * const MITImageToursToolbarBackground;
-extern NSString * const MITImageToursToolbarCamera;
-extern NSString * const MITImageToursToolbarMap;
-extern NSString * const MITImageToursToolbarQR;
-
-extern NSString * const MITImageToursButtonAudioPause;
-extern NSString * const MITImageToursButtonAudio;
-extern NSString * const MITImageToursButtonMap;
-extern NSString * const MITImageToursButtonMapHighlighted;
-extern NSString * const MITImageToursButtonScanQR;
-extern NSString * const MITImageToursButtonScanQRHighlighted;
-extern NSString * const MITImageToursButtonSidetrip;
-extern NSString * const MITImageToursButtonSelectStart;
-extern NSString * const MITImageToursButtonSelectStartMerged;
-extern NSString * const MITImageToursButtonReturn;
-
-extern NSString * const MITImageToursAnnotationStopInitial;
-extern NSString * const MITImageToursAnnotationStopCurrent;
-extern NSString * const MITImageToursAnnotationStopUnvisited;
-extern NSString * const MITImageToursAnnotationStopVisited;
-extern NSString * const MITImageToursAnnotationArrowEnd;
 extern NSString * const MITImageToursAnnotationArrowStart;
-extern NSString * const MITImageToursMapLegendOverlay;
-
-extern NSString * const MITImageToursTemplateButtonExternalLink;
+extern NSString * const MITImageToursAnnotationArrowEnd;
 
 
 #pragma mark - Global Assets

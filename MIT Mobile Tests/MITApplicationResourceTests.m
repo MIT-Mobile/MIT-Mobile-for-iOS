@@ -161,52 +161,15 @@
 
 
 #pragma mark - Tours
+    MITCheckAsset(MITImageToursSelfGuidedBackground);
+    MITCheckAsset(MITImageToursCircleRed);
+    MITCheckAsset(MITImageToursCircleBlue);
+    MITCheckAsset(MITImageToursAnnotationArrowStart);
+    MITCheckAsset(MITImageToursAnnotationArrowEnd);
+    MITCheckAsset(MITImageToursTemplateWhiteActionArrow);
     MITCheckAsset(MITImageToursWBRogers);
     MITCheckAsset(MITImageToursKillian);
     MITCheckAsset(MITImageToursMITSeal);
-    MITCheckAsset(MITImageToursSideTripArrow);
-    MITCheckAsset(MITImageToursScrimNotSure);
-    MITCheckAsset(MITImageToursScrimNotSureTop);
-
-    MITCheckAsset(MITImageToursWallpaperKillian);
-    MITCheckAsset(MITImageToursWallpaperStata);
-    MITCheckAsset(MITImageToursWallpaperGreatSail);
-
-#pragma mark Current Tour Progress Bar
-    MITCheckAsset(MITImageToursProgressBarBackground);
-    MITCheckAsset(MITImageToursProgressBarCurrent);
-    MITCheckAsset(MITImageToursProgressBarDivider);
-    MITCheckAsset(MITImageToursProgressBarPast);
-    MITCheckAsset(MITImageToursProgressBarTrench);
-
-#pragma mark Toolbar Icons
-    MITCheckAsset(MITImageToursToolbarArrowLeft);
-    MITCheckAsset(MITImageToursToolbarArrowRight);
-    MITCheckAsset(MITImageToursToolbarBackground);
-    MITCheckAsset(MITImageToursToolbarCamera);
-    MITCheckAsset(MITImageToursToolbarMap);
-    MITCheckAsset(MITImageToursToolbarQR);
-
-    MITCheckAsset(MITImageToursButtonAudioPause);
-    MITCheckAsset(MITImageToursButtonAudio);
-    MITCheckAsset(MITImageToursButtonMap);
-    MITCheckAsset(MITImageToursButtonMapHighlighted);
-    MITCheckAsset(MITImageToursButtonScanQR);
-    MITCheckAsset(MITImageToursButtonScanQRHighlighted);
-    MITCheckAsset(MITImageToursButtonSidetrip);
-    MITCheckAsset(MITImageToursButtonSelectStart);
-    MITCheckAsset(MITImageToursButtonSelectStartMerged);
-    MITCheckAsset(MITImageToursButtonReturn);
-
-    MITCheckAsset(MITImageToursAnnotationStopInitial);
-    MITCheckAsset(MITImageToursAnnotationStopCurrent);
-    MITCheckAsset(MITImageToursAnnotationStopUnvisited);
-    MITCheckAsset(MITImageToursAnnotationStopVisited);
-    MITCheckAsset(MITImageToursAnnotationArrowEnd);
-    MITCheckAsset(MITImageToursAnnotationArrowStart);
-    MITCheckAsset(MITImageToursMapLegendOverlay);
-
-    MITCheckAsset(MITImageToursTemplateButtonExternalLink);
 
 
 #pragma mark - Global Assets
