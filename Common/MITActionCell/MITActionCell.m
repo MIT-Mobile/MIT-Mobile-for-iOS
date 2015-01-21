@@ -29,10 +29,6 @@
     return @"MITActionCell";
 }
 
-+ (NSString *)actionCellIdentifier {
-    return @"MITActionCellIdentifier";
-}
-
 - (void)layoutSubviews
 {
     [super layoutSubviews];
