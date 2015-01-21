@@ -123,9 +123,9 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)prepareForViewAppearance
 {
+    [self startRefreshingVehicles];
+    
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self startRefreshingVehicles];
-        
         if (!self.hasSetUpMapRect) {
             [self setupMapBoundingBoxAnimated:NO];
             self.hasSetUpMapRect = YES;
@@ -213,10 +213,10 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 {
     self.vehiclesDataSource = [[MITShuttleVehiclesDataSource alloc] init];
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        // iPad always wants to load all vehicles so there isn't a significant delay to display them when returning to "all routes" mode
-        self.vehiclesDataSource.forceUpdateAllVehicles = YES;
-    }
+    // We always wants to pull all vehicles into Core Data so there isn't a significant delay in route status or vehicle position when returning to "all routes" mode
+    // The VehiclesDataSource will take care of fetching the correct ones for our route once they are all saved
+    self.vehiclesDataSource.forceUpdateAllVehicles = YES;
+    
     
     self.vehiclesDataSource.route = self.route;
 }

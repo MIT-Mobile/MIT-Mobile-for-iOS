@@ -14,14 +14,12 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
 
-static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
 static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 
 static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
-static const NSTimeInterval kRouteVehiclesRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
@@ -33,7 +31,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 @property (nonatomic) BOOL isUpdating;
 
-@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 
 @end
 
@@ -72,10 +69,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 {
     [super viewWillAppear:animated];
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self startRefreshingVehicles];
-    }
-    
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -84,8 +77,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    [self stopRefreshingVehicles];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -117,39 +108,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
-}
-
-#pragma mark - Vehicles Refresh Timer
-
-- (void)startRefreshingVehicles
-{
-    [self loadVehicles];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
-                                                                         target:self
-                                                                       selector:@selector(loadVehicles)
-                                                                       userInfo:nil
-                                                                        repeats:YES];
-        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
-    });
-}
-
-- (void)stopRefreshingVehicles
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        self.vehiclesRefreshTimer = nil;
-    });
-}
-
-- (void)loadVehicles
-{
-    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {
-        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-            [self.delegate routeViewControllerDidRefresh:self];
-        }
-    }];
 }
 
 #pragma mark - Update Data
