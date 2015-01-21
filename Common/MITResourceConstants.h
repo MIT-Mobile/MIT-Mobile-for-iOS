@@ -17,10 +17,6 @@ extern NSString * const MITImageShuttlesModuleIcon;
 extern NSString * const MITImageToursModuleIcon;
 
 #pragma mark - Dining
-extern NSString * const MITImageDiningBookmark;
-extern NSString * const MITImageDiningBookmarkSelected;
-extern NSString * const MITImageDiningInfo;
-extern NSString * const MITImageDiningInfoHighlighted;
 extern NSString * const MITImageDiningRotateDevice;
 
 #pragma mark Meal Types
@@ -65,10 +61,6 @@ extern NSString * const MITImageLibrariesStatusReady;
 extern NSString * const MITImageMapBrowseBuildings;
 extern NSString * const MITImageMapBrowseFoodServices;
 extern NSString * const MITImageMapBrowseResidences;
-extern NSString * const MITImageMapLocation;
-extern NSString * const MITImageMapLocationHighlighted;
-extern NSString * const MITImageMapAnnotationUserLocation;
-extern NSString * const MITImageMapAnnotationPin;
 extern NSString * const MITImageMapAnnotationPlacePin;
 extern NSString * const MITImageMapPinBallBlack;
 extern NSString * const MITImageMapPinBallBlue;
@@ -92,29 +84,11 @@ extern NSString * const MITImageMapCategoryRooms;
 extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
 
 
-#pragma mark - News
-extern NSString * const MITImageNewsImagePlaceholder;
-
-
-// Used by the News story HTML template. These may no longer be in
-// active use (although they are referenced).
-extern NSString * const MITImageNewsTemplateButtonBookmark;
-extern NSString * const MITImageNewsTemplateButtonShare;
-extern NSString * const MITImageNewsTemplateButtonShareHighlighted;
-extern NSString * const MITImageNewsTemplateButtonZoomIn;
-
-
-#pragma mark - People Directory
-extern NSString * const MITImagePeopleDirectoryDestructiveButton;
-extern NSString * const MITImagePeopleDirectoryDestructiveButtonHighlighted;
-
-
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;
 extern NSString * const MITImageScannerSampleBarcode;
 extern NSString * const MITImageScannerSampleQRCode;
 extern NSString * const MITImageScannerMissingImage;
-extern NSString * const MITImageScannerScanBarButton;
 
 
 #pragma mark - Shuttles
@@ -167,7 +141,6 @@ extern NSString * const MITImageActionArrowLeft;
 extern NSString * const MITImageActionArrowRight;
 
 extern NSString * const MITImageNameSearch;
-extern NSString * const MITImageNameBookmark;
 extern NSString * const MITImageDisclosureRight;
 extern NSString * const MITImageTransparentPixel;
 

@@ -17,10 +17,6 @@ NSString * const MITImageShuttlesModuleIcon = @"home-shuttle";
 NSString * const MITImageToursModuleIcon = @"home-tours";
 
 #pragma mark - Dining
-NSString * const MITImageDiningBookmark = @"dining-bookmark";
-NSString * const MITImageDiningBookmarkSelected = @"dining-bookmark-selected";
-NSString * const MITImageDiningInfo = @"dining-info";
-NSString * const MITImageDiningInfoHighlighted = @"dining-info-pressed";
 NSString * const MITImageDiningRotateDevice = @"dining-rotate-device";
 
 #pragma mark Meal Types
@@ -67,10 +63,6 @@ NSString * const MITImageLibrariesStatusReady = @"libraries-status-ready";
 NSString * const MITImageMapBrowseBuildings = @"map-browse-buildings";
 NSString * const MITImageMapBrowseFoodServices = @"map-browse-foodservices";
 NSString * const MITImageMapBrowseResidences = @"map-browse-residences";
-NSString * const MITImageMapLocation = @"map-location";
-NSString * const MITImageMapLocationHighlighted = @"map-location-highlighted";
-NSString * const MITImageMapAnnotationUserLocation = @"map-annotation-user-location";
-NSString * const MITImageMapAnnotationPin = @"map-annotation-pin";
 NSString * const MITImageMapAnnotationPlacePin = @"map-annotation-place_pin";
 
 NSString * const MITImageMapPinBallBlack = @"map-pin-ball-black";
@@ -95,29 +87,11 @@ NSString * const MITImageMapCategoryRooms                = @"map-category-room";
 NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
 
 
-
-#pragma mark - News
-NSString * const MITImageNewsImagePlaceholder = @"news-placeholder";
-
-// Used by the News story HTML template. These may no longer be in
-// active use (although they are referenced).
-NSString * const MITImageNewsTemplateButtonBookmark = @"news-template-bookmark_button";
-NSString * const MITImageNewsTemplateButtonShare = @"news-template-share";
-NSString * const MITImageNewsTemplateButtonShareHighlighted = @"news-template-share_pressed";
-NSString * const MITImageNewsTemplateButtonZoomIn = @"news-template-button-zoom_in";
-
-
-#pragma mark - People Directory
-NSString * const MITImagePeopleDirectoryDestructiveButton = @"people-button-delete";
-NSString * const MITImagePeopleDirectoryDestructiveButtonHighlighted = @"people-button-delete-highlighted";
-
-
 #pragma mark - Scanner
 NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";
 NSString * const MITImageScannerSampleBarcode = @"scanner-sample-barcode";
 NSString * const MITImageScannerSampleQRCode = @"scanner-sample-qr";
 NSString * const MITImageScannerMissingImage = @"scanner-missing-image";
-NSString * const MITImageScannerScanBarButton = @"scanner-barbutton-scan";
 
 
 #pragma mark - Shuttles
@@ -174,7 +148,6 @@ NSString * const MITImageActionArrowLeft = @"global-action-arrow_left";
 NSString * const MITImageActionArrowRight = @"global-action-arrow_right";
 
 NSString * const MITImageNameSearch = @"global-search";
-NSString * const MITImageNameBookmark = @"global-bookmark";
 NSString * const MITImageDisclosureRight = @"global-disclosure_right";
 NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 

@@ -65,10 +65,6 @@
     MITCheckAsset(MITImageToursModuleIcon);
 
 #pragma mark - Dining
-    MITCheckAsset(MITImageDiningBookmark);
-    MITCheckAsset(MITImageDiningBookmarkSelected);
-    MITCheckAsset(MITImageDiningInfo);
-    MITCheckAsset(MITImageDiningInfoHighlighted);
     MITCheckAsset(MITImageDiningRotateDevice);
 
 #pragma mark Meal Types
@@ -98,10 +94,6 @@
     MITCheckAsset(MITImageLibrariesStatusReady);
 
 #pragma mark - Map
-    MITCheckAsset(MITImageMapLocation);
-    MITCheckAsset(MITImageMapLocationHighlighted);
-    MITCheckAsset(MITImageMapAnnotationUserLocation);
-    MITCheckAsset(MITImageMapAnnotationPin);
     MITCheckAsset(MITImageMapAnnotationPlacePin);
     MITCheckAsset(MITImageMapPinBallBlack);
     MITCheckAsset(MITImageMapPinBallBlue);
@@ -121,26 +113,12 @@
     MITCheckAsset(MITImageMapCategoryRooms);
     MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
-#pragma mark - News
-    MITCheckAsset(MITImageNewsImagePlaceholder);
-
-    MITCheckAsset(MITImageNewsTemplateButtonBookmark);
-    MITCheckAsset(MITImageNewsTemplateButtonShare);
-    MITCheckAsset(MITImageNewsTemplateButtonShareHighlighted);
-    MITCheckAsset(MITImageNewsTemplateButtonZoomIn);
-
-
-#pragma mark - People Directory
-    MITCheckAsset(MITImagePeopleDirectoryDestructiveButton);
-    MITCheckAsset(MITImagePeopleDirectoryDestructiveButtonHighlighted);
-
 
 #pragma mark - Scanner
     MITCheckAsset(MITImageScannerCameraUnsupported);
     MITCheckAsset(MITImageScannerSampleBarcode);
     MITCheckAsset(MITImageScannerSampleQRCode);
     MITCheckAsset(MITImageScannerMissingImage);
-    MITCheckAsset(MITImageScannerScanBarButton);
 
 
 #pragma mark - Shuttles
@@ -190,7 +168,6 @@
     MITCheckAsset(MITImageNameDownArrow);
 
     MITCheckAsset(MITImageNameSearch);
-    MITCheckAsset(MITImageNameBookmark);
     MITCheckAsset(MITImageDisclosureRight);
     MITCheckAsset(MITImageTransparentPixel);
 
