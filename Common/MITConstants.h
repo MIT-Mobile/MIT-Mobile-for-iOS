@@ -114,3 +114,8 @@ enum {
 };
 
 extern NSString * const MobileLoginKeychainIdentifier;
+
+
+//TableViewCells
+extern NSString * const kMITActionCellNibName;
+extern NSString * const kMITActionCellIdentifier;

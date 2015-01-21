@@ -1,5 +1,5 @@
 #import "MITEventDetailViewController.h"
-#import "MITEventDetailCell.h"
+#import "MITActionCell.h"
 #import "MITCalendarsEvent.h"
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITWebviewCell.h"
@@ -15,9 +15,6 @@
 
 static NSString * const kMITEventHeaderCellNibName = @"MITEventHeaderCell";
 static NSString * const kMITEventHeaderCellIdentifier = @"kMITEventHeaderIdentifier";
-
-static NSString * const kMITEventDetailCellNibName = @"MITEventDetailCell";
-static NSString * const kMITEventDetailCellIdentifier = @"kMITEventDetailIdentifier";
 
 static NSString * const kMITEventWebviewCellNibName = @"MITWebviewCell";
 static NSString * const kMITEventWebviewCellIdentifier = @"kMITEventWebviewIdentifier";
@@ -70,7 +67,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     [super viewDidLoad];
     // Do any additional setup after loading the view from its nib.
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventHeaderCellNibName bundle:nil] forCellReuseIdentifier:kMITEventHeaderCellIdentifier];
-    [self.tableView registerNib:[UINib nibWithNibName:kMITEventDetailCellNibName bundle:nil] forCellReuseIdentifier:kMITEventDetailCellIdentifier];
+    [self.tableView registerNib:[UINib nibWithNibName:kMITActionCellNibName bundle:nil] forCellReuseIdentifier:kMITActionCellIdentifier];
     [self.tableView registerNib:[UINib nibWithNibName:kMITEventWebviewCellNibName bundle:nil] forCellReuseIdentifier:kMITEventWebviewCellIdentifier];
     
     // To prevent showing empty cells
@@ -302,83 +299,60 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 
 #pragma mark - Custom Cells
 
-- (void)configureDetailCell:(MITEventDetailCell *)detailCell ofType:(MITEventDetailRowType)type
+- (void)configureDetailCell:(MITActionCell *)detailCell ofType:(MITEventDetailRowType)type
 {
     detailCell.selectionStyle = UITableViewCellSelectionStyleDefault;
     switch (type) {
         case MITEventDetailRowTypeSpeaker: {
-            [detailCell setTitle:@"speaker"];
-            [detailCell setDetailText:self.event.lecturer];
-            detailCell.accessoryView = nil;
-            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [detailCell setupCellOfType:type withDetailText:self.event.lecturer];
             break;
         }
         case MITEventDetailRowTypeTime: {
-            [detailCell setTitle:@"time"];
             NSString *timeDetailString = [self.event dateStringWithDateStyle:NSDateFormatterFullStyle
                                                                    timeStyle:NSDateFormatterShortStyle
                                                                    separator:@"\n"];
-            [detailCell setDetailText:timeDetailString];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
+            [detailCell setupCellOfType:type withDetailText:timeDetailString];
             break;
         }
         case MITEventDetailRowTypeLocation: {
-            [detailCell setTitle:@"location"];
-            [detailCell setDetailText:[self.event.location locationString]];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
+            [detailCell setupCellOfType:type withDetailText:[self.event.location locationString]];
             break;
         }
         case MITEventDetailRowTypePhone: {
-            [detailCell setTitle:@"phone"];
-            [detailCell setDetailText:self.event.contact.phone];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+            [detailCell setupCellOfType:type withDetailText:self.event.contact.phone];
             break;
         }
         case MITEventDetailRowTypeDescription: {
             // Special case, handled by webview cell
+            
             break;
         }
         case MITEventDetailRowTypeWebsite: {
-            [detailCell setTitle:@"website"];
-            [detailCell setDetailText:self.event.contact.websiteURL];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            [detailCell setupCellOfType:type withDetailText:self.event.contact.websiteURL];
             break;
         }
         case MITEventDetailRowTypeOpenTo: {
-            [detailCell setTitle:@"open to"];
-            [detailCell setDetailText:self.event.openTo];
-            detailCell.accessoryView = nil;
-            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [detailCell setupCellOfType:type withDetailText:self.event.openTo];
             break;
         }
         case MITEventDetailRowTypeCost: {
-            [detailCell setTitle:@"cost"];
             NSString *costString = self.event.cost;
-            [detailCell setDetailText:costString];
-            detailCell.accessoryView = nil;
-            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [detailCell setupCellOfType:type withDetailText:costString];
             break;
         }
         case MITEventDetailRowTypeSponsors: {
-            [detailCell setTitle:@"sponsor"];
             NSString *detailText = [[self.event.sponsors.allObjects valueForKey:@"name"] componentsJoinedByString:@"\n"];
-            [detailCell setDetailText:detailText];
-            detailCell.accessoryView = nil;
-            detailCell.selectionStyle = UITableViewCellSelectionStyleNone;
+            [detailCell setupCellOfType:type withDetailText:detailText];
             break;
         }
         case MITEventDetailRowTypeContact: {
-            [detailCell setTitle:@"for more information, contact"];
             NSString *contactName = self.event.contact.name ? [NSString stringWithFormat:@"%@ ", self.event.contact.name] : @"";
             NSString *detailText = [NSString stringWithFormat:@"%@(%@)", contactName, self.event.contact.email];
-            [detailCell setDetailText:detailText];
-            detailCell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
+            [detailCell setupCellOfType:type withDetailText:detailText];
             break;
         }
     }
     
-    [detailCell setNeedsUpdateConstraints];
-    [detailCell updateConstraintsIfNeeded];
     detailCell.bounds = CGRectMake(0, 0, self.tableView.bounds.size.width, detailCell.bounds.size.height);
     [detailCell setNeedsLayout];
     [detailCell layoutIfNeeded];
@@ -386,9 +360,9 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 
 - (CGFloat)heightForDetailCellOfType:(MITEventDetailRowType)type
 {
-    static MITEventDetailCell *detailCell;
+    static MITActionCell *detailCell;
     if (!detailCell) {
-        detailCell = [[NSBundle mainBundle] loadNibNamed:kMITEventDetailCellNibName owner:self options:nil][0];
+        detailCell = [[NSBundle mainBundle] loadNibNamed:kMITActionCellNibName owner:self options:nil][0];
     }
     
     if (type == MITEventDetailRowTypeDescription) {
@@ -563,7 +537,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
                 cell.delegate = self;
                 return cell;
             } else {
-                MITEventDetailCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventDetailCellIdentifier];
+                MITActionCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITActionCellIdentifier];
                 [self configureDetailCell:cell ofType:rowType];
                 return cell;
             }

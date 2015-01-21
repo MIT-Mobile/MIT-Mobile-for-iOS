@@ -1,10 +1,10 @@
 #import <UIKit/UIKit.h>
 #import "MITEventDetailViewController.h"
 
-@interface MITEventDetailCell : UITableViewCell
+@interface MITActionCell : UITableViewCell
 
 - (void)setTitle:(NSString *)title;
 - (void)setDetailText:(NSString *)detailText;
-- (void)setIconForRowType:(MITEventDetailRowType)rowType;
+- (void)setupCellOfType:(MITEventDetailRowType)type withDetailText:(NSString *)detailText;
 
 @end
