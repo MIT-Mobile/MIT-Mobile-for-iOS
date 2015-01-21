@@ -120,8 +120,8 @@
 
 - (void)setupMainLoopCycleButtons
 {
-    UIImage *upButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_up"];
-    UIImage *downButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_down"];
+    UIImage *upButtonImage = [UIImage imageNamed:MITImageToursPadChevronUp];
+    UIImage *downButtonImage = [UIImage imageNamed:MITImageToursPadChevronDown];
 
     CGFloat spacing = 10;
     CGFloat width = upButtonImage.size.width + downButtonImage.size.width + spacing;

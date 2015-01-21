@@ -50,8 +50,6 @@ extern NSString * const MITResourceDiningMealWellBeing;
 
 #pragma mark - Events (Calendar)
 extern NSString * const MITImageEventsDayPickerButton;
-extern NSString * const MITImageEventsPadChevronUp;
-extern NSString * const MITImageEventsPadChevronDown;
 
 #pragma mark - Libraries
 extern NSString * const MITImageLibrariesCheckmark;
@@ -137,6 +135,8 @@ extern NSString * const MITImageShuttlesAnnotationCurrentStop;
 #pragma mark - Tours
 extern NSString * const MITImageToursSelfGuidedBackground;
 extern NSString * const MITImageToursTemplateWhiteActionArrow;
+extern NSString * const MITImageToursPadChevronUp;
+extern NSString * const MITImageToursPadChevronDown;
 extern NSString * const MITImageToursCircleRed;
 extern NSString * const MITImageToursCircleBlue;
 extern NSString * const MITImageToursWBRogers;

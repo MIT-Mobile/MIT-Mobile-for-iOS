@@ -86,8 +86,6 @@
 
 #pragma mark - Events (Calendar)
     MITCheckAsset(MITImageEventsDayPickerButton);
-    MITCheckAsset(MITImageEventsPadChevronUp);
-    MITCheckAsset(MITImageEventsPadChevronDown);
 
 #pragma mark - Libraries
     MITCheckAsset(MITImageLibrariesCheckmark);
@@ -167,6 +165,8 @@
     MITCheckAsset(MITImageToursAnnotationArrowStart);
     MITCheckAsset(MITImageToursAnnotationArrowEnd);
     MITCheckAsset(MITImageToursTemplateWhiteActionArrow);
+    MITCheckAsset(MITImageToursPadChevronUp);
+    MITCheckAsset(MITImageToursPadChevronDown);
     MITCheckAsset(MITImageToursWBRogers);
     MITCheckAsset(MITImageToursKillian);
     MITCheckAsset(MITImageToursMITSeal);

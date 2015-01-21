@@ -52,8 +52,6 @@ NSString * const MITResourceDiningMealWellBeing = @"dining-meal-well_being.pdf";
 
 #pragma mark - Events (Calendar)
 NSString * const MITImageEventsDayPickerButton = @"events-day_picker_button";
-NSString * const MITImageEventsPadChevronUp = @"events-pad-chevron_up";
-NSString * const MITImageEventsPadChevronDown = @"events-pad-chevron_down";
 
 #pragma mark - Libraries
 NSString * const MITImageLibrariesCheckmark = @"libraries-checkmark";
@@ -141,6 +139,8 @@ NSString * const MITImageShuttlesAnnotationCurrentStop = @"shuttles-annotation-c
 #pragma mark - Tours
 NSString * const MITImageToursSelfGuidedBackground = @"tours_cover_image";
 NSString * const MITImageToursTemplateWhiteActionArrow = @"tours-template-action-arrow-white";
+NSString * const MITImageToursPadChevronUp = @"tours-pad-chevron_up";
+NSString * const MITImageToursPadChevronDown = @"tours-pad-chevron_down";
 NSString * const MITImageToursCircleRed = @"tours-circle-red";
 NSString * const MITImageToursCircleBlue = @"tours-circle-blue";
 
