@@ -335,7 +335,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
             break;
         }
         case MITEventDetailRowTypeDescription: {
-            // Special case, handled by webview cell
+            //Special case, handled by webview cell
             break;
         }
         case MITEventDetailRowTypeWebsite: {
