@@ -187,13 +187,27 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        NSDate *timestamp = [NSDate date];
+                                                        for (MITShuttleVehicleList *vehicleList in result.array) {
+                                                            vehicleList.route.updatedTime = timestamp;
+                                                        }
+                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
 
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:completion];
+    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:^(id object, NSError *error) {
+        if (!error) {
+            NSDate *timestamp = [NSDate date];
+            for (MITShuttleVehicleList *vehicleList in object) {
+                vehicleList.route.updatedTime = timestamp;
+            }
+        }
+        completion(object, error);
+    }];
 }
 
 #pragma mark - Helper Methods

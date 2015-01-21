@@ -109,7 +109,7 @@
 - (MITShuttleRouteStatus)status
 {
     // if our data is stale, we don't know the state of the route
-    if ([self.updatedTime timeIntervalSinceNow] < -60) {
+    if ([self.updatedTime timeIntervalSinceNow] < -80) {
         return MITShuttleRouteStatusUnknown;
     }
     
