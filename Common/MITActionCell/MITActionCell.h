@@ -1,5 +1,17 @@
 #import <UIKit/UIKit.h>
-#import "MITEventDetailViewController.h"
+
+typedef NS_ENUM(NSInteger, MITActionRowType) {
+    MITActionRowTypeSpeaker,
+    MITActionRowTypeTime,
+    MITActionRowTypeLocation,
+    MITActionRowTypePhone,
+    MITActionRowTypeDescription,
+    MITActionRowTypeWebsite,
+    MITActionRowTypeOpenTo,
+    MITActionRowTypeCost,
+    MITActionRowTypeSponsors,
+    MITActionRowTypeContact
+};
 
 @interface MITActionCell : UITableViewCell
 
@@ -9,6 +21,8 @@
 
 - (void)setTitle:(NSString *)title;
 - (void)setDetailText:(NSString *)detailText;
-- (void)setupCellOfType:(MITEventDetailRowType)type withDetailText:(NSString *)detailText;
+- (void)setupCellOfType:(MITActionRowType)type withDetailText:(NSString *)detailText;
+
+
 
 @end

@@ -134,34 +134,34 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     NSMutableArray *rowTypes = [NSMutableArray array];
     
     if (self.event.lecturer) {
-        [rowTypes addObject:@(MITEventDetailRowTypeSpeaker)];
+        [rowTypes addObject:@(MITActionRowTypeSpeaker)];
     }
 	if (self.event.startAt) {
-		[rowTypes addObject:@(MITEventDetailRowTypeTime)];
+		[rowTypes addObject:@(MITActionRowTypeTime)];
 	}
 	if (self.event.location) {
-		[rowTypes addObject:@(MITEventDetailRowTypeLocation)];
+		[rowTypes addObject:@(MITActionRowTypeLocation)];
 	}
     if (self.event.contact.phone) {
-        [rowTypes addObject:@(MITEventDetailRowTypePhone)];
+        [rowTypes addObject:@(MITActionRowTypePhone)];
     }
     if (self.event.htmlDescription) {
-        [rowTypes addObject:@(MITEventDetailRowTypeDescription)];
+        [rowTypes addObject:@(MITActionRowTypeDescription)];
     }
     if (self.event.contact.websiteURL) {
-        [rowTypes addObject:@(MITEventDetailRowTypeWebsite)];
+        [rowTypes addObject:@(MITActionRowTypeWebsite)];
     }
     if (self.event.openTo) {
-        [rowTypes addObject:@(MITEventDetailRowTypeOpenTo)];
+        [rowTypes addObject:@(MITActionRowTypeOpenTo)];
     }
     if (self.event.cost) {
-        [rowTypes addObject:@(MITEventDetailRowTypeCost)];
+        [rowTypes addObject:@(MITActionRowTypeCost)];
     }
     if (self.event.sponsors.anyObject) {
-        [rowTypes addObject:@(MITEventDetailRowTypeSponsors)];
+        [rowTypes addObject:@(MITActionRowTypeSponsors)];
     }
     if (self.event.contact.email) {
-        [rowTypes addObject:@(MITEventDetailRowTypeContact)];
+        [rowTypes addObject:@(MITActionRowTypeContact)];
     }
     
     self.rowTypes = rowTypes;
@@ -299,52 +299,52 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 
 #pragma mark - Custom Cells
 
-- (void)configureDetailCell:(MITActionCell *)detailCell ofType:(MITEventDetailRowType)type
+- (void)configureDetailCell:(MITActionCell *)detailCell ofType:(MITActionRowType)type
 {
     detailCell.selectionStyle = UITableViewCellSelectionStyleDefault;
     switch (type) {
-        case MITEventDetailRowTypeSpeaker: {
+        case MITActionRowTypeSpeaker: {
             [detailCell setupCellOfType:type withDetailText:self.event.lecturer];
             break;
         }
-        case MITEventDetailRowTypeTime: {
+        case MITActionRowTypeTime: {
             NSString *timeDetailString = [self.event dateStringWithDateStyle:NSDateFormatterFullStyle
                                                                    timeStyle:NSDateFormatterShortStyle
                                                                    separator:@"\n"];
             [detailCell setupCellOfType:type withDetailText:timeDetailString];
             break;
         }
-        case MITEventDetailRowTypeLocation: {
+        case MITActionRowTypeLocation: {
             [detailCell setupCellOfType:type withDetailText:[self.event.location locationString]];
             break;
         }
-        case MITEventDetailRowTypePhone: {
+        case MITActionRowTypePhone: {
             [detailCell setupCellOfType:type withDetailText:self.event.contact.phone];
             break;
         }
-        case MITEventDetailRowTypeDescription: {
+        case MITActionRowTypeDescription: {
             // Special case, handled by webview cell
             break;
         }
-        case MITEventDetailRowTypeWebsite: {
+        case MITActionRowTypeWebsite: {
             [detailCell setupCellOfType:type withDetailText:self.event.contact.websiteURL];
             break;
         }
-        case MITEventDetailRowTypeOpenTo: {
+        case MITActionRowTypeOpenTo: {
             [detailCell setupCellOfType:type withDetailText:self.event.openTo];
             break;
         }
-        case MITEventDetailRowTypeCost: {
+        case MITActionRowTypeCost: {
             NSString *costString = self.event.cost;
             [detailCell setupCellOfType:type withDetailText:costString];
             break;
         }
-        case MITEventDetailRowTypeSponsors: {
+        case MITActionRowTypeSponsors: {
             NSString *detailText = [[self.event.sponsors.allObjects valueForKey:@"name"] componentsJoinedByString:@"\n"];
             [detailCell setupCellOfType:type withDetailText:detailText];
             break;
         }
-        case MITEventDetailRowTypeContact: {
+        case MITActionRowTypeContact: {
             NSString *contactName = self.event.contact.name ? [NSString stringWithFormat:@"%@ ", self.event.contact.name] : @"";
             NSString *detailText = [NSString stringWithFormat:@"%@(%@)", contactName, self.event.contact.email];
             [detailCell setupCellOfType:type withDetailText:detailText];
@@ -357,14 +357,14 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     [detailCell layoutIfNeeded];
 }
 
-- (CGFloat)heightForDetailCellOfType:(MITEventDetailRowType)type
+- (CGFloat)heightForDetailCellOfType:(MITActionRowType)type
 {
     static MITActionCell *detailCell;
     if (!detailCell) {
         detailCell = [[NSBundle mainBundle] loadNibNamed:[MITActionCell actionCellNibName] owner:self options:nil][0];
     }
     
-    if (type == MITEventDetailRowTypeDescription) {
+    if (type == MITActionRowTypeDescription) {
         return self.descriptionWebviewCellHeight;
     } else {
         [self configureDetailCell:detailCell ofType:type];
@@ -407,7 +407,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
 {
     switch (indexPath.section) {
         case kMITEventDetailsSection: {
-            MITEventDetailRowType rowType = [self.rowTypes[indexPath.row] integerValue];
+            MITActionRowType rowType = [self.rowTypes[indexPath.row] integerValue];
             CGFloat h = ceil([self heightForDetailCellOfType:rowType]);
             return h;
             break;
@@ -424,15 +424,15 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
     
     switch (rowType) {
-        case MITEventDetailRowTypeSpeaker: {
+        case MITActionRowTypeSpeaker: {
             // Nothing
             break;
         }
-        case MITEventDetailRowTypeTime: {
+        case MITActionRowTypeTime: {
             [self addToCalendar];
             break;
         }
-        case MITEventDetailRowTypeLocation: {
+        case MITActionRowTypeLocation: {
             if (self.event.location.roomNumber) {
                 [MITMapModelController openMapWithUnsanitizedSearchString:self.event.location.roomNumber];
             }
@@ -441,13 +441,13 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
             }
             break;
         }
-        case MITEventDetailRowTypePhone: {
+        case MITActionRowTypePhone: {
             [MITTelephoneHandler attemptToCallPhoneNumber:self.event.contact.phone];
             break;
         }
-        case MITEventDetailRowTypeDescription:
+        case MITActionRowTypeDescription:
             break;
-        case MITEventDetailRowTypeWebsite: {
+        case MITActionRowTypeWebsite: {
             NSString *websiteURLString = self.event.contact.websiteURL;
             NSString *urlPrefix = @"http";
             if (![websiteURLString hasPrefix:urlPrefix]) {
@@ -457,11 +457,11 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
             [[UIApplication sharedApplication] openURL:websiteURL];
             break;
         }
-        case MITEventDetailRowTypeOpenTo:
-        case MITEventDetailRowTypeCost:
-        case MITEventDetailRowTypeSponsors:
+        case MITActionRowTypeOpenTo:
+        case MITActionRowTypeCost:
+        case MITActionRowTypeSponsors:
             break;
-        case MITEventDetailRowTypeContact: {
+        case MITActionRowTypeContact: {
 
             if ([MFMailComposeViewController canSendMail]) {
                 
@@ -513,7 +513,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
         case kMITEventDetailsSection: {
             NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
             
-            if (rowType == MITEventDetailRowTypeDescription) {
+            if (rowType == MITActionRowTypeDescription) {
                 // return webview cell height
                 MITWebviewCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITEventWebviewCellIdentifier];
 

@@ -46,67 +46,67 @@
     // Configure the view for the selected state
 }
 
-- (void)setupCellOfType:(MITEventDetailRowType)type withDetailText:(NSString *)detailText
+- (void)setupCellOfType:(MITActionRowType)type withDetailText:(NSString *)detailText
 {
     self.selectionStyle = UITableViewCellSelectionStyleDefault;
     switch (type) {
-        case MITEventDetailRowTypeSpeaker: {
+        case MITActionRowTypeSpeaker: {
             [self setTitle:@"speaker"];
             [self setDetailText:detailText];
             self.accessoryView = nil;
             self.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
-        case MITEventDetailRowTypeTime: {
+        case MITActionRowTypeTime: {
             [self setTitle:@"time"];
             [self setDetailText:detailText];
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewCalendar];
             break;
         }
-        case MITEventDetailRowTypeLocation: {
+        case MITActionRowTypeLocation: {
             [self setTitle:@"location"];
             [self setDetailText:detailText];
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewMap];
             break;
         }
-        case MITEventDetailRowTypePhone: {
+        case MITActionRowTypePhone: {
             [self setTitle:@"phone"];
             [self setDetailText:detailText];
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             break;
         }
-        case MITEventDetailRowTypeDescription: {
+        case MITActionRowTypeDescription: {
             // Special case, handled by webview cell
             break;
         }
-        case MITEventDetailRowTypeWebsite: {
+        case MITActionRowTypeWebsite: {
             [self setTitle:@"website"];
             [self setDetailText:detailText];
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             break;
         }
-        case MITEventDetailRowTypeOpenTo: {
+        case MITActionRowTypeOpenTo: {
             [self setTitle:@"open to"];
             [self setDetailText:detailText];
             self.accessoryView = nil;
             self.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
-        case MITEventDetailRowTypeCost: {
+        case MITActionRowTypeCost: {
             [self setTitle:@"cost"];
             [self setDetailText:detailText];
             self.accessoryView = nil;
             self.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
-        case MITEventDetailRowTypeSponsors: {
+        case MITActionRowTypeSponsors: {
             [self setTitle:@"sponsor"];
             [self setDetailText:detailText];
             self.accessoryView = nil;
             self.selectionStyle = UITableViewCellSelectionStyleNone;
             break;
         }
-        case MITEventDetailRowTypeContact: {
+        case MITActionRowTypeContact: {
             [self setTitle:@"for more information, contact"];
             [self setDetailText:detailText];
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
