@@ -113,7 +113,7 @@
 {
     self = [super initWithName:MITShuttlesVehiclesResourceName pathPattern:MITShuttlesVehiclesPathPattern managedObjectModel:managedObjectModel];
     if (self) {
-        [self addMapping:[MITShuttleVehicleList objectMapping]
+        [self addMapping:[MITShuttleVehicleList objectMappingFromDetail]
                atKeyPath:nil
         forRequestMethod:RKRequestMethodGET];
     }
