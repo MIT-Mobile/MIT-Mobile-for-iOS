@@ -1,18 +1,5 @@
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, MITEventDetailRowType) {
-    MITEventDetailRowTypeSpeaker,
-    MITEventDetailRowTypeTime,
-    MITEventDetailRowTypeLocation,
-    MITEventDetailRowTypePhone,
-    MITEventDetailRowTypeDescription,
-    MITEventDetailRowTypeWebsite,
-    MITEventDetailRowTypeOpenTo,
-    MITEventDetailRowTypeCost,
-    MITEventDetailRowTypeSponsors,
-    MITEventDetailRowTypeContact
-};
-
 @class MITCalendarsEvent, MITEventDetailViewController;
 
 @protocol MITEventDetailViewControllerDelegate <NSObject>
