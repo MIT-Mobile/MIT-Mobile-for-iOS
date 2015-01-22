@@ -117,7 +117,7 @@
                                                              orientation:UIImageOrientationUp];
                         CGImageRelease(hashImage);
                     } else {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleVersion"]];
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleShortVersionString"]];
                     } 
                 }
                     break;
