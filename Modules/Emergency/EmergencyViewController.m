@@ -235,6 +235,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         } else {
             cell.textLabel.text = @"More Emergency Contacts";
             cell.detailTextLabel.text = nil;
+            cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
