@@ -30,11 +30,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"Emergency Info";
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
-        } else {
-            _webViewInsets = UIEdgeInsetsMake(10., 10., 0., 10.);
-        }
+        _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
     }
     return self;
 }
@@ -70,7 +66,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self infoDidLoad:nil];
     
 	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
 	[emergencyModule syncUnreadNotifications];
