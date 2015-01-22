@@ -68,7 +68,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
+    
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -77,7 +77,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-
+    
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
     [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForRoute:self.route];
@@ -104,48 +104,10 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     }
     [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     self.tableView.separatorInset = UIEdgeInsetsMake(0, self.tableView.frame.size.width, 0, 0);
-
+    
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
-}
-
-#pragma mark - Vehicles Refresh Timer
-
-- (void)startRefreshingVehicles
-{
-    [self loadVehicles];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
-                                                                         target:self
-                                                                       selector:@selector(loadVehicles)
-                                                                       userInfo:nil
-                                                                        repeats:YES];
-        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
-    });
-}
-
-- (void)stopRefreshingVehicles
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        self.vehiclesRefreshTimer = nil;
-    });
-}
-
-- (void)loadVehicles
-{
-    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {
-        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-            [self.delegate routeViewControllerDidRefresh:self];
-        }
-    }];
-
-- (void)setupToolbar
-{
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
 #pragma mark - Update Data
@@ -204,7 +166,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if (!_routeStatusCell) {
         _routeStatusCell = [[NSBundle mainBundle] loadNibNamed:kMITShuttleRouteStatusCellNibName owner:self options:nil][0];
         [_routeStatusCell setRoute:self.route];
-
+        
         CGRect screenRect = [UIScreen mainScreen].bounds;
         CGFloat width = CGRectGetWidth(screenRect);
         CGFloat height = CGRectGetHeight(screenRect);
@@ -304,7 +266,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
-
+    
     if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
         if ([self.delegate respondsToSelector:@selector(routeViewControllerDidSelectMapPlaceholderCell:)]) {
             [self.delegate routeViewControllerDidSelectMapPlaceholderCell:self];
