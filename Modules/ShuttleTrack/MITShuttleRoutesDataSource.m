@@ -12,6 +12,17 @@
 
 @implementation MITShuttleRoutesDataSource
 
+- (instancetype)init
+{
+    self = [super init];
+    
+    if (self) {
+        self.expiryInterval = 60.0;
+    }
+    
+    return self;
+}
+
 - (NSFetchRequest *)fetchRequest
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleRoute entityName]];

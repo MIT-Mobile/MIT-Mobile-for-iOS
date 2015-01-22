@@ -14,14 +14,12 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
 
-static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
 static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 
 static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
-static const NSTimeInterval kRouteVehiclesRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
@@ -33,7 +31,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 @property (nonatomic) BOOL isUpdating;
 
-@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 
 @end
 
@@ -71,11 +68,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self startRefreshingVehicles];
-    }
-    
+
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -84,9 +77,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    [self stopRefreshingVehicles];
-    
+
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
     [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForRoute:self.route];
@@ -113,7 +104,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     }
     [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     self.tableView.separatorInset = UIEdgeInsetsMake(0, self.tableView.frame.size.width, 0, 0);
-    
+
     UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
     [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
     self.refreshControl = refreshControl;
@@ -150,6 +141,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
             [self.delegate routeViewControllerDidRefresh:self];
         }
     }];
+
+- (void)setupToolbar
+{
+    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
+    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
 }
 
 #pragma mark - Update Data
@@ -208,7 +204,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if (!_routeStatusCell) {
         _routeStatusCell = [[NSBundle mainBundle] loadNibNamed:kMITShuttleRouteStatusCellNibName owner:self options:nil][0];
         [_routeStatusCell setRoute:self.route];
-        
+
         CGRect screenRect = [UIScreen mainScreen].bounds;
         CGFloat width = CGRectGetWidth(screenRect);
         CGFloat height = CGRectGetHeight(screenRect);
@@ -259,7 +255,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
-        if (routeStatus != MITShuttleRouteStatusUnknown) {
+        if (routeStatus != MITShuttleRouteStatusUnknown && [stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
             MITShuttlePrediction *prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
             [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
@@ -308,7 +304,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
-    
+
     if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
         if ([self.delegate respondsToSelector:@selector(routeViewControllerDidSelectMapPlaceholderCell:)]) {
             [self.delegate routeViewControllerDidSelectMapPlaceholderCell:self];

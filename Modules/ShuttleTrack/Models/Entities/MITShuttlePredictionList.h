@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttlePrediction, MITShuttleStop;
+@class MITShuttlePrediction, MITShuttleStop, MITShuttleRoute;
 
 @interface MITShuttlePredictionList : MITManagedObject <MITMappedObject>
 
@@ -12,6 +12,7 @@
 @property (nonatomic, retain) NSOrderedSet *predictions;
 @property (nonatomic, retain) NSDate *updatedTime;
 @property (nonatomic, retain) MITShuttleStop *stop;
+@property (nonatomic, retain) MITShuttleRoute *route;
 
 + (RKMapping *)objectMappingFromDetail;
 + (RKMapping *)objectMappingFromStop;

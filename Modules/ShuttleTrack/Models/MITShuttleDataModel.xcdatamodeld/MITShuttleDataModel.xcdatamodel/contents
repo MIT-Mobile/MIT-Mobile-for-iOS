@@ -19,6 +19,7 @@
         <attribute name="stopURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updatedTime" optional="YES" attributeType="Date" syncable="YES"/>
         <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttlePrediction" inverseName="list" inverseEntity="ShuttlePrediction" syncable="YES"/>
+        <relationship name="route" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRoute" inverseName="predictionLists" inverseEntity="ShuttleRoute" syncable="YES"/>
         <relationship name="stop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleStop" inverseName="predictionList" inverseEntity="ShuttleStop" syncable="YES"/>
     </entity>
     <entity name="ShuttleRoute" representedClassName="MITShuttleRoute" syncable="YES">
@@ -33,9 +34,12 @@
         <attribute name="routeDescription" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="scheduled" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="updatedTime" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="vehiclesURL" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="predictionLists" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ShuttlePredictionList" inverseName="route" inverseEntity="ShuttlePredictionList" syncable="YES"/>
         <relationship name="stops" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShuttleStop" inverseName="route" inverseEntity="ShuttleStop" syncable="YES"/>
+        <relationship name="vehicleList" optional="YES" maxCount="1" deletionRule="Cascade" destinationEntity="ShuttleVehicleList" inverseName="route" inverseEntity="ShuttleVehicleList" syncable="YES"/>
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="route" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <entity name="ShuttleStop" representedClassName="MITShuttleStop" syncable="YES">
@@ -66,18 +70,17 @@
     </entity>
     <entity name="ShuttleVehicleList" representedClassName="MITShuttleVehicleList" syncable="YES">
         <attribute name="agency" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="predictable" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="routeId" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="routeURL" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="scheduled" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <relationship name="route" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRoute" inverseName="vehicleList" inverseEntity="ShuttleRoute" syncable="YES"/>
         <relationship name="vehicles" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttleVehicle" inverseName="vehicleList" inverseEntity="ShuttleVehicle" syncable="YES"/>
     </entity>
     <elements>
         <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="165"/>
-        <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="178"/>
-        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="270"/>
+        <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="195"/>
+        <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="313"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="223"/>
         <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
-        <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="135"/>
+        <element name="ShuttleVehicleList" positionX="-990" positionY="65" width="128" height="118"/>
     </elements>
 </model>

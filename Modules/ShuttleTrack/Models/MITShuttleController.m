@@ -36,6 +36,12 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        NSDate *timestamp = [NSDate date];
+                                                        for (MITShuttleRoute *route in result.array) {
+                                                            route.updatedTime = timestamp;
+                                                        }
+                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
@@ -46,6 +52,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
         if (!error) {
             NSDate *timestamp = [NSDate date];
             MITShuttleRoute *route = object;
+            route.updatedTime = timestamp;
             for (MITShuttleStop *stop in route.stops) {
                 stop.predictionList.updatedTime = timestamp;
             }
@@ -72,6 +79,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             NSDate *timestamp = [NSDate date];
             for (MITShuttlePredictionList *list in object) {
                 list.updatedTime = timestamp;
+                list.route.updatedTime = timestamp;
             }
         }
         completion(object, error);
@@ -85,6 +93,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             NSDate *timestamp = [NSDate date];
             for (MITShuttlePredictionList *list in object) {
                 list.updatedTime = timestamp;
+                list.route.updatedTime = timestamp;
             }
             completion(object, error);
         }];
@@ -143,6 +152,7 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
                                                             NSDate *timestamp = [NSDate date];
                                                             for (MITShuttlePredictionList *list in result.array) {
                                                                 list.updatedTime = timestamp;
+                                                                list.route.updatedTime = timestamp;
                                                             }
                                                         }
                                                         [self handleResult:result error:error completion:^(id object, NSError *error) {
@@ -177,13 +187,27 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
                                                 parameters:nil
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+                                                    if (!error) {
+                                                        NSDate *timestamp = [NSDate date];
+                                                        for (MITShuttleVehicleList *vehicleList in result.array) {
+                                                            vehicleList.route.updatedTime = timestamp;
+                                                        }
+                                                    }
                                                     [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
                                                 }];
 }
 
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:completion];
+    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:^(id object, NSError *error) {
+        if (!error) {
+            NSDate *timestamp = [NSDate date];
+            for (MITShuttleVehicleList *vehicleList in object) {
+                vehicleList.route.updatedTime = timestamp;
+            }
+        }
+        completion(object, error);
+    }];
 }
 
 #pragma mark - Helper Methods
