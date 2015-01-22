@@ -110,44 +110,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     self.refreshControl = refreshControl;
 }
 
-#pragma mark - Vehicles Refresh Timer
-
-- (void)startRefreshingVehicles
-{
-    [self loadVehicles];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
-                                                                         target:self
-                                                                       selector:@selector(loadVehicles)
-                                                                       userInfo:nil
-                                                                        repeats:YES];
-        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
-    });
-}
-
-- (void)stopRefreshingVehicles
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        self.vehiclesRefreshTimer = nil;
-    });
-}
-
-- (void)loadVehicles
-{
-    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {
-        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-            [self.delegate routeViewControllerDidRefresh:self];
-        }
-    }];
-
-- (void)setupToolbar
-{
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
-}
-
 #pragma mark - Update Data
 
 - (void)predictionsWillUpdate
