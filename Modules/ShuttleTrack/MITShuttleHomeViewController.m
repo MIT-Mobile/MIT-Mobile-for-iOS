@@ -307,6 +307,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self refreshNearestStops:^{
         NSMutableArray *mutableFlatRouteArray = [NSMutableArray array];
         
+        // Sort first by In Service / Unknown / Not In Service, then by server order
+        
         NSArray *sortedRoutes = [self.routes sortedArrayUsingComparator:^NSComparisonResult(MITShuttleRoute *left, MITShuttleRoute *right) {
             MITShuttleRouteStatus leftStatus = [left status];
             MITShuttleRouteStatus rightStatus = [right status];
@@ -316,9 +318,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 return NSOrderedAscending;
             } else if (rightStatus == MITShuttleRouteStatusInService) {
                 return NSOrderedDescending;
-            } else if (leftStatus == MITShuttleRouteStatusNotInService) {
+            } else if (leftStatus == MITShuttleRouteStatusUnknown) {
                 return NSOrderedAscending;
-            } else if (rightStatus == MITShuttleRouteStatusNotInService) {
+            } else if (rightStatus == MITShuttleRouteStatusUnknown) {
                 return NSOrderedDescending;
             }
             return [left.order compare:right.order];
