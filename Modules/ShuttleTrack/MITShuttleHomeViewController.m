@@ -101,12 +101,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     [super viewWillAppear:animated];
 
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self.navigationController setToolbarHidden:YES animated:animated];
-    } else {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-
     self.shouldAddPredictionsDependencies = YES;
     self.forceRefreshForNextDependencies = YES;
     [self startRefreshingRoutes];
