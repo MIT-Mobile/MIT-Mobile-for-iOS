@@ -15,9 +15,13 @@
     return YES;
 }
 
-- (void)loadRootViewController
+- (void)loadViewController
 {
+    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MartyStoryboard" bundle:nil];
+    NSAssert(storyboard, @"failed to load storyboard for %@",self);
     
+    UIViewController *controller = [storyboard instantiateInitialViewController];
+    self.viewController = controller;
 }
 	
 @end
