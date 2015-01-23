@@ -798,8 +798,8 @@
 		0B394CE719E3358B00B48F17 /* MITNewsRecentSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsRecentSearchController.m; sourceTree = "<group>"; };
 		0B4F9D8F19912A3F0047354E /* MITNewsCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsCategoryViewController.h; sourceTree = "<group>"; };
 		0B4F9D9019912A3F0047354E /* MITNewsCategoryViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsCategoryViewController.m; sourceTree = "<group>"; };
-		0B5D299D1A6ED96F001A55D3 /* MITMartyModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyModule.h; path = Marty/MITMartyModule.h; sourceTree = "<group>"; };
-		0B5D299E1A6ED96F001A55D3 /* MITMartyModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyModule.m; path = Marty/MITMartyModule.m; sourceTree = "<group>"; };
+		0B5D299D1A6ED96F001A55D3 /* MITMartyModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyModule.h; sourceTree = "<group>"; };
+		0B5D299E1A6ED96F001A55D3 /* MITMartyModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyModule.m; sourceTree = "<group>"; };
 		0B5D29C91A7001B9001A55D3 /* MITActionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITActionCell.h; sourceTree = "<group>"; };
 		0B5D29CA1A7001B9001A55D3 /* MITActionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITActionCell.m; sourceTree = "<group>"; };
 		0B5D29CB1A7001B9001A55D3 /* MITActionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITActionCell.xib; sourceTree = "<group>"; };
@@ -2242,7 +2242,7 @@
 				0B5D299D1A6ED96F001A55D3 /* MITMartyModule.h */,
 				0B5D299E1A6ED96F001A55D3 /* MITMartyModule.m */,
 			);
-			name = Marty;
+			path = Marty;
 			sourceTree = "<group>";
 		};
 		0B5D29C81A7001B9001A55D3 /* MITActionCell */ = {
