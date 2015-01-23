@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.iPad.XIB" version="3.0" toolsVersion="5056" systemVersion="13E28" targetRuntime="iOS.CocoaTouch.iPad" propertyAccessControl="none" useAutolayout="YES">
+    <dependencies>
+        <deployment defaultVersion="1552" identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
+    </dependencies>
+    <objects>
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
+        <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" id="KGk-i7-Jjw" customClass="MITDiningDietaryFlagListCell">
+            <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
+            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KGk-i7-Jjw" id="H2p-sc-9uM">
+                <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                <autoresizingMask key="autoresizingMask"/>
+                <subviews>
+                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TbP-Qb-WT9">
+                        <rect key="frame" x="51" y="0.0" width="269" height="43"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <imageView userInteractionEnabled="NO" contentMode="center" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="4GF-Iy-HPn">
+                        <rect key="frame" x="0.0" y="0.0" width="43" height="43"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <constraints>
+                            <constraint firstAttribute="width" secondItem="4GF-Iy-HPn" secondAttribute="height" multiplier="1:1" id="rYy-6n-ttf"/>
+                        </constraints>
+                    </imageView>
+                </subviews>
+                <constraints>
+                    <constraint firstItem="TbP-Qb-WT9" firstAttribute="leading" secondItem="4GF-Iy-HPn" secondAttribute="trailing" constant="8" id="3J0-ss-rLc"/>
+                    <constraint firstItem="4GF-Iy-HPn" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" id="JQi-ob-k5q"/>
+                    <constraint firstItem="TbP-Qb-WT9" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="Pcd-d3-CWr"/>
+                    <constraint firstAttribute="bottom" secondItem="4GF-Iy-HPn" secondAttribute="bottom" id="b8a-bt-pOh"/>
+                    <constraint firstAttribute="bottom" secondItem="TbP-Qb-WT9" secondAttribute="bottom" id="bPa-qE-MOr"/>
+                    <constraint firstAttribute="trailing" secondItem="TbP-Qb-WT9" secondAttribute="trailing" id="kbh-y3-Xso"/>
+                    <constraint firstItem="4GF-Iy-HPn" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="uDF-uy-QXW"/>
+                </constraints>
+            </tableViewCellContentView>
+            <connections>
+                <outlet property="flagImageView" destination="4GF-Iy-HPn" id="fCp-WF-dmT"/>
+                <outlet property="flagTitleLabel" destination="TbP-Qb-WT9" id="uIo-DI-NtH"/>
+            </connections>
+        </tableViewCell>
+    </objects>
+</document>

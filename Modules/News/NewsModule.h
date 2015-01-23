@@ -1,9 +1,9 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
 @class StoryListViewController;
 @class MITNewsViewController;
 
-@interface NewsModule : MITModule
-@property (nonatomic, readonly) StoryListViewController *storyListChannelController;
+@interface NewsModule : MITNavigationModule
+- (instancetype)init;
 @end

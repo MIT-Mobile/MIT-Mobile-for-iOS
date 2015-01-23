@@ -1,27 +1,37 @@
 #import "ToursModule.h"
 #import "MITModule.h"
-#import "CampusTourHomeController.h"
-#import "MITModule+Protected.h"
+#import "MITToursHomeViewController.h"
+#import "MITToursHomeViewControllerPad.h"
 
 @implementation ToursModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = ToursTag;
-        self.shortName = @"Tours";
-        self.longName = @"Campus Tour";
-        self.iconName = @"tours";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagTours title:@"Tours"];
+    if (self) {
+        self.longTitle = @"Campus Tour";
+        self.imageName = MITImageToursModuleIcon;
     }
+
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    CampusTourHomeController *controller = [[CampusTourHomeController alloc] init];
+    return YES;
+}
+
+- (void)loadRootViewController
+{
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
     
-    self.homeController = controller;
-    self.moduleHomeController = controller;
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITToursHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+    
+    self.rootViewController = rootViewController;
 }
 
 @end

@@ -9,9 +9,7 @@
 
 @property (nonatomic, copy) NSString * author;
 @property (nonatomic, copy) NSString * body;
-@property (nonatomic, readonly, copy) NSString *titleText;
 @property (nonatomic, copy) NSString * dek;
-@property (nonatomic, readonly, copy) NSString *dekText;
 @property (nonatomic, strong) NSNumber * featured;
 @property (nonatomic, copy) NSString * identifier;
 @property (nonatomic, strong) NSDate * publishedAt;

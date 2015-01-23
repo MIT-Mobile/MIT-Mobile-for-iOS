@@ -39,7 +39,7 @@
             imageURL = imageRepresentation.url;
         }];
         
-        
+        __weak MITNewsImageViewController *weak = self;
         [[SDWebImageDownloader sharedDownloader] downloadImageWithURL:imageURL
                                                               options:0
                                                              progress:nil
@@ -48,6 +48,8 @@
                                                                 
                                                                 if (image) {
                                                                     [self.scrollView displayImage:image];
+                                                                    MITNewsImageViewController *strong = weak;
+                                                                    strong.cachedImage = image;
                                                                 }
                                                             }];
     }
@@ -56,6 +58,7 @@
 
 - (void)viewWillDisappear:(BOOL)animated
 {
+    [super viewWillDisappear:animated];
     [self.imageView cancelCurrentImageLoad];
 }
 

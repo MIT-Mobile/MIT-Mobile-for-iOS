@@ -1,33 +1,38 @@
 #import "SettingsModule.h"
-
-#import "MITModule.h"
-#import "MITModule+Protected.h"
-#import "SettingsTableViewController.h"
+#import "SettingsTouchstoneViewController.h"
 
 @implementation SettingsModule
-
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = SettingsTag;
-        self.shortName = @"Settings";
-        self.longName = @"Settings";
-        self.iconName = @"settings";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagSettings title:@"Settings"];
+    if (self) {
+        self.imageName = MITImageSettingsModuleIcon;
     }
+
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    self.moduleHomeController = [[SettingsTableViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    return YES;
 }
 
-- (BOOL)handleLocalPath:(NSString *)localPath
-                  query:(NSString *)query
+- (void)loadRootViewController
 {
-    [[MITAppDelegate() rootNavigationController] pushViewController:self.moduleHomeController
-                                                           animated:YES];
-	return YES;
+    SettingsTouchstoneViewController *rootViewController = [[SettingsTouchstoneViewController alloc] init];
+    self.rootViewController = rootViewController;
+}
+
+- (void)viewControllerDidLoad
+{
+    [super viewControllerDidLoad];
+
+    self.viewController.moduleItem.type = MITModulePresentationModal;
+}
+
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    [self.navigationController popToViewController:self.rootViewController animated:NO];
 }
 
 @end

@@ -3,7 +3,18 @@
 #pragma mark Error Domains
 extern NSString * const MITXMLErrorDomain;
 
+#pragma mark Helper Functions
 BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
+
+/** Extracts the URLs and relation type for Link headers
+*   returned by the Mobile API. This is not a robust implementation
+*   of a Link header parser and will either fail or return spectacularly
+*   incorrect results if the headers are not properly formed or contain
+*   unknown parameters.
+*
+*   @returns a dictionary with relation-type to URL association for successfully parsed link headers
+*/
+NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
 
 @interface NSURL (MITAdditions)
 
@@ -19,6 +30,7 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
  * @see -[NSURL query]
  */
 - (NSDictionary*)queryDictionary;
+- (NSDictionary*)URLDecodedQueryDictionary;
 @end
 
 @interface NSArray (MITAdditions)
@@ -80,19 +92,33 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 
 @interface NSDate (MITAdditions)
 + (NSDate *)fakeDateForDining;
-+ (NSDate *) dateForTodayFromTimeString:(NSString *)time;
-- (BOOL) isEqualToDateIgnoringTime: (NSDate *) aDate;
-- (BOOL) isToday;
-- (BOOL) isTomorrow;
-- (BOOL) isYesterday;
-- (NSDate *) startOfDay;
-- (NSDate *) endOfDay;
-- (NSDate *) dayBefore;
-- (NSDate *) dayAfter;
-- (NSString *) MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
-- (NSDateComponents *) dayComponents;
-- (NSDateComponents *) timeComponents;
++ (NSDate *)dateForTodayFromTimeString:(NSString *)time;
+- (BOOL)isEqualToDateIgnoringTime: (NSDate *) aDate;
+- (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date;
+- (BOOL)isToday;
+- (BOOL)isTomorrow;
+- (BOOL)isYesterday;
+- (NSDate *)dateWithoutTime;
+- (NSDate *)startOfDay;
+- (NSDate *)endOfDay;
+- (NSDate *)startOfWeek;
+- (NSDate *)dayBefore;
+- (NSDate *)dayAfter;
+- (NSDate *)dateByAddingDay;
+- (NSDate *)dateBySubtractingDay;
+- (NSDate *)dateByAddingWeek;
+- (NSDate *)dateBySubtractingWeek;
+- (NSDate *)dateByAddingYear;
+- (NSArray *)datesInWeek;
+- (NSString *)MITShortTimeOfDayString; // e.g. "1pm", "10:30am", etc
+- (NSString *)todayTomorrowYesterdayString;
+- (NSDateComponents *)dayComponents;
+- (NSDateComponents *)timeComponents;
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
+- (NSString *)ISO8601String;
+- (NSString *)MITDateCode;
++ (NSNumber *)numberForDateCode:(NSString *)dateCode;
 
 @end
 
@@ -100,4 +126,8 @@ BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1);
 
 + (NSCalendar *)cachedCurrentCalendar;
 
+@end
+
+@interface NSIndexPath (MITAdditions)
++ (NSIndexPath*)indexPathWithIndexPath:(NSIndexPath*)indexPath;
 @end

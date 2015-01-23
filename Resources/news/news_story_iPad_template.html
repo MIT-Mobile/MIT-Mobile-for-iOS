@@ -1,0 +1,196 @@
+<html>
+    <head>
+        <base href="http://newsoffice.mit.edu">
+        <style type="text/css">
+            html {padding-top: 10px; padding-right: 60px; padding-left: 60px; padding-top: 30px;}
+            body {font-family: "Helvetica Neue", Helvetica;font-size: 16px;margin: 0;padding: 0;-webkit-text-size-adjust: none;}
+            a { color: #990000; }
+            .slugline {font-family: "Helvetica Neue Medium", Helvetica;font-size: 24px;line-height: 24px;margin: 0;padding: 0;}
+            .dek {font-size: 18px;line-height: 18px;margin: 14px 0;color: #505050;}
+            .dek:empty { margin: 0; } /* CSS 3: shrink if no content */
+            .inlineControls {
+                float: right;
+                -webkit-user-select: none;
+                position: relative;
+                top: 6px;
+            }
+            .inlineControls a {
+                -webkit-tap-highlight-color: rgba(0,0,0,0);
+            }
+            .inlineControls span {
+                display: inline-block;
+                width: 44px;
+                height: 38px;
+                -webkit-user-select: none;
+            }
+            #bookmarkButton {
+                background: url('global/bookmark_button@2x.png') no-repeat 0 -38px;
+                -webkit-background-size: 88px 76px;
+            }
+            #bookmarkButton.pressed {
+                background-position: 0 1px;
+            }
+            #bookmarkButton.on {
+                background-position: -44px -38px;
+            }
+            #bookmarkButton.pressed.on {
+                background-position: -44px 1px;
+            }
+            #shareButton {
+                background-image: url('global/share@2x.png');
+                -webkit-background-size: 44px 38px;
+            }
+            #shareButton.pressed {
+                background-image: url('global/share_pressed@2x.png');
+                -webkit-background-size: 44px 38px;
+            }
+            .inline-separator {margin: 0 3px;}
+            #content {border-top: 1px solid #A31F34;}
+            .horizontalRule {border-bottom: 1px solid #A31F34; margin: 0; padding-top: 10;}
+            .credential {font-size:8pt;}
+            #image {float:right;margin: 14px 0 -1px 8px;}
+            #image img.thumbnail {float:right; border: 1px solid #505050; /* scale to width respecting aspect */}
+            #image img.enlarge { float:right; margin-left: 4px; }
+            #image div { float:right; margin-top: 2px; margin-right:-2px; }
+            #image a { text-align:right; font-size:11px; line-height: 0px; text-decoration:none; color:#777;}
+            #image a div { margin-top: -4px; }
+            #image a+a div { margin-top: 2px; }
+            #body {line-height: 20px;color: #202020; margin-top: 14px;}
+            .imageDescription {font-size:15px; line-height: 15px; margin: 0 0 0 8px;padding-top: 10; word-wrap:break-word; opacity:0.7;}
+            .imageCredit {font-size:14px; line-height: 14px; margin: 0 0 0 8px;padding-top: 3; padding-bottom: 5; word-wrap:break-word; opacity:0.6;}
+            .imageSpace {padding-top: 8; margin: 0 0 0 0;}
+            .gallery_image {margin-top: 14px;}
+            .gallery_image, .imageDescription, .imageCredit, .imageSpace{
+                float: right;
+                clear: right;
+                margin-left: 20px;
+            }
+            /* Resize embedded iframes for YouTube videos on News articles. */
+            iframe {
+                max-width: 100%;
+            }
+            /* Resize embedded image frames for images on News articles. */
+            img {
+                max-width: 100%;
+                height: auto !important;
+            }
+            p:empty {
+                display: none;
+            }
+            p.author, p.postdate {
+                margin: 0px; font-size: 16px; min-height:16px;
+            }
+            div.byline {
+                padding: 10px 0;
+            }
+        </style>
+        <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
+        <title>__TITLE__</title>
+    </head>
+    <body bgcolor="#FFFFFF">
+        <h1 class="slugline">__TITLE__
+        </h1>
+        <!--
+        <span class="inlineControls">
+            <a href="bookmark"><span width="44" height="38" alt="Bookmark" id="bookmarkButton" class="__BOOKMARKED__"></span></a>
+            <a href="share"><span width="44" height="38" alt="Share" id="shareButton" class=""></span></a>
+        </span>
+         -->
+        <div class="byline">
+            <p class="author">__AUTHOR__</p>
+            <p class="postdate">__DATE__</p>
+        </div>
+        <div id="content">
+            <img class="gallery_image" src="__GALLERY_URL__" width="__GALLERY_WIDTH__" height="__GALLERY_HEIGHT__" id="gallery_image">
+            <p class="imageDescription" style="width:__GALLERY_WIDTH__;">__GALLERY_DESCRIPTION__</p>
+            <p class="imageCredit" style="width:__GALLERY_WIDTH__">Image: <span class="gallery_credit">__GALLERY_CREDIT__</span></p>
+            <p class="imageSpace" style="width:__GALLERY_WIDTH__;"> </p>
+            
+            <p class="dek">__DEK__</p><div id="body">__BODY__</div>
+        </div>
+        <p class="horizontalRule">
+            </p>
+    </body>
+    <!-- JS at the bottom instead of onload in order to do work before UIWebView slides into view -->
+    <script type="text/javascript" charset="utf-8">
+        // hide author if not set
+        var authorIsEmpty = (document.getElementsByClassName("gallery_credit")[0].childNodes.length == 0);
+        if (authorIsEmpty) {
+            var creditNode = document.getElementsByClassName("imageCredit")[0];
+            creditNode.parentElement.removeChild(creditNode);
+        }
+        var imageDescriptionIsEmpty = (document.getElementsByClassName("imageDescription")[0].childNodes.length == 0);
+        if (imageDescriptionIsEmpty) {
+            var imageDescriptionNode = document.getElementsByClassName("imageDescription")[0];
+            imageDescriptionNode.parentElement.removeChild(imageDescriptionNode);
+        }
+        var imageIsEmpty = (document.getElementsByClassName("gallery_image")[0].childNodes.length == 0);
+        if (imageIsEmpty) {
+        }
+    
+    
+    
+        var imageCount = __GALLERY_COUNT__;
+        // remove #image block there are no images at all
+        if (imageCount == 0) {
+            var imageNode = document.getElementById("image");
+            imageNode.parentElement.removeChild(imageNode);
+            
+            var imageNode = document.getElementsByClassName("imageSpace")[0];
+            imageDescriptionNode.parentElement.removeChild(imageNode);
+
+        } else {
+           // document.getElementById("imageCount").innerHTML = imageCount + ((imageCount == 1) ? " image" : " images");
+        }
+        // remove img.thumbnail if thumbnail is not set (empty src attributes == the base URL)
+        if (document.getElementsByClassName("thumbnail").length > 0 && document.getElementsByClassName("thumbnail")[0].src.indexOf("file:") == 0) {
+            var imageNode = document.getElementById("thumbnailLink");
+            imageNode.parentElement.removeChild(imageNode);
+        }
+        
+        function hasClass(ele,cls) {
+            return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+        }
+        
+        function addClass(ele,cls) {
+            if (!this.hasClass(ele,cls)) ele.className += " "+cls;
+        }
+
+        function removeClass(ele,cls) {
+            if (hasClass(ele,cls)) {
+                var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+                ele.className=ele.className.replace(reg,' ');
+            }
+        }
+        
+        function toggleClass (ele, cls) {
+            if (hasClass(ele, cls)) {
+                removeClass(ele, cls);
+            } else {
+                addClass(ele, cls);
+            }
+        }
+/*
+        var bookmarkButton = document.getElementById("bookmarkButton");
+        bookmarkButton.addEventListener("touchstart", function() {
+            addClass(bookmarkButton, "pressed");
+        });
+        bookmarkButton.addEventListener("touchend", function() {
+            removeClass(bookmarkButton, "pressed");
+            toggleClass(bookmarkButton, "on");
+        });
+        var shareButton = document.getElementById("shareButton");
+        shareButton.addEventListener("touchstart", function() {
+            addClass(shareButton, "pressed");
+        });        
+        shareButton.addEventListener("touchend", function() {
+            removeClass(shareButton, "pressed");
+        });
+ */
+        var gallery = document.getElementById("gallery_image");
+        gallery.addEventListener("touchend", function() {
+                                 window.open("mitmobilenews://opengallery");
+        });
+        
+    </script>
+</html>

@@ -2,10 +2,10 @@
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
+#import "MITModuleItem.h"
 
-#define TAB_COUNT 4
-
+NSString* const MITNotificationModuleTagKey = @"tag";
 
 @implementation MITUnreadNotifications
 
@@ -56,10 +56,9 @@
 	}
 	
 
-	// update the badge values for each tab item
 	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
 	for(MITModule *module in appDelegate.modules) {
-		[module setBadgeValue:[modulesBadgeString[module.tag] stringValue]];
+        module.viewController.moduleItem.badgeValue = [@(badgeCountInt) stringValue];
 	}
 	
 	// update the total badge value for the application
@@ -69,38 +68,36 @@
 }
 		
 
-+ (MobileRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"push"
-                                                                              command:command
-                                                                           parameters:params] autorelease];
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error && [jsonResult isKindOfClass:[NSArray class]]) {
-            NSMutableArray *notifications = [NSMutableArray array];
-            for(NSString *noticeString in (NSArray *)jsonResult) {
-                [notifications addObject:[MITNotification fromString:noticeString]];
-            }
-            
-            [MITUnreadNotifications saveUnreadNotifications:notifications];
-            [MITUnreadNotifications updateUI];
-            
-            // since receiving the unread notices from the server is asynchrous event
-            // we want all the modules to know that this data may have changed
-            // so we pass of the new version of the data to each module
-            NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
-            for (MITModule *module in modules) {
-                NSMutableArray *moduleNotifications = [NSMutableArray array];
-                
-                for (MITNotification *notification in notifications) {
-                    if([notification.moduleName isEqualToString:module.tag]) {
-                        [moduleNotifications addObject:notification];
-                    }
++ (MITTouchstoneRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:command parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *notices) {
+        NSAssert([notices isKindOfClass:[NSArray class]], @"expected an instance of NSArray, got %@", NSStringFromClass([notices class]));
+
+        NSMutableArray *notifications = [NSMutableArray array];
+        for(NSString *notice in notices) {
+            [notifications addObject:[MITNotification fromString:notice]];
+        }
+
+        [MITUnreadNotifications saveUnreadNotifications:notifications];
+        [MITUnreadNotifications updateUI];
+
+        NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
+        for (MITModule *module in modules) {
+            NSMutableArray *moduleNotifications = [NSMutableArray array];
+
+            for (MITNotification *notification in notifications) {
+                if([notification.moduleName isEqualToString:module.name]) {
+                    [moduleNotifications addObject:notification];
                 }
-                [module handleUnreadNotificationsSync:moduleNotifications];
             }
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
+    }];
 
-    return request;
+    return requestOperation;
 }
 
 // this method will get the most recent unread data from the MIT server
@@ -110,14 +107,14 @@
 	
 	if(identity) {
 		NSMutableDictionary *parameters = [identity mutableDictionary];
-        MobileRequestOperation *request = [[self class] requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
+        MITTouchstoneRequestOperation *request = [MITUnreadNotifications requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
         [[NSOperationQueue mainQueue] addOperation:request];
 	}
 }
 
 // method calls MIT to tell it to remove the notification
 // then syncs with the data MIT returns
-+ (void) removeNotifications: (NSArray *)notifications {
++ (void)removeNotifications: (NSArray *)notifications {
 	if([notifications count]) {
 		MITIdentity *identity = [MITDeviceRegistration identity];
 		
@@ -130,10 +127,11 @@
 			NSMutableDictionary *parameters = [identity mutableDictionary];
 
             NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
-            parameters[@"tags"] = [[[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding] autorelease];
+            parameters[@"tags"] = [[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding];
 
-            MobileRequestOperation *request = [[self class] requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
-            [[NSOperationQueue mainQueue] addOperation:request];
+            MITTouchstoneRequestOperation *requestOperation = [MITUnreadNotifications requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
+
+            [[NSOperationQueue mainQueue] addOperation:requestOperation];
 		}
         
         [MITUnreadNotifications updateUI];
@@ -146,7 +144,8 @@
 
 // method adds a notification to the phone (from an APNS dictionary)
 + (MITNotification *) addNotification: (NSDictionary *)apnsDictionary {
-	MITNotification *notification = [MITNotification fromString:[apnsDictionary objectForKey:@"tag"]];
+	MITNotification *notification = [MITNotification notificationWithString:[apnsDictionary objectForKey:MITNotificationModuleTagKey]];
+    notification.userInfo = apnsDictionary;
 	
 	if(![apnsDictionary objectForKey:@"noBadge"]) {
 		if(![self hasUnreadNotification:notification]) {
@@ -156,6 +155,7 @@
 			[self updateUI];
 		}
 	}
+    
 	return notification;
 }
 
@@ -166,42 +166,130 @@
 			return YES;
 		}
 	}
+
 	return NO;
 }
 
 @end
 
+@interface MITNotification ()
+@property (nonatomic,readwrite,copy) NSString *tag;
+@property (nonatomic,readwrite,copy) NSString *identifier;
+@end
+
 @implementation MITNotification
-@synthesize moduleName, noticeId;
-
-+ (MITNotification *) fromString: (NSString *)noticeString {
-	// a colon is used to seperate the moduleName from the notification id
-	NSRange colonRange = [noticeString rangeOfString:@":"];
-	
-	return [[[self alloc] 
-		initWithModuleName:[noticeString substringToIndex:colonRange.location] 
-		noticeId:[noticeString substringFromIndex:(colonRange.location+1)]]
-			autorelease];
-}
-	
-- (id) initWithModuleName: (NSString *)aModuleName noticeId: (NSString *)anId {
-	self = [super init];
-	if (self) {
-		moduleName = [aModuleName retain];
-		noticeId = [anId retain];
-	}
-	return self;
-}
-	
-- (NSString *) string {
-	return [NSString stringWithFormat:@"%@:%@", moduleName, noticeId];
++ (BOOL)supportsSecureCoding
+{
+    return YES;
 }
 
-- (BOOL) isEqualTo: (MITNotification *)other {
-	return [[self string] isEqualToString:[other string]];
++ (instancetype)notificationWithString:(NSString*)string
+{
+    NSParameterAssert(string);
+
+    NSArray *notificationComponents = [string componentsSeparatedByString:@":"];
+
+    NSString *tag = [notificationComponents firstObject];
+    NSString *identifier = nil;
+    if ([notificationComponents count] > 1) {
+        NSRange identifierRange = NSMakeRange(1, [notificationComponents count] - 1);
+        NSIndexSet *identifierIndexes = [NSIndexSet indexSetWithIndexesInRange:identifierRange];
+        identifier = [[notificationComponents objectsAtIndexes:identifierIndexes] componentsJoinedByString:@":"];
+    }
+
+    return [[self alloc] initWithModuleTag:tag noticeIdentifier:identifier];
 }
 
-- (NSString *) description {
-	return [NSString stringWithFormat:@"{module:%@, tag:%@}", moduleName, noticeId];
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
+{
+    NSString *tag = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"MITNotification.key"];
+    NSString *identifier = [aDecoder decodeObjectOfClass:[NSString class] forKey:@"MITNotification.identifier"];
+
+    return [self initWithModuleTag:tag noticeIdentifier:identifier];
 }
+
+- (instancetype)initWithModuleTag:(NSString*)tag noticeIdentifier:(NSString*)identifier
+{
+    NSParameterAssert(tag);
+
+    self = [super init];
+    if (self) {
+        _tag = [tag copy];
+        _identifier = [identifier copy];
+    }
+
+    return self;
+}
+
+- (void)encodeWithCoder:(NSCoder *)aCoder
+{
+    [aCoder encodeObject:self.tag forKey:@"MITNotification.key"];
+    [aCoder encodeObject:self.identifier forKey:@"MITNotification.identifier"];
+}
+
+- (NSString *)description
+{
+    if (self.tag && self.identifier) {
+        return [NSString stringWithFormat:@"{module:%@, tag:%@}", self.tag, self.identifier];
+    } else {
+        return [NSString stringWithFormat:@"{module:%@}", self.tag];
+    }
+}
+
+- (NSString*)stringValue
+{
+    if (self.tag && self.identifier) {
+        return [NSString stringWithFormat:@"%@:%@",self.tag,self.identifier];
+    } else {
+        return [NSString stringWithString:self.tag];
+    }
+}
+
+- (BOOL)isEqual:(id)object
+{
+    BOOL result = [super isEqual:object];
+    if (result) {
+        return YES;
+    } else if ([object isKindOfClass:[MITNotification class]]) {
+        return [self isEqualToNotification:(MITNotification*)object];
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isEqualToNotification:(MITNotification*)otherNotification
+{
+    return ([self.tag isEqualToString:otherNotification.tag] &&
+            (self.identifier == otherNotification.identifier ||
+             [self.identifier isEqualToString:otherNotification.identifier]));
+}
+
+@end
+
+@implementation MITNotification (Legacy)
++ (MITNotification*)fromString:(NSString*)noticeString
+{
+    return [self notificationWithString:noticeString];
+}
+
+- (NSString*)moduleName
+{
+    return self.tag;
+}
+
+- (NSString*)noticeId
+{
+    return self.identifier;
+}
+
+- (NSString *) string
+{
+    return [self stringValue];
+}
+
+- (BOOL)isEqualTo:(MITNotification *)other
+{
+    return [self isEqualToNotification:other];
+}
+
 @end

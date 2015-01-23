@@ -11,7 +11,6 @@
 
 - (void)infoDidLoad:(NSNotification *)aNotification;
 - (void)infoDidFailToLoad:(NSNotification *)aNotification;
-- (void)refreshInfo:(id)sender;
-
+- (void)refreshInfo;
 
 @end

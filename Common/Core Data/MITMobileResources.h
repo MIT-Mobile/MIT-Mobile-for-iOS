@@ -12,3 +12,15 @@
 
 #import "MITPersonResource.h"
 #import "MITPeopleResource.h"
+
+#import "MITShuttlesResource.h"
+
+#import "MITCalendarsResource.h"
+
+#import "MITDiningResource.h"
+
+#import "MITLibrariesResource.h"
+
+#import "MITToursResource.h"
+
+#import "MITEmergencyInfoResource.h"

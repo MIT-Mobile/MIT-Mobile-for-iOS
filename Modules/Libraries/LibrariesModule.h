@@ -1,7 +1,8 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@interface LibrariesModule : MITModule
-@property (strong) NSOperationQueue *requestQueue;
+@interface LibrariesModule : MITNavigationModule
+@property(nonatomic,strong) NSOperationQueue *requestQueue;
 
+- (instancetype)init;
 @end

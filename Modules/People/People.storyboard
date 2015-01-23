@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="5053" systemVersion="13C64" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14B25" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" initialViewController="pGg-6v-bdr">
     <dependencies>
-        <deployment defaultVersion="1552" identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="3733"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
     </dependencies>
     <scenes>
-        <!--People Search View Controller - Master-->
+        <!--Master-->
         <scene sceneID="VgW-fR-Quf">
             <objects>
                 <tableViewController storyboardIdentifier="PeopleRoot" title="Master" useStoryboardIdentifierAsRestorationIdentifier="YES" id="pGg-6v-bdr" customClass="PeopleSearchViewController" sceneMemberID="viewController">
@@ -13,9 +13,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <color key="backgroundColor" cocoaTouchSystemColor="groupTableViewBackgroundColor"/>
-                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT Directory" id="E5U-BI-S0w">
+                        <searchBar key="tableHeaderView" contentMode="redraw" text="" placeholder="Search MIT People Directory" id="E5U-BI-S0w">
                             <rect key="frame" x="0.0" y="0.0" width="320" height="44"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMaxY="YES"/>
+                            <color key="tintColor" red="0.6588235294" green="0.019607843140000001" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
                             <textInputTraits key="textInputTraits" autocorrectionType="no"/>
                             <connections>
                                 <outlet property="delegate" destination="pGg-6v-bdr" id="ZAt-6Y-J6i"/>
@@ -31,7 +32,6 @@
                                     <subviews>
                                         <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="rVQ-sE-ffC">
                                             <rect key="frame" x="15" y="11" width="290" height="63"/>
-                                            <autoresizingMask key="autoresizingMask"/>
                                             <string key="text">Sample searches:
 Name: 'william barton rogers', 'rogers'
 Email: 'wbrogers', 'wbrogers@mit.edu'
@@ -97,7 +97,7 @@ Phone: '6172531000', '31000'</string>
                                     <segue destination="SLF-7G-oqw" kind="push" identifier="showEmergencyContacts" id="t9d-xE-boi"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="RecentCell" textLabel="Gj7-2R-eYQ" detailTextLabel="QTM-L6-epc" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="ql5-at-axz">
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="blue" accessoryType="disclosureIndicator" hidesAccessoryWhenEditing="NO" indentationLevel="1" indentationWidth="0.0" reuseIdentifier="FavoriteCell" textLabel="Gj7-2R-eYQ" detailTextLabel="QTM-L6-epc" rowHeight="60" style="IBUITableViewCellStyleSubtitle" id="ql5-at-axz">
                                 <rect key="frame" x="0.0" y="289" width="320" height="60"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="ql5-at-axz" id="TbU-RR-s1d">
@@ -125,23 +125,6 @@ Phone: '6172531000', '31000'</string>
                                     <segue destination="Iur-hm-NJE" kind="push" identifier="showPerson" id="RXr-JH-48W"/>
                                 </connections>
                             </tableViewCell>
-                            <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="ClearRecents" textLabel="o1U-d8-Kyj" style="IBUITableViewCellStyleDefault" id="TPI-JQ-nd8">
-                                <rect key="frame" x="0.0" y="349" width="320" height="60"/>
-                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="TPI-JQ-nd8" id="FR3-mF-PoF">
-                                    <rect key="frame" x="0.0" y="0.0" width="320" height="59"/>
-                                    <autoresizingMask key="autoresizingMask"/>
-                                    <subviews>
-                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Clear Recents" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o1U-d8-Kyj">
-                                            <rect key="frame" x="15" y="0.0" width="290" height="59"/>
-                                            <autoresizingMask key="autoresizingMask"/>
-                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
-                                            <nil key="highlightedColor"/>
-                                        </label>
-                                    </subviews>
-                                </tableViewCellContentView>
-                            </tableViewCell>
                         </prototypes>
                         <sections/>
                         <connections>
@@ -149,7 +132,7 @@ Phone: '6172531000', '31000'</string>
                             <outlet property="delegate" destination="pGg-6v-bdr" id="h1X-R6-Z1j"/>
                         </connections>
                     </tableView>
-                    <navigationItem key="navigationItem" title="People" id="tQt-TN-PWz"/>
+                    <navigationItem key="navigationItem" title="People Directory" id="tQt-TN-PWz"/>
                     <connections>
                         <outlet property="searchBar" destination="E5U-BI-S0w" id="txm-r5-5yK"/>
                         <outlet property="searchDisplayController" destination="uPD-xl-cEX" id="xbh-SD-04A"/>
@@ -168,7 +151,7 @@ Phone: '6172531000', '31000'</string>
             </objects>
             <point key="canvasLocation" x="459" y="64"/>
         </scene>
-        <!--Emergency Contacts View Controller - Emergency Contacts-->
+        <!--Emergency Contacts-->
         <scene sceneID="FLE-os-LVk">
             <objects>
                 <tableViewController id="SLF-7G-oqw" customClass="EmergencyContactsViewController" sceneMemberID="viewController">
@@ -213,6 +196,46 @@ Phone: '6172531000', '31000'</string>
             </objects>
             <point key="canvasLocation" x="1013" y="-304"/>
         </scene>
+        <!--People Recent Results View Controller-->
+        <scene sceneID="9ek-ej-lnI">
+            <objects>
+                <viewController storyboardIdentifier="peopleRecentResults" id="MVT-ud-ley" customClass="MITPeopleRecentResultsViewController" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" id="C91-aq-zOe">
+                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell contentMode="scaleToFill" selectionStyle="gray" indentationWidth="10" reuseIdentifier="recentTableViewCell" textLabel="Gc3-SC-hfa" style="IBUITableViewCellStyleDefault" id="KJh-We-KWX">
+                                <rect key="frame" x="0.0" y="22" width="320" height="44"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="KJh-We-KWX" id="Ygh-S7-77H">
+                                    <rect key="frame" x="0.0" y="0.0" width="320" height="43"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                    <subviews>
+                                        <label opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="Gc3-SC-hfa">
+                                            <rect key="frame" x="15" y="0.0" width="290" height="43"/>
+                                            <autoresizingMask key="autoresizingMask"/>
+                                            <fontDescription key="fontDescription" type="system" pointSize="18"/>
+                                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                                            <nil key="highlightedColor"/>
+                                        </label>
+                                    </subviews>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="MVT-ud-ley" id="rKf-ce-RNW"/>
+                            <outlet property="delegate" destination="MVT-ud-ley" id="UzO-Rm-4yD"/>
+                        </connections>
+                    </tableView>
+                    <connections>
+                        <outlet property="tableView" destination="C91-aq-zOe" id="qdN-2h-Mn1"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="MdV-en-Qxa" userLabel="First Responder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="520" y="772"/>
+        </scene>
         <!--People Details View Controller-->
         <scene sceneID="rh8-zp-L42">
             <objects>
@@ -228,19 +251,16 @@ Phone: '6172531000', '31000'</string>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Name (multi-line)" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="bbU-A2-CDr">
                                     <rect key="frame" x="15" y="15" width="285" height="24"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="boldSystem" pointSize="20"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="nl5-pf-Fri">
                                     <rect key="frame" x="15" y="43" width="285" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Organization (multi-line)" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="285" translatesAutoresizingMaskIntoConstraints="NO" id="flg-EW-KeT">
                                     <rect key="frame" x="15" y="64" width="285" height="17"/>
-                                    <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                     <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                     <nil key="highlightedColor"/>
                                 </label>
@@ -320,37 +340,17 @@ Phone: '6172531000', '31000'</string>
                         <outlet property="personName" destination="bbU-A2-CDr" id="61S-Em-DDa"/>
                         <outlet property="personOrganization" destination="flg-EW-KeT" id="utT-qt-5PA"/>
                         <outlet property="personTitle" destination="nl5-pf-Fri" id="5P3-3r-5WD"/>
-                        <segue destination="oWL-Fh-eEb" kind="push" identifier="showLocationOnMap" id="RR6-94-BBF"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="18J-Mg-glp" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
             <point key="canvasLocation" x="1008" y="482"/>
         </scene>
-        <!--Campus Map View Controller-->
-        <scene sceneID="rKg-90-h9n">
-            <objects>
-                <viewController id="oWL-Fh-eEb" customClass="MITCampusMapViewController" sceneMemberID="viewController">
-                    <layoutGuides>
-                        <viewControllerLayoutGuide type="top" id="Qoj-Y3-bqk"/>
-                        <viewControllerLayoutGuide type="bottom" id="1gv-ka-zwx"/>
-                    </layoutGuides>
-                    <view key="view" contentMode="scaleToFill" id="Rcx-vv-nax">
-                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="calibratedWhite"/>
-                    </view>
-                    <navigationItem key="navigationItem" id="9oY-yX-b5k"/>
-                </viewController>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="0hV-MV-hTv" userLabel="First Responder" sceneMemberID="firstResponder"/>
-            </objects>
-            <point key="canvasLocation" x="1526" y="482"/>
-        </scene>
     </scenes>
-    <color key="tintColor" red="0.6588235294117647" green="0.019607843137254902" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>
         <simulatedScreenMetrics key="destination" type="retina4"/>
     </simulatedMetricsContainer>
+    <color key="tintColor" red="0.6588235294117647" green="0.019607843137254902" blue="0.20000000000000001" alpha="1" colorSpace="deviceRGB"/>
 </document>

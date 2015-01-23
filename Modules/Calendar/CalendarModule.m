@@ -1,50 +1,36 @@
 #import "CalendarModule.h"
-#import "CalendarEventsViewController.h"
-#import "CalendarDetailViewController.h"
-#import "CalendarDataManager.h"
-#import "MITModuleURL.h"
-#import "CalendarEventMapAnnotation.h"
-#import "MITEventList.h"
-#import "MITModule+Protected.h"
+
+#import "MITEventsHomeViewController.h"
+#import "MITEventsHomeViewControllerPad.h"
 
 @implementation CalendarModule
-@dynamic calendarVC;
-
 - (id) init {
-    self = [super init];
+    self = [super initWithName:MITModuleTagCalendar title:@"Events"];
     if (self != nil) {
-        self.tag = CalendarTag;
-        self.shortName = @"Events";
-        self.longName = @"Events Calendar";
-        self.iconName = @"calendar";
-        
-        [[CalendarDataManager sharedManager] requestEventLists];
+        self.longTitle = @"Events Calendar";
+        self.imageName = MITImageEventsModuleIcon;
     }
+
     return self;
 }
 
-- (void)loadModuleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    CalendarEventsViewController *controller = [[CalendarEventsViewController alloc] init];
-    controller.showList = YES;
-    controller.showScroller = YES;
-    
-    self.moduleHomeController = controller;
+    return YES;
 }
 
-
-- (CalendarEventsViewController*)calendarVC;
+- (void)loadRootViewController
 {
-    if ([self.moduleHomeController isKindOfClass:[CalendarEventsViewController class]]) {
-        return (CalendarEventsViewController*) self.moduleHomeController;
-    } else {
-        return nil;
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITEventsHomeViewController alloc] initWithNibName:nil bundle:nil];
     }
-}
 
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query
-{
-	return NO;
+    self.rootViewController = rootViewController;
 }
 
 @end

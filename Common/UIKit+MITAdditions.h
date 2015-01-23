@@ -17,7 +17,13 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @interface UIColor (MITUIAdditions)
 + (UIColor*)mit_backgroundColor;
-+ (UIColor *)MITTintColor;
++ (UIColor *)mit_greyTextColor;
++ (UIColor *)mit_tintColor;
++ (UIColor *)mit_openGreenColor;
++ (UIColor *)mit_closedRedColor;
++ (UIColor *)mit_cellSeparatorColor;
++ (UIColor *)mit_systemTintColor;
++ (UIColor *)mit_navBarColor;
 
 /*!
  * Creates and returns a color object using the specified hexadecimal string.
@@ -72,12 +78,6 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 
 @end
 
-@interface UIActionSheet (MITUIAdditions)
-
-- (void)showFromAppDelegate; // i don't like this name but can't think of a better one
-
-@end
-
 @interface UIAlertView (MITUIAdditions)
 + (UIAlertView*)alertViewForError:(NSError*)error withTitle:(NSString*)title alertViewDelegate:(id<UIAlertViewDelegate>)delegate;
 @end
@@ -85,4 +85,12 @@ BOOL MITCanAutorotateForOrientation(UIInterfaceOrientation orientation, UIInterf
 @interface UIBarButtonItem (MITUIAdditions)
 + (UIBarButtonItem*)fixedSpaceWithWidth:(CGFloat)width;
 + (UIBarButtonItem*)flexibleSpace;
+@end
+
+@interface UISearchBar (MITUIAdditions)
+- (void)setSearchTextColor:(UIColor *)color;
+@end
+
+@interface UISearchBar (MITAdditions)
+- (UITextField *)textField;
 @end

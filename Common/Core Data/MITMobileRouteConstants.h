@@ -21,6 +21,42 @@ FOUNDATION_EXTERN NSString* const MITCalendarEventPathPattern;
 FOUNDATION_EXTERN NSString* const MITDiningResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningPathPattern;
 
+#pragma mark emergency/announcement
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoAnnouncementResourceName;
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoAnnouncementPathPattern;
+
+#pragma mark emergency/contacts
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoContactsResourceName;
+FOUNDATION_EXTERN NSString* const MITEmergencyInfoContactsPathPattern;
+
+#pragma mark libraries
+FOUNDATION_EXTERN NSString* const MITLibrariesResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesPathPattern;
+
+#pragma mark libraries links
+FOUNDATION_EXTERN NSString* const MITLibrariesLinksResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesLinksPathPattern;
+
+#pragma mark libraries Ask Us
+FOUNDATION_EXTERN NSString* const MITLibrariesAskUsResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesAskUsPathPattern;
+
+#pragma mark libraries search
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesSearchPathPattern;
+
+#pragma mark libraries user
+FOUNDATION_EXTERN NSString* const MITLibrariesUserResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesUserPathPattern;
+
+#pragma mark libraries mit identity
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesMITIdentityPathPattern;
+
+#pragma mark libraries item detail
+FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailResourceName;
+FOUNDATION_EXTERN NSString* const MITLibrariesItemDetailPathPattern;
+
 #pragma mark dining/venues/:type/:venue/icon
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconResourceName;
 FOUNDATION_EXTERN NSString* const MITDiningVenueIconPathPattern;
@@ -48,6 +84,10 @@ FOUNDATION_EXTERN NSString* const MITMapCategoriesPathPattern;
 #pragma mark maps/places
 FOUNDATION_EXTERN NSString* const MITMapPlacesResourceName;
 FOUNDATION_EXTERN NSString* const MITMapPlacesPathPattern;
+
+#pragma mark maps/places/:objectID
+FOUNDATION_EXTERN NSString* const MITMapObjectResourceName;
+FOUNDATION_EXTERN NSString* const MITMapObjectPathPattern;
 
 #pragma mark maps/rooms
 FOUNDATION_EXTERN NSString* const MITMapRoomsResourceName;
@@ -89,6 +129,14 @@ FOUNDATION_EXTERN NSString* const MITShuttlesStopsPathPattern;
 FOUNDATION_EXTERN NSString* const MITShuttlesStopResourceName;
 FOUNDATION_EXTERN NSString* const MITShuttlesStopPathPattern;
 
+#pragma mark shuttles/predictions
+FOUNDATION_EXTERN NSString* const MITShuttlesPredictionsResourceName;
+FOUNDATION_EXTERN NSString* const MITShuttlesPredictionsPathPattern;
+
+#pragma mark shuttles/vehicles
+FOUNDATION_EXTERN NSString* const MITShuttlesVehiclesResourceName;
+FOUNDATION_EXTERN NSString* const MITShuttlesVehiclesPathPattern;
+
 #pragma mark techcash
 FOUNDATION_EXTERN NSString* const MITTechcashResourceName;
 FOUNDATION_EXTERN NSString* const MITTechcashPathPattern;
@@ -100,3 +148,10 @@ FOUNDATION_EXTERN NSString* const MITTechcashAccountsPathPattern;
 #pragma mark techcash/accounts/:account
 FOUNDATION_EXTERN NSString* const MITTechcashAccountResourceName;
 FOUNDATION_EXTERN NSString* const MITTechcashAccountPathPattern;
+
+#pragma mark tours
+FOUNDATION_EXTERN NSString* const MITToursResourceName;
+FOUNDATION_EXTERN NSString* const MITToursPathPattern;
+
+FOUNDATION_EXTERN NSString* const MITToursTourResourceName;
+FOUNDATION_EXTERN NSString* const MITToursTourPathPattern;

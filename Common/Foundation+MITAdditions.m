@@ -2,7 +2,7 @@
 #include <libxml/HTMLparser.h>
 #include <libxml/HTMLtree.h>
 #include <libxml/xpath.h>
-#import "Foundation+MITAdditions.h"
+#import "MITAdditions.h"
 
 #pragma mark Error Domains
 NSString * const MITXMLErrorDomain = @"MITXMLError";
@@ -11,6 +11,69 @@ NSString * const MITXMLErrorDomain = @"MITXMLError";
 inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
 {
     return (fabs(((double)f0) - ((double)f1)) <= CGFLOAT_EPSILON);
+}
+
+NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
+{
+    static NSRegularExpression *linkHeaderRegularExpression = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // TODO: Find a better way to pick out the link metadata
+        // This is liable to break in unexpected & infuriating ways if
+        // things are not perfectly formed
+        // (bskinner - 2014.05.28)
+        NSString *pattern = @"<(.+)>;\\s+rel=\"(.+)\"";
+        NSError *error = nil;
+        linkHeaderRegularExpression = [NSRegularExpression regularExpressionWithPattern:pattern
+                                                                                options:NSRegularExpressionCaseInsensitive
+                                                                                  error:&error];
+
+        NSCAssert(linkHeaderRegularExpression, @"failed to create 'link' header regular expression: %@", error);
+    });
+
+    NSString *linkHeader = [response allHeaderFields][@"Link"];
+    NSMutableDictionary *linkHeaderFields = nil;
+
+    if (linkHeader) {
+        linkHeaderFields = [[NSMutableDictionary alloc] init];
+
+        // Separate link fields are separated by a ',' followed by 0 or more
+        //  whitespace (\s*) so separate everything out by ',' first, then trimming the
+        //  whitespace.
+        //
+        // There shouldn't be a problem splitting ',' as it is a reserved character
+        //  (per RFC 3986) and if it is present in the URL, it should be percent-encoded.
+        //  If there is a bare comma in the URL (or the relation type), we should just
+        //  assume that is it malformed and GIGO applies.
+        [[linkHeader componentsSeparatedByString:@","] enumerateObjectsUsingBlock:^(NSString *link, NSUInteger idx, BOOL *stop) {
+            NSString *trimmedLink = [link stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+            [linkHeaderRegularExpression enumerateMatchesInString:trimmedLink options:0
+                                               range:NSMakeRange(0, [trimmedLink length])
+                                         usingBlock:^(NSTextCheckingResult *result, NSMatchingFlags flags, BOOL *stop) {
+
+                // Checking for '3' here because the string should have 3 ranges:
+                //  0: The complete matching string
+                //  1: The URL from the Link reference
+                //  2: The relation type from the Link reference
+                if ([result numberOfRanges] != 3) {
+                    NSRange fullRange = [result rangeAtIndex:0];
+                    DDLogCWarn(@"invalid 'Link' value '%@'",[trimmedLink substringWithRange:fullRange]);
+                } else {
+                    NSString *urlString = [trimmedLink substringWithRange:[result rangeAtIndex:1]];
+                    NSURL *url = [NSURL URLWithString:urlString];
+                    NSString *relation = [trimmedLink substringWithRange:[result rangeAtIndex:2]];
+
+                    if (!url) {
+                        DDLogCWarn(@"url '%@' for relation type '%@' is malformed", url, relation);
+                    } else {
+                        linkHeaderFields[relation] = url;
+                    }
+                }
+            }];
+        }];
+    }
+
+    return linkHeaderFields;
 }
 
 @implementation NSURL (MITAdditions)
@@ -33,7 +96,17 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
                                     path:path];
 }
 
+- (NSDictionary*)URLDecodedQueryDictionary
+{
+    return [self _queryDictionary:YES];
+}
+
 - (NSDictionary*)queryDictionary
+{
+    return [self _queryDictionary:NO];
+}
+
+- (NSDictionary*)_queryDictionary:(BOOL)useURLDecoding
 {
     NSArray *queryParameters = [[self query] componentsSeparatedByString:@"&"];
     
@@ -44,13 +117,29 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
     NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
     [queryParameters enumerateObjectsUsingBlock:^(NSString *queryPair, NSUInteger idx, BOOL *stop) {
         NSArray *parameter = [queryPair componentsSeparatedByString:@"="];
-        
+        NSString *key = nil;
+        id value = nil;
+
         if ([parameter count] == 1) {
-            // This is a singlet parameter. Mark this using [NSNull null] for now
-            parameters[parameter[0]] = [NSNull null];
+            // This is a singlet parameter. Mark this using [NSNull null]
+            if (useURLDecoding) {
+                key = [parameter[0] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+            } else {
+                key = parameter[0];
+            }
+
+            value = [NSNull null];
         } else if ([parameter count] == 2) {
-            parameters[parameter[0]] = parameter[1];
+            if (useURLDecoding) {
+                key = [parameter[0] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+                value = [parameter[1] urlDecodeUsingEncoding:NSUTF8StringEncoding];
+            } else {
+                key = parameter[0];
+                value = parameter[1];
+            }
         }
+
+        parameters[key] = value;
     }];
     
     return parameters;
@@ -158,11 +247,11 @@ inline BOOL MITCGFloatIsEqual(CGFloat f0, CGFloat f1)
     }
     
     NSData *stringData = [htmlFragment dataUsingEncoding:NSUTF8StringEncoding];
-    NSInteger parserOptions = (HTML_PARSE_NONET |
+    int parserOptions = (HTML_PARSE_NONET |
                                HTML_PARSE_RECOVER |
                                HTML_PARSE_NOWARNING |
                                HTML_PARSE_NODEFDTD);
-    document = htmlReadMemory([stringData bytes], [stringData length], "", NULL, parserOptions);
+    document = htmlReadMemory([stringData bytes], (int)[stringData length], "", NULL, parserOptions);
     if (!document) {
         DDLogWarn(@"failed to create xml document from HTML string");
         goto error;
@@ -373,10 +462,12 @@ static NSString *rfc1738_Unsafe = @"<>\"#%{}|\\^~`";
 }
 
 - (NSString*)urlDecodeUsingEncoding:(NSStringEncoding)encoding {
-    return (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
-                                                                                                (CFStringRef)self,
-                                                                                                NULL,
-                                                                                                CFStringConvertNSStringEncodingToEncoding(encoding)));
+    NSString *decodedString = [self stringByReplacingOccurrencesOfString:@"+" withString:@" "];
+    decodedString = (NSString*)CFBridgingRelease(CFURLCreateStringByReplacingPercentEscapesUsingEncoding(NULL,
+                                                                                                         (CFStringRef)decodedString,
+                                                                                                         NULL,
+                                                                                                         CFStringConvertNSStringEncodingToEncoding(encoding)));
+    return decodedString;
 }
 @end
 
@@ -593,6 +684,13 @@ typedef struct {
                                 NSDayCalendarUnit)];
 }
 
+- (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date
+{
+    return [self isEqualToDate:date
+                    components:(NSHourCalendarUnit |
+                                NSMinuteCalendarUnit)];
+}
+
 - (BOOL) isEqualToDate:(NSDate*)otherDate
             components:(NSCalendarUnit)components
 {
@@ -617,16 +715,14 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateBySubtractingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *tomorrowComponents = [[NSDateComponents alloc] init];
-    [tomorrowComponents setDay:1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:tomorrowComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
 }
 
 
@@ -636,16 +732,20 @@ typedef struct {
     NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
                                                              NSMonthCalendarUnit |
                                                              NSDayCalendarUnit)
-                                                   fromDate:self];
+                                                   fromDate:[self dateByAddingDay]];
     
-    NSDate *compareDate = [calendar dateFromComponents:selfComponents];
+    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
+                                                              NSMonthCalendarUnit |
+                                                              NSDayCalendarUnit)
+                                                    fromDate:[NSDate date]];
     
-    NSDateComponents *yesterdayComponents = [[NSDateComponents alloc] init];
-    [yesterdayComponents setDay:-1];
-    
-    return [compareDate isEqual:[calendar dateByAddingComponents:yesterdayComponents
-                                                          toDate:compareDate
-                                                         options:0]];
+    return [todayComponents isEqual:selfComponents];
+}
+
+- (NSDate *)dateWithoutTime
+{
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    return [[NSCalendar currentCalendar] dateFromComponents:comps];
 }
 
 - (NSDate *) startOfDay
@@ -674,6 +774,17 @@ typedef struct {
     --dayInterval;
     
     return [dayStart dateByAddingTimeInterval:dayInterval];
+}
+
+- (NSDate *)startOfWeek
+{
+    NSCalendar *calendar = [NSCalendar currentCalendar];
+    NSDateComponents *currentDateWeekdayComponents = [calendar components:NSWeekdayCalendarUnit fromDate:self];
+    NSDateComponents *dateComponentsToSubtract = [[NSDateComponents alloc] init];
+    dateComponentsToSubtract.day = calendar.firstWeekday - currentDateWeekdayComponents.weekday;
+    NSDate *startDate = [calendar dateByAddingComponents:dateComponentsToSubtract toDate:self options:0];
+    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:startDate];
+    return [calendar dateFromComponents:components];
 }
 
 - (NSDate *) dayBefore
@@ -713,6 +824,52 @@ typedef struct {
                                     options:0];
 }
 
+- (NSDate *)dateByAddingDay
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.day = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateByAddingWeek
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.week = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateBySubtractingDay
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.day = -1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateBySubtractingWeek
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.week = -1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSDate *)dateByAddingYear
+{
+    NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
+    componentsToAdd.year = 1;
+    return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
+}
+
+- (NSArray *)datesInWeek
+{
+    NSDate *day = [self startOfWeek];
+    NSMutableArray *datesInWeek = [[NSMutableArray alloc] initWithArray:@[day]];
+    for (int i = 0; i < 6; i++) {
+        day = [day dateByAddingDay];
+        [datesInWeek addObject:day];
+    }
+    return [datesInWeek copy];
+}
+
 /** Extra compact string representation of the date's time components.
  
  This returns only the time of day for the date. The format is similar to "h:mma", but with the minute component only included when non-zero, e.g. "9pm", "10:30am", "4:01pm".
@@ -723,12 +880,10 @@ typedef struct {
     NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSMinuteCalendarUnit
                                                                          fromDate:self];
     
-    // (bskinner,TODO)
-    // Profile this method in the wild. These NSDateFormatter allocs are expensive
-    // but I'm not sure if we're calling this method enough for it to require caching.
-    // Possible add in a thread-local cached copy if we need to.
-    NSDateFormatter *formatter = [[NSDateFormatter alloc] init];
-    
+    static NSDateFormatter *formatter;
+    if (!formatter) {
+        formatter = [[NSDateFormatter alloc] init];
+    }    
     
     // If the minute value is not zero, use an alternate format
     // that includes the minutes. Otherwise, just ignore them and
@@ -742,6 +897,34 @@ typedef struct {
     }
     
     return [formatter stringFromDate:self];
+}
+
+- (NSString *)todayTomorrowYesterdayString
+{
+    static NSDateFormatter *dayOfWeekFormatter;
+    if (!dayOfWeekFormatter) {
+        dayOfWeekFormatter = [[NSDateFormatter alloc] init];
+        [dayOfWeekFormatter setDateFormat:@"EEEE"];
+    }
+    
+    static NSDateFormatter *dateFormatter;
+    if (!dateFormatter) {
+        dateFormatter = [[NSDateFormatter alloc] init];
+        [dateFormatter setDateFormat:@"MMM d"];
+    }
+    
+    if ([self isToday]) {
+        return [NSString stringWithFormat:@"Today, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isTomorrow]) {
+        return [NSString stringWithFormat:@"Tomorrow, %@", [dateFormatter stringFromDate:self]];
+    }
+    else if ([self isYesterday]) {
+        return [NSString stringWithFormat:@"Yesterday, %@", [dateFormatter stringFromDate:self]];
+    }
+    else {
+        return [NSString stringWithFormat:@"%@, %@", [dayOfWeekFormatter stringFromDate:self], [dateFormatter stringFromDate:self]];
+    }
 }
 
 - (NSDateComponents *)dayComponents {
@@ -776,6 +959,91 @@ typedef struct {
                                    options:0];
 }
 
+
+
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate
+{
+    return ([self timeIntervalSince1970] >= [startDate timeIntervalSince1970] &&
+            [self timeIntervalSince1970] <= [endDate timeIntervalSince1970]);
+}
+
+- (NSString *)ISO8601String
+{
+	struct tm *timeinfo;
+	char buffer[80];
+    
+	time_t rawtime = (time_t)[self timeIntervalSince1970];
+	timeinfo = gmtime(&rawtime);
+    
+	strftime(buffer, 80, "%Y-%m-%dT%H:%M:%SZ", timeinfo);
+    
+	return [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
+}
+
+- (NSString *)MITDateCode
+{
+    static NSDateComponents *dateComponents;
+    if (!dateComponents) {
+        NSCalendar *calendar = [NSCalendar currentCalendar];
+        dateComponents = [calendar components:(NSDayCalendarUnit |
+                                               NSWeekdayCalendarUnit)
+                                      fromDate:self];
+    }
+ 
+    switch (dateComponents.weekday) {
+        case 0:
+            return @"U";
+            break;
+        case 1:
+            return @"M";
+            break;
+        case 2:
+            return @"T";
+            break;
+        case 3:
+            return @"W";
+            break;
+        case 4:
+            return @"R";
+            break;
+        case 5:
+            return @"F";
+            break;
+        case 6:
+            return @"S";
+            break;
+        default:
+            return @"";
+            break;
+    }
+}
+
++ (NSNumber *)numberForDateCode:(NSString *)dateCode
+{
+    if ([dateCode isEqualToString:@"U"]) {
+        return @0;
+    }
+    else if ([dateCode isEqualToString:@"M"]) {
+        return @1;
+    }
+    else if ([dateCode isEqualToString:@"T"]) {
+        return @2;
+    }
+    else if ([dateCode isEqualToString:@"W"]) {
+        return @3;
+    }
+    else if ([dateCode isEqualToString:@"R"]) {
+        return @4;
+    }
+    else if ([dateCode isEqualToString:@"F"]) {
+        return @5;
+    }
+    else if ([dateCode isEqualToString:@"S"]) {
+        return @6;
+    }
+    return @0;
+}
+
 @end
 
 @implementation NSCalendar (MITAdditions)
@@ -791,4 +1059,14 @@ typedef struct {
     return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
 }
 
+@end
+
+@implementation NSIndexPath (MITAdditions)
++ (NSIndexPath*)indexPathWithIndexPath:(NSIndexPath*)indexPath
+{
+    NSUInteger indexes[indexPath.length];
+    [indexPath getIndexes:indexes];
+
+    return [[NSIndexPath alloc] initWithIndexes:indexes length:indexPath.length];
+}
 @end

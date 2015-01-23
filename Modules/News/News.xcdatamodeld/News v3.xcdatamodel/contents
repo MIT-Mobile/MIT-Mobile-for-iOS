@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13D65" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="3401" systemVersion="13B42" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="NewsCategory" representedClassName="MITNewsCategory" syncable="YES">
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
@@ -25,14 +25,12 @@
         <attribute name="author" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="body" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="dek" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="dekText" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
         <attribute name="featured" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="identifier" attributeType="String" indexed="YES" syncable="YES"/>
         <attribute name="publishedAt" attributeType="Date" syncable="YES"/>
         <attribute name="read" optional="YES" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="sourceURL" attributeType="Transformable" syncable="YES"/>
         <attribute name="title" optional="YES" attributeType="String" syncable="YES"/>
-        <attribute name="titleText" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
         <attribute name="topStory" attributeType="Boolean" defaultValueString="NO" syncable="YES"/>
         <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="NewsCategory" inverseName="stories" inverseEntity="NewsCategory" indexed="YES" syncable="YES"/>
@@ -40,9 +38,9 @@
         <relationship name="galleryImages" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="NewsImage" inverseName="gallery" inverseEntity="NewsImage" syncable="YES"/>
     </entity>
     <elements>
-        <element name="NewsCategory" positionX="0" positionY="0" width="128" height="120"/>
-        <element name="NewsImage" positionX="0" positionY="0" width="128" height="135"/>
-        <element name="NewsImageRep" positionX="0" positionY="0" width="128" height="105"/>
-        <element name="NewsStory" positionX="0" positionY="0" width="128" height="285"/>
+        <element name="NewsCategory" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="NewsImage" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="NewsImageRep" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="NewsStory" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>

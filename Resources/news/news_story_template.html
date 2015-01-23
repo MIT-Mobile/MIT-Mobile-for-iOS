@@ -23,30 +23,8 @@
                 height: 38px;
                 -webkit-user-select: none;
             }
-            #bookmarkButton {
-                background: url('global/bookmark_button@2x.png') no-repeat 0 -38px;
-                -webkit-background-size: 88px 76px;
-            }
-            #bookmarkButton.pressed {
-                background-position: 0 1px;
-            }
-            #bookmarkButton.on {
-                background-position: -44px -38px;
-            }
-            #bookmarkButton.pressed.on {
-                background-position: -44px 1px;
-            }
-            #shareButton {
-                background-image: url('global/share@2x.png');
-                -webkit-background-size: 44px 38px;
-            }
-            #shareButton.pressed {
-                background-image: url('global/share_pressed@2x.png');
-                -webkit-background-size: 44px 38px;
-            }
-            .byline {font-size: 11px;color: #505050;min-height:30px;}
             .inline-separator {margin: 0 3px;}
-            #content {border-top: 1px dotted #F00;}
+            #content {border-top: 1px solid #A31F34;}
             .credential {font-size:8pt;}
             #image {float:right;margin: 16px 0 -1px 8px;}
             #image img.thumbnail {float:right; border: 1px solid #505050; /* scale to width respecting aspect */}
@@ -61,6 +39,20 @@
             iframe {
                 max-width: 100%;
             }
+            /* Resize embedded image frames for images on News articles. */
+            img {
+                max-width: 100%;
+                height: auto !important;
+            }
+            p:empty {
+                display: none;
+            }
+            p.author, p.postdate {
+                margin: 0px; font-size: 11px;
+            }
+            div.byline {
+                padding: 10px 0;
+            }
         </style>
         <meta name="viewport" content="initial-scale=1.0, user-scalable=no">
         <title>__TITLE__</title>
@@ -68,19 +60,11 @@
     <body bgcolor="#FFFFFF">
         <h1 class="slugline">__TITLE__
         </h1>
-        <span class="inlineControls">
-            <a href="bookmark"><span width="44" height="38" alt="Bookmark" id="bookmarkButton" class="__BOOKMARKED__"></span></a>
-            <a href="share"><span width="44" height="38" alt="Share" id="shareButton" class=""></span></a>
-        </span>
-        <p class="byline">
-            <span class="credit">by <span class="author">__AUTHOR__</span><br /></span>
-            <span class="postdate">__DATE__</span>
-        </p>    
+        <div class="byline">
+            <p class="author">__AUTHOR__</p>
+            <p class="postdate">__DATE__</p>
+        </div>
         <div id="content">
-            <div id="image"><a id="thumbnailLink" href="image"><img class="thumbnail" src="__THUMBNAIL_URL__" width="__THUMBNAIL_WIDTH__" height="__THUMBNAIL_HEIGHT__">
-                <br /></a>
-                <a href="image"><div>View <span id="imageCount">image</span><img class="enlarge" src="global/button-zoom-in@2x.png" width="30" height="30" alt="zoom"></div>
-            </a></div>
             <p class="dek">__DEK__</p><div id="body">__BODY__</div>
         </div>
     </body>
@@ -92,7 +76,7 @@
             var creditNode = document.getElementsByClassName("credit")[0];
             creditNode.parentElement.removeChild(creditNode);
         }
-        var imageCount = __GALLERY_COUNT__;
+    var imageCount = 0;//__GALLERY_COUNT__;
         // remove #image block there are no images at all
         if (imageCount == 0) {
             var imageNode = document.getElementById("image");

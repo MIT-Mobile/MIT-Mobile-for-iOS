@@ -14,6 +14,8 @@
 #import "UIKit+MITAdditions.h"
 #import "FacilitiesLocationSearch.h"
 
+#import "MITBuildingServicesReportForm.h"
+
 
 @interface FacilitiesCategoryViewController ()
 @property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
@@ -27,7 +29,7 @@
 @property (nonatomic,strong) NSString *trimmedString;
 @property (nonatomic,strong) id observerToken;
 
-- (BOOL)shouldShowLocationSection;
+- (BOOL)shouldShowLocationRow;
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
 - (NSArray*)resultsForSearchString:(NSString*)searchText;
@@ -40,7 +42,7 @@
 {
     self = [super init];
     if (self) {
-        self.title = @"Where is it?";
+        self.title = @"Location";
         self.locationData = [FacilitiesLocationData sharedData];
         self.filterPredicate = [NSPredicate predicateWithFormat:@"locations.@count > 0"];
     }
@@ -72,6 +74,12 @@
 
         tableView.backgroundView = nil;
         tableView.backgroundColor = [UIColor clearColor];
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            tableView.backgroundColor = [UIColor whiteColor];
+        }
+        
         tableView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
                                            UIViewAutoresizingFlexibleWidth);
         tableView.delegate = self;
@@ -87,9 +95,6 @@
     {
         UISearchBar *searchBar = [[UISearchBar alloc] init];
         searchBar.delegate = self;
-        if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-            searchBar.barStyle = UIBarStyleBlackOpaque;
-        }
         
         UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
                                                                                         contentsController:self];
@@ -98,11 +103,15 @@
         searchController.searchResultsDelegate = self;
         self.strongSearchDisplayController = searchController;
         
-        [searchBar sizeToFit];
-        searchBarFrame = searchBar.frame;
-        self.tableView.tableHeaderView = searchBar;
+        // while we still need to initialize searchController for both iPhone and iPad,
+        // we only need add search bar to the view for the iPhone case
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+        {
+            [searchBar sizeToFit];
+            searchBarFrame = searchBar.frame;
+            self.tableView.tableHeaderView = searchBar;
+        }
     }
-
     
     {
         CGRect loadingFrame = screenFrame;
@@ -141,6 +150,11 @@
 - (void)viewWillAppear:(BOOL)animated {
     [super viewWillAppear:animated];
     
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(customTextDidChange:)
+                                                 name:MITBuildingServicesLocationCustomTextNotification
+                                               object:nil];
+    
     if (self.observerToken == nil) {
         __block FacilitiesCategoryViewController *weakSelf = self;
         self.observerToken = [self.locationData addUpdateObserver:^(NSString *notification, BOOL updated, id userData) {
@@ -168,6 +182,9 @@
 
 - (void)viewWillDisappear:(BOOL)animated {
     [super viewWillDisappear:animated];
+    
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
     if (self.observerToken) {
         [self.locationData removeUpdateObserver:self.observerToken];
     }
@@ -186,7 +203,8 @@
 
 
 #pragma mark - Private Methods
-- (BOOL)shouldShowLocationSection {
+- (BOOL)shouldShowLocationRow
+{
     if ((self.cachedData == nil) || ([self.cachedData count] == 0)) {
         return NO;
     } else {
@@ -233,21 +251,33 @@
 - (void)configureMainTableCell:(UITableViewCell *)cell
                   forIndexPath:(NSIndexPath *)indexPath
 {
-    if ((indexPath.section == 0) && ([self shouldShowLocationSection])) {
-        cell.textLabel.text = @"Use my location";
-    } else {
-        FacilitiesCategory *cat = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
-        cell.textLabel.text = cat.name;
+    BOOL shouldShowLocationRow = [self shouldShowLocationRow];
+    if( indexPath.row == 0 && shouldShowLocationRow )
+    {
+        cell.textLabel.text = @"Nearby Locations";
+        
+        return;
     }
+
+    NSInteger row = indexPath.row;
+    
+    if( shouldShowLocationRow )
+    {
+        // since we inserted a location row, need to update cachedData index
+        row--;
+    }
+    
+    FacilitiesCategory *cat = (FacilitiesCategory*)[self.cachedData objectAtIndex:row];
+    cell.textLabel.text = cat.name;
 }
 
 - (void)configureSearchCell:(HighlightTableViewCell *)cell
                 forIndexPath:(NSIndexPath *)indexPath
 {
-    NSDictionary *loc = [self.filteredData objectAtIndex:indexPath.row];
+    NSDictionary *locDict = [self.filteredData objectAtIndex:indexPath.row];
     
     cell.highlightLabel.searchString = self.searchString;
-    cell.highlightLabel.text = [loc objectForKey:FacilitiesSearchResultDisplayStringKey];
+    cell.highlightLabel.text = [locDict objectForKey:FacilitiesSearchResultDisplayStringKey];
 }
 
 
@@ -273,62 +303,125 @@
     return _filteredData;
 }
 
+#pragma mark - notifications
+
+// on iPad manually set searchText and add searchResultsTableView to the view hierarchy
+// in order to show the filtered list.
+- (void)customTextDidChange:(NSNotification *)senderNotification
+{
+    // make sure this logic only occurs for the iPad.
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    NSDictionary *userInfo = senderNotification.userInfo;
+    
+    if( userInfo == nil || userInfo[@"customText"] == nil )
+    {
+        return;
+    }
+    
+    NSString *customLocationText = userInfo[@"customText"];
+    
+    [self handleUpdatedSearchText:customLocationText];
+    
+    [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+    
+    if( customLocationText.length == 0 )
+    {
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+        [self.strongSearchDisplayController.searchResultsTableView removeFromSuperview];
+    }
+    else
+    {
+        if( [self.strongSearchDisplayController.searchResultsTableView superview] == nil )
+        {
+            [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
+            [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
+            [self.strongSearchDisplayController.searchResultsTableView setBackgroundColor:[UIColor whiteColor]];
+        }
+        
+        [self.strongSearchDisplayController.searchResultsTableView reloadData];
+    }
+}
 
 #pragma mark - UITableViewDelegate Methods
-- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
-    UIViewController *nextViewController = nil;
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    return 0.1f;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    if (tableView == self.tableView) {
-        if ((indexPath.section == 0) && [self shouldShowLocationSection]) {
+    if (tableView == self.tableView)
+    {
+        UIViewController *nextViewController = nil;
+        
+        BOOL shouldShowLocationRow = [self shouldShowLocationRow];
+        
+        if ((indexPath.row == 0) && shouldShowLocationRow)
+        {
             nextViewController = [[FacilitiesUserLocationViewController alloc] init];
-        } else {
-            FacilitiesCategory *category = (FacilitiesCategory*)[self.cachedData objectAtIndex:indexPath.row];
+        }
+        else
+        {
+            NSInteger row = indexPath.row;
+            
+            // if showing location row, then need to adjust row index to the previous one (e.g. due to inserting location at index 0).
+            if( shouldShowLocationRow ) row--;
+            
+            FacilitiesCategory *category = (FacilitiesCategory*)[self.cachedData objectAtIndex:row];
             FacilitiesLocationViewController *controller = [[FacilitiesLocationViewController alloc] init];
             controller.category = category;
             nextViewController = controller;
         }
-    } else {
-        if (indexPath.row == 0) {
-            FacilitiesTypeViewController *vc = [[FacilitiesTypeViewController alloc] init];
-            vc.userData = @{FacilitiesRequestLocationUserBuildingKey : self.searchString, FacilitiesRequestLocationUserRoomKey : @""};
+        
+        [self.navigationController pushViewController:nextViewController animated:YES];
+    }
+    else // search results
+    {
+        if (indexPath.row == 0) // custom search term
+        {
+            [[MITBuildingServicesReportForm sharedServiceReport] setCustomLocation:self.searchString];
+        }
+        else // search results
+        {
+            NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row - 1];
+            FacilitiesLocation *location = (FacilitiesLocation *)[dict objectForKey:FacilitiesSearchResultLocationKey];
             
-            nextViewController = vc;
-        } else {
-            
-            NSDictionary *dict = [self.filteredData objectAtIndex:indexPath.row-1];
-            FacilitiesLocation *location = (FacilitiesLocation*)[dict objectForKey:FacilitiesSearchResultLocationKey];
-            
-            if ([location.isLeased boolValue]) {
-                FacilitiesLeasedViewController *controller = [[FacilitiesLeasedViewController alloc] initWithLocation:location];
-                
-                nextViewController = controller;
-            } else {
-                FacilitiesRoomViewController *controller = [[FacilitiesRoomViewController alloc] init];
-                controller.location = location;
-                nextViewController = controller;
-            }
+            [[MITBuildingServicesReportForm sharedServiceReport] setLocation:location shouldSetRoom:![location.isLeased boolValue]];
+        }
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+        {
+            [self.navigationController popToRootViewControllerAnimated:YES];
+        }
+        else
+        {
+            [[NSNotificationCenter defaultCenter] postNotificationName:MITBuildingServicesLocationChosenNoticiation object:nil];
         }
     }
-    
-    [self.navigationController pushViewController:nextViewController
-                                         animated:YES];
-    
-    [tableView deselectRowAtIndexPath:indexPath
-                             animated:YES];
 }
 
 #pragma mark - UITableViewDataSource Methods
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView) {
-        return ([self shouldShowLocationSection] ? 2 : 1);
-    } else {
-        return 1;
-    }
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView) {
-        return ((section == 0) && [self shouldShowLocationSection]) ? 1 : [self.cachedData count];
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    if (tableView == self.tableView)
+    {
+        NSInteger firstRowOffset = 0;
+        
+        if( [self shouldShowLocationRow] ) firstRowOffset++;
+        
+        return ( [self.cachedData count] + firstRowOffset );
     } else {
         return ([self.trimmedString length] > 0) ? [self.filteredData count] + 1 : 0;
     }
@@ -338,13 +431,15 @@
     static NSString *facilitiesIdentifier = @"facilitiesCell";
     static NSString *searchIdentifier = @"searchCell";
     
-    if (tableView == self.tableView) {
+    if (tableView == self.tableView)
+    {
         UITableViewCell *cell = nil;
         cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
-        if (cell == nil) {
+        if (cell == nil)
+        {
             cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault
-                                           reuseIdentifier:facilitiesIdentifier];
+                                          reuseIdentifier:facilitiesIdentifier];
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
@@ -360,17 +455,21 @@
                                                     reuseIdentifier:searchIdentifier];
             
             hlCell.autoresizesSubviews = YES;
-            hlCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            hlCell.accessoryType = UITableViewCellAccessoryNone;
         }
         
         if (indexPath.row == 0) {
+            
             hlCell.highlightLabel.searchString = nil;
-            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            
+            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+            {
+                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
+            }
+            
         } else {
-            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1)
-                                                   inSection:indexPath.section];
-            [self configureSearchCell:hlCell
-                         forIndexPath:path];
+            NSIndexPath *path = [NSIndexPath indexPathForRow:(indexPath.row-1) inSection:indexPath.section];
+            [self configureSearchCell:hlCell forIndexPath:path];
         }
         
         
@@ -381,9 +480,16 @@
 }
 
 #pragma mark - UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText {
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self handleUpdatedSearchText:searchText];
+}
+
+- (void)handleUpdatedSearchText:(NSString *)searchText
+{
     self.trimmedString = [searchText stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-    if (![self.searchString isEqualToString:self.trimmedString]) {
+    if (![self.searchString isEqualToString:self.trimmedString])
+    {
         self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }

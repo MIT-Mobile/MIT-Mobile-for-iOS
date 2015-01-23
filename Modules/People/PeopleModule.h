@@ -1,9 +1,9 @@
-#import "MITModule.h"
+#import "MITNavigationModule.h"
+#import "PeopleSearchViewController.h"
 
-@class PeopleSearchViewController;
+@interface PeopleModule : MITNavigationModule
+@property(nonatomic,strong) PeopleSearchViewController *rootViewController;
 
-@interface PeopleModule : MITModule
-@property (nonatomic,readonly) PeopleSearchViewController *peopleController;
-
+- (instancetype)init;
 @end
 

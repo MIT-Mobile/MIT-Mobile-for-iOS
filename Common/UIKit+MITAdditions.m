@@ -24,21 +24,21 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 {
     switch (orientation) {
         case UIImageOrientationDown:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDown", UIImageOrientationDown];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationDown", (long)UIImageOrientationDown];
         case UIImageOrientationDownMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationDownMirrored", UIImageOrientationDownMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationDownMirrored", (long)UIImageOrientationDownMirrored];
         case UIImageOrientationLeft:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeft", UIImageOrientationLeft];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationLeft", (long)UIImageOrientationLeft];
         case UIImageOrientationLeftMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationLeftMirrored", UIImageOrientationLeftMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationLeftMirrored", (long)UIImageOrientationLeftMirrored];
         case UIImageOrientationUp:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUp", UIImageOrientationUp];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationUp", (long)UIImageOrientationUp];
         case UIImageOrientationUpMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationUpMirrored", UIImageOrientationUpMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationUpMirrored", (long)UIImageOrientationUpMirrored];
         case UIImageOrientationRight:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRight", UIImageOrientationRight];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationRight", (long)UIImageOrientationRight];
         case UIImageOrientationRightMirrored:
-            return [NSString stringWithFormat:@"%@ [%d]", @"UIImageOrientationRightMirrored", UIImageOrientationRightMirrored];
+            return [NSString stringWithFormat:@"%@ [%ld]", @"UIImageOrientationRightMirrored", (long)UIImageOrientationRightMirrored];
     }
 }
 
@@ -70,14 +70,44 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 @end
 
 @implementation UIColor (MITUIAdditions)
-+ (UIColor*)mit_backgroundColor
++ (UIColor* )mit_backgroundColor
 {
     return [UIColor colorWithHexString:@"d7dae0"];
 }
 
-+ (UIColor *)MITTintColor
++ (UIColor *)mit_greyTextColor
+{
+    return [UIColor colorWithWhite:0.3 alpha:1.0];
+}
+
++ (UIColor *)mit_tintColor
 {
     return [UIColor colorWithHexString:@"a31f34"]; // MIT Red, aka Pantone 201
+}
+
++ (UIColor *)mit_openGreenColor
+{
+    return [UIColor colorWithHexString:@"0abf00"];
+}
+
++ (UIColor *)mit_closedRedColor
+{
+    return [UIColor colorWithHexString:@"e52200"];
+}
+
++ (UIColor *)mit_cellSeparatorColor
+{
+    return [UIColor colorWithRed:227.0/255.0 green:227.0/255.0 blue:229.0/255.0 alpha:1.0];
+}
+
++ (UIColor *)mit_navBarColor
+{
+    return [UIColor colorWithRed:248.0/255.0 green:248.0/255.0 blue:248.0/255.0 alpha:1.0];
+}
+
++ (UIColor *)mit_systemTintColor
+{
+    return [UIColor colorWithRed:0.0 green:122.0/255.0 blue:1.0 alpha:1.0];
 }
 
 // snagged from http://arstechnica.com/apple/guides/2009/02/iphone-development-accessing-uicolor-components.ars
@@ -125,46 +155,37 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 + (UIImageView *)accessoryViewWithMITType:(MITAccessoryViewType)type {
     NSString *imageName = nil;
-    NSString *highlightedImageName = nil;
 
     switch (type) {
         case MITAccessoryViewEmail:
             imageName = MITImageNameEmail;
-            highlightedImageName = MITImageNameEmailHighlight;
             break;
         case MITAccessoryViewMap:
             imageName = MITImageNameMap;
-            highlightedImageName = MITImageNameMapHighlight;
             break;
         case MITAccessoryViewPeople:
             imageName = MITImageNamePeople;
-            highlightedImageName = MITImageNamePeopleHighlight;
             break;
         case MITAccessoryViewPhone:
             imageName = MITImageNamePhone;
-            highlightedImageName = MITImageNamePhoneHighlight;
             break;
         case MITAccessoryViewExternal:
-            imageName = MITImageNameExternal;
-            highlightedImageName = MITImageNameExternalHighlight;
+            imageName = MITImageActionExternal;
             break;
 		case MITAccessoryViewEmergency:
 			imageName = MITImageNameEmergency;
-			highlightedImageName = MITImageNameEmergencyHighlight;
 			break;
         case MITAccessoryViewSecure:
             imageName = MITImageNameSecure;
-            highlightedImageName = MITImageNameSecureHighlight;
             break;
         case MITAccessoryViewCalendar:
             imageName = MITImageNameCalendar;
-            highlightedImageName = MITImageNameCalendarHighlight;
             break;
     }
     
     UIImage *image = [UIImage imageNamed:imageName];
-    UIImage *highlightedImage = [UIImage imageNamed:highlightedImageName];
-    UIImageView *accessoryView = [[UIImageView alloc] initWithImage:image highlightedImage:highlightedImage];
+    image = [image imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImageView *accessoryView = [[UIImageView alloc] initWithImage:image];
     return accessoryView;
 }
 
@@ -376,13 +397,6 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 @end
 
-@implementation UIActionSheet (MITUIAdditions)
-- (void)showFromAppDelegate {
-    MIT_MobileAppDelegate *appDelegate = MITAppDelegate();
-    [self showInView:appDelegate.rootNavigationController.view];
-}
-@end
-
 
 #define JSON_ERROR_CODE -2
 @implementation UIAlertView (MITUIAdditions)
@@ -423,5 +437,42 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 + (UIBarButtonItem*)flexibleSpace
 {
     return [[self alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
+}
+@end
+
+@implementation UISearchBar (MITUIAdditions)
+
+// have to iterate through the subviews to change text color. Using appearance proxy doesn't
+// work unless it's changed once at searchBar creation time.
+// http://stackoverflow.com/questions/19048766/uisearchbar-text-color-change-in-ios-7
+- (void)setSearchTextColor:(UIColor *)color
+{
+    for (UIView *subView in self.subviews)
+    {
+        for (UIView *secondLevelSubview in subView.subviews)
+        {
+            if ([secondLevelSubview isKindOfClass:[UITextField class]])
+            {
+                UITextField *searchBarTextField = (UITextField *)secondLevelSubview;
+                [searchBarTextField setTextColor:color];
+                
+                break;
+            }
+        }
+    }
+}
+@end
+
+@implementation UISearchBar (MITAdditions)
+- (UITextField *)textField
+{
+    for (UIView *subview in self.subviews) {
+        for (UIView *secondLevelSubview in subview.subviews){
+            if ([secondLevelSubview isKindOfClass:[UITextField class]]) {
+                return (UITextField *)secondLevelSubview;
+            }
+        }
+    }
+    return nil;
 }
 @end

@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
-#import "MITModule.h"
+#import "MITNavigationModule.h"
 
-@interface DiningModule : MITModule
+@interface DiningModule : MITNavigationModule
 
+- (instancetype)init;
 @end

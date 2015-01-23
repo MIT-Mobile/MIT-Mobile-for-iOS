@@ -3,6 +3,7 @@
 #import "FacilitiesPropertyOwner.h"
 #import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
+#import "MITTelephoneHandler.h"
 
 enum {
     FacilitiesLeasedNoneTag = 0,
@@ -123,10 +124,7 @@ enum {
             
         case FacilitiesLeasedPhoneTag:
         {
-            NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",self.location.propertyOwner.phone]];
-            if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                [[UIApplication sharedApplication] openURL:url];
-            }
+            [MITTelephoneHandler attemptToCallPhoneNumber:self.location.propertyOwner.phone];
             break;
         }
         

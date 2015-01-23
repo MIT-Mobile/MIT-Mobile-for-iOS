@@ -3,6 +3,7 @@
 #import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "SecondaryGroupedTableViewCell.h"
+#import "MITTelephoneHandler.h"
 
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";
 static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
@@ -177,10 +178,7 @@ static NSString* const kFacilitiesPhoneNumber = @"617.253.4948";
                 
             case 1:
             {
-                NSURL *url = [NSURL URLWithString:[NSString stringWithFormat:@"tel://1%@",kFacilitiesPhoneNumber]];
-                if ([[UIApplication sharedApplication] canOpenURL:url]) {
-                    [[UIApplication sharedApplication] openURL:url];
-                }
+                [MITTelephoneHandler attemptToCallPhoneNumber:kFacilitiesPhoneNumber];
                 break;
             }
             

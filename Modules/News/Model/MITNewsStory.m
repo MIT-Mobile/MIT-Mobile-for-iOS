@@ -1,16 +1,9 @@
 #import "MITNewsStory.h"
 #import "MITNewsCategory.h"
 #import "MITNewsImage.h"
-#import "MITAdditions.h"
 
-@interface MITNewsStory ()
-@property (nonatomic,copy) NSString *dekText;
-@property (nonatomic,copy) NSString *titleText;
-@end
 
 @implementation MITNewsStory
-@synthesize dekText = _dekText;
-@synthesize titleText = _titleText;
 
 @dynamic author;
 @dynamic body;
@@ -59,68 +52,23 @@
     return storyMapping;
 }
 
-- (void)setDek:(NSString *)dek
+- (NSString *)dek
 {
-    [self willChangeValueForKey:@"dek"];
-    [self willChangeValueForKey:@"dekText"];
+    [self willAccessValueForKey:@"dek"];
+    NSString *dek = [self primitiveValueForKey:@"dek"];
+    [self didAccessValueForKey:@"dek"];
 
-    [self setPrimitiveValue:dek forKey:@"dek"];
-    _dekText = nil;
-
-    [self didChangeValueForKey:@"dek"];
-    [self didChangeValueForKey:@"dekText"];
+    dek = [dek stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return dek;
 }
 
-- (void)setTitle:(NSString *)title
+- (NSString *)title
 {
-    [self willChangeValueForKey:@"title"];
-    [self willChangeValueForKey:@"titleText"];
-
-    [self setPrimitiveValue:title forKey:@"title"];
-    _titleText = nil;
-
-    [self didChangeValueForKey:@"title"];
-    [self didChangeValueForKey:@"titleText"];
-}
-
-- (NSString*)dekText
-{
-    if (!_dekText) {
-        NSError *error = nil;
-        NSString *string = [self.dek stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-
-        if (!string) {
-            if (error) {
-                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
-            }
-
-            _dekText = self.dek;
-        } else {
-            _dekText = string;
-        }
-    }
-
-    return _dekText;
-}
-
-- (NSString*)titleText
-{
-    if (!_titleText) {
-        NSError *error = nil;
-        NSString *string = [self.title stringBySanitizingHTMLFragmentWithPermittedElementNames:nil error:&error];
-
-        if (!string) {
-            if (error) {
-                DDLogWarn(@"failed to sanitize dek, falling back to the original content: %@",error);
-            }
-            
-            _titleText = self.title;
-        } else {
-            _titleText = string;
-        }
-    }
-
-    return _titleText;
+    [self willAccessValueForKey:@"title"];
+    NSString *title = [self primitiveValueForKey:@"title"];
+    [self didAccessValueForKey:@"title"];
+    title = [title stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return title;
 }
 
 @end

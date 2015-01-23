@@ -1,9 +1,9 @@
+
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
 #import "MITDeviceRegistration.h"
 #import "MITUnreadNotifications.h"
 #import "AudioToolbox/AudioToolbox.h"
-#import "MITSpringboard.h"
 #import "ModuleVersions.h"
 #import "MITLogging.h"
 #import "Secret.h"
@@ -27,36 +27,38 @@
 #import "MITMobileServerConfiguration.h"
 #import "NewsModule.h"
 #import "PeopleModule.h"
-#import "QRReaderModule.h"
+#import "MITScannerModule.h"
 #import "SettingsModule.h"
 #import "ShuttleModule.h"
 #import "ToursModule.h"
 
 #import "MITTouchstoneController.h"
+#import "MITSlidingViewController.h"
+#import "MITShuttleStopNotificationManager.h"
+#import "MITShuttleController.h"
 
-@interface APNSUIDelegate : NSObject <UIAlertViewDelegate>
-@property (nonatomic,strong) NSDictionary *apnsDictionary;
-@property (nonatomic,weak) MIT_MobileAppDelegate *appDelegate;
+static NSString* const MITMobileButtonTitleView = @"View";
+static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveModuleName";
 
-- (id)initWithApnsDictionary:(NSDictionary *)apns appDelegate:(MIT_MobileAppDelegate *)delegate;
-@end
-
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate>
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate,MITSlidingViewControllerDelegate >
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
-@property (nonatomic,strong) NSMutableSet *pendingNotifications;
+
+@property(nonatomic,strong) NSMutableArray *pendingNotifications;
+
+@property(nonatomic,copy) NSString *lastActiveModuleName;
+@property(nonatomic,copy) NSArray *modules;
+
+@property (nonatomic,strong) NSRecursiveLock *lock;
 
 - (void)updateBasicServerInfo;
 @end
 
-@implementation MIT_MobileAppDelegate {
-    MITCoreDataController *_coreDataController;
-    NSManagedObjectModel *_managedObjectModel;
-    NSArray *_modules;
-    MITMobile *_remoteObjectManager;
-}
-
-@dynamic coreDataController,managedObjectModel,modules,remoteObjectManager;
+@implementation MIT_MobileAppDelegate
+@synthesize coreDataController = _coreDataController;
+@synthesize remoteObjectManager = _remoteObjectManager;
+@synthesize managedObjectModel = _managedObjectModel;
+@dynamic lastActiveModuleName;
 
 + (void)initialize
 {
@@ -74,14 +76,9 @@
     }
 }
 
-+ (MITModule*)moduleForTag:(NSString *)aTag
-{
-    return [[self applicationDelegate] moduleForTag:aTag];
-}
-
 #pragma mark -
 #pragma mark Application lifecycle
-- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
+- (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 #if defined(TESTFLIGHT)
     if ([MITApplicationTestFlightToken length]) {
         [TestFlight setOptions:@{@"logToConsole" : @NO,
@@ -89,118 +86,118 @@
         [TestFlight takeOff:MITApplicationTestFlightToken];
     }
 #endif
-    // The below load* methods called here are not necessary.
-    //  The property getters are lazy and will load in the proper order.
-    //  This is done to clearly illustrate the order in which they
-    //  should be setup.
-    //[self loadTouchstoneController];
-    //[self loadManagedObjectModel];
-    //[self loadCoreDataController];
-    //[self loadRemoteObjectManager];
+
+    [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 
     // Default the cache expiration to 1d
     [[SDImageCache sharedImageCache] setMaxCacheAge:86400];
-    
+
     // Create the default Touchstone controller and set it.
     // -sharedTouchstoneController is a lazy method and it should create
     // a default controller here if needed.
     [MITTouchstoneController setSharedController:self.sharedTouchstoneController];
-    
+
+    NSMutableArray *moduleViewControllers = [[NSMutableArray alloc] init];
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module supportsCurrentUserInterfaceIdiom]) {
+            UIViewController *viewController = module.viewController;
+            NSAssert(viewController, @"module %@ does not have a valid view controller",module.name);
+            [moduleViewControllers addObject:viewController];
+        }
+    }];
+
+    self.rootViewController.delegate = self;
+    self.rootViewController.viewControllers = moduleViewControllers;
+
+    NSString *activeModuleName = self.lastActiveModuleName;
+    if (activeModuleName) {
+        MITModule *module = [self moduleWithTag:self.lastActiveModuleName];
+        if (module && (module.viewController.moduleItem.type == MITModulePresentationFullScreen)) {
+            self.rootViewController.visibleViewController = module.viewController;
+        }
+    }
+
     [self updateBasicServerInfo];
 
-    // TODO: don't store state like this when we're using a springboard.
-	// set modules state
-	NSDictionary *modulesState = [[NSUserDefaults standardUserDefaults] objectForKey:MITModulesSavedStateKey];
-	for (MITModule *aModule in self.modules) {
-		NSDictionary *pathAndQuery = modulesState[aModule.tag];
-		aModule.currentPath = pathAndQuery[@"path"];
-		aModule.currentQuery = pathAndQuery[@"query"];
-	}
-    
-    // Override point for customization after view hierarchy is set
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationDidFinishLaunching];
-    }
-    
-    // Register for push notifications
-    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
+
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
-	
-	[MITUnreadNotifications updateUI];
-	[MITUnreadNotifications synchronizeWithMIT];
-	
-	//APNS dictionary generated from the json of a push notificaton
-	NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    
-	// check if application was opened in response to a notofication
-	if(apnsDict) {
-		MITNotification *notification = [MITUnreadNotifications addNotification:apnsDict];
-		[[self moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:YES];
-		DDLogVerbose(@"Application opened in response to notification=%@", notification);
-	}
-    
+
+    if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
+        [application registerForRemoteNotifications];
+    } else {
+        [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+    }
+
+    return YES;
+}
+
+- (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+{
+    if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
+        UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |
+                                                    UIUserNotificationTypeSound |
+                                                    UIUserNotificationTypeAlert);
+        UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
+        [application registerUserNotificationSettings:settings];
+    }
+
+    [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
+
+    [MITUnreadNotifications updateUI];
+    [MITUnreadNotifications synchronizeWithMIT];
+
+    //APNS dictionary generated from the json of a push notificaton
+    NSDictionary *apnsDict = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+
     [self.window makeKeyAndVisible];
     DDLogVerbose(@"Original Window size: %@ [%@]", NSStringFromCGRect([self.window frame]), self.window);
 
+    // check if application was opened in response to a notification
+    if(apnsDict) {
+        [self application:[UIApplication sharedApplication] didReceiveRemoteNotification:apnsDict];
+    }
+
+    [self addGlobalMITStyling];
+    
     return YES;
 }
 
 // Because we implement -application:didFinishLaunchingWithOptions: this only gets called when an mitmobile:// URL is opened from within this app
 - (BOOL)application:(UIApplication *)application handleOpenURL:(NSURL *)url {
-    BOOL canHandle = NO;
-    
-    if (canHandle == NO)
-    {
-        NSString *scheme = [url scheme];
-        NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
-        NSArray *urlTypes = infoDict[@"CFBundleURLTypes"];
-        for (NSDictionary *type in urlTypes) {
-            NSArray *schemes = type[@"CFBundleURLSchemes"];
-            for (NSString *supportedScheme in schemes) {
-                if ([supportedScheme isEqualToString:scheme]) {
-                    canHandle = YES;
-                    break;
-                }
+    NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
+    NSArray *urlTypes = infoDict[@"CFBundleURLTypes"];
+
+    __block BOOL canHandle = NO;
+    [urlTypes enumerateObjectsUsingBlock:^(NSDictionary *type, NSUInteger idx, BOOL *stop) {
+        NSArray *supportedSchemes = type[@"CFBundleURLSchemes"];
+        [supportedSchemes enumerateObjectsUsingBlock:^(NSString *scheme, NSUInteger idx, BOOL *stop) {
+            if ([scheme isEqualToString:url.scheme]) {
+                canHandle = YES;
+                (*stop) = YES;
             }
-            if (canHandle) {
-                break;
-            }
-        }
-        
-        if (canHandle) {
-            NSString *path = [url path];
-            NSString *moduleTag = [url host];
-            MITModule *module = [self moduleForTag:moduleTag];
-            if ([path rangeOfString:@"/"].location == 0) {
-                path = [path substringFromIndex:1];
-            }
-            
-            // right now expecting URLs like mitmobile://people/search?Some%20Guy
-            NSString *query = [[url query] stringByReplacingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            
-            if (!module.hasLaunchedBegun) {
-                module.hasLaunchedBegun = YES;
-            }
-            
-            DDLogVerbose(@"handling internal url: %@", url);
-            canHandle = [module handleLocalPath:path query:query];
-        } else {
-            DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
-        }
+        }];
+
+        (*stop) = canHandle;
+    }];
+
+    if (canHandle) {
+        NSString *moduleName = url.host;
+        DDLogVerbose(@"handling internal url for module %@: %@",moduleName,url);
+
+        MITModule *module = [self moduleWithTag:moduleName];
+        [module didReceiveRequestWithURL:url];
+
+        [self showModuleWithTag:module.name animated:YES];
+    } else {
+        DDLogWarn(@"%@ couldn't handle url: %@", NSStringFromSelector(_cmd), url);
     }
 
     return canHandle;
 }
 
 - (void)applicationShouldSaveState:(UIApplication *)application {
-    // Let each module perform clean up as necessary
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationWillTerminate];
-    }
-    
-	[self saveModulesState];
-    
     // Save preferences
     [[NSUserDefaults standardUserDefaults] synchronize];
 }
@@ -209,36 +206,24 @@
 	[self applicationShouldSaveState:application];
 }
 
-- (void)applicationDidEnterBackground:(UIApplication *)application {
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationDidEnterBackground];
-    }
-}
-
 - (void)applicationWillEnterForeground:(UIApplication *)application {
-    for (MITModule *aModule in self.modules) {
-        [aModule applicationWillEnterForeground];
-    }
-    
     [MITUnreadNotifications updateUI];
 }
 
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
-    // (https://developers.facebook.com/docs/tutorials/ios-sdk-tutorial/authenticate - 2013.07.17)
-    // We need to properly handle activation of the application with regards to Facebook Login
-    // (e.g., returning from iOS 6.0 Login Dialog or from fast app switching).
+    // Do Nothing
 }
 
 #pragma mark - Shared resources
 - (void)showNetworkActivityIndicator {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSInteger count = self.networkActivityCounter + 1;
-        
+
         if (count < 1) {
-            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %d",count);
+            DDLogWarn(@"unmatched number of calls to showNetworkActivityIndicator: %ld", (long)count);
         }
-        
+
         [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
         self.networkActivityCounter = count;
     });
@@ -247,7 +232,7 @@
 - (void)hideNetworkActivityIndicator {
     dispatch_async(dispatch_get_main_queue(), ^{
         NSInteger count = self.networkActivityCounter - 1;
-        
+
         if (count < 1) {
             count = 0;
             [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
@@ -264,64 +249,61 @@
 }
 
 #pragma mark -
-#pragma mark App-modal view controllers
-
-// Call these instead of [appDelegate.tabbar presentModal...], because dismissing that crashes the app
-// Also, presenting a transparent modal view controller (e.g. DatePickerViewController) the traditional way causes the screen behind to go black.
-- (void)presentAppModalViewController:(UIViewController *)viewController animated:(BOOL)animated {
-    if (self.rootNavigationController.presentedViewController == nil)
-    {
-        [self.rootNavigationController presentViewController:viewController animated:animated completion:NULL];
-    }
-}
-
-- (void)dismissAppModalViewControllerAnimated:(BOOL)animated {
-    if (self.rootNavigationController.presentedViewController)
-    {
-        [self.rootNavigationController dismissViewControllerAnimated:animated completion:NULL];
-    }
-}
-
-#pragma mark -
 #pragma mark Push notifications
+- (BOOL)notificationsEnabled
+{
+    return (BOOL)[[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
+}
+
+- (void)application:(UIApplication *)application didReceiveLocalNotification:(UILocalNotification *)notification
+{
+    [self _didRecieveNotification:notification.userInfo withAlert:notification.alertBody];
+
+    if ([application.scheduledLocalNotifications count] == 0) {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+    }
+}
 
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
-	[MITUnreadNotifications updateUI];
-	
-	// vibrate the phone
-	AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-	
-	// display the notification in an alert
-    APNSUIDelegate *notificationHelper = [[APNSUIDelegate alloc] initWithApnsDictionary:userInfo appDelegate:self];
-    [self.pendingNotifications addObject:notificationHelper];
-
-	UIAlertView *notificationView =[[UIAlertView alloc] initWithTitle:[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"]
-                                                              message:userInfo[@"aps"][@"alert"]
-                                                             delegate:notificationHelper
-                                                    cancelButtonTitle:@"Close"
-                                                    otherButtonTitles:@"View", nil];
-	[notificationView show];
+    NSString *message = userInfo[@"aps"][@"alert"];
+    [self _didRecieveNotification:userInfo withAlert:message];
 }
 
-- (void)application:(UIApplication *)application 
-didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
+- (void)application:(UIApplication *)application didRegisterForRemoteNotificationsWithDeviceToken:(NSData *)deviceToken {
 	DDLogVerbose(@"Registered for push notifications. deviceToken == %@", deviceToken);
     self.deviceToken = deviceToken;
-    
+
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	if(!identity) {
-		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken];
+		[MITDeviceRegistration registerNewDeviceWithToken:deviceToken completion:^(BOOL success) {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                }
+            }];
+        }];
 	} else {
 		NSData *oldToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
-		
+
 		if(![oldToken isEqualToData:deviceToken]) {
-			[MITDeviceRegistration newDeviceToken:deviceToken];
-		}
+			[MITDeviceRegistration newDeviceToken:deviceToken completion:^(BOOL success) {
+                [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                    if (module.pushNotificationSupported) {
+                        [self _registerNotificationsForModuleWithName:module.name enabled:success completed:nil];
+                    }
+                }];
+            }];
+        } else {
+            [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+                if (module.pushNotificationSupported) {
+                    [self _registerNotificationsForModuleWithName:module.name enabled:YES completed:nil];
+                }
+            }];
+        }
 	}
 }
 
-- (void)application:(UIApplication *)application 
-didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
+- (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     DDLogWarn(@"%@", [error localizedDescription]);
 
     if ([error code] == 3010) {
@@ -338,59 +320,103 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
     }
 }
 
+#pragma mark - Background Fetch
+
+- (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
+{
+    if ([application.scheduledLocalNotifications count] > 0) {
+        [[MITShuttleStopNotificationManager sharedManager] performBackgroundNotificationUpdatesWithCompletion:^(NSError *error) {
+            if (error) {
+                completionHandler(UIBackgroundFetchResultFailed);
+            } else {
+                completionHandler(UIBackgroundFetchResultNewData);
+            }
+        }];
+    } else {
+        [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
+        completionHandler(UIBackgroundFetchResultNoData);
+    }
+}
+
 #pragma mark - Lazy property getters
+- (NSRecursiveLock*)lock
+{
+    if (!_lock) {
+        @synchronized([self class]) {
+            if (!_lock) {
+                _lock = [[NSRecursiveLock alloc] init];
+            }
+        }
+    }
+
+    return _lock;
+}
+
 - (MITTouchstoneController*)sharedTouchstoneController
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+
+    if (!_sharedTouchstoneController) {
         [self loadTouchstoneController];
         NSAssert(_sharedTouchstoneController && [MITTouchstoneController sharedController], @"failed to load Touchstone authentication controller");
-    });
-    
+    }
+
+    [self.lock unlock];
+
     return _sharedTouchstoneController;
 }
 
 - (MITMobile*)remoteObjectManager
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+
+    if (!_remoteObjectManager) {
+
         [self loadRemoteObjectManager];
         NSAssert(_remoteObjectManager, @"failed to initalize the persitence stack");
-    });
+    }
+
+    [self.lock unlock];
 
     return _remoteObjectManager;
 }
 
 - (NSManagedObjectModel*)managedObjectModel
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+
+    if (!_managedObjectModel) {
         [self loadManagedObjectModel];
         NSAssert(_managedObjectModel, @"failed to create the managed object model");
-    });
+    }
+
+    [self.lock unlock];
 
     return _managedObjectModel;
 }
 
 - (MITCoreDataController*)coreDataController
 {
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
+    [self.lock lock];
+
+    if (!_coreDataController) {
         [self loadCoreDataController];
         NSAssert(_coreDataController, @"failed to load CoreData store controller");
-    });
+    }
+
+    [self.lock unlock];
 
     return _coreDataController;
 }
 
-- (UIWindow*)window
+- (MITSlidingViewController*)rootViewController
 {
-    if (!_window) {
-        [self loadWindow];
-        NSAssert(_window, @"failed to load main window");
+    UIViewController *rootViewController = self.window.rootViewController;
+    if ([rootViewController isKindOfClass:[MITSlidingViewController class]]) {
+        return (MITSlidingViewController*)rootViewController;
+    } else {
+        return nil;
     }
-    
-    return _window;
 }
 
 - (NSArray*)modules
@@ -399,14 +425,14 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
         [self loadModules];
         NSAssert(_modules,@"failed to load application modules");
     }
-    
+
     return _modules;
 }
 
-- (NSMutableSet*)pendingNotifications
+- (NSMutableArray*)pendingNotifications
 {
     if (!_pendingNotifications) {
-        _pendingNotifications = [[NSMutableSet alloc] init];
+        _pendingNotifications = [[NSMutableArray alloc] init];
     }
 
     return _pendingNotifications;
@@ -428,180 +454,355 @@ didFailToRegisterForRemoteNotificationsWithError:(NSError *)error {
 
 - (void)loadManagedObjectModel
 {
-    NSArray *modelNames = @[@"Calendar",
+    NSArray *modelNames = @[@"MITCalendarDataModel",
                             @"CampusMap",
-                            @"Dining",
+                            @"MITDiningDataModel",
                             @"Emergency",
                             @"FacilitiesLocations",
-                            @"LibrariesLocationsHours",
                             @"News",
                             @"QRReaderResult",
-                            @"ShuttleTrack",
-                            @"Tours",
-                            @"PeopleDataModel"];
-    
+                            @"MITShuttleDataModel",
+                            @"PeopleDataModel",
+                            @"MITToursDataModel"];
+
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
         NSURL *modelURL = [[NSBundle mainBundle] URLForResource:modelName withExtension:@"momd"];
         NSManagedObjectModel *objectModel = [[NSManagedObjectModel alloc] initWithContentsOfURL:modelURL];
         NSAssert(objectModel, @"managed object model '%@' at URL '%@' could not be loaded",modelName,modelURL);
-        
+
         [managedObjectModels addObject:objectModel];
     }];
-    
+
     _managedObjectModel = [NSManagedObjectModel modelByMergingModels:managedObjectModels];
 }
 
 - (void)loadModules {
     // add your MITModule subclass here by adding it to the below
-    _modules = @[[[NewsModule alloc] init],
-                 [[ShuttleModule alloc] init],
-                 [[CMModule alloc] init],
-                 [[CalendarModule alloc] init],
-                 [[PeopleModule alloc] init],
-                 [[ToursModule alloc] init],
-                 [[EmergencyModule alloc] init],
-                 [[LibrariesModule alloc] init],
-                 [[FacilitiesModule alloc] init],
-                 [[DiningModule alloc] init],
-                 [[QRReaderModule alloc] init],
-                 [[LinksModule alloc] init],
-                 [[SettingsModule alloc] init],
-                 [[AboutModule alloc] init]];
+    // Modules are listed in the order they are added here.
+    NSMutableArray *modules = [[NSMutableArray alloc] init];
+
+    NewsModule *newsModule = [[NewsModule alloc] init];
+    [modules addObject:newsModule];
+
+    ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
+    [modules addObject:shuttlesModule];
+
+    CMModule *campusMapModule = [[CMModule alloc] init];
+    [modules addObject:campusMapModule];
+
+    CalendarModule *calendarModule = [[CalendarModule alloc] init];
+    [modules addObject:calendarModule];
+
+    PeopleModule *peopleModule = [[PeopleModule alloc] init];
+    [modules addObject:peopleModule];
+
+    ToursModule *toursModule = [[ToursModule alloc] init];
+    [modules addObject:toursModule];
+
+    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
+    [modules addObject:emergencyModule];
+
+    LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
+    [modules addObject:librariesModule];
+
+    DiningModule *diningModule = [[DiningModule alloc] init];
+    [modules addObject:diningModule];
+    
+    FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
+    [modules addObject:facilitiesModule];
+
+    MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
+    [modules addObject:scannerModule];
+
+    LinksModule *linksModule = [[LinksModule alloc] init];
+    [modules addObject:linksModule];
+
+    SettingsModule *settingsModule = [[SettingsModule alloc] init];
+    [modules addObject:settingsModule];
+
+    AboutModule *aboutModule = [[AboutModule alloc] init];
+    [modules addObject:aboutModule];
+
+    _modules = modules;
 }
 
 - (void)loadRemoteObjectManager
 {
     MITMobile *remoteObjectManager = [[MITMobile alloc] init];
     [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
-    
+
     MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapPlaces];
     
+    MITMobileResource *mapObjectPlaces = [[MITMapObjectResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:mapObjectPlaces];
+
     MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:mapCategories];
-    
+
     MITMobileResource *newsStories = [[MITNewsStoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsStories];
 
     MITMobileResource *newsCategories = [[MITNewsCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:newsCategories];
-    
+
     MITMobileResource *personResource = [[MITPersonResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:personResource];
-    
+
     MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
     [remoteObjectManager addResource:peopleResource];
+
+    MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRoutesResource];
+
+    MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleRouteDetailResource];
+
+    MITMobileResource *shuttleStopDetailResource = [[MITShuttleStopDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleStopDetailResource];
+
+    MITMobileResource *shuttlePredictionsResource = [[MITShuttlePredictionsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttlePredictionsResource];
+
+    MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:shuttleVehiclesResource];
+
+    MITMobileResource *calendarsCalendarsResource = [[MITCalendarsCalendarsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsCalendarsResource];
+
+    MITMobileResource *calendarsCalendarResource = [[MITCalendarsCalendarResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsCalendarResource];
+
+    MITMobileResource *calendarsEventsResource = [[MITCalendarsEventsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsEventsResource];
+
+    MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:calendarsEventResource];
+
+    MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:diningResource];
+
+    MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
+    [remoteObjectManager addResource:librariesResource];
+
+    MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
+    [remoteObjectManager addResource:librariesLinksResource];
+
+    MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
+    [remoteObjectManager addResource:librariesAskUsResource];
+
+    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
+    [remoteObjectManager addResource:librariesSearchResource];
+
+    MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
+    [remoteObjectManager addResource:librariesUserResource];
+
+    MITMobileResource *librariesMITIdentityResource = [[MITLibrariesMITIdentityResource alloc] init];
+    [remoteObjectManager addResource:librariesMITIdentityResource];
+
+    MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
+    [remoteObjectManager addResource:librariesItemDetailResource];
+
+    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursToursResource];
+
+    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+    [remoteObjectManager addResource:toursTourResource];
+
+    MITMobileResource *emergencyInfoContactResource = [[MITEmergencyInfoContactsResource alloc] init];
+    [remoteObjectManager addResource:emergencyInfoContactResource];
+    
+    MITMobileResource *emergencyInfoAnnouncementResource =[[MITEmergencyInfoAnnouncementResource alloc] init];
+    [remoteObjectManager addResource:emergencyInfoAnnouncementResource];
     
     _remoteObjectManager = remoteObjectManager;
 }
 
-- (void)loadWindow
+#pragma mark Private
+- (void)_didRecieveNotification:(NSDictionary*)userInfo withAlert:(NSString*)alertBody
 {
-    UIWindow *window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
-    window.backgroundColor = [UIColor mit_backgroundColor];
-    
-    // iOS 6's UIWindow doesn't do tintColor
-    if ([window respondsToSelector:@selector(setTintColor:)]) {
-        window.tintColor = [UIColor MITTintColor];
+    MITNotification *notification = [MITUnreadNotifications addNotification:userInfo];
+    [MITUnreadNotifications updateUI];
+
+    NSString *applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+    if (!applicationName) {
+        applicationName = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleNameKey];
     }
-    
-    DDLogVerbose(@"Root window size is %@", NSStringFromCGRect([window bounds]));
-    
-    MITSpringboard *springboard = [[MITSpringboard alloc] init];
-    springboard.primaryModules = self.modules;
-    self.springboardController = springboard;
-    
-    UINavigationController *navigationController = [[MITNavigationController alloc] initWithRootViewController:springboard];
-    navigationController.navigationBarHidden = NO;
-    
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        navigationController.navigationBar.barStyle = UIBarStyleDefault;
-        navigationController.navigationBar.translucent = YES;
+
+    [self.pendingNotifications addObject:notification];
+    UIAlertView *notificationView = [[UIAlertView alloc] initWithTitle:applicationName
+                                                               message:alertBody
+                                                              delegate:self
+                                                     cancelButtonTitle:@"Close"
+                                                     otherButtonTitles:MITMobileButtonTitleView, nil];
+    [notificationView show];
+}
+
+- (void)_registerNotificationsForModuleWithName:(NSString*)name enabled:(BOOL)enabled completed:(void (^)(void))block
+{
+    // If we don't have an identity, don't even try to enable (or disable) notifications,
+    // just leave everything as-is
+    if (!self.deviceToken) {
+        if (block) {
+            block();
+        }
+
+        return;
     } else {
-        navigationController.navigationBar.barStyle = UIBarStyleBlack;
-        navigationController.navigationBar.translucent = NO;
+        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+        parameters[@"module_name"] = name;
+        parameters[@"enabled"] = (enabled ? @"1" : @"0");
+
+        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
+        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registrationResult) {
+            if (![registrationResult isKindOfClass:[NSDictionary class]]) {
+                DDLogError(@"fatal error: invalid response for push configuration");
+            } else if (registrationResult[@"error"]) {
+                DDLogError(@"failed to enable notifications for module %@ with error %@",name,registrationResult[@"error"]);
+            }
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+            DDLogError(@"failed to enable notifications for module %@ with error %@",name,error);
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block();
+                }
+            }];
+        }];
+
+        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
-    
-    navigationController.delegate = self;
-    self.rootNavigationController = navigationController;
-    
-    window.rootViewController = navigationController;
-    self.window = window;
 }
 
 #pragma mark Application modules helper methods
-- (MITModule *)moduleForTag:(NSString *)aTag {
-    for (MITModule *aModule in self.modules) {
-        if ([aModule.tag isEqual:aTag]) {
-            return aModule;
+- (MITModule*)moduleWithTag:(NSString *)tag
+{
+    __block MITModule *selectedModule = nil;
+    [self.modules enumerateObjectsUsingBlock:^(MITModule *module, NSUInteger idx, BOOL *stop) {
+        if ([module.name isEqualToString:tag]) {
+            selectedModule = module;
+            (*stop) = YES;
         }
-    }
-    return nil;
+    }];
+
+    return selectedModule;
 }
 
-- (void)showModuleForTag:(NSString *)tag {
-    [self.springboardController pushModuleWithTag:tag];
+- (void)showModuleWithTag:(NSString *)tag
+{
+    [self showModuleWithTag:tag animated:NO];
+}
+
+- (void)showModuleWithTag:(NSString *)tag animated:(BOOL)animated
+{
+    MITModule *module = [self moduleWithTag:tag];
+
+    UIViewController *viewController = module.viewController;
+    [self.rootViewController setVisibleViewController:viewController animated:animated completion:^{
+        if (viewController.moduleItem.type == MITModulePresentationFullScreen) {
+            self.lastActiveModuleName = module.name;
+        }
+    }];
 }
 
 #pragma mark Preferences
 - (void)saveModulesState {
-	NSMutableDictionary *modulesSavedState = [NSMutableDictionary dictionary];
-    for (MITModule *aModule in self.modules) {
-		if (aModule.currentPath && aModule.currentQuery) {
-            NSDictionary *moduleState = @{@"path" : aModule.currentPath,
-                                          @"query" : aModule.currentQuery};
-            [modulesSavedState setObject:moduleState
-                                  forKey:aModule.tag];
-		}
-	}
+    [[NSUserDefaults standardUserDefaults] setObject:nil forKey:MITModulesSavedStateKey];
+}
+
+- (void)setLastActiveModuleName:(NSString *)lastActiveModuleName
+{
+    NSUserDefaults *standardUserDefaults = [NSUserDefaults standardUserDefaults];
+
+    DDLogVerbose(@"updating last presented module from '%@' to '%@'",self.lastActiveModuleName,lastActiveModuleName);
     
-	[[NSUserDefaults standardUserDefaults] setObject:modulesSavedState forKey:MITModulesSavedStateKey];
+    if (lastActiveModuleName) {
+        [standardUserDefaults setObject:lastActiveModuleName forKey:MITMobileLastActiveModuleNameKey];
+    } else {
+        [standardUserDefaults removeObjectForKey:MITMobileLastActiveModuleNameKey];
+    }
 }
 
-#pragma mark MITTouchstoneAuthentication delegation
-- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController
+- (NSString*)lastActiveModuleName
 {
-    [[self.window rootViewController] presentViewController:viewController animated:YES completion:nil];
+    return [[NSUserDefaults standardUserDefaults] stringForKey:MITMobileLastActiveModuleNameKey];
 }
 
-- (void)dismissViewControllerForTouchstoneController:(MITTouchstoneController *)controller completion:(void(^)(void))completion
+#pragma mark - Delegates
+#pragma mark MITTouchstoneAuthenticationDelegate
+- (void)touchstoneController:(MITTouchstoneController*)controller presentViewController:(UIViewController*)viewController completion:(void(^)(void))completion
 {
-    [[self.window rootViewController] dismissViewControllerAnimated:YES completion:completion];
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+
+    if (UIUserInterfaceIdiomPad == [UIDevice currentDevice].userInterfaceIdiom) {
+        viewController.modalPresentationStyle = UIModalPresentationFormSheet;
+        viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    } else {
+        viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+        viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+    }
+
+    if (presented) {
+        [presented presentViewController:viewController animated:YES completion:completion];
+    } else {
+        [rootViewController presentViewController:viewController animated:YES completion:completion];
+    }
 }
 
-@end
-
-
-@implementation APNSUIDelegate
-- (id) initWithApnsDictionary: (NSDictionary *)apns appDelegate: (MIT_MobileAppDelegate *)delegate;
+- (void)touchstoneController:(MITTouchstoneController*)controller dismissViewController:(UIViewController*)viewController completion:(void(^)(void))completion
 {
-	self = [super init];
-	if (self != nil) {
-		_apnsDictionary = apns;
-		_appDelegate = delegate;
-	}
-    
-	return self;
+    UIViewController *rootViewController = [self.window rootViewController];
+    UIViewController *presented = [rootViewController presentedViewController];
+
+    if (presented) {
+        [presented dismissViewControllerAnimated:YES completion:completion];
+    } else {
+        [rootViewController dismissViewControllerAnimated:YES completion:completion];
+    }
 }
 
-// this is the delegate method for responding to the push notification UIAlertView
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex {
-	
-	MITNotification *notification = [MITUnreadNotifications addNotification:self.apnsDictionary];
-
-	BOOL shouldOpen = (buttonIndex == 1);
-	if (shouldOpen) {
-		[self.appDelegate dismissAppModalViewControllerAnimated:YES];
-	}
-
-	[[self.appDelegate moduleForTag:notification.moduleName] handleNotification:notification shouldOpen:(buttonIndex == 1)];
-}
-
+#pragma mark UIAlertViewDelegate
 - (void)alertView:(UIAlertView *)alertView didDismissWithButtonIndex:(NSInteger)buttonIndex
 {
-    [self.appDelegate.pendingNotifications removeObject:self];
+    MITNotification *notification = [self.pendingNotifications lastObject];
+    [self.pendingNotifications removeLastObject];
+    [MITUnreadNotifications removeNotifications:@[notification]];
+
+    MITModule *module = [self moduleWithTag:notification.moduleName];
+    [module didReceiveNotification:notification.userInfo];
+
+    NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
+    if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
+        [self showModuleWithTag:module.name animated:YES];
+    }
+}
+
+#pragma mark MITSlidingViewControllerDelegate
+- (void)slidingViewController:(MITSlidingViewController *)slidingViewController didShowTopViewController:(UIViewController *)viewController
+{
+    MITModuleItem *moduleItem = viewController.moduleItem;
+    if (moduleItem.type == MITModulePresentationFullScreen) {
+        self.lastActiveModuleName = moduleItem.name;
+    }
+}
+
+#pragma mark - Global App Styling
+- (void)addGlobalMITStyling
+{
+    [[UINavigationBar appearance] setTintColor:[UIColor mit_tintColor]];
+    [[UITableViewCell appearance] setTintColor:[UIColor mit_tintColor]];
+    [[UISegmentedControl appearance] setTintColor:[UIColor mit_tintColor]];
+    [[UIToolbar appearance] setBarTintColor:[UIColor mit_navBarColor]];
+    [[UITableView appearance] setSectionIndexColor:[UIColor mit_tintColor]];
 }
 
 @end
-

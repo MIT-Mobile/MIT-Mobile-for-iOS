@@ -20,7 +20,7 @@
         self.htmlFormatString = @"<html>"
         "<head>"
         "<style type=\"text/css\" media=\"screen\">"
-        "body { margin: 0; padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 15px; }"
+        "body { margin-left: auto;, margin-right:auto, padding: 0; font-family: \"Helvetica Neue\", Helvetica; font-size: 15px; }"
         "a { color: #990000; }"
         "</style>"
         "</head>"
@@ -38,9 +38,11 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-//    self.tableView.opaque = YES;
     self.tableView.backgroundView = nil;
-//    self.view.backgroundColor = [UIColor colorWithPatternImage:[UIImage imageNamed:MITImageNameBackground]];
+    
+    // Prevent excess cells from appearing.
+    self.tableView.tableFooterView = [UIView new];
+    self.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -58,6 +60,18 @@
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (CGFloat)targetTableViewHeight
+{
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
+    }
+    
+    return tableHeight;
 }
 
 #pragma mark - Table view data source
@@ -129,6 +143,9 @@
 	if(newDescriptionHeight != self.htmlHeight) {
 		self.htmlHeight = newDescriptionHeight;
 		[self.tableView reloadData];
+        if ([self.delegate respondsToSelector:@selector(singleWebViewCellTableViewControllerDidUpdateHeight:)]) {
+            [self.delegate singleWebViewCellTableViewControllerDidUpdateHeight:self];
+        }
     }
 }
 

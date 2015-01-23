@@ -10,7 +10,7 @@
 #import "ConnectionDetector.h"
 #import "FacilitiesRepairType.h"
 #import "ModuleVersions.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 NSString* const FacilitiesDidLoadDataNotification = @"MITFacilitiesDidLoadData";
 
@@ -30,7 +30,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 // once the data is updated (if needed).
 @property (strong) NSArray *updateNotifications;
 
-- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request;
+- (BOOL)shouldUpdateDataWithRequest:(MITTouchstoneRequestOperation*)request;
 
 - (void)updateCategoryData;
 - (void)updateLocationData;
@@ -52,7 +52,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
                        withUserData:(id)userData
                    newDataAvailable:(BOOL)updated;
 
-- (BOOL)hasActiveRequest:(MobileRequestOperation*)request;
+- (BOOL)hasActiveRequest:(MITTouchstoneRequestOperation*)request;
 @end
 
 @implementation FacilitiesLocationData
@@ -81,7 +81,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 - (NSArray*)allCategories {
     [self updateCategoryData];
     return [[CoreDataManager coreDataManager] objectsForEntity:@"FacilitiesCategory"
-                                             matchingPredicate:[NSPredicate predicateWithValue:YES]];
+                                             matchingPredicate:nil];
 }
 
 - (NSArray*)allLocations {
@@ -279,7 +279,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
     return [NSString stringWithString:string];
 }
 
-- (BOOL)shouldUpdateDataWithRequest:(MobileRequestOperation*)request {
+- (BOOL)shouldUpdateDataWithRequest:(MITTouchstoneRequestOperation*)request {
     NSDictionary *parameters = request.parameters;
     NSString *command = request.command;
     
@@ -368,60 +368,88 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 }
 
 - (void)updateDataForCommand:(NSString*)command params:(NSDictionary*)params {
-    MobileRequestOperation *request = [[MobileRequestOperation alloc] initWithModule:@"facilities"
-                                                                              command:command
-                                                                           parameters:params];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id content, NSString *contentType, NSError *error) {
-        NSString *blkCommand = operation.command;
-        NSDictionary *parameters = operation.parameters;
-        
-        if (error) {
-            DDLogError(@"Request failed with error: %@",[error localizedDescription]);
-        } else {
-            [self.updateQueue addOperationWithBlock:^{
-                if ([blkCommand isEqualToString:FacilitiesCategoriesKey]) {
-                    [self loadCategoriesWithArray:(NSArray*)content];
-                } else if ([blkCommand isEqualToString:FacilitiesLocationsKey]) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"facilities" command:command parameters:params];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+
+    __weak FacilitiesLocationData *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
+        FacilitiesLocationData *blockSelf = weakSelf;
+        NSString *command = operation.command;
+
+        [blockSelf.updateQueue addOperationWithBlock:^{
+            if (!blockSelf)
+            {
+                return;
+            }
+           
+            if( [command isEqualToString:FacilitiesCategoriesKey] )
+            {
+                // TODO: figure out what's server is supposed to send back
+                // array or dictionary
+                [self loadCategoriesWithArray:responseObject];
+            }
+            else if ([responseObject isKindOfClass:[NSArray class]])
+            {
+                NSArray *content = (NSArray*)responseObject;
+
+                if ([command isEqualToString:FacilitiesLocationsKey])
+                {
                     [self loadLocationsWithArray:(NSArray*)content];
-                } else if ([blkCommand isEqualToString:FacilitiesRepairTypesKey]) {
+                }
+                else if ([command isEqualToString:FacilitiesRepairTypesKey])
+                {
                     [self loadRepairTypesWithArray:(NSArray*)content];
-                } else if ([blkCommand isEqualToString:FacilitiesRoomsKey]) {
-                    NSDictionary *roomData = (NSDictionary*)content;
-                    NSString *requestedId = [parameters objectForKey:@"building"];
-                    
-                    if (requestedId) {
-                        roomData = [NSDictionary dictionaryWithObject:[roomData objectForKey:requestedId]
+                }
+            }
+            else if ([responseObject isKindOfClass:[NSDictionary class]])
+            {
+                NSDictionary *jsonObject = (NSDictionary*)responseObject;
+
+                if ([command isEqualToString:FacilitiesRoomsKey])
+                {
+                    NSDictionary *roomData = (NSDictionary*)responseObject;
+                    NSString *requestedId = operation.parameters[@"building"];
+
+                    if (requestedId)
+                    {
+                        roomData = [NSDictionary dictionaryWithObject:jsonObject[requestedId]
                                                                forKey:requestedId];
                     }
-                    
+                    else
+                    {
+                        roomData = jsonObject;
+                    }
+
                     [self loadRoomsWithData:roomData];
                 }
-            }];
-            
-            [self.updateQueue waitUntilAllOperationsAreFinished];
+            } else {
+                // Don't know what to do, abort before continuing the updates!
+                DDLogWarn(@"unable to handle response of type %@",NSStringFromClass([responseObject class]));
+                return;
+            }
+
             [[CoreDataManager coreDataManager] saveData];
-            
-            BOOL shouldUpdateDate = !([blkCommand isEqualToString:FacilitiesRoomsKey] && [parameters objectForKey:@"building"]);
-            
+            BOOL shouldUpdateDate = !([command isEqualToString:FacilitiesRoomsKey] && operation.parameters[@"building"]);
+
             if (shouldUpdateDate) {
                 NSMutableDictionary *dict = [NSMutableDictionary dictionaryWithDictionary:[[NSUserDefaults standardUserDefaults] dictionaryForKey:FacilitiesFetchDatesKey]];
-                [dict setObject:[NSDate date]
-                         forKey:blkCommand];
-                [[NSUserDefaults standardUserDefaults] setObject:dict
-                                                          forKey:FacilitiesFetchDatesKey];
+                dict[operation.command] = [NSDate date];
+
+                [[NSUserDefaults standardUserDefaults] setObject:dict forKey:FacilitiesFetchDatesKey];
                 [[NSUserDefaults standardUserDefaults] synchronize];
             }
-            
-            [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
-                                 withUserData:blkCommand
-                             newDataAvailable:YES];
-        }
-    };
 
-    if ([self hasActiveRequest:request] == NO) {
-        if ([self shouldUpdateDataWithRequest:request]) {
-            [self.requestQueue addOperation:request];
+            [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
+                                 withUserData:operation.command
+                             newDataAvailable:YES];
+        }];
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        DDLogError(@"Request failed with error: %@",[error localizedDescription]);
+    }];
+
+    if ([self hasActiveRequest:requestOperation] == NO) {
+        if ([self shouldUpdateDataWithRequest:requestOperation]) {
+            [self.requestQueue addOperation:requestOperation];
         } else {
             [self sendNotificationToObservers:FacilitiesDidLoadDataNotification
                                  withUserData:command
@@ -570,7 +598,17 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
             location.uid = [loc objectForKey:@"id"];
         }
         
-        location.name = [loc objectForKey:@"name"];
+        // TODO: occasionally server would return a dictionary here as opposed to a string.
+        // making sure app doesn't crash in that case.
+        if( [[loc objectForKey:@"name"] isKindOfClass:[NSString class]] )
+        {
+            location.name = [loc objectForKey:@"name"];
+        }
+        else
+        {
+            location.name = @"";
+        }
+
         location.number = [loc objectForKey:@"bldgnum"];
         
         location.longitude = [NSNumber numberWithDouble:[[loc objectForKey:@"long_wgs84"] doubleValue]];
@@ -755,7 +793,7 @@ static NSString *FacilitiesFetchDatesKey = @"FacilitiesDataFetchDates";
 }
 
 #pragma mark - Server request management
-- (BOOL)hasActiveRequest:(MobileRequestOperation*)request {
+- (BOOL)hasActiveRequest:(MITTouchstoneRequestOperation*)request {
     return [[self.requestQueue operations] containsObject:request];
 }
 

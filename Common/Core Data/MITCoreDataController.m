@@ -80,10 +80,20 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
         DDLogError(@"failed to create persistent store at URL '%@': %@",persistentStoreURL,error);
 
         if ([persistentStoreURL checkResourceIsReachableAndReturnError:nil]) {
-            DDLogError(@"store exists, but failed to load (revision %@). The store will be re-created",self.persistentStoreRevision);
-            
-            [[NSFileManager defaultManager] removeItemAtURL:persistentStoreURL error:nil];
+            DDLogError(@"store exists, but failed to load (revision %@), migration will be attempted",self.persistentStoreRevision);
 
+            NSError *migrationError = nil;
+            BOOL storeMigrationSucceeded = [self migratePersistentStoreWithURL:persistentStoreURL error:&migrationError];
+            
+            if (!storeMigrationSucceeded) {
+                DDLogError(@"migration failed, the store will be re-created");
+                if (migrationError)  {
+                    DDLogInfo(@"migration failed with error: %@", migrationError);
+                }
+                
+                [[NSFileManager defaultManager] removeItemAtURL:persistentStoreURL error:nil];
+            }
+            
             // Update the revision
             [self setPersistentStoreURL:persistentStoreURL withRevision:[MITBuildInfo revision]];
 
@@ -112,6 +122,51 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
             DDLogWarn(@"Failed to exclude item at path '%@' from Backup: %@",[self.persistentStoreURL path],error);
         }
     }
+}
+
+- (BOOL)migratePersistentStoreWithURL:(NSURL *)storeURL error:(NSError *__autoreleasing*)error
+{
+    NSDictionary *storeMeta = [NSPersistentStoreCoordinator metadataForPersistentStoreOfType:nil URL:storeURL error:error];
+    if (storeMeta) {
+        NSManagedObjectModel *model = [NSManagedObjectModel mergedModelFromBundles:nil];
+        if (![model isConfiguration:nil compatibleWithStoreMetadata:storeMeta]) {
+            NSManagedObjectModel *oldModel = [NSManagedObjectModel mergedModelFromBundles:nil forStoreMetadata:storeMeta];
+            
+            if (!oldModel) {
+                if (error) {
+                    (*error) = [NSError errorWithDomain:NSCocoaErrorDomain
+                                                   code:NSCoreDataError
+                                               userInfo:@{NSLocalizedDescriptionKey:@"Cannot create an inferred NSMappingModel with a nil source model"}];
+                }
+                
+                return NO;
+            }
+            
+            NSMappingModel *mapping = [NSMappingModel inferredMappingModelForSourceModel:oldModel destinationModel:model error:error];
+            if (mapping) {
+                NSURL *storeBackupURL = [storeURL URLByAppendingPathExtension:@"backup"];
+                BOOL done = [[NSFileManager defaultManager] moveItemAtURL:storeURL toURL:storeBackupURL error:error];
+                if (done) {
+                    NSMigrationManager *migrationManager = [[NSMigrationManager alloc] initWithSourceModel:oldModel destinationModel:model];
+                    BOOL done = [migrationManager migrateStoreFromURL:storeBackupURL
+                                                                 type:NSSQLiteStoreType
+                                                              options:nil
+                                                     withMappingModel:mapping
+                                                     toDestinationURL:storeURL
+                                                      destinationType:NSSQLiteStoreType
+                                                   destinationOptions:nil
+                                                                error:error];
+                    if (done) {
+                        [[NSFileManager defaultManager] removeItemAtURL:storeBackupURL error:error];
+                    }
+                    
+                    return done;
+                }
+            }
+        }
+    }
+    
+    return NO;
 }
 
 #pragma mark Persistent Store Metadata
@@ -320,36 +375,40 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
     }];
 }
 
-- (BOOL)performBackgroundUpdateAndWait:(void (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
+- (BOOL)performBackgroundUpdateAndWait:(BOOL (^)(NSManagedObjectContext *context, NSError **error))update error:(NSError *__autoreleasing *)error
 {
     NSManagedObjectContext *backgroundContext = [self.managedObjectStore newChildManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType tracksChanges:NO];
 
+    __block BOOL success = YES;
     __block NSError *localError = nil;
     [backgroundContext performBlockAndWait:^{
         if (update) {
-            update(backgroundContext, &localError);
+            success = update(backgroundContext, &localError);
         }
 
-        if (localError) {
+        if (!success) {
             DDLogError(@"Failed to complete update to context: %@",localError);
         } else {
-            if ([backgroundContext save:&localError]) {
-                [backgroundContext.parentContext performBlock:^{
-                    [backgroundContext.parentContext save:&localError];
+            success = [backgroundContext save:&localError];
 
-                    if (localError) {
-                        DDLogError(@"Failed to save root background context: %@", localError);
+            if (success) {
+                [backgroundContext.parentContext performBlock:^{
+                    NSError *parentError = nil;
+                    BOOL parentSuccess = [backgroundContext.parentContext save:&parentError];
+
+                    if (!parentSuccess) {
+                        DDLogError(@"Failed to save root background context: %@", parentError);
                     }
                 }];
             }
         }
     }];
 
-    if (localError && error) {
+    if (!success && error) {
         (*error) = localError;
     }
 
-    return !(localError);
+    return success;
 }
 
 @end

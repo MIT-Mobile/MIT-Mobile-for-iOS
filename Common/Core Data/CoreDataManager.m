@@ -111,7 +111,6 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
     [modelSet addObject:@"Tours"];
     [modelSet addObject:@"QRReaderResult"];
     [modelSet addObject:@"FacilitiesLocations"];
-    [modelSet addObject:@"LibrariesLocationsHours"];
     [modelSet addObject:@"Dining"];
     return modelSet;
 }
@@ -207,34 +206,53 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 }
 
 - (void)saveData {
-    NSManagedObjectContext *context = self.managedObjectContext;
-
     // Since the main thread managed object context
     // may not be at the root of the tree with the new MITCoreDataManager
     // we'll need to walk up the tree and bubble the save up until
     // everything is flushed to the PSC. As long as everything either uses
-    // CoreDataManager xor MITCoreDataManager, things should work fine
-    while (context != nil) {
+    // CoreDataManager xor MITCoreDataManager, things should work fine.
+    //
+    // Structure note: The CoreDataManager was build assuming that every context
+    //  was per-thread and directly descended from the PSC:
+    //  PS -> PSC -> MOCs (confinement)
+    //
+    // The current structure has several more levels in the hierarchy:
+    //  PS -> PSC -> MOC (private) -> Main Queue MOC -> MOCs (confinement)
+    //                             -> Background MOCs
+
+    NSManagedObjectContext* (^bubbleUpSaveBlock)(NSManagedObjectContext*) = ^(NSManagedObjectContext *context) {
         NSError *error = nil;
         BOOL saveSucceeded = [context save:&error];
 
-        if (!saveSucceeded) {
-            NSMutableString *message = [[NSMutableString alloc] init];
-            [message appendFormat:@"failed to save managed object context %@: %@",context,error];
+        if (saveSucceeded) {
+            return context.parentContext;
+        }
 
-            NSArray *detailedErrors = [error userInfo][NSDetailedErrorsKey];
+        NSMutableString *message = [NSMutableString stringWithFormat:@"failed to save managed object context %@: %@",context,error];
 
-            if ([detailedErrors count]) {
-                [message appendFormat:@"\n\tdetail:"];
-                [detailedErrors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
-                    [message appendFormat:@"\n\t\t%@",obj];
+        NSArray *detailedErrors = [error userInfo][NSDetailedErrorsKey];
+        [detailedErrors enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [message appendFormat:@"\n\terror %lu: %@", (unsigned long)idx, obj];
+        }];
+
+        DDLogError(@"%@",message);
+        return (NSManagedObjectContext*)nil;
+    };
+
+    __block NSManagedObjectContext *context = self.managedObjectContext;
+    while (context != nil) {
+        switch (context.concurrencyType) {
+            case NSPrivateQueueConcurrencyType:
+            case NSMainQueueConcurrencyType: {
+                [context performBlockAndWait:^{
+                    context = bubbleUpSaveBlock(context);
                 }];
-            }
+            } break;
 
-            DDLogError(@"%@",message);
-            break;
-        } else {
-            context = context.parentContext;
+            // Due to the CoreDataManager's MOC structure this should *only* be triggered on the first pass through.
+            default: {
+                context = bubbleUpSaveBlock(context);
+            }
         }
     }
 }
@@ -349,7 +367,7 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 																							error:&error];
 
 	if (sourceMetadata == nil) {
-		DDLogError(@"Failed to fetch metadata with error %d: %@", [error code], [error userInfo]);
+		DDLogError(@"Failed to fetch metadata with error %ld: %@", (long)[error code], [error userInfo]);
 		return NO;
 	}
 
@@ -401,12 +419,12 @@ static NSString * const MITCoreDataThreadObserverTokenKey = @"MITThreadObserverT
 
 	if (![manager migrateStoreFromURL:sourceURL type:NSSQLiteStoreType options:nil withMappingModel:mappingModel
 					 toDestinationURL:destURL destinationType:NSSQLiteStoreType destinationOptions:nil error:&error]) {
-		DDLogError(@"Migration failed with error %d: %@", [error code], [error userInfo]);
+		DDLogError(@"Migration failed with error %ld: %@", (long)[error code], [error userInfo]);
 		return NO;
 	}
 
 	if (![[NSFileManager defaultManager] removeItemAtPath:sourcePath error:&error]) {
-		DDLogWarn(@"Failed to remove old store with error %d: %@", [error code], [error userInfo]);
+		DDLogWarn(@"Failed to remove old store with error %ld: %@", (long)[error code], [error userInfo]);
 	}
     
 	DDLogVerbose(@"Migration complete!");

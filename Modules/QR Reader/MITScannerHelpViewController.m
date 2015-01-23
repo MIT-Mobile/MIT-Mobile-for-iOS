@@ -1,6 +1,13 @@
 #import "MITScannerHelpViewController.h"
 #import "UIKit+MITAdditions.h"
 
+@interface MITScannerHelpViewController()
+
+// private methods
+- (void)dismissHelp:(id)sender;
+
+@end
+
 @implementation MITScannerHelpViewController
 - (id)init
 {
@@ -10,8 +17,7 @@
 
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:@"MITScannerHelpViewController"
-                           bundle:nil];
+    self = [super initWithNibName:@"MITScannerHelpViewController" bundle:nil];
     if (self) {
         // Custom initialization
     }
@@ -22,20 +28,15 @@
 {
     [super viewDidLoad];
 
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
-    } else {
-        self.view.backgroundColor = [UIColor mit_backgroundColor];
-    }
-    self.title = @"Scanner Help";
-    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];
+    self.view.backgroundColor = [UIColor whiteColor];
+    self.title = @"Info";
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(dismissHelp:)];    
 }
 
 - (void)viewDidUnload
 {
     [super viewDidUnload];
     self.helpTextView = nil;
-    self.doneButton = nil;
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -49,9 +50,11 @@
     return UIInterfaceOrientationMaskPortrait;
 }
 
-- (IBAction)dismissHelp:(id)sender
+- (void)dismissHelp:(id)sender
 {
-    [self dismissViewControllerAnimated:YES completion:NULL];
+    [self dismissViewControllerAnimated:YES completion:^{
+        [self.delegate helpViewControllerDidClose];
+    }];
 }
 
 @end

@@ -1,35 +1,23 @@
 #import "EmergencyModule.h"
 
+#import "MITUnreadNotifications.h"
 #import "EmergencyData.h"
 #import "EmergencyViewController.h"
 #import "EmergencyContactsViewController.h"
-#import "MITModule+Protected.h"
 
 @interface EmergencyModule ()
 @property BOOL emergencyMessageLoaded;
-@property (strong) id infoDidLoadToken;
+@property(nonatomic,strong) id infoDidLoadToken;
 @end
 
 @implementation EmergencyModule
-- (id) init {
-    self = [super init];
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagEmergency title:@"Emergency"];
     if (self) {
-        // Basic settings
-        self.tag = EmergencyTag;
-        self.shortName = @"Emergency";
-        self.longName = @"Emergency Info";
-        self.iconName = @"emergency";
+        self.longTitle = @"Emergency Info";
+        self.imageName = MITImageEmergencyModuleIcon;
         self.pushNotificationSupported = YES;
-        
-        _infoDidLoadToken = [[NSNotificationCenter defaultCenter] addObserverForName:EmergencyInfoDidLoadNotification
-                                                                              object:nil
-                                                                               queue:nil
-                                                                          usingBlock:^(NSNotification *note) {
-                                                                              self.emergencyMessageLoaded = YES;
-                                                                              [self syncUnreadNotifications];
-                                                                          }];
-        // check for new emergency info on app launch
-        [[EmergencyData sharedData] checkForEmergencies];
     }
     
     return self;
@@ -40,50 +28,60 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self.infoDidLoadToken];
 }
 
-- (void)applicationWillEnterForeground {
-    self.emergencyMessageLoaded = NO;
-    [[EmergencyData sharedData] checkForEmergencies];
-}
-
-- (void)loadModuleHomeController
+- (void)viewControllerDidLoad
 {
-    EmergencyViewController *controller = [[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped];
-    controller.delegate = self;
+    [super viewControllerDidLoad];
     
-    self.mainViewController = controller;
-    self.moduleHomeController = controller;
-}
+    // TODO: Find a better spot for this
+    if (!self.infoDidLoadToken) {
+        __weak EmergencyModule *weakSelf = self;
+        self.infoDidLoadToken = [[NSNotificationCenter defaultCenter] addObserverForName:EmergencyInfoDidLoadNotification
+                                                                                  object:nil
+                                                                                   queue:nil
+                                                                              usingBlock:^(NSNotification *note) {
+                                                                                  EmergencyModule *blockSelf = weakSelf;
 
-- (BOOL)handleLocalPath:(NSString *)localPath query:(NSString *)query {
-    BOOL didHandle = NO;
-    if ([localPath isEqualToString:@"contacts"]) {
-        UINavigationController *controller = [MITAppDelegate() rootNavigationController];
-        
-        if (![controller.visibleViewController isKindOfClass:[EmergencyContactsViewController class]]) {
-            
-            // show More Emergency Contact drilldown
-            // init its view controller
-            EmergencyContactsViewController *contactsVC = [[EmergencyContactsViewController alloc] initWithNibName:nil bundle:nil];
-            // push it onto the navigation stack
-            [controller pushViewController:contactsVC
-                                  animated:YES];
-        }
-        
-        didHandle = YES;
+                                                                                  if (blockSelf) {
+                                                                                      blockSelf.emergencyMessageLoaded = YES;
+                                                                                      [blockSelf syncUnreadNotifications];
+                                                                                  }
+                                                                              }];
+        // check for new emergency info on app launch
+        [[EmergencyData sharedData] checkForEmergencies];
     }
-    return didHandle;
 }
 
-- (BOOL)handleNotification:(MITNotification *)notification
-                shouldOpen:(BOOL)shouldOpen {
-	if(shouldOpen) {
-		[self.mainViewController refreshInfo:nil];
-		self.currentPath = @"";
-        [[MITAppDelegate() rootNavigationController] popToRootViewControllerAnimated:NO];
-        [[MITAppDelegate() springboardController] pushModuleWithTag:self.tag];
-	}
+- (void)loadRootViewController
+{
+    EmergencyViewController *rootViewController = [[EmergencyViewController alloc] initWithStyle:UITableViewStyleGrouped];
+    rootViewController.delegate = self;
+    self.rootViewController = rootViewController;
+}
+
+- (void)didReceiveRequestWithURL:(NSURL*)url
+{
+    [super didReceiveRequestWithURL:url];
     
-	return YES;
+    NSArray *pathComponents = url.pathComponents;
+    
+    if ([[pathComponents firstObject] isEqualToString:@"contacts"]) {
+        // TODO: Stuff like this would probably be much more suited for a method
+        // like willShowModuleWithURL:animated: (or something like that)
+        
+        UIViewController *topViewController = self.navigationController.topViewController;
+        
+        if (![topViewController isKindOfClass:[EmergencyContactsViewController class]]) {
+            [self.navigationController popToRootViewControllerAnimated:NO];
+            EmergencyContactsViewController *contactsViewController = [[EmergencyContactsViewController alloc] init];
+            [self.navigationController pushViewController:contactsViewController animated:NO];
+        }
+    }
+}
+
+- (void)didReceiveNotification:(NSDictionary *)userInfo
+{
+    [super didReceiveNotification:userInfo];
+    [self.rootViewController refreshInfo];
 }
 
 - (void) syncUnreadNotifications {
@@ -91,9 +89,16 @@
 	// and the emergency module has received data from the server (does not have to be new data)
 	// since the last time it was on screen, we tell the server to clear the emergency badge
 	
-	if(self.emergencyMessageLoaded && [[EmergencyData sharedData] didReadMessage]) {
-		[MITUnreadNotifications removeNotificationsForModuleTag:self.tag];
+	if(self.emergencyMessageLoaded) {
+		[MITUnreadNotifications removeNotificationsForModuleTag:self.name];
 	}
+}
+
+#pragma mark - User Interface Idiom Support
+
+- (BOOL)supportsCurrentUserInterfaceIdiom
+{
+    return YES;
 }
 
 @end

@@ -1,13 +1,11 @@
 #import "ModuleVersions.h"
-#import "MobileRequestOperation.h"
+#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 
 @interface ModuleVersions ()
-@property (nonatomic,retain) NSDictionary *moduleDates;
+@property (nonatomic,strong) NSDictionary *moduleDates;
 @end
 
 @implementation ModuleVersions
-@synthesize moduleDates = _moduleDates;
-
 - (id)init {
     self = [super init];
 
@@ -18,22 +16,15 @@
     return self;
 }
 
-- (void)dealloc {
-    self.moduleDates = nil;
-    [super dealloc];
-}
-
 #pragma mark - Public Methods
 - (BOOL)isDataAvailable {
     return (self.moduleDates != nil);
 }
 
 - (void)updateVersionInformation {
-    MobileRequestOperation *request = [[[MobileRequestOperation alloc] initWithModule:@"version"
-                                                                              command:@"list"
-                                                                           parameters:nil] autorelease];
-    
-    request.completeBlock = ^(MobileRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
+    NSURLRequest *request = [NSURLRequest requestForModule:@"version" command:@"list" parameters:nil];
+    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
         if (!error) {
             NSDictionary *remoteDates = (NSDictionary *)jsonResult;
             NSMutableDictionary *dict = [NSMutableDictionary dictionary];
@@ -45,7 +36,7 @@
                 for (NSString *key in moduleDates) {
                     NSString *epochString = [moduleDates objectForKey:key];
                     NSTimeInterval epochTime = [epochString integerValue];
-                    NSDate *date = [[[NSDate alloc] initWithTimeIntervalSince1970:epochTime] autorelease];
+                    NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:epochTime];
                     
                     [dateDict setObject:date
                                  forKey:key];
@@ -59,7 +50,7 @@
         }
     };
 
-    [[NSOperationQueue mainQueue] addOperation:request];
+    [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }
 
 - (NSDictionary *)lastUpdateDatesForModule:(NSString *)module {

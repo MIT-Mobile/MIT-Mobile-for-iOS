@@ -3,7 +3,7 @@
 #pragma mark - Route Definitions
 #pragma mark calendars
 NSString* const MITCalendarsResourceName = @"MITCalendarsResourceName";
-NSString* const MITCalendarsPathPattern = @"apis/calendars";
+NSString* const MITCalendarsPathPattern = @"apis/calendars/";
 
 #pragma mark calendars/:calendar
 NSString* const MITCalendarResourceName = @"MITCalendarResourceName";
@@ -19,7 +19,43 @@ NSString* const MITCalendarEventPathPattern = @"apis/calendars/:calendar/events/
 
 #pragma mark dining
 NSString* const MITDiningResourceName = @"MITDiningResourceName";
-NSString* const MITDiningPathPattern = @"apis/dining";
+NSString* const MITDiningPathPattern = @"apis/dining/";
+
+#pragma mark emergency/announcement
+NSString* const MITEmergencyInfoAnnouncementResourceName = @"MITEmergencyInfoAnnouncementResourceName";
+NSString* const MITEmergencyInfoAnnouncementPathPattern = @"apis/emergency_info/announcement";
+
+#pragma mark emergency/contacts
+NSString* const MITEmergencyInfoContactsResourceName = @"MITEmergencyInfoContactsResourceName";
+NSString* const MITEmergencyInfoContactsPathPattern = @"apis/emergency_info/contacts";
+
+#pragma mark libraries
+NSString* const MITLibrariesResourceName = @"MITLibrariesResourceName";
+NSString* const MITLibrariesPathPattern = @"apis/libraries/locations";
+
+#pragma mark libraries links
+NSString* const MITLibrariesLinksResourceName = @"MITLibrariesLinksResourceName";
+NSString* const MITLibrariesLinksPathPattern = @"apis/libraries/links";
+
+#pragma mark libraries Ask Us
+NSString* const MITLibrariesAskUsResourceName = @"MITLibrariesAskUsResourceName";
+NSString* const MITLibrariesAskUsPathPattern = @"apis/secure/libraries/forms/askUs";
+
+#pragma mark libraries search
+NSString* const MITLibrariesSearchResourceName = @"MITLibrariesSearchResourceName";
+NSString* const MITLibrariesSearchPathPattern = @"apis/libraries/worldcat/";
+
+#pragma mark libraries user
+NSString* const MITLibrariesUserResourceName = @"MITLibrariesUserResourceName";
+NSString* const MITLibrariesUserPathPattern = @"apis/secure/libraries/account";
+
+#pragma mark libraries mit identity
+NSString* const MITLibrariesMITIdentityResourceName = @"MITLibrariesMITIdentityResourceName";
+NSString* const MITLibrariesMITIdentityPathPattern = @"apis/secure/user";
+
+#pragma mark libraries item detail
+NSString* const MITLibrariesItemDetailResourceName = @"MITLibrariesItemDetailResourceName";
+NSString* const MITLibrariesItemDetailPathPattern = @"apis/libraries/worldcat/:itemId";
 
 #pragma mark dining/venues/:type/:venue/icon
 NSString* const MITDiningVenueIconResourceName = @"MITDiningVenueIconResourceName";
@@ -49,6 +85,10 @@ NSString* const MITMapCategoriesPathPattern = @"apis/map/place_categories/";
 NSString* const MITMapPlacesResourceName = @"MITMapPlacesResourceName";
 NSString* const MITMapPlacesPathPattern = @"apis/map/places/";
 
+#pragma mark maps/places/:objectID
+NSString* const MITMapObjectResourceName = @"MITMapObjectResourceName";
+NSString* const MITMapObjectPathPattern = @"apis/map/places/:objectID";
+
 #pragma mark maps/rooms
 NSString* const MITMapRoomsResourceName = @"MITMapRoomsResourceName";
 NSString* const MITMapRoomsPathPattern = @"apis/map/rooms/";
@@ -75,7 +115,7 @@ NSString* const MITPersonPathPattern = @"apis/people/:person";
 
 #pragma mark shuttles/routes
 NSString* const MITShuttlesRoutesResourceName = @"MITShuttlesRoutesResourceName";
-NSString* const MITShuttlesRoutesPathPattern = @"apis/shuttles/routes";
+NSString* const MITShuttlesRoutesPathPattern = @"apis/shuttles/routes/";
 
 #pragma mark shuttles/routes/:route
 NSString* const MITShuttlesRouteResourceName = @"MITShuttlesRouteResourceName";
@@ -83,11 +123,19 @@ NSString* const MITShuttlesRoutePathPattern = @"apis/shuttles/routes/:route";
 
 #pragma mark shuttles/routes/:route/stops
 NSString* const MITShuttlesStopsResourceName = @"MITShuttlesStopsResourceName";
-NSString* const MITShuttlesStopsPathPattern = @"apis/shuttles/routes/:route/stops";
+NSString* const MITShuttlesStopsPathPattern = @"apis/shuttles/routes/:route/stops/";
 
 #pragma mark shuttles/routes/:route/stops/:stop
 NSString* const MITShuttlesStopResourceName = @"MITShuttlesStopResourceName";
 NSString* const MITShuttlesStopPathPattern = @"apis/shuttles/routes/:route/stops/:stop";
+
+#pragma mark shuttles/predictions
+NSString* const MITShuttlesPredictionsResourceName = @"MITShuttlesPredictionsResourceName";
+NSString* const MITShuttlesPredictionsPathPattern = @"apis/shuttles/predictions/";
+
+#pragma mark shuttles/vehicles
+NSString* const MITShuttlesVehiclesResourceName = @"MITShuttlesVehiclesResourceName";
+NSString* const MITShuttlesVehiclesPathPattern = @"apis/shuttles/vehicles/";
 
 #pragma mark techcash
 NSString* const MITTechcashResourceName = @"MITTechcashResourceName";
@@ -100,3 +148,10 @@ NSString* const MITTechcashAccountsPathPattern = @"apis/techcash/accounts";
 #pragma mark techcash/accounts/:account
 NSString* const MITTechcashAccountResourceName = @"MITTechcashAccountResourceName";
 NSString* const MITTechcashAccountPathPattern = @"apis/techcash/accounts/:account";
+
+#pragma mark tours
+NSString* const MITToursResourceName = @"MITToursResourceName";
+NSString* const MITToursPathPattern = @"apis/tours/";
+
+NSString* const MITToursTourResourceName = @"MITToursTourResourceName";
+NSString* const MITToursTourPathPattern = @"apis/tours/:tour";

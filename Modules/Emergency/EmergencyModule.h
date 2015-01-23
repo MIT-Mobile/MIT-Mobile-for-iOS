@@ -1,10 +1,10 @@
-#import "MITModule.h"
-#import "EmergencyData.h"
+#import "MITNavigationModule.h"
 #import "EmergencyViewController.h"
 
-@interface EmergencyModule : MITModule <EmergencyViewControllerDelegate>
-@property (weak) EmergencyViewController *mainViewController;
-@property BOOL didReadMessage;
+@interface EmergencyModule : MITNavigationModule <EmergencyViewControllerDelegate>
+@property(nonatomic,strong) EmergencyViewController *rootViewController;
 
-- (void)syncUnreadNotifications;
+- (instancetype)init;
+
+- (void)syncUnreadNotifications DEPRECATED_ATTRIBUTE;
 @end

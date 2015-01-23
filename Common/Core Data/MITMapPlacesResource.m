@@ -8,15 +8,16 @@
 #import "MITMapModelController.h"
 
 @implementation MITMapPlacesResource
+
 + (void)placesWithQuery:(NSString*)queryString loaded:(MITMobileResult)block
 {
     NSParameterAssert(queryString);
     NSParameterAssert(block);
 
+    [[MITMobile defaultManager] cancelAllRequestOperationsForRequestMethod:RKRequestMethodGET atResourcePath:MITMapPlacesPathPattern];
     [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapPlacesResourceName
                                                 parameters:@{@"q" : queryString}
                                                 completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    [[MITMapModelController sharedController] addRecentSearch:queryString];
 
                                                     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                                                         if (!error) {
@@ -138,14 +139,58 @@
                                                        @"street" : @"streetAddress",
                                                        @"city" : @"city",
                                                        @"lat_wgs84" : @"latitude",
-                                                       @"long_wgs84" : @"longitude"}];
-
+                                                       @"long_wgs84" : @"longitude",
+                                                       @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *categoriesRelationship = [placeEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *categoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:categoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [placeMapping addConnection:categoriesConnection];
+    
     RKEntityMapping *contentsMapping = [[RKEntityMapping alloc] initWithEntity:placeContentEntity];
     [contentsMapping addAttributeMappingsFromDictionary:@{@"name" : @"name",
-                                                          @"url" : @"url"}];
+                                                          @"url" : @"url",
+                                                          @"category" : @"categoryIds"}];
+    
+    NSRelationshipDescription *contentCategoriesRelationship = [placeContentEntity relationshipsByName][@"categories"];
+    RKConnectionDescription *contentCategoriesConnection = [[RKConnectionDescription alloc] initWithRelationship:contentCategoriesRelationship attributes:@{@"categoryIds": @"identifier"}];
+    [contentsMapping addConnection:contentCategoriesConnection];
+
     [placeMapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"contents" toKeyPath:@"contents" withMapping:contentsMapping]];
 
     [self addMapping:placeMapping atKeyPath:nil forRequestMethod:RKRequestMethodAny];
+}
+
+@end
+
+@implementation MITMapObjectResource
+
++ (void)placesWithObjectID:(NSString *)objectID loaded:(MITMobileResult)block
+{
+    NSParameterAssert(objectID);
+    NSParameterAssert(block);
+    
+    [[MITMobile defaultManager] getObjectsForResourceNamed:MITMapObjectResourceName object:@{@"objectID" : objectID} parameters:nil completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (!error) {
+                NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+                NSArray *mappedObjects = [mainQueueContext transferManagedObjects:[result array]];
+                block(mappedObjects,nil);
+            } else {
+                block(nil,error);
+            }
+        }];
+    }];
+}
+
+- (NSFetchRequest*)fetchRequestForURL:(NSURL*)url
+{
+    return (NSFetchRequest*)nil;
+}
+
+- (instancetype)initWithManagedObjectModel:(NSManagedObjectModel*)managedObjectModel
+{
+    self = [super initWithName:MITMapObjectResourceName pathPattern:MITMapObjectPathPattern managedObjectModel:managedObjectModel];
+    return self;
 }
 
 @end

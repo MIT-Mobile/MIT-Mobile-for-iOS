@@ -1,141 +1,214 @@
 #import "MITMapBookmarksViewController.h"
-#import "CampusMapViewController.h"
-#import "UIKit+MITAdditions.h"
-#import "MITMapModel.h"
 #import "MITCoreDataController.h"
+#import "MITMapModelController.h"
+#import "MITMapBookmark.h"
+#import "MITMapPlaceCell.h"
+
+static NSString *const kAddBookmarksLabelText = @"No Bookmarks";
+static NSString *const kMITMapsBookmarksTableCellIdentifier = @"kMITMapsBookmarksTableCellIdentifier";
+
+@interface MITMapBookmarksViewController ()
+
+@property (nonatomic, strong) NSArray *bookmarkedPlaces;
+@property (nonatomic, strong) UIView *noResultsView;
+
+@property (nonatomic, strong) UIBarButtonItem *bookmarksDoneButton;
+
+@end
 
 @implementation MITMapBookmarksViewController
 
-#pragma mark - View lifecycle
-- (id)init
-{
-    NSPredicate *predicate = [NSPredicate predicateWithFormat:@"bookmark != nil"];
-    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"bookmark.order" ascending:YES];
-    
-    self = [super initWithPredicate:predicate sortDescriptors:@[sortDescriptor]];
-    if (self) {
-	    self.title = @"Bookmarks";
-    }
+@synthesize delegate = _delegate;
 
+- (id)initWithStyle:(UITableViewStyle)style
+{
+    self = [super initWithStyle:style];
+    if (self) {
+        // Custom initialization
+    }
     return self;
 }
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
+    
+    self.navigationItem.leftBarButtonItem = self.editButtonItem;
+    self.bookmarksDoneButton = self.navigationItem.rightBarButtonItem;
+    
+    [self setupTableView];
+    [self setupNoResultsView];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self updateBookmarkedPlaces];
+    [self updateTableState];
+}
 
-	if ([[MITMapModelController sharedController] numberOfBookmarks]) {
-		self.editButtonItem.enabled = YES;
-	}
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+   // [self updateNoBookmarksLabel];
+}
 
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.navigationController.navigationBar.barStyle = UIBarStyleBlack;
-    }
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
+    // Dispose of any resources that can be recreated.
+}
+
+- (void)setupTableView
+{
+    UINib *cellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
+    [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITMapsBookmarksTableCellIdentifier];
+}
+
+- (void)updateBookmarkedPlaces
+{
+    NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
     
-    [self.navigationItem setLeftBarButtonItem:self.editButtonItem animated:animated];
-
-    UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                              target:self
-                                                                              action:@selector(doneButtonPressed:)];
-	[self.navigationItem setRightBarButtonItem:doneItem animated:animated];
-
-    __weak MITMapBookmarksViewController *weakSelf = self;
-    [[MITMapModelController sharedController] bookmarkedPlaces:^(NSFetchRequest *fetchRequest, NSDate *lastUpdated, NSError *error) {
-        MITMapBookmarksViewController *blockSelf = weakSelf;
-
-        if (blockSelf) {
-            blockSelf.fetchRequest = fetchRequest;
-            [blockSelf.fetchedResultsController performFetch:nil];
-            [blockSelf.tableView reloadData];
-        }
-    }];
-}
-
-// Override to allow orientations other than the default portrait orientation.
-- (BOOL)shouldAutorotateToInterfaceOrientation:(UIInterfaceOrientation)interfaceOrientation {
-    // Return YES for supported orientations
-    return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
-}
-
-- (NSUInteger)supportedInterfaceOrientations
-{
-    return UIInterfaceOrientationMaskPortrait;
-}
-
-- (IBAction)doneButtonPressed:(UIBarButtonItem*)doneItem
-{
-    [self didSelectPlaces:nil];
-}
-
-- (void)setEditing:(BOOL)editing animated:(BOOL)animated
-{
-    [super setEditing:editing animated:animated];
-
-    if (editing) {
-        [self.navigationItem setRightBarButtonItem:nil animated:animated];
-    } else {
-        UIBarButtonItem *doneItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone
-                                                                                  target:self
-                                                                                  action:@selector(doneButtonPressed:)];
-        [self.navigationItem setRightBarButtonItem:doneItem animated:animated];
+    NSError *error;
+    NSArray *fetchResults = [context executeFetchRequest:[[MITMapModelController sharedController] bookmarkedPlaces:nil] error:&error];
+    
+    if (!error) {
+        self.bookmarkedPlaces = fetchResults;
     }
 }
 
-#pragma mark - Delegate Protocols
-#pragma mark UITableViewDataSource
-// Customize the appearance of table view cells.
+- (void)updateTableState
+{
+    if ([self hasBookmarkedPlaces]) {
+        [self showTable];
+    }
+    else {
+        [self hideTable];
+    }
+}
+
+- (BOOL)hasBookmarkedPlaces
+{
+    return [self.bookmarkedPlaces count] > 0;
+}
+
+- (void)showTable
+{
+    [self setNoResultsViewHidden:YES];
+    self.navigationItem.leftBarButtonItem.enabled = YES;
+}
+
+- (void)hideTable
+{
+    [self setEditing:NO animated:YES];
+    [self setNoResultsViewHidden:NO];
+    self.navigationItem.leftBarButtonItem.enabled = NO;
+}
+
+#pragma mark - Table view data source
+
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
+    return 1;
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return self.bookmarkedPlaces ? self.bookmarkedPlaces.count : 0;
+}
+
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    static NSString *CellIdentifier = @"Cell";
-
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:CellIdentifier];
-    }
-
-	MITMapPlace* bookmarkedPlace = (MITMapPlace*)[self.fetchedResultsController objectAtIndexPath:indexPath];
-    cell.textLabel.text = [bookmarkedPlace title];
-    cell.detailTextLabel.text = [bookmarkedPlace subtitle];
-
+    MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapsBookmarksTableCellIdentifier forIndexPath:indexPath];
+    [cell setPlace:self.bookmarkedPlaces[indexPath.row]];
     return cell;
 }
 
-// Override to support editing the table view.
 - (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (editingStyle == UITableViewCellEditingStyleDelete) {
-        MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-        [[MITMapModelController sharedController] removeBookmarkForPlace:place completion:nil];
+        [self deleteBookmarkAtIndexPath:indexPath];
     }
 }
 
-
-// Override to support rearranging the table view.
 - (void)tableView:(UITableView *)tableView moveRowAtIndexPath:(NSIndexPath *)fromIndexPath toIndexPath:(NSIndexPath *)toIndexPath
 {
-    MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:fromIndexPath];
-    [[MITMapModelController sharedController] moveBookmarkForPlace:place toIndex:toIndexPath.row completion:nil];
+    [self moveBookmarkedAtIndex:fromIndexPath.row toIndex:toIndexPath.row];
 }
 
-
-// Override to support conditional rearranging of the table view.
 - (BOOL)tableView:(UITableView *)tableView canMoveRowAtIndexPath:(NSIndexPath *)indexPath
 {
     return YES;
 }
 
-#pragma mark - Table view delegate
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	[tableView deselectRowAtIndexPath:indexPath animated:YES];
+    MITMapPlace *place = self.bookmarkedPlaces[indexPath.row];
+    [self.delegate placeSelectionViewController:self didSelectPlace:place];
+}
 
-	// get the bookmark that was selected.
-    MITMapPlace* place = [self.fetchedResultsController objectAtIndexPath:indexPath];
-    [self didSelectPlaces:@[place]];
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return [MITMapPlaceCell heightForPlace:self.bookmarkedPlaces[indexPath.row] tableViewWidth:self.tableView.frame.size.width accessoryType:UITableViewCellAccessoryNone];
+}
+
+- (void)deleteBookmarkAtIndexPath:(NSIndexPath *)indexPath
+{
+    MITMapPlace *place = self.bookmarkedPlaces[indexPath.row];
+    [[MITMapModelController sharedController] removeBookmarkForPlace:place
+                                                          completion:^(NSError *error) {
+                                                              [self updateBookmarkedPlaces];
+                                                              if ([self hasBookmarkedPlaces]) {
+                                                                  [self.tableView deleteRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+                                                              }
+                                                              else {
+                                                                 [self.tableView reloadData];
+                                                                  [self updateTableState];
+                                                              }
+                                                          }];
+}
+
+- (void)moveBookmarkedAtIndex:(NSInteger)fromIndex toIndex:(NSInteger)toIndex
+{
+    MITMapPlace *place = self.bookmarkedPlaces[fromIndex];
+    [[MITMapModelController sharedController] moveBookmarkForPlace:place toIndex:toIndex completion:nil];
+}
+
+#pragma mark - Setters
+
+- (void)setEditing:(BOOL)editing animated:(BOOL)animated
+{
+    [super setEditing:editing
+             animated:animated];
+    
+    if (editing) {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+    else {
+        self.navigationItem.rightBarButtonItem = self.bookmarksDoneButton;
+    }
+}
+
+#pragma mark - No Results View
+
+- (void)setupNoResultsView
+{
+    UILabel *noResultsLabel = [[UILabel alloc] init];
+    noResultsLabel.text = @"No Bookmarks";
+    noResultsLabel.font = [UIFont systemFontOfSize:24.0];
+    noResultsLabel.textColor = [UIColor grayColor];
+    noResultsLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    
+    UIView *noResultsView = [[UIView alloc] initWithFrame:self.tableView.bounds];
+    [noResultsView addSubview:noResultsLabel];
+    [noResultsView addConstraints:@[[NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterX multiplier:1.0 constant:0.0],
+                                    [NSLayoutConstraint constraintWithItem:noResultsLabel attribute:NSLayoutAttributeCenterY relatedBy:NSLayoutRelationEqual toItem:noResultsView attribute:NSLayoutAttributeCenterY multiplier:1.0 constant:0.0]]];
+    self.noResultsView = noResultsView;
+}
+
+- (void)setNoResultsViewHidden:(BOOL)hidden
+{
+    self.tableView.separatorStyle = hidden ? UITableViewCellSeparatorStyleSingleLine : UITableViewCellSeparatorStyleNone;
+    self.tableView.backgroundView = hidden ? nil : self.noResultsView;
 }
 
 @end

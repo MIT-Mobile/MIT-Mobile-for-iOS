@@ -4,6 +4,8 @@
 
 // Should be an array of MITNewsImageRepresentation objects
 @property (nonatomic,strong) NSArray *galleryImages;
+@property (nonatomic, strong) NSURL *storyLink;
+@property (nonatomic, strong) NSString *storyTitle;
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
 @property (nonatomic,weak) IBOutlet UIPageViewController *pageViewController;

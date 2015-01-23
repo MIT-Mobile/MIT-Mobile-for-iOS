@@ -2,6 +2,7 @@
 
 NSString* const MITNewsLoadMoreCellIdentifier = @"NewsLoadMoreCell";
 NSString* const MITNewsLoadMoreCellNibName = @"NewsLoadMoreTableCell";
+CGFloat const MITNewsLoadMoreTableViewCellHeight = 75;
 
 NSString* const MITNewsStoryCellIdentifier = @"StoryCell";
 NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";
@@ -19,3 +20,12 @@ NSString* const MITNewsStoryExternalNoImageCellNibName = @"NewsStoryExternalNoIm
 NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
 
 NSUInteger const MITNewsDefaultNumberOfStoriesPerPage = 20;
+CGFloat const MITNewsRefreshControlHangTime = 0.5;
+
+NSString* const MITNewsCellIdentifierStoryJumbo = @"NewsStoryJumboCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryDek = @"NewsStoryDekCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryClip = @"NewsStoryClipCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryWithImage = @"NewsStoryImageCollectionViewCell";
+NSString* const MITNewsCellIdentifierStoryLoadMore = @"NewsStoryLoadMoreCollectionViewCell";
+NSString* const MITNewsReusableViewIdentifierSectionHeader = @"NewsStoryHeaderReusableView";
+NSString* const MITNewsReusableViewIdentifierDivider = @"MITNewsCollectionDecorationDividerIdentifier";

@@ -1,10 +1,15 @@
 #import <UIKit/UIKit.h>
 
+@protocol MITScannerHelpViewControllerDelegate <NSObject>
+
+- (void)helpViewControllerDidClose;
+
+@end
+
 @interface MITScannerHelpViewController : UIViewController
 @property (weak) IBOutlet UILabel *helpTextView;
-@property (weak) IBOutlet UIImageView *backgroundImage;
-@property (weak) IBOutlet UIBarButtonItem *doneButton;
+@property (weak) IBOutlet UIView *sampleImagesContainerView;
 
-- (IBAction)dismissHelp:(id)sender;
+@property (weak, nonatomic) id <MITScannerHelpViewControllerDelegate> delegate;
 
 @end

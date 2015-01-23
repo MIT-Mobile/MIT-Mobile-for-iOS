@@ -3,11 +3,14 @@
 #import "MITScannerImage.h"
 #import "UIImage+Resize.h"
 #import "CoreDataManager.h"
+#import "MITCoreDataController.h"
 #import "UIKit+MITAdditions.h"
+
+NSString * const kScannerHistoryNewScanCounterKey = @"kScannerHistoryNewScanCounterKey";
 
 @implementation QRReaderHistoryData
 - (id)init {
-    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSConfinementConcurrencyType];
+    NSManagedObjectContext *context = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     context.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
     
     return [self initWithManagedContext:context];
@@ -24,52 +27,135 @@
     return self;
 }
 
-- (void)deleteScanResult:(QRReaderResult*)result {
-    [self.context deleteObject:result];
-}
-
-- (QRReaderResult*)insertScanResult:(NSString *)scanResult
-                           withDate:(NSDate *)date {
-    return [self insertScanResult:scanResult
-                         withDate:date
-                        withImage:nil];
-}
-
-
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
-                           withDate:(NSDate*)date
-                          withImage:(UIImage*)image
+- (void)deleteScanResults:(NSArray *)results completion:(void (^)(NSError* error))block
 {
-    return [self insertScanResult:scanResult
-                         withDate:date
-                        withImage:image
-          shouldGenerateThumbnail:NO];
+    NSManagedObjectContext *childContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSPrivateQueueConcurrencyType];
+    childContext.parentContext = self.context;
+    [childContext performBlock:^{
+        for( QRReaderResult *result in results )
+        {
+            @autoreleasepool
+            {
+                QRReaderResult *fetchedResult = (QRReaderResult *)[childContext objectWithID:result.objectID];
+                [childContext deleteObject:fetchedResult];
+            }
+        }
+
+        NSError *error;
+        [childContext save:&error];
+        
+        if( block )
+        {
+            block( error );
+        }
+    }];
 }
 
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
+- (void)insertScanResult:(NSString *)scanResult
+                withDate:(NSDate *)date
+              completion:(void (^)(QRReaderResult* result, NSError *error))block
+{
+     [self insertScanResult:scanResult
+                   withDate:date
+                  withImage:nil
+                 completion:block];
+}
+
+
+- (void)insertScanResult:(NSString*)scanResult
+                withDate:(NSDate*)date
+               withImage:(UIImage*)image
+              completion:(void (^)(QRReaderResult *, NSError *))block
+{
+    [self insertScanResult:scanResult
+                  withDate:date
+                 withImage:image
+   shouldGenerateThumbnail:NO
+                completion:block];
+}
+
+// TODO: move to background
+- (void)insertScanResult:(NSString*)scanResult
                            withDate:(NSDate*)date
                           withImage:(UIImage*)image
             shouldGenerateThumbnail:(BOOL)generateThumbnail
+                         completion:(void (^)(QRReaderResult* result, NSError *error))block
 {
     QRReaderResult *result = (QRReaderResult*)[NSEntityDescription insertNewObjectForEntityForName:@"QRReaderResult"
                                                                             inManagedObjectContext:self.context];
     result.text = scanResult;
     result.date = date;
     
-    if (image)
+    if( image )
     {
-        image = [[UIImage imageWithCGImage:image.CGImage
-                                    scale:1.0
-                              orientation:UIImageOrientationUp] imageByRotatingImageInRadians:-M_PI_2];
+        image = [UIImage imageWithCGImage:image.CGImage
+                                     scale:1.0
+                               orientation:UIImageOrientationUp];
+        
+        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortrait )
+        {
+            image = [image imageByRotatingImageInRadians:-M_PI_2];
+        }
+        if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationPortraitUpsideDown )
+        {
+            image = [image imageByRotatingImageInRadians:M_PI_2];
+        }
+        else if( [[UIDevice currentDevice] orientation] == UIDeviceOrientationLandscapeRight )
+        {
+            image = [image imageByRotatingImageInRadians:M_PI];
+        }
+
         result.scanImage = image;
         
         if (generateThumbnail)
         {
             result.thumbnail =  [image resizedImage:[QRReaderResult defaultThumbnailSize]
-                               interpolationQuality:kCGInterpolationDefault];
+                                    interpolationQuality:kCGInterpolationDefault];
         }
     }
     
-    return result;
+    NSError *error;
+    [self.context save:&error];
+    
+    if( block )
+    {
+        block( result, error );
+    }
 }
+
+- (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId
+{
+   return (QRReaderResult *)[self.context objectWithID:scanId];
+}
+
+- (void)updateHistoryNewScanCounter
+{
+    NSInteger currentCounter = [[NSUserDefaults standardUserDefaults] integerForKey:kScannerHistoryNewScanCounterKey];
+    [[NSUserDefaults standardUserDefaults] setInteger:(++currentCounter) forKey:kScannerHistoryNewScanCounterKey];
+    [[NSUserDefaults standardUserDefaults] synchronize];
+}
+
+- (void)resetHistoryNewScanCounter
+{
+    [[NSUserDefaults standardUserDefaults] setInteger:0 forKey:kScannerHistoryNewScanCounterKey];
+}
+
+- (NSInteger)historyNewScanCounter
+{
+    return [[NSUserDefaults standardUserDefaults] integerForKey:kScannerHistoryNewScanCounterKey];
+}
+
+- (void)saveDataModelChanges
+{
+    if( [self.context hasChanges] )
+    {
+        NSError *saveError = nil;
+        [self.context save:&saveError];
+        if (saveError)
+        {
+            DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
+        }
+    }
+}
+
 @end

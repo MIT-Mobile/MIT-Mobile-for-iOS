@@ -2,87 +2,74 @@
 #import <AudioToolbox/AudioToolbox.h>
 
 #import "MITScannerViewController.h"
+#import "MITScannerHistoryViewController.h"
 #import "MITScannerOverlayView.h"
-#import "ZBarSDK.h"
 #import "QRReaderHistoryData.h"
-#import "QRReaderDetailViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "QRReaderResult.h"
-#import "NSDateFormatter+RelativeString.h"
 #import "MITScannerHelpViewController.h"
-#import "UIImage+Resize.h"
+#import "MITScannerDetailViewController.h"
 #import "MITNavigationController.h"
-#import "CoreDataManager.h"
+#import "MITScannerAdvancedMenuViewController.h"
+#import "MITBatchScanningAlertView.h"
+#import "MITScannerMgr.h"
 
-@interface MITScannerViewController () <ZBarReaderViewDelegate,UITableViewDelegate,UITableViewDataSource,NSFetchedResultsControllerDelegate>
+#define FIRST_ALERT_POSITION_TAG 20
+#define SECOND_ALERT_POSITION_TAG 21
 
-#pragma mark - Scanner Properties
+@interface MITScannerViewController ()
+
+#pragma mark - Scanner UI components
 @property (strong) UIView *scanView;
 @property (weak) UIImageView *cameraUnavailableView;
 @property (weak) MITScannerOverlayView *overlayView;
-@property (weak) ZBarReaderView *readerView;
 @property (weak) UIButton *infoButton;
+@property (weak) UIButton *advancedButton;
 
-@property (nonatomic,assign) BOOL isCaptureActive;
-@property (readonly) BOOL isScanningSupported;
+@property (nonatomic, strong) MITScannerMgr *scannerMgr;
 
 #pragma mark - History Properties
-@property (nonatomic,weak) UITableView *historyView;
 @property (strong) QRReaderHistoryData *scannerHistory;
 
-@property (strong) NSManagedObjectContext *fetchContext;
-@property (strong) NSFetchedResultsController *fetchController;
-@property (strong) NSOperationQueue *renderingQueue;
+#pragma mark - popovers
+@property (nonatomic, strong) UIPopoverController *advancedMenuPopover;
+@property (nonatomic, strong) UIPopoverController *historyPopoverController;
 
 #pragma mark - Private methods
 - (IBAction)showHistory:(id)sender;
-- (IBAction)showScanner:(id)sender;
 - (IBAction)showHelp:(id)sender;
-
-- (void)startCapture;
-- (void)stopCapture;
-
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath;
 @end
+
+#pragma mark - categories
+@interface MITScannerViewController(ScanDetailViewDelegate) <MITScannerDetailViewControllerDelegate>
+- (void)detailFormSheetViewDidDisappear;
+@end
+
+@interface MITScannerViewController(BatchScanAlertHandler) <MITBatchScanningAlertViewDelegate>
+- (void)showAlertForScanResult:(QRReaderResult *)result;
+- (void)removeVisibleScanningAlerts;
+@end
+
+@interface MITScannerViewController(DelegatesHandler) <UIPopoverControllerDelegate, MITScannerHelpViewControllerDelegate, MITScannerMgrDelegate>
+- (void)helpViewControllerDidClose;
+@end
+
 #pragma mark -
 
 @implementation MITScannerViewController
-- (id)init
+
+- (instancetype)init
 {
-    return [self initWithNibName:nil
-                          bundle:nil];
+    return [self initWithNibName:nil bundle:nil];
 }
 
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
-    self = [super initWithNibName:nil
-                           bundle:nil];
+    self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.title = @"Scanner";
-        self.isCaptureActive = NO;
-
-        self.renderingQueue = [[NSOperationQueue alloc] init];
-        self.renderingQueue.maxConcurrentOperationCount = 1;
-
-        NSManagedObjectContext *fetchContext = [[NSManagedObjectContext alloc] init];
-        fetchContext.persistentStoreCoordinator = [[CoreDataManager coreDataManager] persistentStoreCoordinator];
-        fetchContext.undoManager = nil;
-        fetchContext.stalenessInterval = 0;
-        
-        self.scannerHistory = [[QRReaderHistoryData alloc] initWithManagedContext:fetchContext];
-        self.fetchContext = fetchContext;
-
-        NSSortDescriptor *dateDescriptor = [[NSSortDescriptor alloc] initWithKey:@"date"
-                                                                        ascending:NO];
-        
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] initWithEntityName:@"QRReaderResult"];
-        fetchRequest.sortDescriptors = @[dateDescriptor];
-        
-        self.fetchController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                    managedObjectContext:fetchContext
-                                                                      sectionNameKeyPath:nil
-                                                                               cacheName:nil];
-        self.fetchController.delegate = self;
+        self.scannerHistory = [QRReaderHistoryData new];
+        self.scannerMgr = [[MITScannerMgr alloc] initWithScannerData:self.scannerHistory];;
+        self.scannerMgr.delegate = self;
     }
     return self;
 }
@@ -90,11 +77,6 @@
 - (BOOL)wantsFullScreenLayout
 {
     return YES;
-}
-
-- (void)dealloc
-{
-    [self.renderingQueue cancelAllOperations];
 }
 
 - (void)loadView
@@ -112,21 +94,16 @@
     
     UIView *scannerView = [[UIView alloc] init];
     scannerView.autoresizesSubviews = YES;
-    scannerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                    UIViewAutoresizingFlexibleWidth);
+    scannerView.autoresizingMask = UIViewAutoresizingNone;
     scannerView.backgroundColor = [UIColor blackColor];
 
-    if (self.isScanningSupported) {
-        ZBarReaderView *readerView = [[ZBarReaderView alloc] init];
-        readerView.torchMode = AVCaptureTorchModeOff;
-        readerView.readerDelegate = self;
-        readerView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                       UIViewAutoresizingFlexibleWidth);
-
-        [scannerView addSubview:readerView];
-        self.readerView = readerView;
-    } else {
-        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"qrreader/camera-unsupported"]];
+    if( [self.scannerMgr isScanningSupported] )
+    {
+        [self.scannerMgr setupCaptureSession];
+    }
+    else
+    {
+        UIImageView *unsupportedView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageScannerCameraUnsupported]];
         unsupportedView.contentMode = UIViewContentModeCenter;
         [scannerView addSubview:unsupportedView];
         self.cameraUnavailableView = unsupportedView;
@@ -136,9 +113,8 @@
     MITScannerOverlayView *overlay = [[MITScannerOverlayView alloc] initWithFrame:frame];
     overlay.backgroundColor = [UIColor clearColor];
     overlay.userInteractionEnabled = NO;
-    overlay.autoresizingMask = (UIViewAutoresizingFlexibleBottomMargin |
-                                UIViewAutoresizingFlexibleWidth);
-    if (self.isScanningSupported) {
+    overlay.autoresizingMask = UIViewAutoresizingNone;
+    if ([self.scannerMgr isScanningSupported]) {
         overlay.helpText = @"To scan a QR code or barcode, frame it below.\nAvoid glare and shadows.";
     } else {
         overlay.helpText = @"A camera is required to scan QR codes and barcodes";
@@ -147,13 +123,20 @@
     [scannerView addSubview:overlay];
     self.overlayView = overlay;
 
-
-    UIButton *infoButton = [UIButton buttonWithType:UIButtonTypeInfoLight];
+    UIButton *infoButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    [infoButton setTitle:@"Info" forState:UIControlStateNormal];
+    [infoButton sizeToFit];
     [infoButton addTarget:self action:@selector(showHelp:) forControlEvents:UIControlEventTouchUpInside];
     [scannerView addSubview:infoButton];
     self.infoButton = infoButton;
 
-
+    UIButton *advancedButton = [[UIButton alloc] initWithFrame:CGRectZero];
+    [advancedButton setTitle:@"Advanced" forState:UIControlStateNormal];
+    [advancedButton sizeToFit];
+    [advancedButton addTarget:self action:@selector(showAdvancedMenu:) forControlEvents:UIControlEventTouchUpInside];
+    [scannerView addSubview:advancedButton];
+    self.advancedButton = advancedButton;
+    
     [controllerView addSubview:scannerView];
     self.scanView = scannerView;
 }
@@ -163,9 +146,14 @@
     self.scanView.frame = self.view.bounds;
     {
         CGRect scannerContentBounds = self.scanView.bounds;
-        if (self.isScanningSupported) {
-            self.readerView.frame = scannerContentBounds;
-        } else {
+        
+        if ([self.scannerMgr isScanningSupported])
+        {
+            self.scannerMgr.previewLayer.frame = scannerContentBounds;
+            [self.scanView.layer insertSublayer:self.scannerMgr.previewLayer atIndex:0];
+        }
+        else
+        {
             CGRect cameraFrame = scannerContentBounds;
             cameraFrame.origin.y += 44.;
             self.cameraUnavailableView.frame = cameraFrame;
@@ -173,44 +161,33 @@
 
         self.overlayView.frame = scannerContentBounds;
 
-        CGRect frame = self.infoButton.bounds;
+        CGRect frame = self.advancedButton.bounds;
         frame.origin.x = CGRectGetMaxX(scannerContentBounds) - (CGRectGetWidth(frame) + 20.); //20px -> standard spacing between a view and it's superview
         frame.origin.y = CGRectGetMaxY(scannerContentBounds) - (CGRectGetHeight(frame) + 20.);
-        self.infoButton.frame = frame;
-    }
-
-    if (self->_historyView) {
-        CGRect historyFrame = self.view.bounds;
-        historyFrame.origin.y = 64.;
-        historyFrame.size.height -= 64.;
-        self.historyView.frame = historyFrame;
+        self.advancedButton.frame = frame;
+        
+        CGRect infoBtnFrame = self.infoButton.bounds;
+        infoBtnFrame.origin.x = CGRectGetMinX(scannerContentBounds) + 20.;
+        infoBtnFrame.origin.y = frame.origin.y;
+        self.infoButton.frame = infoBtnFrame;
     }
 }
 
-- (UIView*)historyView
+- (void)viewDidLayoutSubviews
 {
-    if (!_historyView) {
-        CGRect historyFrame = self.view.bounds;
-        historyFrame.origin.y = 64.;
-        historyFrame.size.height -= 64.;
-        UITableView *historyView = [[UITableView alloc] initWithFrame:self.view.bounds
-                                                                style:UITableViewStylePlain];
-        historyView.delegate = self;
-        historyView.dataSource = self;
-        historyView.rowHeight = [QRReaderResult defaultThumbnailSize].height;
+    [super viewDidLayoutSubviews];
+}
 
-        [self.view addSubview:historyView];
-        self.historyView = historyView;
-    }
-
-    return _historyView;
+- (void)didReceiveMemoryWarning
+{
+    [super didReceiveMemoryWarning];
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    if (self.isScanningSupported)
+    
+    if ([self.scannerMgr isScanningSupported])
     {
         UIBarButtonItem *toolbarItem = [[UIBarButtonItem alloc] initWithTitle:@"History"
                                                                         style:UIBarButtonItemStyleBordered
@@ -218,48 +195,34 @@
                                                                        action:@selector(showHistory:)];
         self.navigationItem.rightBarButtonItem = toolbarItem;
     }
+    
+    self.navigationController.toolbarHidden = YES;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
-    self.navigationController.navigationBar.translucent = YES;
+    [self makeNavigationBarTransparent];
     
-    // Directly access the ivar here so we don't trigger the lazy instantiation
-    if (self->_historyView) {
-        [self.historyView deselectRowAtIndexPath:[self.historyView indexPathForSelectedRow] animated:YES];
-    }
+    [self updateHistoryButtonTitle];
+    
+    [self.navigationItem.rightBarButtonItem setEnabled:YES];
 }
 
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
-    if (self.scanView.hidden == NO)
-    {
-        [self startCapture];
-    }
-    else
-    {
-        [self.historyView reloadData];
-    }
     
+    [self.scannerMgr startSessionCapture];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
-    [self.renderingQueue cancelAllOperations];
-    NSError *saveError = nil;
-    [self.fetchContext save:&saveError];
-    if (saveError)
-    {
-        DDLogError(@"Error saving scan: %@", [saveError localizedDescription]);
-    }
+    [super viewWillDisappear:animated];
+    [self.scannerMgr stopSessionCapture];
     
-    [self stopCapture];
-    // rely on Springboard to reset the navbar style to what it prefers
-//    self.navigationController.navigationBar.translucent = NO;
+    [self.scannerHistory saveDataModelChanges];
 }
 
 - (void)viewDidUnload
@@ -276,272 +239,347 @@
 
 - (NSUInteger)supportedInterfaceOrientations
 {
+    if( [self isOnIpad] )
+    {
+        return UIInterfaceOrientationMaskAll;
+    }
+    
     return UIInterfaceOrientationMaskPortrait;
+}
+
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [self.overlayView setNeedsDisplay];
+}
+
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation {
+    [self.scannerMgr setVideoOrientation];
 }
 
 - (IBAction)showHistory:(id)sender
 {
-    [self stopCapture];
-    self.navigationItem.rightBarButtonItem.enabled = NO;
+    if( [self isOnIpad] )
+    {
+        [self showHistoryOnIpad];
+        
+        return;
+    }
     
-    [self.fetchController performFetch:nil];
-    
-    [UIView transitionFromView:self.scanView
-                        toView:self.historyView
-                      duration:1.0
-                       options:(UIViewAnimationOptionCurveEaseInOut |
-                                UIViewAnimationOptionBeginFromCurrentState |
-                                UIViewAnimationOptionShowHideTransitionViews |
-                                UIViewAnimationOptionTransitionFlipFromRight)
-                    completion:^(BOOL finished)
-     {
-         self.navigationItem.rightBarButtonItem.title = @"Scan";
-         [self.navigationItem.rightBarButtonItem setAction:@selector(showScanner:)];
-         self.navigationItem.rightBarButtonItem.enabled = YES;
-         [self.historyView reloadData];
-     }];
+    [self showHistoryOnIphone];
 }
 
-- (IBAction)showScanner:(id)sender
+- (void)showHistoryOnIphone
 {
-    [self startCapture];
-    self.navigationItem.rightBarButtonItem.enabled = NO;
+    [self.navigationItem.rightBarButtonItem setEnabled:NO];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
     
-    [UIView transitionFromView:self.historyView
-                        toView:self.scanView
-                      duration:1.0
-                       options:(UIViewAnimationOptionCurveEaseInOut |
-                                UIViewAnimationOptionBeginFromCurrentState |
-                                UIViewAnimationOptionShowHideTransitionViews |
-                                UIViewAnimationOptionTransitionFlipFromLeft)
-                    completion:^(BOOL finished) {
-                        self.navigationItem.rightBarButtonItem.title = @"History";
-                        [self.navigationItem.rightBarButtonItem setAction:@selector(showHistory:)];
-                        self.navigationItem.rightBarButtonItem.enabled = YES;
-                        [self.historyView removeFromSuperview];
-                        [self.fetchContext save:nil];
-                    }];
+    MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
+    [self.navigationController pushViewController:historyVC animated:YES];
+}
+
+- (void)prepareForShowingHistoryOnIpad
+{
+    [self.scannerMgr stopSessionCapture];
+    [self removeVisibleScanningAlerts];
+    [self.scannerHistory resetHistoryNewScanCounter];
+    [self updateHistoryButtonTitle];
+    
+    if( [self.advancedMenuPopover isPopoverVisible] )
+    {
+        [self.advancedMenuPopover dismissPopoverAnimated:NO];
+    }
+}
+
+- (void)showHistoryOnIpad
+{
+    [self prepareForShowingHistoryOnIpad];
+    
+    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:[MITScannerHistoryViewController new]];
+    self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    self.historyPopoverController.delegate = self;
+    [self.historyPopoverController setPopoverContentSize:CGSizeMake(400, 480) animated:NO];
+    [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                                          permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                          animated:YES];
+}
+
+- (void)showDetailsThroughHistoryForItemWithIndex:(NSInteger)itemIndex
+{
+    [self prepareForShowingHistoryOnIpad];
+    
+    MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
+    historyVC.itemToOpenOnLoadIndex = itemIndex;
+    MITNavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:historyVC];
+    self.historyPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
+    self.historyPopoverController.delegate = self;
+    [self.historyPopoverController setPopoverContentSize:CGSizeMake(400, 480) animated:NO];
+    [self.historyPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem
+                                          permittedArrowDirections:UIPopoverArrowDirectionUp
+                                                          animated:YES];
 }
 
 - (IBAction)showHelp:(id)sender
 {
+    [self.scannerMgr stopSessionCapture];
+    
     MITScannerHelpViewController *vc = [[MITScannerHelpViewController alloc] init];
+    vc.delegate = self;
     UINavigationController *helpNavController = [[MITNavigationController alloc] initWithRootViewController:vc];
-    if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-        helpNavController.navigationBar.barStyle = UIBarStyleDefault;
-    } else {
-        helpNavController.navigationBar.barStyle = UIBarStyleBlack;
-    }
-    helpNavController.navigationBar.translucent = NO;
+    helpNavController.modalPresentationStyle = UIModalPresentationFormSheet;
     [self.navigationController presentViewController:helpNavController animated:YES completion:NULL];
 }
 
-- (BOOL)isCaptureActive
+- (void)showAdvancedMenu:(id)sender
 {
-    return (self->_isCaptureActive && self.isScanningSupported);
-}
-
-- (void)startCapture
-{
-    if (self.isCaptureActive == NO)
+    if( [self isOnIpad] )
     {
-        self.isCaptureActive = YES;
-        [self.readerView start];
-    }
-}
-
-- (void)stopCapture
-{
-    if (self.isCaptureActive)
-    {
-        self.isCaptureActive = NO;
-        [self.readerView stop];
-    }
-}
-#pragma mark - Scanning Methods
-- (BOOL)isScanningSupported
-{
-    return [UIImagePickerController isCameraDeviceAvailable:UIImagePickerControllerCameraDeviceRear];
-}
-
-- (void)readerView:(ZBarReaderView*)readerView
-    didReadSymbols:(ZBarSymbolSet*)symbols
-         fromImage:(UIImage*)image
-{
-    ZBarSymbol *readerSymbol = nil;
-    
-    // Grab the first symbol
-    for(readerSymbol in symbols)
-        break;
-    
-    if (readerSymbol)
-    {
-        self.navigationController.navigationBar.userInteractionEnabled = NO;
-        [self stopCapture];
-        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
-        self.overlayView.highlighted = YES;
+        [self showAdvancedMenuOnIpad:sender];
         
-        QRReaderResult *result = [self.scannerHistory insertScanResult:readerSymbol.data
-                                                              withDate:[NSDate date]
-                                                             withImage:image];
-        
-        QRReaderDetailViewController *viewController = [QRReaderDetailViewController detailViewControllerForResult:result];
-        
-        dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
-        dispatch_after(popTime, dispatch_get_main_queue(), ^{
-            [self.navigationController pushViewController:viewController
-                                                 animated:YES];
-            
-            self.navigationController.navigationBar.userInteractionEnabled = YES;
-            self.overlayView.highlighted = NO;
-        });
-    }
-}
-
-#pragma mark - History Methods
-- (void)configureCell:(UITableViewCell*)cell atIndexPath:(NSIndexPath*)indexPath
-{
-    QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
-    
-    cell.textLabel.text = result.text;
-    cell.textLabel.numberOfLines = 2;
-    cell.textLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    cell.detailTextLabel.text = [NSDateFormatter relativeDateStringFromDate:result.date
-                                                                     toDate:[NSDate date]];
-    
-    if (result.thumbnail == nil)
-    {
-        CGRect imageFrame = cell.imageView.frame;
-        imageFrame.size = [QRReaderResult defaultThumbnailSize];
-        
-        cell.imageView.frame = imageFrame;
-        cell.imageView.contentMode = UIViewContentModeScaleToFill;
-        cell.imageView.image = [UIImage imageNamed:@"news/news-placeholder.png"];
-        cell.imageView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                           UIViewAutoresizingFlexibleWidth);
-        
-        UIImage *scanImage = result.scanImage;
-        NSManagedObjectID *scanId = [result objectID];
-        if (scanImage)
-        {
-            [self.renderingQueue addOperationWithBlock:^{
-                UIImage *thumbnail = [scanImage resizedImage:[QRReaderResult defaultThumbnailSize]
-                                        interpolationQuality:kCGInterpolationDefault];
-                
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    QRReaderResult *scan = (QRReaderResult*)([self.fetchContext objectWithID:scanId]);
-                    
-                    if (scan.isDeleted == NO)
-                    {
-                        scan.thumbnail = thumbnail;
-                        [self.fetchContext save:nil];
-                    }
-                });
-            }];
-        }
-    }
-    else
-    {
-        CGRect frame = cell.imageView.frame;
-        frame.size = result.thumbnail.size;
-        cell.imageView.frame = frame;
-        cell.imageView.image = result.thumbnail;
-        cell.imageView.contentMode = UIViewContentModeScaleAspectFill;
-    }
-}
-
-#pragma mark - UITableViewDataSource
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
-    static NSString *reusableCellId = @"HistoryCell";
-    
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:reusableCellId];
-    
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle
-                                      reuseIdentifier:reusableCellId];
-        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
-        cell.selectionStyle = UITableViewCellSelectionStyleBlue;
-        cell.textLabel.font = [UIFont fontWithName:cell.textLabel.font.fontName
-                                              size:16.0];
-    }
-    
-    [self configureCell:cell
-            atIndexPath:indexPath];
-    
-    return cell;
-}
-
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return [[self.fetchController sections] count];
-}
-
-- (NSInteger)tableView:(UITableView *)tableView
- numberOfRowsInSection:(NSInteger)section
-{
-    NSArray *sections = [self.fetchController sections];
-    id<NSFetchedResultsSectionInfo> sectionInfo = sections[section];
-    
-    return [sectionInfo numberOfObjects];
-}
-
-- (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath {
-    return YES;
-}
-
-- (void)tableView:(UITableView *)tableView commitEditingStyle:(UITableViewCellEditingStyle)editingStyle forRowAtIndexPath:(NSIndexPath *)indexPath {
-    QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
-    
-    if (editingStyle == UITableViewCellEditingStyleDelete) {
-        [self.scannerHistory deleteScanResult:result];
-    }
-}
-
-#pragma mark - UITableViewDelegate
-- (void)tableView:(UITableView *)tableView
-didSelectRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    QRReaderResult *result = [self.fetchController objectAtIndexPath:indexPath];
-    
-    QRReaderDetailViewController *detailView = [QRReaderDetailViewController detailViewControllerForResult:result];
-    [self.navigationController pushViewController:detailView
-                                         animated:YES];
-}
-
-#pragma mark - NSFetchedResultsControllerDelegate
-- (void)controller:(NSFetchedResultsController *)controller
-   didChangeObject:(id)anObject
-       atIndexPath:(NSIndexPath *)indexPath
-     forChangeType:(NSFetchedResultsChangeType)type
-      newIndexPath:(NSIndexPath *)newIndexPath
-{
-    
-    if (self.historyView.isHidden)
-    {
         return;
     }
     
-    UITableView *tableView = self.historyView;
-    
-    switch (type)
-    {
-        case NSFetchedResultsChangeInsert:
-            [tableView insertRowsAtIndexPaths:@[newIndexPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeDelete:
-            [tableView deleteRowsAtIndexPaths:@[indexPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        case NSFetchedResultsChangeUpdate:
-            [tableView reloadRowsAtIndexPaths:@[newIndexPath]
-                             withRowAnimation:UITableViewRowAnimationFade];
-            break;
-            
-        default:
-            break;
+    [self showAdvancedMenuOnIphone:sender];
+}
+
+- (void)showAdvancedMenuOnIphone:(id)sender
+{
+    MITScannerAdvancedMenuViewController *vc = [MITScannerAdvancedMenuViewController new];
+    UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:vc];
+    [self.navigationController presentViewController:navController animated:YES completion:NULL];
+}
+
+- (void)showAdvancedMenuOnIpad:(id)sender
+{
+    MITScannerAdvancedMenuViewController *advancedMenuVC = [MITScannerAdvancedMenuViewController new];
+    self.advancedMenuPopover = [[UIPopoverController alloc] initWithContentViewController:advancedMenuVC];
+    [self.advancedMenuPopover setPopoverContentSize:CGSizeMake(320, advancedMenuVC.menuViewHeight) animated:NO];    
+    [self.advancedMenuPopover presentPopoverFromRect:[sender frame]
+                                       inView:self.view
+                     permittedArrowDirections:UIPopoverArrowDirectionDown
+                                     animated:YES];
+}
+
+- (void)makeNavigationBarTransparent
+{
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        [self.navigationController.navigationBar setBackgroundImage:[UIImage new] forBarMetrics:UIBarMetricsDefault];
+        self.navigationController.navigationBar.shadowImage = [UIImage new];
+        self.navigationController.navigationBar.tintColor = [UIColor whiteColor];
     }
 }
+
+- (NSString *)historyTitleWithNumberOfRecentScans:(NSInteger)numberOfRecentScans
+{
+    if( numberOfRecentScans > 0 )
+    {
+        return [NSString stringWithFormat:@"History (%li)", (long)numberOfRecentScans];
+    }
+    
+    return @"History";
+}
+
+- (void)updateHistoryButtonTitle
+{
+    NSInteger newScanCounter = [self.scannerHistory historyNewScanCounter];
+
+    self.navigationItem.rightBarButtonItem.title = [self historyTitleWithNumberOfRecentScans:newScanCounter];
+}
+
+#pragma mark - Scanning Methods
+
+- (void)showScanDetailsForScanResult:(QRReaderResult *)result
+{
+    if( [self isOnIpad] )
+    {
+        [self showDetailsThroughHistoryForItemWithIndex:0];
+        
+        return;
+    }
+    
+    MITScannerDetailViewController *viewController = [MITScannerDetailViewController new];
+    viewController.scanResult = result;
+    
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        [self.navigationController pushViewController:viewController animated:YES];
+        
+        self.navigationController.navigationBar.userInteractionEnabled = YES;
+        self.overlayView.highlighted = NO;
+    });
+}
+
+- (BOOL)isOnIpad
+{
+    return [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad;
+}
+
+- (void)runAsyncOnMainThread:(dispatch_block_t) blockToRun
+{
+    dispatch_async(dispatch_get_main_queue(), blockToRun);
+}
+
+- (void)runAsyncOnBackgroundThread:(dispatch_block_t) blockToRun
+{
+    dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), blockToRun );
+}
+
+@end
+
+#pragma mark - ScanDetailViewDelegate
+
+@implementation MITScannerViewController(ScanDetailViewDelegate)
+
+- (void)detailFormSheetViewDidDisappear
+{
+    [self.scannerMgr startSessionCapture];
+    self.overlayView.hidden = NO;
+}
+
+@end
+
+@implementation MITScannerViewController(BatchScanAlertHandler)
+
+- (void)showAlertForScanResult:(QRReaderResult *)result
+{
+    double fadingDuration = 2.0;
+    double waitBeforeFading = 4.0;
+    
+    [self runAsyncOnMainThread:^{
+        
+        __block MITBatchScanningAlertView *firstAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:FIRST_ALERT_POSITION_TAG];
+        __block MITBatchScanningAlertView *secondAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:SECOND_ALERT_POSITION_TAG];
+        
+        if( firstAlert == nil )
+        {
+            firstAlert = [self alertWithScanResult:result];
+            firstAlert.tag = FIRST_ALERT_POSITION_TAG;
+            [self.view addSubview:firstAlert];
+            
+            [firstAlert fadeOutWithDuration:fadingDuration andWait:waitBeforeFading completion:^{
+                [firstAlert removeFromSuperview];
+                firstAlert = nil;
+            }];
+        }
+        else
+        {
+            // if second alert is already created, then need to remove it
+            // as we shift everything down.
+            if( secondAlert != nil )
+            {
+                [secondAlert removeFromSuperview];
+                secondAlert = nil;
+            }
+            
+            // moving first alert down on a second position
+            CGRect alertFrame = firstAlert.frame;
+            alertFrame.origin.y += alertFrame.size.height + 5;
+            firstAlert.frame = alertFrame;
+            firstAlert.tag = SECOND_ALERT_POSITION_TAG;
+            
+            // creating another alert and setting it to the first position
+            secondAlert = [self alertWithScanResult:result];
+            secondAlert.tag = FIRST_ALERT_POSITION_TAG;
+            [self.view addSubview:secondAlert];
+            
+            // animating fade animation for that other alert we just created
+            [secondAlert fadeOutWithDuration:fadingDuration andWait:waitBeforeFading completion:^{
+                [secondAlert removeFromSuperview];
+                secondAlert = nil;
+            }];
+        }
+    }];
+}
+
+- (MITBatchScanningAlertView *)alertWithScanResult:(QRReaderResult *)result
+{
+    UINib *nib = [UINib nibWithNibName:NSStringFromClass([MITBatchScanningAlertView class]) bundle:nil];
+    MITBatchScanningAlertView *alertView = [nib instantiateWithOwner:nil options:nil][0];
+    alertView.scanCodeLabel.text = result.text;
+    alertView.ScanThumbnailView.image = result.thumbnail;
+    alertView.scanId = result.objectID;
+    alertView.delegate = self;
+    
+    return alertView;
+}
+
+- (void)didTouchAlertView:(MITBatchScanningAlertView *)alertView
+{
+    NSInteger index = (alertView.tag == FIRST_ALERT_POSITION_TAG) ? 0 : 1;
+    [self showDetailsThroughHistoryForItemWithIndex:index];
+}
+
+- (void)removeVisibleScanningAlerts
+{
+    MITBatchScanningAlertView *firstAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:FIRST_ALERT_POSITION_TAG];
+    [firstAlert removeFromSuperview];
+    firstAlert = nil;
+    
+    MITBatchScanningAlertView *secondAlert = (MITBatchScanningAlertView *)[self.view viewWithTag:SECOND_ALERT_POSITION_TAG];
+    [secondAlert removeFromSuperview];
+    secondAlert = nil;
+}
+
+@end
+
+@implementation MITScannerViewController(DelegatesHandler)
+
+- (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
+{
+    [self runAsyncOnMainThread:^{
+        self.overlayView.highlighted = NO;
+        [self updateHistoryButtonTitle];
+        [self.scannerMgr startSessionCapture];
+    }];
+}
+
+- (void)helpViewControllerDidClose
+{
+    [self.scannerMgr startSessionCapture];
+}
+
+- (void)barCodeFound
+{
+    [self runAsyncOnMainThread:^{
+        self.overlayView.highlighted = YES;
+        AudioServicesPlayAlertSound(kSystemSoundID_Vibrate);
+    }];
+}
+
+- (void)barCodeProcessed:(QRReaderResult *)result isBatchScanning:(BOOL)isBatchScanning
+{
+    [self runAsyncOnMainThread:^{        
+
+        if ( isBatchScanning )
+        {
+            [self.scannerHistory updateHistoryNewScanCounter];
+            [self updateHistoryButtonTitle];
+            
+            if( [self isOnIpad] )
+            {
+                [self showAlertForScanResult:result];
+            }
+            
+            [self continueBatchScanning];
+        }
+        else
+        {
+            [self showScanDetailsForScanResult:result];
+        }
+    }];
+}
+
+- (void)continueBatchScanning
+{
+    dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.0 * NSEC_PER_SEC));
+    dispatch_after(popTime, dispatch_get_main_queue(), ^{
+        self.overlayView.highlighted = NO;
+        
+        if( ![self.historyPopoverController isPopoverVisible] )
+        {
+            [self.scannerMgr startSessionCapture];
+        }
+    });
+}
+
 @end

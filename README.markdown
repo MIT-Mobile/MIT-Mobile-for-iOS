@@ -15,7 +15,7 @@ MIT Mobile for iPhone will build for the iPhone Simulator without any modificati
 #Technical Details
 
 - Base SDK is Latest iOS (7.0)
-- Deployment Target is iOS 6.1
+- Deployment Target is iOS 7.0
 
 #Feedback
 

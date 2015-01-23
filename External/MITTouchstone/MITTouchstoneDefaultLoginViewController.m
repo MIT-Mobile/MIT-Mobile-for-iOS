@@ -139,12 +139,6 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
 - (void)viewDidLoad {
     [super viewDidLoad];
     
-    self.tableView.backgroundView = nil;
-    self.tableView.backgroundColor = [UIColor colorWithRed:0.843
-                                                     green:0.855
-                                                      blue:0.878
-                                                     alpha:1.0];
-    
     self.title = @"Touchstone";
     self.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel
                                                                                           target:self

@@ -5,7 +5,6 @@
 #import "AboutCreditsVC.h"
 #import "UIKit+MITAdditions.h"
 #import "MITUIConstants.h"
-#import "MITMailComposeController.h"
 #import "MITBuildInfo.h"
 #import  <QuartzCore/CALayer.h>
 #import "ExplanatorySectionLabel.h"
@@ -17,6 +16,7 @@
 @implementation AboutTableViewController
 
 - (void)viewDidLoad {
+    [super viewDidLoad];
     [self.tableView applyStandardColors];
     self.tableView.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.backgroundView = nil;
@@ -117,7 +117,7 @@
                                                              orientation:UIImageOrientationUp];
                         CGImageRelease(hashImage);
                     } else {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleVersion"]];
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleShortVersionString"]];
                     } 
                 }
                     break;

@@ -1,33 +1,35 @@
 #import "NewsModule.h"
 
-#import "MITNewsViewController.h"
-
-#import "MITModule+Protected.h"
-
 @implementation NewsModule
-- (id) init {
-    self = [super init];
-    if (self != nil) {
-        self.tag = NewsOfficeTag;
-        self.shortName = @"News";
-        self.longName = @"News Office";
-        self.iconName = @"news";
+- (instancetype)init
+{
+    self = [super initWithName:MITModuleTagNewsOffice title:@"News"];
+    if (self) {
+        self.longTitle = @"News Office";
+        self.imageName = MITImageNewsModuleIcon;
     }
+    
     return self;
 }
 
-- (UIViewController*)moduleHomeController
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    return [self instantiateRootViewController];
+    return YES;
 }
 
-- (UIViewController*)instantiateRootViewController
+- (void)loadViewController
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"News" bundle:nil];
+    UIStoryboard *storyboard = nil;
+
+	if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone) {
+   		storyboard = [UIStoryboard storyboardWithName:@"News_iPhone" bundle:nil];
+	} else {
+   		storyboard = [UIStoryboard storyboardWithName:@"News_iPad" bundle:nil];
+	}
     NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    UIViewController *controller = [storyboard instantiateViewControllerWithIdentifier:@"StoryListViewController"];
-    return controller;
+
+    UIViewController *controller = [storyboard instantiateInitialViewController];
+    self.viewController = controller;
 }
 
 @end

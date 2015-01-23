@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="5064" systemVersion="13E28" minimumToolsVersion="Xcode 4.3" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="MITDiningDining" representedClassName="MITDiningDining" syncable="YES">
+        <attribute name="announcementsHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="links" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningLinks" inverseName="dining" inverseEntity="MITDiningLinks" syncable="YES"/>
+        <relationship name="venues" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningVenues" inverseName="dining" inverseEntity="MITDiningVenues" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningHouseDay" representedClassName="MITDiningHouseDay" syncable="YES">
+        <attribute name="dateString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="houseVenue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningHouseVenue" inverseName="mealsByDay" inverseEntity="MITDiningHouseVenue" syncable="YES"/>
+        <relationship name="meals" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningMeal" inverseName="houseDay" inverseEntity="MITDiningMeal" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningHouseVenue" representedClassName="MITDiningHouseVenue" syncable="YES">
+        <attribute name="iconURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="payment" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="shortName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningLocation" inverseName="houseVenue" inverseEntity="MITDiningLocation" syncable="YES"/>
+        <relationship name="mealsByDay" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningHouseDay" inverseName="houseVenue" inverseEntity="MITDiningHouseDay" syncable="YES"/>
+        <relationship name="venues" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningVenues" inverseName="house" inverseEntity="MITDiningVenues" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningLinks" representedClassName="MITDiningLinks" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="url" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="dining" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningDining" inverseName="links" inverseEntity="MITDiningDining" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningLocation" representedClassName="MITDiningLocation" syncable="YES">
+        <attribute name="city" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="locationDescription" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="mitRoomNumber" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="state" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="street" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="zipCode" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="houseVenue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningHouseVenue" inverseName="location" inverseEntity="MITDiningHouseVenue" syncable="YES"/>
+        <relationship name="retailVenue" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningRetailVenue" inverseName="location" inverseEntity="MITDiningRetailVenue" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningMeal" representedClassName="MITDiningMeal" syncable="YES">
+        <attribute name="endTimeString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startTimeString" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="houseDay" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningHouseDay" inverseName="meals" inverseEntity="MITDiningHouseDay" syncable="YES"/>
+        <relationship name="items" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningMenuItem" inverseName="meal" inverseEntity="MITDiningMenuItem" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningMenuItem" representedClassName="MITDiningMenuItem" syncable="YES">
+        <attribute name="dietaryFlags" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="itemDescription" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="station" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="meal" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITDiningMeal" inverseName="items" inverseEntity="MITDiningMeal" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningRetailDay" representedClassName="MITDiningRetailDay" syncable="YES">
+        <attribute name="dateString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="endTimeString" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="message" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="startTimeString" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="retailHours" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MITDiningRetailVenue" inverseName="hours" inverseEntity="MITDiningRetailVenue" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningRetailVenue" representedClassName="MITDiningRetailVenue" syncable="YES">
+        <attribute name="cuisine" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="descriptionHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="favorite" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="homepageURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="iconURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="menuHTML" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="menuURL" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="payment" optional="YES" attributeType="Transformable" syncable="YES"/>
+        <attribute name="shortName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="hours" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningRetailDay" inverseName="retailHours" inverseEntity="MITDiningRetailDay" syncable="YES"/>
+        <relationship name="location" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningLocation" inverseName="retailVenue" inverseEntity="MITDiningLocation" syncable="YES"/>
+        <relationship name="venues" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningVenues" inverseName="retail" inverseEntity="MITDiningVenues" syncable="YES"/>
+    </entity>
+    <entity name="MITDiningVenues" representedClassName="MITDiningVenues" syncable="YES">
+        <relationship name="dining" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MITDiningDining" inverseName="venues" inverseEntity="MITDiningDining" syncable="YES"/>
+        <relationship name="house" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningHouseVenue" inverseName="venues" inverseEntity="MITDiningHouseVenue" syncable="YES"/>
+        <relationship name="retail" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITDiningRetailVenue" inverseName="venues" inverseEntity="MITDiningRetailVenue" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="MITDiningDining" positionX="-63" positionY="-18" width="128" height="103"/>
+        <element name="MITDiningHouseDay" positionX="18" positionY="54" width="128" height="105"/>
+        <element name="MITDiningHouseVenue" positionX="-9" positionY="63" width="128" height="163"/>
+        <element name="MITDiningLinks" positionX="9" positionY="45" width="128" height="88"/>
+        <element name="MITDiningLocation" positionX="0" positionY="36" width="128" height="193"/>
+        <element name="MITDiningMeal" positionX="-9" positionY="27" width="128" height="135"/>
+        <element name="MITDiningMenuItem" positionX="0" positionY="36" width="128" height="120"/>
+        <element name="MITDiningRetailDay" positionX="36" positionY="72" width="128" height="118"/>
+        <element name="MITDiningRetailVenue" positionX="-18" positionY="18" width="128" height="253"/>
+        <element name="MITDiningVenues" positionX="-54" positionY="-9" width="128" height="88"/>
+    </elements>
+</model>

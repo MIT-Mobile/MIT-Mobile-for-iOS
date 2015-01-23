@@ -1,29 +1,38 @@
 #import "LibrariesModule.h"
-#import "LibrariesViewController.h"
-#import "MITModule+Protected.h"
+#import "MITLibrariesHomeViewController.h"
+#import "MITLibrariesHomeViewControllerPad.h"
 
 @implementation LibrariesModule
-- (id) init
+@dynamic rootViewController;
+
+- (instancetype)init
 {
-    self = [super init];
-    if (self != nil) {
-        self.tag = LibrariesTag;
-        self.shortName = @"Libraries";
-        self.longName = @"Libraries";
-        self.iconName = @"libraries";
+    self = [super initWithName:MITModuleTagLibraries title:@"Libraries"];
+    if (self) {
+        self.imageName = MITImageLibrariesModuleIcon;
         self.requestQueue = [[NSOperationQueue alloc] init];
     }
+    
     return self;
 }
 
-- (void) dealloc
+- (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    [self.requestQueue cancelAllOperations];
+    return YES;
 }
 
-- (void)loadModuleHomeController
+- (void)loadRootViewController
 {
-    self.moduleHomeController = [[LibrariesViewController alloc] initWithNibName:@"LibrariesViewController" bundle:nil];
+    UIViewController *rootViewController = nil;
+    UIUserInterfaceIdiom userInterfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+    
+    if (UIUserInterfaceIdiomPad == userInterfaceIdiom) {
+        rootViewController = [[MITLibrariesHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    } else if (UIUserInterfaceIdiomPhone == userInterfaceIdiom) {
+        rootViewController = [[MITLibrariesHomeViewController alloc] initWithNibName:nil bundle:nil];
+    }
+    
+    self.rootViewController = rootViewController;
 }
 
 @end

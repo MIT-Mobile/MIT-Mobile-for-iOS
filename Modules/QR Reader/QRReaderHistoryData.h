@@ -1,4 +1,5 @@
 #import <Foundation/Foundation.h>
+#import <CoreData/CoreData.h>
 
 @class QRReaderResult;
 
@@ -7,18 +8,29 @@
 
 - (id)initWithManagedContext:(NSManagedObjectContext*)context;
 
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
-                           withDate:(NSDate*)date;
+- (void)insertScanResult:(NSString*)scanResult
+                withDate:(NSDate*)date
+              completion:(void (^)(QRReaderResult* result, NSError *error))block;
 
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
-                           withDate:(NSDate*)date
-                          withImage:(UIImage*)image;
+- (void)insertScanResult:(NSString*)scanResult
+                withDate:(NSDate*)date
+               withImage:(UIImage*)image
+              completion:(void (^)(QRReaderResult* result, NSError *error))block;
 
-- (QRReaderResult*)insertScanResult:(NSString*)scanResult
-                           withDate:(NSDate*)date
-                          withImage:(UIImage*)image
-            shouldGenerateThumbnail:(BOOL)generateThumbnail;
+- (void)insertScanResult:(NSString*)scanResult
+                withDate:(NSDate*)date
+               withImage:(UIImage*)image
+ shouldGenerateThumbnail:(BOOL)generateThumbnail
+              completion:(void (^)(QRReaderResult* result, NSError *error))block;
 
-- (void)deleteScanResult:(QRReaderResult*)result;
+- (QRReaderResult *)fetchScanResult:(NSManagedObjectID *)scanId;
+
+- (void)deleteScanResults:(NSArray *)results completion:(void (^)(NSError* error))block;
+
+- (void)resetHistoryNewScanCounter;
+- (void)updateHistoryNewScanCounter;
+- (NSInteger)historyNewScanCounter;
+
+- (void)saveDataModelChanges;
 
 @end

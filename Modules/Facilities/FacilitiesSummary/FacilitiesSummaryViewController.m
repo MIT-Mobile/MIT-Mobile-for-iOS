@@ -115,7 +115,7 @@
             [self.imageButton setBackgroundImage:image forState:UIControlStateHighlighted];
             
             self.imageButton.titleLabel.font = [UIFont systemFontOfSize:[UIFont labelFontSize]];
-            [self.imageButton setTitleColor:[UIColor MITTintColor] forState:UIControlStateNormal];
+            [self.imageButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
 
             CGRect frame = self.imageButton.frame;
             frame.origin.x = CGRectGetMinX(self.view.bounds);
@@ -325,9 +325,7 @@
     [self dismissKeyboard:self];
     
     FacilitiesSubmitViewController *vc = [[FacilitiesSubmitViewController alloc] initWithNibName:nil bundle:nil];
-    vc.reportDictionary = self.reportData;
-    [self.navigationController pushViewController:vc
-                                         animated:YES];
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (IBAction)dismissKeyboard:(id)sender {

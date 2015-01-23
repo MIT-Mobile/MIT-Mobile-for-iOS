@@ -1,14 +1,16 @@
+#import <MessageUI/MessageUI.h>
+
 #import "PeopleDetailsViewController.h"
 #import "ConnectionDetector.h"
-#import "PeopleRecentsData.h"
+#import "PeopleFavoriteData.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITUIConstants.h"
 #import "UIKit+MITAdditions.h"
 #import "Foundation+MITAdditions.h"
-#import "MITMailComposeController.h"
 #import "MITPeopleResource.h"
 #import "MITNavigationController.h"
-#import "MITCampusMapViewController.h"
+#import "MITMapModelController.h"
+#import "MITTelephoneHandler.h"
 
 static NSString * EmailAccessoryIcon    = @"email";
 static NSString * PhoneAccessoryIcon    = @"phone";
@@ -19,7 +21,7 @@ static NSInteger AttributeValueIndex    = 0;
 static NSInteger DisplayNameIndex       = 1;
 static NSInteger AccessoryIconIndex     = 2;
 
-@interface PeopleDetailsViewController ()
+@interface PeopleDetailsViewController () <MFMailComposeViewControllerDelegate>
 
 @property (nonatomic, strong) NSArray *attributes;
 
@@ -34,50 +36,49 @@ static NSInteger AccessoryIconIndex     = 2;
 static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 @implementation PeopleDetailsViewController
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-
-    if (NSFoundationVersionNumber <= NSFoundationVersionNumber_iOS_6_1) {
-        self.headerLeftIndentLayoutConstraint.constant = 10.;
-    }
+    
+    [self adjustTableViewInsets];
     
     [self updateTableViewHeaderView];
-	
-	// if lastUpdate is sufficiently long ago, issue a background search
-	// TODO: change this time interval to something more reasonable
-    // TODO: let Cache-Control headers from API response determine how long data is fresh
-	if ([[self.personDetails valueForKey:@"lastUpdate"] timeIntervalSinceNow] < -300) { // 5 mins for testing
-        [MITPeopleResource personWithID:self.personDetails.uid loaded:^(NSArray *objects, NSError *error) {
-            if (!error) {
-                self.personDetails = [objects lastObject];
-                [self updateTableViewHeaderView];
-                [self.tableView reloadData];
-            }
-        }];
+}
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+    if (!self.tableView.tableFooterView) {
+        UIView *tableFooterView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, self.view.frame.size.width, 1)];
+        tableFooterView.backgroundColor = [UIColor clearColor];
+        self.tableView.tableFooterView = tableFooterView;
     }
 }
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+- (void)viewDidAppear:(BOOL)animated
 {
-    if ([@"showLocationOnMap" isEqualToString:segue.identifier]) {
-        MITCampusMapViewController *mapViewController = (MITCampusMapViewController*)[segue destinationViewController];
-        NSIndexPath *selectedIndexPath = [self.tableView indexPathForSelectedRow];
-        if (selectedIndexPath.row < [self.attributes count]) {
-            NSArray *personAttributes = self.attributes[selectedIndexPath.row];
+    [super viewDidAppear:animated];
+}
 
-            DDLogVerbose(@"Using attribute %@:%@",personAttributes[DisplayNameIndex],personAttributes[AttributeValueIndex]);
-            NSString *locationName = personAttributes[AttributeValueIndex];
-
-            [mapViewController setPendingSearch:locationName];
-        }
-    }
+- (void) reload
+{
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self updateTableViewHeaderView];
+        [self.tableView reloadData];
+    }];
 }
 
 - (void) setPersonDetails:(PersonDetails *)personDetails
 {
-    _personDetails = [PeopleRecentsData updatePerson:personDetails];
-    [self mapPersonAttributes];
+    _personDetails = personDetails;
+    
+    if( _personDetails )
+    {
+        [self mapPersonAttributes];
+    }
+    
+    [self reload];
 }
 
 
@@ -148,7 +149,13 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
         CGRect frame = self.headerView.frame;
         frame.size.height = size.height;
         self.headerView.frame = frame;
+        
+        return;
     }
+
+    self.personTitle.text = @"";
+    self.personName.text = @"";
+    self.personOrganization.text = @"";
 }
 
 // Override to allow orientations other than the default portrait orientation.
@@ -169,10 +176,43 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	// Release any cached data, images, etc that aren't in use.
 }
 
+#pragma mark - UI configs
+
+- (void) adjustTableViewInsets
+{
+    if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
+    {
+        return;
+    }
+    
+    UIEdgeInsets insets = UIEdgeInsetsMake([self topBarHeight], 0, 0, 0);
+    
+    self.tableView.contentInset = insets;
+    self.tableView.scrollIndicatorInsets = insets;
+}
+
+- (CGFloat) topBarHeight
+{
+    CGSize statusBarSize = [UIApplication sharedApplication].statusBarFrame.size;
+    return CGRectGetHeight(self.navigationController.navigationBar.frame) + MIN(statusBarSize.width, statusBarSize.height);
+}
+
+- (CGFloat) landscapeHeightDelta
+{
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    
+    return size.height - size.width;
+}
+
 #pragma mark - Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
+    if( !self.personDetails )
+    {
+        return 0;
+    }
+    
 	return 2;
 }
 
@@ -185,7 +225,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
             return [self.attributes count];
 
         case 1:
-            return 2;
+            
+            return 3;
 
         default:
             return 0;
@@ -206,9 +247,19 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 		if (row == 0) {
 			cell.textLabel.text = @"Create New Contact";
-        } else {
+        } else if( row == 1 ) {
 			cell.textLabel.text = @"Add to Existing Contact";
-		}
+		} else if( row == 2 ) {
+            
+            if( self.personDetails.favorite )
+            {
+                cell.textLabel.text = @"Remove from Favorites";
+            }
+            else
+            {
+                cell.textLabel.text = @"Add to Favorites";
+            }
+        }
 		
 	} else { // (section == 0) cells for displaying person details
 		cell = [tableView dequeueReusableCellWithIdentifier:@"AttributeCell" forIndexPath:indexPath];
@@ -282,120 +333,141 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 
 - (UIView *)tableView:(UITableView *)tableView viewForFooterInSection:(NSInteger)section
 {
-    if (section == 1) {
-        return [[UIView alloc] init];
-    }
     return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForFooterInSection:(NSInteger)section
 {
-    if (section == 1) {
-        return 44.;
-    }
     return 0;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (indexPath.section == 1) { // user selected create/add to contacts
-		if (indexPath.row == 0) { // create addressbook entry
-			ABRecordRef person = ABPersonCreate();
-			CFErrorRef error = NULL;
-			NSString *value = nil;;
-		
-			// set single value properties
-			if ((value = [self.personDetails valueForKey:@"givenname"]))
-				ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"surname"]))
-				ABRecordSetValue(person, kABPersonLastNameProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"title"]))
-				ABRecordSetValue(person, kABPersonJobTitleProperty, (__bridge CFTypeRef)value, &error);
-			if ((value = [self.personDetails valueForKey:@"dept"]))
-				ABRecordSetValue(person, kABPersonDepartmentProperty, (__bridge CFTypeRef)value, &error);
-		
-			// set multivalue properties: email and phone numbers
-			ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if ((value = [self.personDetails valueForKey:@"email"])) {
-				for (NSString *email in self.personDetails.email)
-					ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)email, kABWorkLabel, NULL);
-				ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
-			}
-
-			CFRelease(multiEmail);
-		
-			BOOL haveValues = NO;
-			ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
-			if ((value = [self.personDetails valueForKey:@"phone"])) {
-				for (NSString *phone in self.personDetails.phone) {
-					ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)phone, kABWorkLabel, NULL);
-                }
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-				haveValues = YES;
-			}
-
-			if ((value = [self.personDetails valueForKey:@"fax"])) {
-				for (NSString *fax in self.personDetails.fax) {
-                    ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)fax, kABPersonPhoneWorkFAXLabel, NULL);
-                }
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-				haveValues = YES;
-			}
-
-			if (haveValues) {
-				ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
-			}
-
-			CFRelease(multiPhone);
-			
-			ABNewPersonViewController *creator = [[ABNewPersonViewController alloc] init];
-			creator.displayedPerson = person;
-			[creator setNewPersonViewDelegate:self];
-			
-			// present newPersonController in a separate navigationController
-			// since it doesn't have its own nav bar
-			UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
-			
-			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-			[appDelegate presentAppModalViewController:navController animated:YES];
-
-            CFRelease(person);
-		} else {
-			ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
-			[picker setPeoplePickerDelegate:self];
-			
-			MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-			[appDelegate presentAppModalViewController:picker animated:YES];
-		}
-
-        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-	} else {
-		NSArray *personInfo = self.attributes[indexPath.row];
-		NSString *actionIcon = personInfo[AccessoryIconIndex];
-        NSString * value = personInfo[AttributeValueIndex];
-		
-		if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
-			[self emailIconTapped:value];
-        } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
-			[self phoneIconTapped:value];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
-			[self mapIconTapped:value];
-        } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
-            [self externalIconTapped:value];
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        } else {
-            [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
-        }
+	if (indexPath.section == 0)
+    {
+        [self tableView:tableView didSelectAttributeRowAtIndexPath:indexPath];
 	}
+    else
+    {
+        // user selected create/add to contacts/favorites
+        [self tableView:tableView didSelectActionRowAtIndexPath:indexPath];
+	}
+    
+    [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)tableView:(UITableView *)tableView didSelectAttributeRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSArray *personInfo = self.attributes[indexPath.row];
+    NSString *actionIcon = personInfo[AccessoryIconIndex];
+    NSString * value = personInfo[AttributeValueIndex];
+    
+    if ([actionIcon isEqualToString:EmailAccessoryIcon]) {
+        [self emailIconTapped:value];
+    } else if ([actionIcon isEqualToString:PhoneAccessoryIcon]) {
+        [self phoneIconTapped:value];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else if ([actionIcon isEqualToString:MapAccessoryIcon]) {
+        [self mapIconTapped:value];
+    } else if ([actionIcon isEqualToString:ExternalAccessoryIcon]) {
+        [self externalIconTapped:value];
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    } else {
+        [self.tableView deselectRowAtIndexPath:indexPath animated:YES];
+    }
+}
+
+- (void)tableView:(UITableView *)tableView didSelectActionRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.row == 0) { // create addressbook entry
+        ABRecordRef person = ABPersonCreate();
+        CFErrorRef error = NULL;
+        NSString *value = nil;;
+		
+        // set single value properties
+        if ((value = [self.personDetails valueForKey:@"givenname"]))
+            ABRecordSetValue(person, kABPersonFirstNameProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"surname"]))
+            ABRecordSetValue(person, kABPersonLastNameProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"title"]))
+            ABRecordSetValue(person, kABPersonJobTitleProperty, (__bridge CFTypeRef)value, &error);
+        if ((value = [self.personDetails valueForKey:@"dept"]))
+            ABRecordSetValue(person, kABPersonDepartmentProperty, (__bridge CFTypeRef)value, &error);
+		
+        // set multivalue properties: email and phone numbers
+        ABMutableMultiValueRef multiEmail = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        if ((value = [self.personDetails valueForKey:@"email"])) {
+            for (NSString *email in self.personDetails.email)
+                ABMultiValueAddValueAndLabel(multiEmail, (__bridge CFTypeRef)email, kABWorkLabel, NULL);
+            ABRecordSetValue(person, kABPersonEmailProperty, multiEmail, &error);
+        }
+        
+        CFRelease(multiEmail);
+		
+        BOOL haveValues = NO;
+        ABMutableMultiValueRef multiPhone = ABMultiValueCreateMutable(kABMultiStringPropertyType);
+        if ((value = [self.personDetails valueForKey:@"phone"])) {
+            for (NSString *phone in self.personDetails.phone) {
+                ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)phone, kABWorkLabel, NULL);
+            }
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+            haveValues = YES;
+        }
+        
+        if ((value = [self.personDetails valueForKey:@"fax"])) {
+            for (NSString *fax in self.personDetails.fax) {
+                ABMultiValueAddValueAndLabel(multiPhone, (__bridge CFTypeRef)fax, kABPersonPhoneWorkFAXLabel, NULL);
+            }
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+            haveValues = YES;
+        }
+        
+        if (haveValues) {
+            ABRecordSetValue(person, kABPersonPhoneProperty, multiPhone, &error);
+        }
+        
+        CFRelease(multiPhone);
+        
+        ABNewPersonViewController *creator = [[ABNewPersonViewController alloc] init];
+        creator.displayedPerson = person;
+        [creator setNewPersonViewDelegate:self];
+        
+        // present newPersonController in a separate navigationController
+        // since it doesn't have its own nav bar
+        UINavigationController *navController = [[MITNavigationController alloc] initWithRootViewController:creator];
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad ) {
+            navController.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
+        [self presentViewController:navController animated:YES completion:nil];
+        
+        CFRelease(person);
+    }
+    else if( indexPath.row == 1 )
+    {
+        ABPeoplePickerNavigationController *picker = [[ABPeoplePickerNavigationController alloc] init];
+        [picker setPeoplePickerDelegate:self];
+        
+        if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad )
+        {
+            picker.modalPresentationStyle = UIModalPresentationFormSheet;
+        }
+        
+        [self presentViewController:picker animated:YES completion:nil];
+    }
+    else if( indexPath.row == 2 )
+    {
+        [PeopleFavoriteData setPerson:self.personDetails asFavorite:!self.personDetails.favorite];
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationAutomatic];
+    }
 }
 
 #pragma mark -
 #pragma mark Address book new person methods
 - (void)newPersonViewController:(ABNewPersonViewController *)newPersonViewController didCompleteWithNewPerson:(ABRecordRef)person
 {	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [newPersonViewController.presentingViewController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark Address book person controller methods
@@ -461,17 +533,29 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	ABMultiValueRef multi = ABRecordCopyValue(person, kABPersonPhoneProperty);
 	ABMutableMultiValueRef phone = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingPhones = CFBridgingRelease(ABMultiValueCopyArrayOfAllValues(phone));
-	if ((ldapValue = [self.personDetails valueForKey:@"phone"])) {
-		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
-			if (![existingPhones containsObject:value]) {
+    NSArray *ldapValues = [self.personDetails valueForKey:@"phone"];
+	if ( ldapValues )
+    {
+		for (NSString *value in ldapValues)
+        {
+			if (![existingPhones containsObject:value])
+            {
 				ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)value, kABWorkLabel, NULL);
 			}
 		}
 	}
 
-	if ((ldapValue = [self.personDetails valueForKey:@"fax"]) && ![existingPhones containsObject:ldapValue]) {
-		ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)ldapValue, kABPersonPhoneWorkFAXLabel, NULL);
-	}
+    ldapValues = [self.personDetails valueForKey:@"fax"];
+    if( ldapValues )
+    {
+        for( NSString *value in ldapValues )
+        {
+            if( ![existingPhones containsObject:value] )
+            {
+                ABMultiValueAddValueAndLabel(phone, (__bridge CFTypeRef)value, kABPersonPhoneWorkFAXLabel, NULL);
+            }
+        }
+    }
 
     ABRecordSetValue(newPerson, kABPersonPhoneProperty, phone, &error);
 	CFRelease(phone);
@@ -481,8 +565,11 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	multi = ABRecordCopyValue(person, kABPersonEmailProperty);
 	ABMutableMultiValueRef email = ABMultiValueCreateMutableCopy(multi);
 	NSArray *existingEmails = CFBridgingRelease(ABMultiValueCopyArrayOfAllValues(email));
-	if ((ldapValue = [self.personDetails valueForKey:@"email"])) {
-		for (NSString *value in [ldapValue componentsSeparatedByString:@","]) {
+    ldapValues = [self.personDetails valueForKey:@"email"];
+	if ( ldapValues )
+    {
+		for (NSString *value in ldapValues)
+        {
 			if (![existingEmails containsObject:value]) {
 				ABMultiValueAddValueAndLabel(email, (__bridge CFTypeRef)value, kABWorkLabel, NULL);
 			}
@@ -500,10 +587,8 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     ABAddressBookSave(ab, &error);
 	CFRelease(newPerson);
     CFRelease(ab);
-	
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
 
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 	return NO; // don't navigate to built-in view
 }
 
@@ -517,8 +602,7 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 	
 - (void)peoplePickerNavigationControllerDidCancel:(ABPeoplePickerNavigationController *)peoplePicker
 {
-	MIT_MobileAppDelegate *appDelegate = (MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate];
-	[appDelegate dismissAppModalViewControllerAnimated:YES];
+    [self.navigationController dismissViewControllerAnimated:YES completion:nil];
 }
 
 #pragma mark - App-switching actions
@@ -526,21 +610,25 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
 - (void)mapIconTapped:(NSString *)room
 {
     if (room) {
-        [self performSegueWithIdentifier:@"showLocationOnMap" sender:self.tableView];
+        [MITMapModelController openMapWithUnsanitizedSearchString:room];
     }
 }
 
 - (void)phoneIconTapped:(NSString *)phone
 {
-	NSURL *externURL = [NSURL URLWithString:[NSString stringWithFormat:@"tel://%@", phone]];
-	if ([[UIApplication sharedApplication] canOpenURL:externURL]) {
-		[[UIApplication sharedApplication] openURL:externURL];
-    }
+    [MITTelephoneHandler attemptToCallPhoneNumber:phone];
 }
 
 - (void)emailIconTapped:(NSString *)email
 {
-    [MITMailComposeController presentMailControllerWithRecipient:email subject:nil body:nil];
+    if ([MFMailComposeViewController canSendMail]) {
+        NSParameterAssert(email);
+        
+        MFMailComposeViewController *composeViewController = [[MFMailComposeViewController alloc] init];
+        [composeViewController setToRecipients:@[email]];
+        composeViewController.mailComposeDelegate = self;
+        [self presentViewController:composeViewController animated:YES completion:nil];
+    }
 }
 
 - (void)externalIconTapped:(NSString *)urlString
@@ -548,6 +636,14 @@ static NSString * AttributeCellReuseIdentifier = @"AttributeCell";
     NSURL *url = [NSURL URLWithString:urlString];
     if (url && [[UIApplication sharedApplication] canOpenURL:url]) {
         [[UIApplication sharedApplication] openURL:url];
+    }
+}
+
+#pragma mark MFMailComposeViewControllerDelegate
+- (void)mailComposeController:(MFMailComposeViewController *)controller didFinishWithResult:(MFMailComposeResult)result error:(NSError *)error
+{
+    if ([self.presentedViewController isEqual:controller]) {
+        [self dismissViewControllerAnimated:YES completion:nil];
     }
 }
 

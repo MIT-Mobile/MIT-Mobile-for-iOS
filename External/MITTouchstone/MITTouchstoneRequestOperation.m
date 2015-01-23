@@ -110,6 +110,14 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
     }];
 }
 
+- (NSSet *)acceptableContentTypes
+{
+    // Necessary to handle error between restKit and touchstone operations.
+    NSMutableSet *acceptableContentTypes = [[super acceptableContentTypes] mutableCopy];
+    [acceptableContentTypes addObject:MITECPMIMEType];
+    return acceptableContentTypes;
+}
+
 - (void)pause:(BOOL)useHTTPRange
 {
     [self.lock lock];
@@ -144,7 +152,7 @@ static NSString *MITTouchstoneRequestUserAgentKey = @"MITTouchstoneRequestUserAg
 
     NSError *error = nil;
 
-    if (matchingRange.location != NSNotFound) {
+    if (contentType && matchingRange.location != NSNotFound) {
         if (_isRetryingRequestAfterLoginAttempt) {
             // Just fail, we already tried to log in once
             error = [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorUserAuthenticationRequired userInfo:nil];
