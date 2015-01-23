@@ -342,6 +342,8 @@
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
 		2CA9AFBB185F92E00005D5DA /* MITMapPlacesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */; };
 		2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */; };
+		2CB5E8581A700E240012F034 /* Marty_phone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E8571A700E240012F034 /* Marty_phone.storyboard */; };
+		2CB5E88F1A7029E60012F034 /* Marty_pad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */; };
 		2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
@@ -1391,6 +1393,8 @@
 		2CA9AFBA185F92E00005D5DA /* MITMapPlacesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlacesResource.m; sourceTree = "<group>"; };
 		2CA9AFBC185F9A4B0005D5DA /* MITMapCategoriesResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapCategoriesResource.h; sourceTree = "<group>"; };
 		2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesResource.m; sourceTree = "<group>"; };
+		2CB5E8571A700E240012F034 /* Marty_phone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_phone.storyboard; sourceTree = "<group>"; };
+		2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_pad.storyboard; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* MITScannerModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* MITScannerModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerModule.m; sourceTree = "<group>"; };
 		2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITResourceConstants.m; sourceTree = "<group>"; };
@@ -2233,6 +2237,8 @@
 		0B5D29991A6ED8DF001A55D3 /* Marty */ = {
 			isa = PBXGroup;
 			children = (
+				2CB5E8571A700E240012F034 /* Marty_phone.storyboard */,
+				2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */,
 				0B5D299D1A6ED96F001A55D3 /* MITMartyModule.h */,
 				0B5D299E1A6ED96F001A55D3 /* MITMartyModule.m */,
 			);
@@ -5031,12 +5037,14 @@
 				0B7311941A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib in Resources */,
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */,
+				2CB5E88F1A7029E60012F034 /* Marty_pad.storyboard in Resources */,
 				A5A24B691994307A00AA1CFC /* MITEventSearchTypeAheadViewController.xib in Resources */,
 				277A583019FD70BA00BE134E /* MITFacilities_iphone.storyboard in Resources */,
 				0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */,
 				22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
 				A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */,
+				2CB5E8581A700E240012F034 /* Marty_phone.storyboard in Resources */,
 				0B73118B1A30FF3C00C1CA01 /* credits_current.html in Resources */,
 				A50884EA19D1E7150047A21B /* MITLibrariesItemHoldCell.xib in Resources */,
 				A5DDEB99195CA88E00BEA0E7 /* MITMapHomeViewController.xib in Resources */,
