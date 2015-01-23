@@ -344,6 +344,7 @@
 		2CA9AFBE185F9A4B0005D5DA /* MITMapCategoriesResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */; };
 		2CB5E8581A700E240012F034 /* Marty_phone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E8571A700E240012F034 /* Marty_phone.storyboard */; };
 		2CB5E88F1A7029E60012F034 /* Marty_pad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */; };
+		2CB5E8931A704E4A0012F034 /* MITMartyRootPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB5E8921A704E4A0012F034 /* MITMartyRootPhoneViewController.m */; };
 		2CBA739719F7E4E6000258C9 /* MITResourceConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */; };
 		2CC2E9CC144DC9B000151C71 /* MITTabHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC2E9CB144DC9B000151C71 /* MITTabHeaderView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
@@ -1395,6 +1396,8 @@
 		2CA9AFBD185F9A4B0005D5DA /* MITMapCategoriesResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapCategoriesResource.m; sourceTree = "<group>"; };
 		2CB5E8571A700E240012F034 /* Marty_phone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_phone.storyboard; sourceTree = "<group>"; };
 		2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_pad.storyboard; sourceTree = "<group>"; };
+		2CB5E8911A704E4A0012F034 /* MITMartyRootPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyRootPhoneViewController.h; path = "View Controllers/MITMartyRootPhoneViewController.h"; sourceTree = "<group>"; };
+		2CB5E8921A704E4A0012F034 /* MITMartyRootPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyRootPhoneViewController.m; path = "View Controllers/MITMartyRootPhoneViewController.m"; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* MITScannerModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerModule.h; sourceTree = "<group>"; };
 		2CB6459E134CAF1A00E85E64 /* MITScannerModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerModule.m; sourceTree = "<group>"; };
 		2CBA739619F7E4E6000258C9 /* MITResourceConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITResourceConstants.m; sourceTree = "<group>"; };
@@ -2237,6 +2240,7 @@
 		0B5D29991A6ED8DF001A55D3 /* Marty */ = {
 			isa = PBXGroup;
 			children = (
+				2CB5E8901A7045F50012F034 /* View Controllers */,
 				2CB5E8571A700E240012F034 /* Marty_phone.storyboard */,
 				2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */,
 				0B5D299D1A6ED96F001A55D3 /* MITMartyModule.h */,
@@ -3586,6 +3590,15 @@
 				0BE653E21A68287A00F9FA51 /* MITEmergencyInfoResource.m */,
 			);
 			name = Resources;
+			sourceTree = "<group>";
+		};
+		2CB5E8901A7045F50012F034 /* View Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				2CB5E8911A704E4A0012F034 /* MITMartyRootPhoneViewController.h */,
+				2CB5E8921A704E4A0012F034 /* MITMartyRootPhoneViewController.m */,
+			);
+			name = "View Controllers";
 			sourceTree = "<group>";
 		};
 		2CB6459C134CAF1A00E85E64 /* Scanner */ = {
@@ -5592,6 +5605,7 @@
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */,
+				2CB5E8931A704E4A0012F034 /* MITMartyRootPhoneViewController.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				A563904F19D992CD001DE763 /* MITLibrariesHoldingLibraryHeaderCell.m in Sources */,
 				48B8129715E4295D00E791F9 /* LinksViewController.m in Sources */,
