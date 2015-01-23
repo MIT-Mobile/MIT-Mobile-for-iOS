@@ -35,6 +35,8 @@
 {    
     self.titleTextView.text = title;
     self.descriptionTextView.text = description;
+    [self setNeedsUpdateConstraints];
+    [self updateConstraintsIfNeeded];
 }
 
 - (void)layoutSubviews

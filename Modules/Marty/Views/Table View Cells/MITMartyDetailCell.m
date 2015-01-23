@@ -1,13 +1,17 @@
-#import "MITMartyDetailHeaderView.h"
+#import "MITMartyDetailCell.h"
 
-@interface MITMartyDetailHeaderView()
+@interface MITMartyDetailCell()
 
 @property (nonatomic,weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic,weak) IBOutlet UILabel *statusLabel;
 
 @end
 
-@implementation MITMartyDetailHeaderView
+@implementation MITMartyDetailCell
+
+- (void)awakeFromNib {
+    // Initialization code
+}
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -18,11 +22,27 @@
     return self;
 }
 
+- (void)setSelected:(BOOL)selected animated:(BOOL)animated {
+    [super setSelected:selected animated:animated];
+
+    // Configure the view for the selected state
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];
     [self needsUpdateConstraints];
     [self updateConstraintsIfNeeded];
+}
+
++ (UINib *)detailCellNib
+{
+    return [UINib nibWithNibName:self.detailCellNibName bundle:nil];
+}
+
++ (NSString *)detailCellNibName
+{
+    return @"MITMartyDetailCell";
 }
 
 - (void)updateConstraints

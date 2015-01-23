@@ -25,7 +25,8 @@
     return [UINib nibWithNibName:self.actionCellNibName bundle:nil];
 }
 
-+ (NSString *)actionCellNibName {
++ (NSString *)actionCellNibName
+{
     return @"MITActionCell";
 }
 
