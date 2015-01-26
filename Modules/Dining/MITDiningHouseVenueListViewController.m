@@ -206,7 +206,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
 - (void)setDiningData:(MITDiningDining *)diningData
 {
     _diningData = diningData;
-    self.houseVenues = [diningData.venues.house array];
+    self.houseVenues = [[diningData.venues.house array] copy];
     self.diningLinks = [diningData.links array];
 
     [self.tableView reloadData];
