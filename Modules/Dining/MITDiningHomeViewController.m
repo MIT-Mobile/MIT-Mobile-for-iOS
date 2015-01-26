@@ -53,12 +53,13 @@
     [self performFetch];
 
     [self setupSegmentedControl];
+    
+    [self performWebserviceCall];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self performWebserviceCall];
 }
 
 - (void)didReceiveMemoryWarning
@@ -81,7 +82,9 @@
 
 - (void)performWebserviceCall
 {
-    [MITDiningWebservices getDiningWithCompletion:NULL];
+    [MITDiningWebservices getDiningWithCompletion:^(MITDiningDining *dining, NSError *error) {
+        [self performFetch];
+    }];
 }
 
 #pragma mark - Sub ViewController Management
