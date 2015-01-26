@@ -10,7 +10,6 @@ NSString* const MITNewsStoryCellNibName = @"NewsStoryTableCell";
 NSString* const MITNewsStoryNoDekCellIdentifier = @"StoryNoDekCell";
 NSString* const MITNewsStoryNoDekCellNibName = @"NewsStoryNoDekTableCell";
 
-
 NSString* const MITNewsStoryExternalType = @"news_clip";
 NSString* const MITNewsStoryExternalCellIdentifier = @"StoryExternalCell";
 NSString* const MITNewsStoryExternalCellNibName = @"NewsStoryExternalTableCell";
@@ -18,6 +17,7 @@ NSString* const MITNewsStoryExternalNoImageCellIdentifier = @"StoryExternalNoIma
 NSString* const MITNewsStoryExternalNoImageCellNibName = @"NewsStoryExternalNoImageTableCell";
 
 NSString* const MITNewsCategoryHeaderIdentifier = @"MITNewsCategoryHeader";
+NSString* const MITNewsCategoryHeaderViewNibName = @"NewsCategoryHeaderView";
 
 NSUInteger const MITNewsDefaultNumberOfStoriesPerPage = 20;
 CGFloat const MITNewsRefreshControlHangTime = 0.5;

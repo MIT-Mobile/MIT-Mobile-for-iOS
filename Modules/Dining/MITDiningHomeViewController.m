@@ -53,11 +53,7 @@
     [self performFetch];
 
     [self setupSegmentedControl];
-}
-
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
+    
     [self performWebserviceCall];
 }
 
