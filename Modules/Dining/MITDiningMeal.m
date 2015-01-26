@@ -20,6 +20,7 @@
     [mapping addAttributeMappingsFromArray:@[@"name", @"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"items" withMapping:[MITDiningMenuItem objectMapping]]];
     mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
     
     return mapping;
 }
@@ -28,7 +29,11 @@
 {
     NSString *description = nil;
     if (!self.startTimeString || !self.endTimeString) {
-        description = self.message;
+        if (self.message) {
+            description = self.message;
+        } else {
+            description = @"Closed";
+        }
     } else {
         NSString *startString = [self.startTime MITShortTimeOfDayString];
         NSString *endString = [self.endTime MITShortTimeOfDayString];
