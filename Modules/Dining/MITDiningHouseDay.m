@@ -38,7 +38,7 @@
     }
     else {
         NSMutableArray *hoursStrings = [NSMutableArray array];
-        for (MITDiningMeal *meal in self.meals) {
+        for (MITDiningMeal *meal in self.sortedMealsArray) {
             NSString *hours = [meal mealHoursDescription];
             if (hours) {
                 [hoursStrings addObject:hours];
