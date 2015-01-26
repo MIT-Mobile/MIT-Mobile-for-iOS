@@ -3,10 +3,12 @@
 #import "MITMartyDetailCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITTitleDescriptionCell.h"
+#import "MITMartySpecificationsHeader.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
 static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
+static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
 
 @interface MITMartyTableViewController() <UITableViewDataSource, UITableViewDelegate, UITableViewDataSourceDynamicSizing>
 
@@ -28,6 +30,10 @@ static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdent
 
     [self.tableView registerNib:[MITMartyDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
     
+    [self.tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
+    
+    self.tableView.tableFooterView = [UIView new];
+    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
     [self setup];
 }
 
@@ -56,29 +62,11 @@ static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdent
 {
     NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
+   
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    
     return cell;
-    
-    if (indexPath.section == 0) {
-        MITMartyDetailCell *detailCell = [tableView dequeueReusableCellWithIdentifier:MITMartyDetailCellIdentifier];
-        [detailCell setTitle: @"Gear Head Combo Lathe Mill Drill"];
-        [detailCell setStatus:@"Online"];
-        return detailCell;
-        
-    }
-    if (indexPath.section == 1) {
-        MITActionCell *cell = [tableView dequeueReusableCellWithIdentifier:MITActionCellIdentifier];
-        [cell setupCellOfType:MITActionRowTypeLocation withDetailText:@"6-338"];
-        return cell;
-    }
-    
-    if (indexPath.section == 2) {
-        MITTitleDescriptionCell *cell = [tableView dequeueReusableCellWithIdentifier:MITTitleDescriptionCellIdentifier];
-        [cell setTitle:self.specificationsTitle[indexPath.row] setDescription:self.specificationsDescription[indexPath.row]];
-        return cell;
-    }
-    return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -95,6 +83,7 @@ static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdent
         MITMartyDetailCell *detailCell = (MITMartyDetailCell*)cell;
         [detailCell setTitle: @"Gear Head Combo Lathe Mill Drill"];
         [detailCell setStatus:@"Online"];
+
     } else if ([cell isKindOfClass:[MITActionCell class]]) {
         MITActionCell *actionCell = (MITActionCell*)cell;
         [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:@"6-338"];
@@ -115,17 +104,42 @@ static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdent
     } else if (indexPath.section == 2) {
         return MITTitleDescriptionCellIdentifier;
     }
-
+    
     return nil;
 }
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
+    if (section == 2) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+        
+        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
+            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+            specificationsHeaderView.titleLabel.text = @"Specifications";
+        }
+        
+        return headerView;
+    }
     return nil;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
+    if (section == 2) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+        
+        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
+            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+            specificationsHeaderView.titleLabel.text = @"Specifications";
+            
+            CGRect frame = specificationsHeaderView.frame;
+            frame.size.width = self.tableView.bounds.size.width;
+            specificationsHeaderView.contentView.frame = frame;
+            
+            CGSize fittingSize = [specificationsHeaderView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+            return fittingSize.height;
+        }
+    }
     return 0;
 }
 
