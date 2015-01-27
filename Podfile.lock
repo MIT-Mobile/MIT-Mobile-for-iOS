@@ -22,13 +22,19 @@ PODS:
   - RestKit/Support (0.22.0):
     - TransitionKit (= 2.0.0)
   - RKValueTransformers (1.0.1)
+  - SDWebImage (3.7.1):
+    - SDWebImage/Core (= 3.7.1)
+  - SDWebImage/Core (3.7.1)
   - SOCKit (1.1)
+  - SVProgressHUD (1.1.2)
   - SVPullToRefresh (0.4.1)
   - TransitionKit (2.0.0)
 
 DEPENDENCIES:
   - KissXML
   - RestKit (= 0.22.0)
+  - SDWebImage (= 3.7.1)
+  - SVProgressHud (= 1.1.2)
   - SVPullToRefresh
 
 SPEC CHECKSUMS:
@@ -37,7 +43,9 @@ SPEC CHECKSUMS:
   KissXML: e537c38b18ede903ee6de45953a9bd86c131ebe9
   RestKit: 6b82f862848cbe026ddc297985aa9a766b7e1a38
   RKValueTransformers: 994503e34bffdbe0159ff6b497290dd1f8d5657f
+  SDWebImage: 116e88633b5b416ea0ca4b334a4ac59cf72dd38d
   SOCKit: d8d0dd3688ae1026c12367570da8fa8e1a6980fb
+  SVProgressHUD: da7a49e789af645d9279ffbca62318945a832438
   SVPullToRefresh: d5161ebc833a38b465364412e5e307ca80bbb190
   TransitionKit: 7877021649a734f3239ed176b7967de29321dcf3
 

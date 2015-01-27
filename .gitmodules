@@ -4,15 +4,9 @@
 [submodule "External/MIT-Mobile-for-iPhone-Private"]
 	path = External/MIT-Mobile-for-iPhone-Private
 	url = git@github.com:MIT-Mobile/MIT-Mobile-for-iPhone-Private.git
-[submodule "External/SDWebImage"]
-	path = External/SDWebImage
-	url = git@github.com:MIT-Mobile/SDWebImage.git
 [submodule "External/ECSlidingViewController"]
 	path = External/ECSlidingViewController
 	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
-[submodule "External/SVProgressHUD"]
-	path = External/SVProgressHUD
-	url = git@github.com:TransitApp/SVProgressHUD.git
 [submodule "SVProgressHUD"]
 	path = SVProgressHUD
 	url = git@github.com:TransitApp/SVProgressHUD.git

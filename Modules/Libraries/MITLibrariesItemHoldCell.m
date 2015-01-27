@@ -1,6 +1,6 @@
 #import "MITLibrariesItemHoldCell.h"
 #import "MITLibrariesMITHoldItem.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 

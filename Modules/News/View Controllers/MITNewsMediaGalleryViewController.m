@@ -11,7 +11,7 @@
 
 #import "ThumbnailPickerView.h"
 
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITNewsMediaGalleryViewController () <UIPageViewControllerDataSource,UIPageViewControllerDelegate, ThumbnailPickerViewDataSource, ThumbnailPickerViewDelegate, UIGestureRecognizerDelegate, UIBarPositioningDelegate, UINavigationBarDelegate>
 @property (nonatomic,weak) IBOutlet UIGestureRecognizer *toggleUIGesture;

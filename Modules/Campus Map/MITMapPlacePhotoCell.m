@@ -1,6 +1,6 @@
 #import "MITMapPlacePhotoCell.h"
 #import "MITMapPlace.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITMapPlacePhotoCell()
 
