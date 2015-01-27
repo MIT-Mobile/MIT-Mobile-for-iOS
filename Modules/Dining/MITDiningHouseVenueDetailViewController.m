@@ -383,6 +383,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
         self.comparisonViewController.houseVenues = [self.houseVenue.venues.house array];
         self.comparisonViewController.filtersApplied = self.filters;
         
+        self.comparisonViewController.visibleDay = self.currentlyDisplayedDay;
         self.comparisonViewController.visibleMeal = self.currentlyDisplayedMeal;
         
         [self addChildViewController:self.comparisonViewController];

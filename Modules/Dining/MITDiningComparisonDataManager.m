@@ -89,7 +89,7 @@
 {
     date = [date dateWithoutTime];
     for (MITDiningAggregatedMeal *aggregatedMeal in self.aggregatedMeals) {
-        if ([aggregatedMeal.date compare:[date dateWithoutTime]] == NSOrderedSame && [aggregatedMeal.mealName isEqualToString:mealName]) {
+        if ([aggregatedMeal.date isEqualToDateIgnoringTime:date] && (!mealName || [aggregatedMeal.mealName isEqualToString:mealName])) {
             return [self.aggregatedMeals indexOfObject:aggregatedMeal];
         }
     }
