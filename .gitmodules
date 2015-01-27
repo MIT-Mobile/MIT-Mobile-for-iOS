@@ -1,12 +1,6 @@
-[submodule "External/CocoaLumberjack"]
-	path = External/CocoaLumberjack
-	url = git://github.com/MIT-Mobile/CocoaLumberjack.git
 [submodule "External/MIT-Mobile-for-iPhone-Private"]
 	path = External/MIT-Mobile-for-iPhone-Private
 	url = git@github.com:MIT-Mobile/MIT-Mobile-for-iPhone-Private.git
-[submodule "External/ECSlidingViewController"]
-	path = External/ECSlidingViewController
-	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
 [submodule "SVProgressHUD"]
 	path = SVProgressHUD
 	url = git@github.com:TransitApp/SVProgressHUD.git
