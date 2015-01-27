@@ -6,7 +6,6 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "ModuleVersions.h"
 #import "MITLogging.h"
-#import "Secret.h"
 #import "SDImageCache.h"
 #import "MITNavigationController.h"
 
