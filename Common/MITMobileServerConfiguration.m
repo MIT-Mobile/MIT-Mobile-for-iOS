@@ -4,7 +4,16 @@
 
 #import <Foundation/Foundation.h>
 #import "MITMobileServerConfiguration.h"
-#import "Secret.h"
+
+static NSString * const MobileAPIServers[] = {@"https://m.mit.edu/api", @"https://mobile-dev.mit.edu/api", @"https://mobile-stage.mit.edu/api", nil};
+
+#if defined(TESTFLIGHT)
+NSUInteger const MITMobileServerConfigurationDefaultIndex = 0;
+#elif defined(DEBUG)
+NSUInteger const MITMobileServerConfigurationDefaultIndex = 1;
+#else
+NSUInteger const MITMobileServerConfigurationDefaultIndex = 0;
+#endif
 
 NSArray* MITMobileWebGetAPIServerList( void ) {
     static NSMutableArray* array = nil;

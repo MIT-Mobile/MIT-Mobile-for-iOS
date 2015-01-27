@@ -299,7 +299,6 @@
 		2C5E54FD1A02DA9A0047C699 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2C5CA5B019ACD861004C6FC6 /* Main.storyboard */; };
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; };
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
-		2C6528F217906DBD00BED0DF /* Secret.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6528F117906DBD00BED0DF /* Secret.m */; };
 		2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C698F4018650A860010B0C0 /* MITNewsImage.m */; };
 		2C698F4718650A870010B0C0 /* MITNewsImageRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C698F4618650A870010B0C0 /* MITNewsImageRepresentation.m */; };
 		2C6AB74013564F74003B174A /* NSDateFormatter+RelativeString.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */; };
@@ -1226,8 +1225,6 @@
 		2C603011139EA21700D34F1B /* FacilitiesRepairType.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRepairType.m; sourceTree = "<group>"; };
 		2C63A1E3143205000068333F /* SettingsTouchstoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingsTouchstoneViewController.h; sourceTree = "<group>"; };
 		2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTouchstoneViewController.m; sourceTree = "<group>"; };
-		2C6528F017906DBD00BED0DF /* Secret.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Secret.h; sourceTree = "<group>"; };
-		2C6528F117906DBD00BED0DF /* Secret.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = Secret.m; sourceTree = "<group>"; };
 		2C698F391864D0A20010B0C0 /* News v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News v3.xcdatamodel"; sourceTree = "<group>"; };
 		2C698F3F18650A860010B0C0 /* MITNewsImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsImage.h; path = Model/MITNewsImage.h; sourceTree = "<group>"; };
 		2C698F4018650A860010B0C0 /* MITNewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsImage.m; path = Model/MITNewsImage.m; sourceTree = "<group>"; };
@@ -1341,7 +1338,6 @@
 		2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapCategory.m; path = Model/MITMapCategory.m; sourceTree = "<group>"; };
 		2CE7A2FE186A0AF900DF455F /* MITMobileManagedResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileManagedResource.h; sourceTree = "<group>"; };
 		2CE7A2FF186A0AF900DF455F /* MITMobileManagedResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileManagedResource.m; sourceTree = "<group>"; };
-		2CEBBFA31635C7D900441252 /* Secret.m.in */ = {isa = PBXFileReference; lastKnownFileType = text; path = Secret.m.in; sourceTree = "<group>"; };
 		2CEC6A541A01461800867A66 /* dining-meal-farm_to_fork.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-farm_to_fork.pdf"; sourceTree = "<group>"; };
 		2CEC6A551A01461800867A66 /* dining-meal-gluten_free.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-gluten_free.pdf"; sourceTree = "<group>"; };
 		2CEC6A561A01461800867A66 /* dining-meal-halal.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-halal.pdf"; sourceTree = "<group>"; };
@@ -1381,7 +1377,6 @@
 		2CFB87D61416B1AC0014E141 /* MITTabView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITTabView.m; sourceTree = "<group>"; };
 		2CFBF914138EC2610080883D /* FacilitiesSubmitViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesSubmitViewController.h; sourceTree = "<group>"; };
 		2CFBF915138EC2610080883D /* FacilitiesSubmitViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesSubmitViewController.m; sourceTree = "<group>"; };
-		2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "MIT-Mobile-for-iPhone-Private"; path = "External/MIT-Mobile-for-iPhone-Private"; sourceTree = "<group>"; };
 		2CFF6C2817E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScrollingNavigationBarCell.h; sourceTree = "<group>"; };
 		2CFF6C2917E11B4F00BAA8B2 /* MITScrollingNavigationBarCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScrollingNavigationBarCell.m; sourceTree = "<group>"; };
 		2CFFD00818A5231E00D83104 /* MITNewsImageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITNewsImageViewController.xib; sourceTree = "<group>"; };
@@ -2025,7 +2020,6 @@
 				2CFF6C2717E11AE500BAA8B2 /* Scrolling Navigation Bar */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
-				2CEBBFA11635C4D200441252 /* Configuration */,
 				29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */,
 				29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */,
 				EBBFAF93129C2A23009AAEE0 /* TabViewControl.h */,
@@ -3502,16 +3496,6 @@
 			name = "Table View Elements";
 			sourceTree = "<group>";
 		};
-		2CEBBFA11635C4D200441252 /* Configuration */ = {
-			isa = PBXGroup;
-			children = (
-				2C6528F017906DBD00BED0DF /* Secret.h */,
-				2C6528F117906DBD00BED0DF /* Secret.m */,
-				2CEBBFA31635C7D900441252 /* Secret.m.in */,
-			);
-			path = Configuration;
-			sourceTree = "<group>";
-		};
 		2CEC6A531A01461800867A66 /* dining */ = {
 			isa = PBXGroup;
 			children = (
@@ -3669,7 +3653,6 @@
 			isa = PBXGroup;
 			children = (
 				0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */,
-				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
 				2C1808E518F33B95008F9775 /* MITTouchstone */,
 				AF41E4EA1A06ACF400EC4F18 /* SMCalloutView */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
@@ -4515,7 +4498,6 @@
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
 				39B121FE724C96F7C6FACE69 /* Check Pods Manifest.lock */,
-				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
@@ -4770,21 +4752,6 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		2C6894FE1316F4B700245391 /* Run Script */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputPaths = (
-			);
-			name = "Run Script";
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/bash;
-			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common/Configuration\"\n\nmkdir -p \"${LOCAL_CONFIG_DIR}\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    shopt -s nullglob\n    for file in \"${CONFIG_REPO_PATH}/\"*.{m,h,in}; do\n        file_name=$(basename \"${file}\")\n        cp \"${file}\" \"${LOCAL_CONFIG_DIR}/${file_name}\"\n    done\nelse\n    if [[ ! -f \"${LOCAL_CONFIG_DIR}/Secret.m\" ]]; then\n        cp \"${LOCAL_CONFIG_DIR}/Secret.m.in\" \"${LOCAL_CONFIG_DIR}/Secret.m\"\n    fi\nfi\n\nexit 0";
-			showEnvVarsInLog = 0;
-		};
 		39B121FE724C96F7C6FACE69 /* Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -5241,7 +5208,6 @@
 				2258CBE719CB69800067E35C /* MITLibrariesLibrary.m in Sources */,
 				5E62A9B1194A28DF00C0B76C /* MITShuttleResourceViewController.m in Sources */,
 				5EC89F5C1926517100E06204 /* MITShuttleRoute.m in Sources */,
-				2C6528F217906DBD00BED0DF /* Secret.m in Sources */,
 				2C5CA5C919AE3B6B004C6FC6 /* MITSlidingViewController.m in Sources */,
 				2258CBE119CB24940067E35C /* MITLibrariesLink.m in Sources */,
 				2CE4431A16DFAB54005A01B2 /* MapKit+MITAdditions.m in Sources */,
