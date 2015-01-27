@@ -7,9 +7,6 @@
 [submodule "External/SDWebImage"]
 	path = External/SDWebImage
 	url = git@github.com:MIT-Mobile/SDWebImage.git
-[submodule "External/SVPullToRefresh"]
-	path = External/SVPullToRefresh
-	url = git@github.com:MIT-Mobile/SVPullToRefresh.git
 [submodule "External/ECSlidingViewController"]
 	path = External/ECSlidingViewController
 	url = git@github.com:ECSlidingViewController/ECSlidingViewController.git
