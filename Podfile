@@ -2,6 +2,8 @@ source 'https://github.com/CocoaPods/Specs.git'
 
 platform :ios, '7.0'
 
+inhibit_all_warnings!
+
 pod 'SVPullToRefresh'
 pod 'RestKit', '0.22.0'
 pod 'KissXML'
