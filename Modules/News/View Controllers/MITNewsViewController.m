@@ -133,10 +133,11 @@ CGFloat const refreshControlTextHeight = 19;
         } else {
             [self updateRefreshStatusWithLastUpdatedTime];
         }
-        [self updateNavigationItem:YES];
     } else if (!self.storyUpdateInProgress){
         [self updateRefreshStatusWithLastUpdatedTime];
     }
+    
+    [self updateNavigationItem:YES];
     
     if (!self.storyUpdateInProgress || self.weakStoryDetailViewController) {
         return;
@@ -465,11 +466,10 @@ CGFloat const refreshControlTextHeight = 19;
             self.searchBar.frame = CGRectMake(0, 0, 280, 44);
         } else {
             self.searchBar.frame = CGRectMake(0, 0, self.view.frame.size.width, 44);
+            self.navigationItem.leftBarButtonItem = nil;
         }
         if (self.isSingleDataSource) {
             self.navigationItem.hidesBackButton = YES;
-        } else {
-            self.navigationItem.leftBarButtonItem = nil;
         }
         
         UIBarButtonItem *searchBarItem = [[UIBarButtonItem alloc] initWithCustomView:self.searchBar];
