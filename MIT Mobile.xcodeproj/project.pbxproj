@@ -317,7 +317,6 @@
 		2C893AC018BE3091002690CE /* MITNavigationController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C893ABF18BE3090002690CE /* MITNavigationController.m */; };
 		2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C8A074718BE690900284F8A /* MITImageScrollView.m */; };
 		2C8E045F1A1E602C00D762E8 /* NewsStoryTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534D1896B25900D1F9B5 /* NewsStoryTableCell.xib */; };
-		2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96F17175B4000376BCF /* UIView+Image.m */; };
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
 		2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */; };
@@ -402,9 +401,6 @@
 		48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 48B8129915E42B1700E791F9 /* LinksModule.m */; };
 		48BB1A3F1884B3C000852645 /* MITPersonResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 48BB1A3E1884B3C000852645 /* MITPersonResource.m */; };
 		48D9C1D31885935D00CB3F15 /* MITPeopleResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */; };
-		48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96717175AF400376BCF /* UIImage+PDF.m */; };
-		48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96B17175B4000376BCF /* NSString+MD5.m */; };
-		48EDC97117175B4000376BCF /* PDFView.m in Sources */ = {isa = PBXBuildFile; fileRef = 48EDC96D17175B4000376BCF /* PDFView.m */; };
 		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
@@ -1431,15 +1427,6 @@
 		48BB1A3E1884B3C000852645 /* MITPersonResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPersonResource.m; sourceTree = "<group>"; };
 		48D9C1D11885935D00CB3F15 /* MITPeopleResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITPeopleResource.h; sourceTree = "<group>"; };
 		48D9C1D21885935D00CB3F15 /* MITPeopleResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITPeopleResource.m; sourceTree = "<group>"; };
-		48EDC96517175AF400376BCF /* LICENSE.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = LICENSE.txt; sourceTree = "<group>"; };
-		48EDC96617175AF400376BCF /* UIImage+PDF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+PDF.h"; sourceTree = "<group>"; };
-		48EDC96717175AF400376BCF /* UIImage+PDF.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+PDF.m"; sourceTree = "<group>"; };
-		48EDC96A17175B4000376BCF /* NSString+MD5.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSString+MD5.h"; sourceTree = "<group>"; };
-		48EDC96B17175B4000376BCF /* NSString+MD5.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSString+MD5.m"; sourceTree = "<group>"; };
-		48EDC96C17175B4000376BCF /* PDFView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PDFView.h; sourceTree = "<group>"; };
-		48EDC96D17175B4000376BCF /* PDFView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PDFView.m; sourceTree = "<group>"; };
-		48EDC96E17175B4000376BCF /* UIView+Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIView+Image.h"; sourceTree = "<group>"; };
-		48EDC96F17175B4000376BCF /* UIView+Image.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIView+Image.m"; sourceTree = "<group>"; };
 		4B667065140330CD00714C6A /* LibrariesModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = LibrariesModule.h; sourceTree = "<group>"; };
 		4B667066140330CD00714C6A /* LibrariesModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = LibrariesModule.m; sourceTree = "<group>"; };
 		569DC3381282ADAB00BA0794 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
@@ -3663,23 +3650,6 @@
 			name = Links;
 			sourceTree = "<group>";
 		};
-		48EDC96417175AF400376BCF /* UIImage+PDF */ = {
-			isa = PBXGroup;
-			children = (
-				48EDC96A17175B4000376BCF /* NSString+MD5.h */,
-				48EDC96B17175B4000376BCF /* NSString+MD5.m */,
-				48EDC96C17175B4000376BCF /* PDFView.h */,
-				48EDC96D17175B4000376BCF /* PDFView.m */,
-				48EDC96E17175B4000376BCF /* UIView+Image.h */,
-				48EDC96F17175B4000376BCF /* UIView+Image.m */,
-				48EDC96517175AF400376BCF /* LICENSE.txt */,
-				48EDC96617175AF400376BCF /* UIImage+PDF.h */,
-				48EDC96717175AF400376BCF /* UIImage+PDF.m */,
-			);
-			name = "UIImage+PDF";
-			path = "External/UIImage+PDF";
-			sourceTree = "<group>";
-		};
 		4B66705F1403304300714C6A /* Libraries */ = {
 			isa = PBXGroup;
 			children = (
@@ -3703,7 +3673,6 @@
 				2C1808E518F33B95008F9775 /* MITTouchstone */,
 				AF41E4EA1A06ACF400EC4F18 /* SMCalloutView */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
-				48EDC96417175AF400376BCF /* UIImage+PDF */,
 			);
 			name = External;
 			sourceTree = "<group>";
@@ -5289,7 +5258,6 @@
 				A5BF260A1969FCB400D73AF5 /* MITMapPlaceNameCell.m in Sources */,
 				22D9BBB519D21DBD0065A2E7 /* MITTouchstoneRequestOperation+MITMobileV3.m in Sources */,
 				2C70B81E170DBFFA00746EB9 /* MITLogFormatter.m in Sources */,
-				48EDC96917175AF400376BCF /* UIImage+PDF.m in Sources */,
 				2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */,
 				80C5D9E91A111C9700E63FDD /* MITLibrariesFormSheetElementPurpose.m in Sources */,
 				22D902FC199BA90D00AEBC7D /* MITDiningVenues.m in Sources */,
@@ -5297,12 +5265,9 @@
 				2287A7DB19BE2CAA008B0DF6 /* MITCalendarsCalendar.m in Sources */,
 				48B4ADE41713572300EF426F /* MITDiningHallMenuComparisonView.m in Sources */,
 				80EC3C271A03D1960051F417 /* MITDayPickerViewController.m in Sources */,
-				48EDC97017175B4000376BCF /* NSString+MD5.m in Sources */,
 				22830A3E1A018A6400B514D1 /* MITToursStopCellModel.m in Sources */,
-				48EDC97117175B4000376BCF /* PDFView.m in Sources */,
 				A563910D19E2F1A2001DE763 /* MITLibrariesCitationCell.m in Sources */,
 				5EB7F3FD19351D7F00C89F64 /* MITShuttleRouteStatusCell.m in Sources */,
-				2C8E04611A1E602C00D762E8 /* UIView+Image.m in Sources */,
 				22E6BC9619E2E2CE003E278C /* MITLibrariesLoansFinesHoldsTableViewController.m in Sources */,
 				A5FFD24A19FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.m in Sources */,
 				22D9BBA519D1CD170065A2E7 /* MITLibrariesAvailability.m in Sources */,
