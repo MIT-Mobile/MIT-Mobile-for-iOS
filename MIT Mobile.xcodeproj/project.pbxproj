@@ -328,7 +328,6 @@
 		2C95A1D3137D677A0025B28D /* FacilitiesRoomViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D2137D677A0025B28D /* FacilitiesRoomViewController.m */; };
 		2C95A1D8137DB24D0025B28D /* FacilitiesSummaryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C95A1D6137DB24D0025B28D /* FacilitiesSummaryViewController.m */; };
 		2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C95A1D7137DB24D0025B28D /* FacilitiesSummaryViewController.xib */; };
-		2C98DE5818510D1200232C71 /* libRestKit.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C5123041843D56700902BB4 /* libRestKit.a */; };
 		2C99DCAF1370508D00114A9A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C99DCAE1370508D00114A9A /* HighlightLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C99DCDF1370782200114A9A /* CoreText.framework */; };
 		2C9BAFC218A01D6B003B9AD0 /* MITNewsStoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C9BAFC118A01D6B003B9AD0 /* MITNewsStoryViewController.m */; };
@@ -677,12 +676,11 @@
 		AFECC2C31A0A856600B59442 /* MITToursStopCollectionViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = AFECC2C11A0A856600B59442 /* MITToursStopCollectionViewCell.xib */; };
 		AFECC2C61A0A877500B59442 /* MITToursStopCollectionViewManager.m in Sources */ = {isa = PBXBuildFile; fileRef = AFECC2C51A0A877500B59442 /* MITToursStopCollectionViewManager.m */; };
 		BD9FA7EE1047A05E00BC3C0A /* MessageUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */; };
+		CC37812E00B9844304B4B23C /* libPods.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 8A8CB9DF52659F18CB8914F9 /* libPods.a */; };
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
 		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; };
-		DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */; };
-		DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */ = {isa = PBXBuildFile; fileRef = DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */; };
 		DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE5BE3EB188BA796008A135E /* Images.xcassets */; };
@@ -736,47 +734,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		2C5123031843D56700902BB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D1614564E810060A5C5;
-			remoteInfo = RestKit;
-		};
-		2C5123051843D56700902BB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160D2614564E820060A5C5;
-			remoteInfo = RestKitTests;
-		};
-		2C5123071843D56700902BB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E62145651060060A5C5;
-			remoteInfo = RestKitFramework;
-		};
-		2C5123091843D56700902BB4 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 25160E78145651060060A5C5;
-			remoteInfo = RestKitFrameworkTests;
-		};
 		2C5D083F1A028329006E09C3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 29B97313FDCFA39411CA2CEA /* Project object */;
 			proxyType = 1;
 			remoteGlobalIDString = 1D6058900D05DD3D006BFB54;
 			remoteInfo = "MIT Mobile";
-		};
-		2C98DE5618510CED00232C71 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-			proxyType = 1;
-			remoteGlobalIDString = 25160D1514564E810060A5C5;
-			remoteInfo = RestKit;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -839,6 +802,7 @@
 		0BE653EB1A682B2400F9FA51 /* MITEmergencyInfoContact.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEmergencyInfoContact.h; path = Models/MITEmergencyInfoContact.h; sourceTree = "<group>"; };
 		0BE653EC1A682B2400F9FA51 /* MITEmergencyInfoContact.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEmergencyInfoContact.m; path = Models/MITEmergencyInfoContact.m; sourceTree = "<group>"; };
 		0BE653FB1A686CBD00F9FA51 /* Emergency.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Emergency.xcdatamodel; sourceTree = "<group>"; };
+		0BF55C6986088F557B3870C2 /* Pods.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.testflight.xcconfig; path = "Pods/Target Support Files/Pods/Pods.testflight.xcconfig"; sourceTree = "<group>"; };
 		0BFBCA1E195DD6940064D02C /* MITNewsSearchController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsSearchController.h; sourceTree = "<group>"; };
 		0BFBCA1F195DD6940064D02C /* MITNewsSearchController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsSearchController.m; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -1304,7 +1268,6 @@
 		2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDrawerViewController.m; path = "App Delegate/MITDrawerViewController.m"; sourceTree = "<group>"; };
 		2C49DBB017E8AB9400ABA319 /* MITMapModelController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapModelController.h; sourceTree = "<group>"; };
 		2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapModelController.m; sourceTree = "<group>"; };
-		2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RestKit.xcodeproj; path = External/RestKit/RestKit.xcodeproj; sourceTree = "<group>"; };
 		2C544B9B1358A24400685545 /* UIImage+Resize.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIImage+Resize.h"; sourceTree = "<group>"; };
 		2C544B9C1358A24400685545 /* UIImage+Resize.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIImage+Resize.m"; sourceTree = "<group>"; };
 		2C5B30461371D54500870E6D /* FacilitiesUserLocationViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesUserLocationViewController.h; sourceTree = "<group>"; };
@@ -1504,6 +1467,7 @@
 		3AA2194F1039D74700DB7637 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		3AA21C541039DDEA00DB7637 /* CoreDataManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CoreDataManager.h; sourceTree = "<group>"; };
 		3AA21C551039DDEA00DB7637 /* CoreDataManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CoreDataManager.m; sourceTree = "<group>"; };
+		3E020E44F0FB2A8E6BEDE14F /* Pods.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.release.xcconfig; path = "Pods/Target Support Files/Pods/Pods.release.xcconfig"; sourceTree = "<group>"; };
 		442C195410F3B21400CB44EC /* MITMapRoute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapRoute.h; sourceTree = "<group>"; };
 		4431ACD52C16E08AB479048D /* MITMappedObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMappedObject.h; sourceTree = "<group>"; };
 		4463CC8710D6F4A50048CA83 /* CMModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CMModule.h; sourceTree = "<group>"; };
@@ -1725,6 +1689,7 @@
 		80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITPadDayOfTheWeekCell.xib; sourceTree = "<group>"; };
 		80F6E2B7199A932A0060C971 /* MITDiningCustomSeparatorCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningCustomSeparatorCell.h; path = Dining/MITDiningCustomSeparatorCell.h; sourceTree = "<group>"; };
 		80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningCustomSeparatorCell.m; path = Dining/MITDiningCustomSeparatorCell.m; sourceTree = "<group>"; };
+		8A8CB9DF52659F18CB8914F9 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
 		A50884DC19D1CB050047A21B /* MITLibrariesWorldcatItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesWorldcatItemCell.h; sourceTree = "<group>"; };
 		A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesWorldcatItemCell.m; sourceTree = "<group>"; };
@@ -1985,11 +1950,6 @@
 		DE18F9E910F19085009A69B9 /* News.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = News.xcdatamodel; sourceTree = "<group>"; };
 		DE1B4D7010CE17B30073BABC /* MITJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITJSON.h; sourceTree = "<group>"; };
 		DE1B4D7110CE17B30073BABC /* MITJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITJSON.m; sourceTree = "<group>"; };
-		DE27768F177E7A3900CF46FF /* SVPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVPullToRefresh.h; sourceTree = "<group>"; };
-		DE277690177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SVInfiniteScrolling.h"; sourceTree = "<group>"; };
-		DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVInfiniteScrolling.m"; sourceTree = "<group>"; };
-		DE277692177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIScrollView+SVPullToRefresh.h"; sourceTree = "<group>"; };
-		DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIScrollView+SVPullToRefresh.m"; sourceTree = "<group>"; };
 		DE2A45831885AF72002DE0EA /* MITNewsStoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsStoryCell.h; sourceTree = "<group>"; };
 		DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsStoryCell.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
@@ -2077,6 +2037,7 @@
 		EF3B3B15103F072400E8AA0D /* MITNavigationActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationActivityView.h; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+MITAdditions.m"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+MITAdditions.h"; sourceTree = "<group>"; };
+		F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -2086,7 +2047,6 @@
 			files = (
 				2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */,
 				3A82708D103DAA2400BB4109 /* SystemConfiguration.framework in Frameworks */,
-				2C98DE5818510D1200232C71 /* libRestKit.a in Frameworks */,
 				2C75D20A16C975D100DD5350 /* libc++.dylib in Frameworks */,
 				2C74240E165A9583000020FC /* libstdc++.dylib in Frameworks */,
 				2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */,
@@ -2120,6 +2080,7 @@
 				A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */,
 				A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */,
 				2CDA8ABB1762445F001F011F /* libTestFlight.a in Frameworks */,
+				CC37812E00B9844304B4B23C /* libPods.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2133,6 +2094,16 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		016CBC104D3C3EA38F3D3049 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */,
+				3E020E44F0FB2A8E6BEDE14F /* Pods.release.xcconfig */,
+				0BF55C6986088F557B3870C2 /* Pods.testflight.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		080E96DDFE201D6D7F000001 /* Common */ = {
 			isa = PBXGroup;
 			children = (
@@ -3053,7 +3024,6 @@
 		29B97314FDCFA39411CA2CEA /* CustomTemplate */ = {
 			isa = PBXGroup;
 			children = (
-				2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */,
 				4B83721C157E5B19004CBC49 /* External */,
 				DE715445102FE468005E6111 /* Modules */,
 				080E96DDFE201D6D7F000001 /* Common */,
@@ -3063,6 +3033,7 @@
 				2C5D083A1A028328006E09C3 /* MIT Mobile Tests */,
 				29B97323FDCFA39411CA2CEA /* Frameworks */,
 				19C28FACFE9D520D11CA2CBB /* Products */,
+				016CBC104D3C3EA38F3D3049 /* Pods */,
 			);
 			name = CustomTemplate;
 			sourceTree = "<group>";
@@ -3131,6 +3102,7 @@
 				2C333497162EEFA700BBB312 /* Twitter.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				A63DEE271353CF37001C52BF /* EventKit.framework */,
+				8A8CB9DF52659F18CB8914F9 /* libPods.a */,
 			);
 			name = Frameworks;
 			sourceTree = SOURCE_ROOT;
@@ -3328,17 +3300,6 @@
 				2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */,
 			);
 			path = FacilitiesLocation;
-			sourceTree = "<group>";
-		};
-		2C5122FD1843D56700902BB4 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-				2C5123041843D56700902BB4 /* libRestKit.a */,
-				2C5123061843D56700902BB4 /* RestKitTests.octest */,
-				2C5123081843D56700902BB4 /* RestKit.framework */,
-				2C51230A1843D56700902BB4 /* RestKitFrameworkTests.octest */,
-			);
-			name = Products;
 			sourceTree = "<group>";
 		};
 		2C5123111843DB4000902BB4 /* Mobile API */ = {
@@ -3939,7 +3900,6 @@
 				2CFCB03A1656CC9A0099A6EB /* MIT-Mobile-for-iPhone-Private */,
 				2C1808E518F33B95008F9775 /* MITTouchstone */,
 				AF41E4EA1A06ACF400EC4F18 /* SMCalloutView */,
-				DE27768E177E7A3900CF46FF /* SVPullToRefresh */,
 				2CDA8AB61762445F001F011F /* TestFlight */,
 				48EDC96417175AF400376BCF /* UIImage+PDF */,
 			);
@@ -4537,19 +4497,6 @@
 			path = JSON;
 			sourceTree = "<group>";
 		};
-		DE27768E177E7A3900CF46FF /* SVPullToRefresh */ = {
-			isa = PBXGroup;
-			children = (
-				DE27768F177E7A3900CF46FF /* SVPullToRefresh.h */,
-				DE277690177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.h */,
-				DE277691177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m */,
-				DE277692177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.h */,
-				DE277693177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m */,
-			);
-			name = SVPullToRefresh;
-			path = External/SVPullToRefresh/SVPullToRefresh;
-			sourceTree = "<group>";
-		};
 		DE2A458A1885AF83002DE0EA /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -4837,16 +4784,17 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1D6058960D05DD3E006BFB54 /* Build configuration list for PBXNativeTarget "MIT Mobile" */;
 			buildPhases = (
+				39B121FE724C96F7C6FACE69 /* Check Pods Manifest.lock */,
 				2C6894FE1316F4B700245391 /* Run Script */,
 				1D60588D0D05DD3D006BFB54 /* Resources */,
 				1D60588E0D05DD3D006BFB54 /* Sources */,
 				1D60588F0D05DD3D006BFB54 /* Frameworks */,
 				DEE2B550104C17860037A4AB /* Run Script */,
+				DD85340A11CD22ACE02ABED6 /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
 			dependencies = (
-				2C98DE5718510CED00232C71 /* PBXTargetDependency */,
 			);
 			name = "MIT Mobile";
 			productName = "MIT Mobile";
@@ -4907,12 +4855,6 @@
 			);
 			mainGroup = 29B97314FDCFA39411CA2CEA /* CustomTemplate */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = 2C5122FD1843D56700902BB4 /* Products */;
-					ProjectRef = 2C5122FC1843D56700902BB4 /* RestKit.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				1D6058900D05DD3D006BFB54 /* MIT Mobile */,
@@ -4920,37 +4862,6 @@
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		2C5123041843D56700902BB4 /* libRestKit.a */ = {
-			isa = PBXReferenceProxy;
-			fileType = archive.ar;
-			path = libRestKit.a;
-			remoteRef = 2C5123031843D56700902BB4 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2C5123061843D56700902BB4 /* RestKitTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitTests.octest;
-			remoteRef = 2C5123051843D56700902BB4 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2C5123081843D56700902BB4 /* RestKit.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = RestKit.framework;
-			remoteRef = 2C5123071843D56700902BB4 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		2C51230A1843D56700902BB4 /* RestKitFrameworkTests.octest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = RestKitFrameworkTests.octest;
-			remoteRef = 2C5123091843D56700902BB4 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		1D60588D0D05DD3D006BFB54 /* Resources */ = {
@@ -5143,6 +5054,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/bash;
 			shellScript = "CONFIG_REPO_PATH=\"${PROJECT_DIR}/External/MIT-Mobile-for-iPhone-Private\"\nLOCAL_CONFIG_DIR=\"${PROJECT_DIR}/Common/Configuration\"\n\nmkdir -p \"${LOCAL_CONFIG_DIR}\"\n\nif [[ -d \"${CONFIG_REPO_PATH}\" ]]; then\n    shopt -s nullglob\n    for file in \"${CONFIG_REPO_PATH}/\"*.{m,h,in}; do\n        file_name=$(basename \"${file}\")\n        cp \"${file}\" \"${LOCAL_CONFIG_DIR}/${file_name}\"\n    done\nelse\n    if [[ ! -f \"${LOCAL_CONFIG_DIR}/Secret.m\" ]]; then\n        cp \"${LOCAL_CONFIG_DIR}/Secret.m.in\" \"${LOCAL_CONFIG_DIR}/Secret.m\"\n    fi\nfi\n\nexit 0";
+			showEnvVarsInLog = 0;
+		};
+		39B121FE724C96F7C6FACE69 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		DD85340A11CD22ACE02ABED6 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods/Pods-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DEE2B550104C17860037A4AB /* Run Script */ = {
@@ -5684,10 +5625,8 @@
 				27CBE99E1A197CDB00B85F67 /* MITScannerDetailViewController.m in Sources */,
 				8011C4F3199D4FD500ED8F56 /* MITDiningRetailVenueDetailViewController.m in Sources */,
 				5E70E393192F7F7F00165B41 /* MITShuttleRouteViewController.m in Sources */,
-				DE277694177E7A3900CF46FF /* UIScrollView+SVInfiniteScrolling.m in Sources */,
 				22D9030E199BA90E00AEBC7D /* MITDiningMenuItem.m in Sources */,
 				224E1AAE1A003D4100913D99 /* MITToursTourDetailsViewController.m in Sources */,
-				DE277695177E7A3900CF46FF /* UIScrollView+SVPullToRefresh.m in Sources */,
 				A5A24B57198F24C400AA1CFC /* MITCalendarEventDateGroupedDataSource.m in Sources */,
 				2247B76319F6AC05000E1725 /* MITToursDirectionsToStop.m in Sources */,
 				2258CBDA19CA1E450067E35C /* MITLibrariesHomeViewController.m in Sources */,
@@ -5717,11 +5656,6 @@
 			target = 1D6058900D05DD3D006BFB54 /* MIT Mobile */;
 			targetProxy = 2C5D083F1A028329006E09C3 /* PBXContainerItemProxy */;
 		};
-		2C98DE5718510CED00232C71 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			name = RestKit;
-			targetProxy = 2C98DE5618510CED00232C71 /* PBXContainerItemProxy */;
-		};
 /* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
@@ -5738,6 +5672,7 @@
 /* Begin XCBuildConfiguration section */
 		1D6058940D05DD3E006BFB54 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5766,6 +5701,7 @@
 		};
 		1D6058950D05DD3E006BFB54 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 3E020E44F0FB2A8E6BEDE14F /* Pods.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
@@ -5995,6 +5931,7 @@
 		};
 		DEF93C671110C9C4009DF154 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 0BF55C6986088F557B3870C2 /* Pods.testflight.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
