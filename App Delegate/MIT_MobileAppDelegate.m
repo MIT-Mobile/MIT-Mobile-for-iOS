@@ -75,16 +75,9 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     }
 }
 
-#pragma mark -
-#pragma mark Application lifecycle
+#pragma mark - Application lifecycle
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#if defined(TESTFLIGHT)
-    if ([MITApplicationTestFlightToken length]) {
-        [TestFlight setOptions:@{@"logToConsole" : @NO,
-                                 @"logToSTDERR"  : @NO}];
-        [TestFlight takeOff:MITApplicationTestFlightToken];
-    }
-#endif
 
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 

@@ -7,9 +7,7 @@
 
 static NSString * const MobileAPIServers[] = {@"https://m.mit.edu/api", @"https://mobile-dev.mit.edu/api", @"https://mobile-stage.mit.edu/api", nil};
 
-#if defined(TESTFLIGHT)
-NSUInteger const MITMobileServerConfigurationDefaultIndex = 0;
-#elif defined(DEBUG)
+#if defined(DEBUG)
 NSUInteger const MITMobileServerConfigurationDefaultIndex = 1;
 #else
 NSUInteger const MITMobileServerConfigurationDefaultIndex = 0;

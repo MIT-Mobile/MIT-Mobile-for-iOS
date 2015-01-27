@@ -535,7 +535,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
                     NSArray *places = [context executeFetchRequest:fetchRequest error:nil];
                     [self bookmarkPlaces:places completion:^(NSError *error) {
                         if (!error) {
-#if !defined(DEBUG) || defined(TESTFLIGHT)
+#if !defined(DEBUG)
                             [[NSFileManager defaultManager] removeItemAtURL:bookmarksURL
                                                                       error:nil];
 #endif //DEBUG

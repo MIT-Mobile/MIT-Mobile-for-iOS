@@ -4,9 +4,7 @@
 #import "DDTTYLogger.h"
 #import "DDDispatchQueueLogFormatter.h"
 
-#if defined(TESTFLIGHT)
-static const int ddLogLevel = LOG_LEVEL_INFO;
-#elif defined(DEBUG)
+#if defined(DEBUG)
 static const int ddLogLevel = LOG_LEVEL_VERBOSE;
 #else
 static const int ddLogLevel = LOG_LEVEL_WARN;

@@ -1,7 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "MITLogging.h"
 #import "MITLogFormatter.h"
-#import "MITTestFlightLogger.h"
 
 void mit_logger_init( void );
 int main(int argc, char *argv[]) {
@@ -28,14 +27,6 @@ void mit_logger_init( void )
             [DDLog addLogger:logger];
         }
 #endif //DEBUG
-        
-#if defined(TESTFLIGHT)
-        {
-            MITTestFlightLogger *logger = [MITTestFlightLogger sharedInstance];
-            logger.logFormatter = [[MITLogFormatter alloc] init];
-            [DDLog addLogger:logger];
-        }
-#endif //TESTFLIGHT
         
         DDLogCVerbose(@"Lumberjack logging initialized");
     });
