@@ -17,7 +17,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 };
 
 @interface EmergencyViewController ()
-@property (weak) UIWebView *infoWebView;
+@property (nonatomic, strong) UIWebView *infoWebView;
 
 @property (nonatomic,copy) NSString *htmlString;
 @property BOOL refreshButtonPressed;
@@ -48,13 +48,17 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [self.refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     // register for emergencydata notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidFailToLoad:) name:EmergencyInfoDidFailToLoadNotification object:nil];
-
+    
+    if (!_infoWebView) {
+        [self infoDidLoad:nil];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -71,9 +75,29 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 	[emergencyModule syncUnreadNotifications];
 }
 
+- (UIWebView *)infoWebView
+{
+    if (!_infoWebView) {
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:UIEdgeInsetsInsetRect(self.tableView.bounds, self.webViewInsets)];
+        webView.delegate = self;
+        webView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                    UIViewAutoresizingFlexibleWidth);
+        webView.backgroundColor = [UIColor clearColor];
+        webView.dataDetectorTypes = UIDataDetectorTypeAll;
+        webView.opaque = NO;
+        webView.scrollView.scrollEnabled = NO;
+        webView.scrollView.showsHorizontalScrollIndicator = NO;
+        webView.scrollView.showsVerticalScrollIndicator = NO;
+        webView.userInteractionEnabled = NO;
+        _infoWebView = webView;
+    }
+    return _infoWebView;
+}
+
 - (void)setHtmlString:(NSString *)htmlString
 {
     _htmlString = [htmlString copy];
+    self.webViewCellHeight = 0;
     [self.infoWebView loadHTMLString:self.htmlString
                              baseURL:nil];
 }
@@ -181,38 +205,18 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     static NSString *contactCellId = @"ContactCell";
     
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:alertCellId];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:alertCellId];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.contentView.autoresizesSubviews = YES;
-            cell.contentView.clipsToBounds = YES;
-            
-            UIWebView *webView = [[UIWebView alloc] initWithFrame:UIEdgeInsetsInsetRect(cell.contentView.bounds, self.webViewInsets)];
-            webView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                        UIViewAutoresizingFlexibleWidth);
-            webView.backgroundColor = [UIColor clearColor];
-            webView.dataDetectorTypes = UIDataDetectorTypeAll;
-            webView.delegate = self;
-            if (!self.webViewCellHeight) {
-                webView.delegate = self;
-            } else {
-                webView.delegate = nil;
-            }
-            webView.opaque = NO;
-            
-            webView.scrollView.scrollEnabled = NO;
-            webView.scrollView.showsHorizontalScrollIndicator = NO;
-            webView.scrollView.showsVerticalScrollIndicator = NO;
-            webView.userInteractionEnabled = NO;
-            [cell.contentView addSubview:webView];
-            self.infoWebView = webView;
-            
-            if ([self.htmlString length]) {
-                NSString *htmlString = self.htmlString;
-                [webView loadHTMLString:htmlString
-                                baseURL:nil];
-            }
+        
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:alertCellId];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.contentView.autoresizesSubviews = YES;
+        cell.contentView.clipsToBounds = YES;
+        
+        UIWebView *webView = self.infoWebView;
+        webView.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds, self.webViewInsets);
+        [cell.contentView addSubview:webView];
+        if (!self.webViewCellHeight) {
+            [self.infoWebView loadHTMLString:self.htmlString
+                                     baseURL:nil];
         }
         
         return cell;
