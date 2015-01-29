@@ -17,11 +17,18 @@
 
 - (void)loadViewController
 {
-    UIStoryboard *storyboard = [UIStoryboard storyboardWithName:@"MartyStoryboard" bundle:nil];
-    NSAssert(storyboard, @"failed to load storyboard for %@",self);
-    
-    UIViewController *controller = [storyboard instantiateInitialViewController];
-    self.viewController = controller;
+    UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+
+    UIStoryboard *storyboard = nil;
+    if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        storyboard = [UIStoryboard storyboardWithName:@"Marty_pad" bundle:nil];
+    } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        storyboard = [UIStoryboard storyboardWithName:@"Marty_phone" bundle:nil];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unknown user interface idiom" userInfo:nil];
+    }
+
+    self.viewController = [storyboard instantiateInitialViewController];
 }
 	
 @end
