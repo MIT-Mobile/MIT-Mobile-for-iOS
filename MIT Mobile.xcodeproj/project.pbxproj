@@ -677,7 +677,6 @@
 		EBF1120712A495170002D751 /* en.lproj in Resources */ = {isa = PBXBuildFile; fileRef = EBF1120412A495170002D751 /* en.lproj */; };
 		EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */; };
 		EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
@@ -1856,8 +1855,6 @@
 		EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
 		EBF8C20312BABBF400D39AE6 /* CoreLocation+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "CoreLocation+MITAdditions.h"; sourceTree = "<group>"; };
 		EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CoreLocation+MITAdditions.m"; sourceTree = "<group>"; };
-		EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TextEntryTableViewCell.m; path = "Text Entry Cell/TextEntryTableViewCell.m"; sourceTree = "<group>"; };
-		EF3B3B15103F072400E8AA09 /* TextEntryTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TextEntryTableViewCell.h; path = "Text Entry Cell/TextEntryTableViewCell.h"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNavigationActivityView.m; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0D /* MITNavigationActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationActivityView.h; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+MITAdditions.m"; sourceTree = "<group>"; };
@@ -3403,8 +3400,6 @@
 				EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */,
 				EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */,
 				EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */,
-				EF3B3B15103F072400E8AA09 /* TextEntryTableViewCell.h */,
-				EF3B3B15103F072400E8AA07 /* TextEntryTableViewCell.m */,
 			);
 			name = "Table View Elements";
 			sourceTree = "<group>";
@@ -4968,7 +4963,6 @@
 				22D90311199BA90E00AEBC7D /* MITDiningLocation.m in Sources */,
 				274887301933A61900414552 /* MITPeopleSearchResultsViewController.m in Sources */,
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
-				EF3B3B15103F072400E8AA08 /* TextEntryTableViewCell.m in Sources */,
 				0BE653DF1A68225800F9FA51 /* MITEmergencyInfoWebservices.m in Sources */,
 				A5A9A99019CB15BE0090BE4F /* UINavigationBar+ExtensionPrep.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
