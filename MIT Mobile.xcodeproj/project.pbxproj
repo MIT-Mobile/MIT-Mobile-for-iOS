@@ -245,7 +245,6 @@
 		2C09824C13A8F21D00778B53 /* ModuleVersions.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C09824B13A8F21D00778B53 /* ModuleVersions.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
-		2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15FCCF17C5868A00DC934C /* MITMultilineTableViewCell.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */; };
 		2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1808E718F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m */; };
@@ -1111,8 +1110,6 @@
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
 		2C15EB7415A349B200C9C345 /* MITScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerViewController.h; sourceTree = "<group>"; };
 		2C15EB7515A349B200C9C345 /* MITScannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerViewController.m; sourceTree = "<group>"; };
-		2C15FCCE17C5868A00DC934C /* MITMultilineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMultilineTableViewCell.h; sourceTree = "<group>"; };
-		2C15FCCF17C5868A00DC934C /* MITMultilineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMultilineTableViewCell.m; sourceTree = "<group>"; };
 		2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoom.h; sourceTree = "<group>"; };
 		2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRoom.m; sourceTree = "<group>"; };
 		2C18073A1382C32D000CCB6F /* FacilitiesTypeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesTypeViewController.h; sourceTree = "<group>"; };
@@ -3402,8 +3399,6 @@
 			children = (
 				2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */,
 				2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */,
-				2C15FCCE17C5868A00DC934C /* MITMultilineTableViewCell.h */,
-				2C15FCCF17C5868A00DC934C /* MITMultilineTableViewCell.m */,
 				EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */,
 				EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */,
 				EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */,
@@ -4886,7 +4881,6 @@
 				80C5D9FF1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m in Sources */,
 				AFECC2C21A0A856600B59442 /* MITToursStopCollectionViewCell.m in Sources */,
 				225AC09019B8F3EB008854BC /* MITDiningComparisonDataManager.m in Sources */,
-				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
 				5ED47248194F2419001D6B78 /* UITableView+MITAdditions.m in Sources */,
 				EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */,
 				22E6BCBB19E46949003E278C /* MITLibrariesHomeViewControllerPad.m in Sources */,
