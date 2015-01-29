@@ -510,7 +510,6 @@
 		A541EB8A1A314D5C00FA7349 /* MITNewsDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB891A314D5C00FA7349 /* MITNewsDataSource.m */; };
 		A541EB8D1A314E8600FA7349 /* MITModuleItem.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB8C1A314E8600FA7349 /* MITModuleItem.m */; };
 		A541EB901A31503A00FA7349 /* MITCollectionViewCellSizer.m in Sources */ = {isa = PBXBuildFile; fileRef = A541EB8F1A31503A00FA7349 /* MITCollectionViewCellSizer.m */; };
-		A5444EAC1A35FCD5006932CF /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */; };
 		A544EF001961D1B60046823E /* MITTiledMapView.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EEFF1961D1B60046823E /* MITTiledMapView.m */; };
 		A544EF0B19647FA30046823E /* MITMapPlaceDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A544EF0919647FA30046823E /* MITMapPlaceDetailViewController.m */; };
 		A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A544EF0A19647FA30046823E /* MITMapPlaceDetailViewController.xib */; };
@@ -722,8 +721,6 @@
 		0B7602611A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsStoryCollectionViewCell.m; path = "Modules/News/Views/Collection View Cells/MITNewsStoryCollectionViewCell.m"; sourceTree = SOURCE_ROOT; };
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
-		0BB48BF01976EDB700C7E920 /* MultiLineLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineLabel.h; sourceTree = "<group>"; };
-		0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineLabel.m; sourceTree = "<group>"; };
 		0BCC90BF1963188900440544 /* MITNewsRecentSearchList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsRecentSearchList.h; path = Model/MITNewsRecentSearchList.h; sourceTree = "<group>"; };
 		0BCC90C01963188900440544 /* MITNewsRecentSearchList.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsRecentSearchList.m; path = Model/MITNewsRecentSearchList.m; sourceTree = "<group>"; };
 		0BCC90C51963188A00440544 /* MITNewsRecentSearchQuery.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsRecentSearchQuery.h; path = Model/MITNewsRecentSearchQuery.h; sourceTree = "<group>"; };
@@ -1930,7 +1927,6 @@
 				277A583F19FD71C800BE134E /* MITActionSheetHandler.m */,
 				A544EEFD1961D1B60046823E /* Views */,
 				0B1493CE1987DD05009B7EA8 /* MITPopoverBackgroundView */,
-				0BB48BEF1976EDB700C7E920 /* MultiLineLabel */,
 				2C3C9D7314CDC0B2005646F7 /* Categories */,
 				3AA21C481039DDBA00DB7637 /* Connection */,
 				3AA21C491039DDBD00DB7637 /* Core Data */,
@@ -1993,15 +1989,6 @@
 			);
 			name = ThumbnailPickerView;
 			path = External/ThumbnailPickerView;
-			sourceTree = "<group>";
-		};
-		0BB48BEF1976EDB700C7E920 /* MultiLineLabel */ = {
-			isa = PBXGroup;
-			children = (
-				0BB48BF01976EDB700C7E920 /* MultiLineLabel.h */,
-				0BB48BF11976EDB700C7E920 /* MultiLineLabel.m */,
-			);
-			path = MultiLineLabel;
 			sourceTree = "<group>";
 		};
 		0BD7B96A194A36BC00B0EDBD /* Collection View Cells */ = {
@@ -4839,7 +4826,6 @@
 				A5A24B7419946FA400AA1CFC /* MITEventsRecentSearches.m in Sources */,
 				22CFC1A819AE623F003BD72A /* MITDiningVenueInfoCell.m in Sources */,
 				80598DA21A0A71370095CEAA /* MITLibrariesAskUsFormSheetViewController.m in Sources */,
-				A5444EAC1A35FCD5006932CF /* MultiLineLabel.m in Sources */,
 				EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */,
 				DE81CF6210C6BC390085573D /* NewsModule.m in Sources */,
 				27D2CC411953EA40003F447F /* MITPeopleFavoritesTableViewController.m in Sources */,
