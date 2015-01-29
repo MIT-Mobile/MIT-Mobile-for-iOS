@@ -268,10 +268,6 @@
 		2C2C6F8D18CF58AC00E15D62 /* UITableView+DynamicSizing.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2C6F8C18CF58AC00E15D62 /* UITableView+DynamicSizing.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
-		2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348E162DCF2600BBB312 /* Accounts.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33348F162DCF2600BBB312 /* AdSupport.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333497162EEFA700BBB312 /* Twitter.framework */; };
-		2C33349A162F27E200BBB312 /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C333499162F27E200BBB312 /* Social.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C33349E162F2F0200BBB312 /* libsqlite3.dylib */; };
 		2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */; };
 		2C3676B813C5F854003CB7A4 /* MobileCoreServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */; };
@@ -391,7 +387,6 @@
 		4B667067140330CD00714C6A /* LibrariesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B667066140330CD00714C6A /* LibrariesModule.m */; };
 		569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3381282ADAB00BA0794 /* AVFoundation.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33B1282ADBC00BA0794 /* CoreMedia.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC33E1282ADC000BA0794 /* CoreVideo.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		569DC3421282ADCE00BA0794 /* libiconv.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 569DC3411282ADCE00BA0794 /* libiconv.dylib */; settings = {ATTRIBUTES = (Required, ); }; };
 		56D7DF52128854DF00E9E5C9 /* MapKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 56D7DF51128854DF00E9E5C9 /* MapKit.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
 		5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */; };
@@ -656,7 +651,6 @@
 		EB07B06C12B8971D005D6A4C /* calendar in Resources */ = {isa = PBXBuildFile; fileRef = EB07B06912B8971D005D6A4C /* calendar */; };
 		EB4C1E9B127723B700058748 /* ToursModule.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C1E99127723B700058748 /* ToursModule.m */; };
 		EB4C34FA1281FCBD00058748 /* tours in Resources */ = {isa = PBXBuildFile; fileRef = EB4C34F81281FCBD00058748 /* tours */; };
-		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; };
 		EB5C625A1201D93A00805EBE /* news in Resources */ = {isa = PBXBuildFile; fileRef = EB5C621F1201D93A00805EBE /* news */; };
 		EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
@@ -1153,10 +1147,6 @@
 		2C2F779B196DBA6500284AE7 /* MITCollectionViewGridDividerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridDividerView.h; sourceTree = "<group>"; };
 		2C2F779C196DBA6500284AE7 /* MITCollectionViewGridDividerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridDividerView.m; sourceTree = "<group>"; };
 		2C32BD24136F27D40015ACF6 /* FacilitiesLocations.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = FacilitiesLocations.xcdatamodel; sourceTree = "<group>"; };
-		2C33348E162DCF2600BBB312 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
-		2C33348F162DCF2600BBB312 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
-		2C333497162EEFA700BBB312 /* Twitter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Twitter.framework; path = System/Library/Frameworks/Twitter.framework; sourceTree = SDKROOT; };
-		2C333499162F27E200BBB312 /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		2C33349E162F2F0200BBB312 /* libsqlite3.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.dylib; path = usr/lib/libsqlite3.dylib; sourceTree = SDKROOT; };
 		2C3676B413C5F6B1003CB7A4 /* ImageIO.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ImageIO.framework; path = System/Library/Frameworks/ImageIO.framework; sourceTree = SDKROOT; };
 		2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MobileCoreServices.framework; path = System/Library/Frameworks/MobileCoreServices.framework; sourceTree = SDKROOT; };
@@ -1817,7 +1807,6 @@
 		EB4C1E98127723B700058748 /* ToursModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ToursModule.h; sourceTree = "<group>"; };
 		EB4C1E99127723B700058748 /* ToursModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ToursModule.m; sourceTree = "<group>"; };
 		EB4C34F81281FCBD00058748 /* tours */ = {isa = PBXFileReference; lastKnownFileType = folder; name = tours; path = Resources/tours; sourceTree = "<group>"; };
-		EB4C40D41288988900058748 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		EB4C42DD1289CC8000058748 /* MITMapRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRoute.m; sourceTree = "<group>"; };
 		EB5C621F1201D93A00805EBE /* news */ = {isa = PBXFileReference; lastKnownFileType = folder; name = news; path = Resources/news; sourceTree = "<group>"; };
 		EB6F2B6910E9023300A29A2A /* MITUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITUIConstants.h; sourceTree = "<group>"; };
@@ -1865,10 +1854,6 @@
 				2C33349F162F2F0200BBB312 /* libsqlite3.dylib in Frameworks */,
 				2C5DECDC13E9BEF400F9C089 /* libz.dylib in Frameworks */,
 				29366C1A118E401C009D6863 /* libxml2.dylib in Frameworks */,
-				2C33349A162F27E200BBB312 /* Social.framework in Frameworks */,
-				2C333498162EEFA700BBB312 /* Twitter.framework in Frameworks */,
-				2C333490162DCF2600BBB312 /* Accounts.framework in Frameworks */,
-				2C333491162DCF2600BBB312 /* AdSupport.framework in Frameworks */,
 				2CA454F213C7468F00891428 /* AssetsLibrary.framework in Frameworks */,
 				2C3676B513C5F6B1003CB7A4 /* ImageIO.framework in Frameworks */,
 				2C99DCE01370782200114A9A /* CoreText.framework in Frameworks */,
@@ -1885,10 +1870,8 @@
 				29366C1E118E4151009D6863 /* Security.framework in Frameworks */,
 				569DC3391282ADAB00BA0794 /* AVFoundation.framework in Frameworks */,
 				569DC33C1282ADBC00BA0794 /* CoreMedia.framework in Frameworks */,
-				569DC33F1282ADC000BA0794 /* CoreVideo.framework in Frameworks */,
 				569DC3421282ADCE00BA0794 /* libiconv.dylib in Frameworks */,
 				56D7DF52128854DF00E9E5C9 /* MapKit.framework in Frameworks */,
-				EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */,
 				EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */,
 				A63DEE281353CF37001C52BF /* EventKit.framework in Frameworks */,
 				A69826E51354A488004A8258 /* EventKitUI.framework in Frameworks */,
@@ -2837,10 +2820,8 @@
 		29B97323FDCFA39411CA2CEA /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				2C33348E162DCF2600BBB312 /* Accounts.framework */,
 				EB7F32D210CD6FB300188BCD /* AddressBook.framework */,
 				EB7F32D610CD6FBB00188BCD /* AddressBookUI.framework */,
-				2C33348F162DCF2600BBB312 /* AdSupport.framework */,
 				2CA454F113C7468F00891428 /* AssetsLibrary.framework */,
 				296F9EDC110A0F5400EC8FCA /* AudioToolbox.framework */,
 				569DC3381282ADAB00BA0794 /* AVFoundation.framework */,
@@ -2863,12 +2844,9 @@
 				EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */,
 				BD9FA7ED1047A05E00BC3C0A /* MessageUI.framework */,
 				2C3676B613C5F7FF003CB7A4 /* MobileCoreServices.framework */,
-				EB4C40D41288988900058748 /* OpenGLES.framework */,
 				DE7720DF10C57E1C00620A7D /* QuartzCore.framework */,
 				29366C1D118E4151009D6863 /* Security.framework */,
-				2C333499162F27E200BBB312 /* Social.framework */,
 				3A82708C103DAA2400BB4109 /* SystemConfiguration.framework */,
-				2C333497162EEFA700BBB312 /* Twitter.framework */,
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				A63DEE271353CF37001C52BF /* EventKit.framework */,
 				8A8CB9DF52659F18CB8914F9 /* libPods.a */,
