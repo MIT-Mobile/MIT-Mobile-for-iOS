@@ -6,7 +6,6 @@
 #import "CoreLocation+MITAdditions.h"
 #import "UIImage+Resize.h"
 #import "NSDateFormatter+RelativeString.h"
-#import "NSMutableAttributedString+MITAdditions.h"
 #import "NSTimer+MITBlockTimer.h"
 #import "CoreData+MITAdditions.h"
 

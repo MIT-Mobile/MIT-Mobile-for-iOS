@@ -669,7 +669,6 @@
 		EBF8A77B12AF09CD00D39AE6 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */; };
 		EBF8C20612BABBF400D39AE6 /* CoreLocation+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EF3B3B15103F072400E8AA0C /* MITNavigationActivityView.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */ = {isa = PBXBuildFile; fileRef = EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -1837,8 +1836,6 @@
 		EBF8C20412BABBF400D39AE6 /* CoreLocation+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "CoreLocation+MITAdditions.m"; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0B /* MITNavigationActivityView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNavigationActivityView.m; sourceTree = "<group>"; };
 		EF3B3B15103F072400E8AA0D /* MITNavigationActivityView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNavigationActivityView.h; sourceTree = "<group>"; };
-		EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSMutableAttributedString+MITAdditions.m"; sourceTree = "<group>"; };
-		EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSMutableAttributedString+MITAdditions.h"; sourceTree = "<group>"; };
 		F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -2975,8 +2972,6 @@
 				2CC2F6BC164971AE00838337 /* MITAdditions.h */,
 				2C6AB73E13564F74003B174A /* NSDateFormatter+RelativeString.h */,
 				2C6AB73F13564F74003B174A /* NSDateFormatter+RelativeString.m */,
-				EF3B3B15103F072400E8AA14 /* NSMutableAttributedString+MITAdditions.h */,
-				EF3B3B15103F072400E8AA12 /* NSMutableAttributedString+MITAdditions.m */,
 				2C544B9B1358A24400685545 /* UIImage+Resize.h */,
 				2C544B9C1358A24400685545 /* UIImage+Resize.m */,
 				DE821E7F10EAB4F500B4C4C8 /* UIKit+MITAdditions.h */,
@@ -4970,7 +4965,6 @@
 				22C7530019AD125600DD6E73 /* MITDiningRetailVenueDataManager.m in Sources */,
 				2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */,
 				80C5D9C91A11142800E63FDD /* MITLibrariesFormSheetElementTopic.m in Sources */,
-				EF3B3B15103F072400E8AA13 /* NSMutableAttributedString+MITAdditions.m in Sources */,
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */,
