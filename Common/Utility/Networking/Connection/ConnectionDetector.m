@@ -37,8 +37,4 @@
 	return self;
 }
 
-- (void)dealloc {
-    self.reachability = nil;
-}
-
 @end

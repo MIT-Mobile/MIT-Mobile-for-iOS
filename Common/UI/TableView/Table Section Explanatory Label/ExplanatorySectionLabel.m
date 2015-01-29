@@ -77,13 +77,6 @@ NSString * const labelText = @"Some Text";
     return self;
 }
 
-- (void)dealloc {
-    self.accessoryView = nil;
-    self.label = nil;
-    self.font = nil;
-    self.text = nil;
-}
-
 - (void)setAccessoryView:(UIImageView *)accessoryView {
     if (accessoryView != _accessoryView) {
         [_accessoryView removeFromSuperview];

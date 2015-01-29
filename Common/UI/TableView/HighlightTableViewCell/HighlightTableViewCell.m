@@ -19,11 +19,6 @@
     [super setSelected:selected animated:animated];
 }
 
-- (void)dealloc
-{
-    self.highlightLabel = nil;
-}
-
 - (void)layoutSubviews {
     [super layoutSubviews];
     
