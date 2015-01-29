@@ -643,7 +643,6 @@
 		DE0A62AC10CDAEA90058B2C2 /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE0F6B3411109BC500F064D6 /* AboutMITVC.m in Sources */ = {isa = PBXBuildFile; fileRef = DE0F6B3311109BC500F064D6 /* AboutMITVC.m */; };
 		DE18F9EE10F19105009A69B9 /* News.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DE18F9ED10F19105009A69B9 /* News.xcdatamodeld */; };
-		DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */ = {isa = PBXBuildFile; fileRef = DE1B4D7110CE17B30073BABC /* MITJSON.m */; };
 		DE2A45861885AF72002DE0EA /* MITNewsStoryCell.m in Sources */ = {isa = PBXBuildFile; fileRef = DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */; };
 		DE516256147889D1002415DE /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = DE516255147889D1002415DE /* ExplanatorySectionLabel.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DE5BE3EB188BA796008A135E /* Images.xcassets */; };
@@ -1811,8 +1810,6 @@
 		DE10571411985D4B0090A505 /* News 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News 2.xcdatamodel"; sourceTree = "<group>"; };
 		DE129018134B748E00BEBDA2 /* MITLogging.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLogging.h; sourceTree = "<group>"; };
 		DE18F9E910F19085009A69B9 /* News.xcdatamodel */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = wrapper.xcdatamodel; path = News.xcdatamodel; sourceTree = "<group>"; };
-		DE1B4D7010CE17B30073BABC /* MITJSON.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITJSON.h; sourceTree = "<group>"; };
-		DE1B4D7110CE17B30073BABC /* MITJSON.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITJSON.m; sourceTree = "<group>"; };
 		DE2A45831885AF72002DE0EA /* MITNewsStoryCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsStoryCell.h; sourceTree = "<group>"; };
 		DE2A45841885AF72002DE0EA /* MITNewsStoryCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsStoryCell.m; sourceTree = "<group>"; };
 		DE516254147889D1002415DE /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
@@ -1974,7 +1971,6 @@
 				2C99DCAE1370508D00114A9A /* HighlightLabel.m */,
 				EB4C2911127B224800058748 /* IconGrid.h */,
 				EB4C2912127B224800058748 /* IconGrid.m */,
-				BD1E92F3103B5D60004429AA /* JSON */,
 				DE0A62AA10CDAEA90058B2C2 /* MITBuildInfo.h */,
 				DE0A62AB10CDAEA90058B2C2 /* MITBuildInfo.m */,
 				DEA3B6F610CB126200BDA774 /* MITConstants.h */,
@@ -4151,15 +4147,6 @@
 			name = Cells;
 			sourceTree = "<group>";
 		};
-		BD1E92F3103B5D60004429AA /* JSON */ = {
-			isa = PBXGroup;
-			children = (
-				DE1B4D7010CE17B30073BABC /* MITJSON.h */,
-				DE1B4D7110CE17B30073BABC /* MITJSON.m */,
-			);
-			path = JSON;
-			sourceTree = "<group>";
-		};
 		DE2A458A1885AF83002DE0EA /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -4893,7 +4880,6 @@
 				A5A303CA19804F0B00C9C273 /* MITEventDetailViewController.m in Sources */,
 				2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */,
 				A59D4C9A19F6D0C40074E392 /* MITLibrariesSearchResultsViewController.m in Sources */,
-				DE1B4D7210CE17B30073BABC /* MITJSON.m in Sources */,
 				80C5D9DD1A1119CC00E63FDD /* MITLibrariesFormSheetElementPhoneNumber.m in Sources */,
 				80C5D9EC1A111D2400E63FDD /* MITLibrariesFormSheetElementCourse.m in Sources */,
 				A5BF26021969E24400D73AF5 /* MITMapPlacePhotoCell.m in Sources */,

@@ -3,7 +3,6 @@
 #import "EmergencyContactsViewController.h"
 #import "MITUIConstants.h"
 #import "EmergencyData.h"
-#import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "MITTelephoneHandler.h"
