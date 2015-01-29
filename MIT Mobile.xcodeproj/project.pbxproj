@@ -239,7 +239,6 @@
 		2978864510F03656002670CC /* MITDeviceRegistration.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864210F03656002670CC /* MITDeviceRegistration.m */; };
 		2978864610F03656002670CC /* MITUnreadNotifications.m in Sources */ = {isa = PBXBuildFile; fileRef = 2978864410F03656002670CC /* MITUnreadNotifications.m */; };
 		29974B711160F1DA009D03B9 /* URLShortener.m in Sources */ = {isa = PBXBuildFile; fileRef = 29974B701160F1DA009D03B9 /* URLShortener.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
-		29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */ = {isa = PBXBuildFile; fileRef = 29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		2C0023A617FB7AC800E8E0E5 /* MITMapPlace.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */; };
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
@@ -1105,8 +1104,6 @@
 		29974B6F1160F1DA009D03B9 /* URLShortener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = URLShortener.h; sourceTree = "<group>"; };
 		29974B701160F1DA009D03B9 /* URLShortener.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = URLShortener.m; sourceTree = "<group>"; };
 		29B97316FDCFA39411CA2CEA /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SFHFKeychainUtils.h; sourceTree = "<group>"; };
-		29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SFHFKeychainUtils.m; sourceTree = "<group>"; };
 		2C0023A417FB7AC800E8E0E5 /* MITMapPlace.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMapPlace.h; path = Model/MITMapPlace.h; sourceTree = "<group>"; };
 		2C0023A517FB7AC800E8E0E5 /* MITMapPlace.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMapPlace.m; path = Model/MITMapPlace.m; sourceTree = "<group>"; };
 		2C03C6CC137C4C2B0005F1FC /* FacilitiesCategoryViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesCategoryViewController.h; sourceTree = "<group>"; };
@@ -1987,8 +1984,6 @@
 				2C09824B13A8F21D00778B53 /* ModuleVersions.m */,
 				DEAF6EEE13B3C7B40078AB8F /* PlaceholderTextView.h */,
 				DEAF6EEF13B3C7B40078AB8F /* PlaceholderTextView.m */,
-				29C454BE118B61CA00A321B0 /* SFHFKeychainUtils.h */,
-				29C454BF118B61CA00A321B0 /* SFHFKeychainUtils.m */,
 				2CFB87CF1416AFB10014E141 /* UI Classes */,
 				29974B6F1160F1DA009D03B9 /* URLShortener.h */,
 				29974B701160F1DA009D03B9 /* URLShortener.m */,
@@ -4923,7 +4918,6 @@
 				22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				80C5D9FF1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m in Sources */,
-				29C454C1118B61CA00A321B0 /* SFHFKeychainUtils.m in Sources */,
 				AFECC2C21A0A856600B59442 /* MITToursStopCollectionViewCell.m in Sources */,
 				225AC09019B8F3EB008854BC /* MITDiningComparisonDataManager.m in Sources */,
 				2C15FCD017C5868A00DC934C /* MITMultilineTableViewCell.m in Sources */,
