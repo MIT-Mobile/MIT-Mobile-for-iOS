@@ -3,7 +3,6 @@
 
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMobileServerConfiguration.h"
-#import "MobileKeychainServices.h"
 #import "MITAdditions.h"
 
 static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";

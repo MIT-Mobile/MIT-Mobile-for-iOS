@@ -15,6 +15,7 @@
     #import <UIKit/UIKit.h>
     #import "MITConstants.h" // shared constants (common URLs, NSUserDefaults keys, etc)
     #import "MIT_MobileAppDelegate.h" // This is used in a fair number of locations, so give everything access by default
+    #import <CocoaLumberjack/DDLog.h>
 #endif
 
 #ifndef CGFLOAT_EPSILON
