@@ -661,7 +661,6 @@
 		EB4C40D51288988900058748 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EB4C40D41288988900058748 /* OpenGLES.framework */; };
 		EB4C42DE1289CC8000058748 /* MITMapRoute.m in Sources */ = {isa = PBXBuildFile; fileRef = EB4C42DD1289CC8000058748 /* MITMapRoute.m */; };
 		EB5C625A1201D93A00805EBE /* news in Resources */ = {isa = PBXBuildFile; fileRef = EB5C621F1201D93A00805EBE /* news */; };
-		EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB6FD1F910E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */; settings = {COMPILER_FLAGS = "-fno-objc-arc"; }; };
 		EB7F327F10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = EB7F326A10CD6C5B00188BCD /* PeopleDataModel.xcdatamodeld */; };
 		EB7F328110CD6C5B00188BCD /* PersonDetails.m in Sources */ = {isa = PBXBuildFile; fileRef = EB7F326F10CD6C5B00188BCD /* PersonDetails.m */; };
@@ -1827,8 +1826,6 @@
 		EB4C40D41288988900058748 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 		EB4C42DD1289CC8000058748 /* MITMapRoute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapRoute.m; sourceTree = "<group>"; };
 		EB5C621F1201D93A00805EBE /* news */ = {isa = PBXFileReference; lastKnownFileType = folder; name = news; path = Resources/news; sourceTree = "<group>"; };
-		EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MultiLineTableViewCell.h; path = ../MultiLineTableViewCell.h; sourceTree = "<group>"; };
-		EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MultiLineTableViewCell.m; path = ../MultiLineTableViewCell.m; sourceTree = "<group>"; };
 		EB6F2B6910E9023300A29A2A /* MITUIConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITUIConstants.h; sourceTree = "<group>"; };
 		EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = SecondaryGroupedTableViewCell.h; path = ../SecondaryGroupedTableViewCell.h; sourceTree = "<group>"; };
 		EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = SecondaryGroupedTableViewCell.m; path = ../SecondaryGroupedTableViewCell.m; sourceTree = "<group>"; };
@@ -3396,8 +3393,6 @@
 			children = (
 				2C03C6D2137C66100005F1FC /* HighlightTableViewCell.h */,
 				2C03C6D3137C66100005F1FC /* HighlightTableViewCell.m */,
-				EB6DEE3E11D246EA00B65CE3 /* MultiLineTableViewCell.h */,
-				EB6DEE3F11D246EA00B65CE3 /* MultiLineTableViewCell.m */,
 				EB6FD1F710E19D7900D56BE1 /* SecondaryGroupedTableViewCell.h */,
 				EB6FD1F810E19D7900D56BE1 /* SecondaryGroupedTableViewCell.m */,
 			);
@@ -4837,7 +4832,6 @@
 				44C1A4C511A412E2000FD653 /* MITMapSearch.m in Sources */,
 				A541EB8D1A314E8600FA7349 /* MITModuleItem.m in Sources */,
 				5E0692F81945F7A0009D1449 /* MITShuttleRoute+MapKit.m in Sources */,
-				EB6DEE4111D246EA00B65CE3 /* MultiLineTableViewCell.m in Sources */,
 				27CBE9981A17E6D600B85F67 /* MITBatchScanningCell.m in Sources */,
 				808DCE661A6583C300A1FF80 /* MITDiningHouseMealListViewController.m in Sources */,
 				5E62A9AB194A275900C0B76C /* MITShuttleResourceData.m in Sources */,
