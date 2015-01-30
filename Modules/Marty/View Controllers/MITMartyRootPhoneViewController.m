@@ -91,7 +91,7 @@
             }
         } else {
             DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITMartyTableViewController class]),
+                      NSStringFromClass([MITMartyDetailTableViewController class]),
                       NSStringFromClass([[segue destinationViewController] class]));
         }
     }
