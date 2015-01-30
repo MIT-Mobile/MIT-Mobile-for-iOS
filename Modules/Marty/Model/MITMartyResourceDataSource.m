@@ -10,85 +10,6 @@
 static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
 static NSString* const MITMartyResourcePathPattern = @"resource";
 
-
-typedef NS_ENUM(NSInteger, MITMartyResourceOperator) {
-    MITMartyResourceOperatorEqual,
-    MITMartyResourceOperatorNotEqual,
-    MITMartyResourceOperatorLessThan,
-    MITMartyResourceOperatorLessThanOrEqual,
-    MITMartyResourceOperatorGreaterThan,
-    MITMartyResourceOperatorGreaterThanOrEqual,
-    MITMartyResourceOperatorIn,
-    MITMartyResourceOperatorNotIn,
-    MITMartyResourceOperatorLike,
-    MITMartyResourceOperatorNotLike,
-    MITMartyResourceOperatorIsNull,
-    MITMartyResourceOperatorIsNotNull,
-    MITMartyResourceOperatorBetween
-};
-
-static NSDictionary* MITMartyResourceWhereClause(NSString *field, MITMartyResourceOperator operator, NSString *value) {
-
-    NSString *operatorString = nil;
-    switch (operator) {
-        case MITMartyResourceOperatorEqual: {
-            operatorString = @"=";
-        } break;
-
-        case MITMartyResourceOperatorNotEqual: {
-            operatorString = @"!=";
-        } break;
-
-        case MITMartyResourceOperatorLessThan: {
-            operatorString = @"<";
-        } break;
-
-        case MITMartyResourceOperatorLessThanOrEqual: {
-            operatorString = @"<=";
-        } break;
-
-        case MITMartyResourceOperatorGreaterThan: {
-            operatorString = @">";
-        } break;
-
-        case MITMartyResourceOperatorGreaterThanOrEqual: {
-            operatorString = @">=";
-        } break;
-
-        case MITMartyResourceOperatorIn: {
-            operatorString = @"in";
-        } break;
-
-        case MITMartyResourceOperatorNotIn: {
-            operatorString = @"NotIn";
-        } break;
-
-        case MITMartyResourceOperatorLike: {
-            operatorString = @"like";
-        } break;
-
-        case MITMartyResourceOperatorNotLike: {
-            operatorString = @"NotLike";
-        } break;
-
-        case MITMartyResourceOperatorIsNull: {
-            operatorString = @"IsNull";
-        } break;
-
-        case MITMartyResourceOperatorIsNotNull: {
-            operatorString = @"IsNotNull";
-        } break;
-
-        case MITMartyResourceOperatorBetween: {
-            operatorString = @"between";
-        } break;
-    }
-
-    return @{@"field" : field,
-             @"operator" : operatorString,
-             @"value" : value};
-}
-
 @interface MITMartyResourceDataSource ()
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
@@ -140,21 +61,11 @@ static NSDictionary* MITMartyResourceWhereClause(NSString *field, MITMartyResour
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMartyResourceDataSource* dataSource, NSError *error))block
 {
     NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMartyDefaultServer];
-
     NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMartyResourcePathPattern];
 
     if (queryString) {
-        NSDictionary *whereClause = MITMartyResourceWhereClause(@"attribute_values.value", MITMartyResourceOperatorLike, queryString);
-        NSDictionary *queryParameters = @{@"where" : @[whereClause]};
-
-        NSError *error = nil;
-        NSData *jsonData = [NSJSONSerialization dataWithJSONObject:queryParameters options:0 error:&error];
-
-        if (jsonData) {
-            NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
-            jsonString = [jsonString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
-            [urlPath appendFormat:@"?%@&%@",@"format=json",jsonString];
-        }
+        NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
+        [urlPath appendFormat:@"?%@&q=%@",@"format=json",encodedString];
     }
 
     NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
