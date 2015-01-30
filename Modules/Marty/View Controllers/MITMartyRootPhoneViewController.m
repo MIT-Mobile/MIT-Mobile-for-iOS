@@ -27,7 +27,7 @@
 
     MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
     self.dataSource = dataSource;
-    [dataSource resourcesWithQuery:@"Slant-Bed+CNC+Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+    [dataSource resourcesWithQuery:@"Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
         if (error) {
             DDLogWarn(@"Error: %@",error);
         } else {
@@ -36,12 +36,7 @@
 
                 [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
                     DDLogVerbose(@"Got resource with name: %@ [%@]",resource.name, resource.identifier);
-                    if ([resource.name isEqualToString:@"Slant-Bed CNC Lathe"]) {
-                        self.resource = resource;
-                        [self performSegueWithIdentifier:@"showDetail" sender:nil];
-                        *stop = YES;
-                        
-                    }
+
                 }];
 
             }];
