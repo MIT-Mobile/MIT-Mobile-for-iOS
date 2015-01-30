@@ -5,17 +5,16 @@
 #import "MITTitleDescriptionCell.h"
 #import "MITMartySpecificationsHeader.h"
 
-#import "MITMartyResourceAttribute.h"
 #import "MITMartyTemplateAttribute.h"
 #import "MITMartyResourceAttribute.h"
-#import "MITMartyTemplate.h"
+#import "MITMartyResourceAttributeValue.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
 static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
 static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
 
-@interface MITMartyDetailTableViewController() <UITableViewDataSource, UITableViewDelegate, UITableViewDataSourceDynamicSizing>
+@interface MITMartyDetailTableViewController() <UITableViewDataSourceDynamicSizing>
 
 @end
 
@@ -89,12 +88,22 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
     } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]]) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-        
-        NSArray *orderedAttributes = [self.resource.attributes allObjects];
 
-        MITMartyResourceAttribute *rAttribute = orderedAttributes[indexPath.row];
-#warning go back and make descriptions a list of values
-        [titleDescriptionCell setTitle:rAttribute.attribute.label setDescription:[rAttribute.values firstObject]];
+        MITMartyResourceAttribute *rAttribute = self.resource.attributes[indexPath.row];
+        
+        NSString *valueString = [[NSString alloc] init];
+        
+        for (MITMartyResourceAttributeValue *value in rAttribute.values) {
+            if (![value.value isEqualToString:@""]) {
+                if ([valueString isEqualToString:@""]) {
+                    valueString = value.value;
+                } else {
+                    valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];
+                }
+            }
+        }
+        
+        [titleDescriptionCell setTitle:rAttribute.attribute.label setDescription:valueString];
     }
 }
 

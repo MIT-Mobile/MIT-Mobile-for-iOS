@@ -3,6 +3,6 @@
 
 @interface MITMartyDetailTableViewController : UITableViewController
 
-@property (nonatomic, strong) MITMartyResource *resource;
+@property (nonatomic, weak) MITMartyResource *resource;
 
 @end
