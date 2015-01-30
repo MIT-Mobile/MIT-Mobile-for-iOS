@@ -94,8 +94,8 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
         NSString *valueString = [[NSString alloc] init];
         
         for (MITMartyResourceAttributeValue *value in rAttribute.values) {
-            if (![value.value isEqualToString:@""]) {
-                if ([valueString isEqualToString:@""]) {
+            if ([value.value length] != 0) {
+                if ([valueString length] == 0) {
                     valueString = value.value;
                 } else {
                     valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];

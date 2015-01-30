@@ -1,4 +1,5 @@
 #import "MITMartyDetailCell.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITMartyDetailCell()
 
@@ -61,10 +62,12 @@
 
 - (void)setStatus:(NSString *)status
 {
-    if ([status isEqualToString:@"Online"]) {
-        _statusLabel.textColor = [UIColor colorWithRed:0. green:119/255.0 blue:0. alpha:1];
-    } else if ([status isEqualToString:@"Offline"]) {
-        _statusLabel.textColor = [UIColor redColor];
+    
+    
+    if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
+        _statusLabel.textColor = [UIColor mit_openGreenColor];
+    } else if ([status caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
+        _statusLabel.textColor = [UIColor mit_closedRedColor];
     }
     _statusLabel.text = status;
     [self setNeedsUpdateConstraints];
