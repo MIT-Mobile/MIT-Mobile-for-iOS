@@ -36,6 +36,7 @@
 		0B882A1A1A7AF10F00E80E3A /* MITMartyDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B882A181A7AF10F00E80E3A /* MITMartyDetailCell.xib */; };
 		0B882A1B1A7AF10F00E80E3A /* MITMartySpecificationsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B882A191A7AF10F00E80E3A /* MITMartySpecificationsHeader.xib */; };
 		0B882A1E1A7AF17400E80E3A /* MITMartyTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B882A1D1A7AF17400E80E3A /* MITMartyTableViewController.m */; };
+		0B882A221A7BF32000E80E3A /* MITMartyPadHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B882A211A7BF32000E80E3A /* MITMartyPadHomeViewController.m */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0BB2036C1A72E2F1003E9C91 /* MITMartyDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB2036B1A72E2F1003E9C91 /* MITMartyDetailCell.m */; };
 		0BB203771A7678CA003E9C91 /* MITMartySpecificationsHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB203761A7678CA003E9C91 /* MITMartySpecificationsHeader.m */; };
@@ -850,6 +851,8 @@
 		0B882A191A7AF10F00E80E3A /* MITMartySpecificationsHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITMartySpecificationsHeader.xib; path = "Modules/Marty/Views/Table View Cells XIBs/MITMartySpecificationsHeader.xib"; sourceTree = SOURCE_ROOT; };
 		0B882A1C1A7AF17400E80E3A /* MITMartyTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyTableViewController.h; path = "View Controllers/MITMartyTableViewController.h"; sourceTree = "<group>"; };
 		0B882A1D1A7AF17400E80E3A /* MITMartyTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyTableViewController.m; path = "View Controllers/MITMartyTableViewController.m"; sourceTree = "<group>"; };
+		0B882A201A7BF32000E80E3A /* MITMartyPadHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyPadHomeViewController.h; sourceTree = "<group>"; };
+		0B882A211A7BF32000E80E3A /* MITMartyPadHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyPadHomeViewController.m; sourceTree = "<group>"; };
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
 		0BB2036A1A72E2F1003E9C91 /* MITMartyDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyDetailCell.h; path = "Modules/Marty/Views/Table View Cells/MITMartyDetailCell.h"; sourceTree = SOURCE_ROOT; };
@@ -3710,6 +3713,8 @@
 				2CB5E8921A704E4A0012F034 /* MITMartyRootPhoneViewController.m */,
 				0B882A1C1A7AF17400E80E3A /* MITMartyTableViewController.h */,
 				0B882A1D1A7AF17400E80E3A /* MITMartyTableViewController.m */,
+				0B882A201A7BF32000E80E3A /* MITMartyPadHomeViewController.h */,
+				0B882A211A7BF32000E80E3A /* MITMartyPadHomeViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -5642,6 +5647,7 @@
 				2C18090318F33B95008F9775 /* MITTouchstoneRequestOperation+MITMobileV2.m in Sources */,
 				22BDD0CC19804E3D005BE8E9 /* MITCalendarEventCell.m in Sources */,
 				2C544BA01358A24500685545 /* UIImage+Resize.m in Sources */,
+				0B882A221A7BF32000E80E3A /* MITMartyPadHomeViewController.m in Sources */,
 				2240182B19E71C7C0005BB6D /* MITLibrariesQuickLinksViewController.m in Sources */,
 				DE821E8110EAB4F500B4C4C8 /* UIKit+MITAdditions.m in Sources */,
 				A541EBBB1A31557900FA7349 /* SDWebImageDecoder.m in Sources */,

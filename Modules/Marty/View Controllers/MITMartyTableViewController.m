@@ -5,16 +5,17 @@
 #import "MITTitleDescriptionCell.h"
 #import "MITMartySpecificationsHeader.h"
 
+#import "MITMartyResourceAttribute.h"
+#import "MITMartyTemplateAttribute.h"
+#import "MITMartyResourceAttribute.h"
+#import "MITMartyTemplate.h"
+
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
 static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
 static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
 
 @interface MITMartyTableViewController() <UITableViewDataSource, UITableViewDelegate, UITableViewDataSourceDynamicSizing>
-
-//Test data
-@property (nonatomic, strong) NSArray *specificationsTitle;
-@property (nonatomic, strong) NSArray *specificationsDescription;
 
 @end
 
@@ -34,13 +35,11 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     
     self.tableView.tableFooterView = [UIView new];
     self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
-    [self setup];
 }
 
-- (void)setup
+- (void)viewWillAppear:(BOOL)animated
 {
-    self.specificationsTitle = @[@"Name", @"Description", @"Model"];
-    self.specificationsDescription = @[@"Gear Head Combo Lathe Mill Drill", @"This is a tool that is a tool that makes a tool which creates a tool which tests the cell resizing thing of creating a resizable cell that does something about a tool", @"A22"];
+    [super viewWillAppear:animated];
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
@@ -53,7 +52,7 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     if (section == 0 || section == 1) {
         return 1;
     } else if (section == 2) {
-        return [self.specificationsDescription count];
+        return [self.resource.attributes count];
     }
     return 0;
 }
@@ -81,16 +80,21 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 {
     if ([cell isKindOfClass:[MITMartyDetailCell class]]) {
         MITMartyDetailCell *detailCell = (MITMartyDetailCell*)cell;
-        [detailCell setTitle: @"Gear Head Combo Lathe Mill Drill"];
-        [detailCell setStatus:@"Online"];
+        [detailCell setTitle: self.resource.name];
+        [detailCell setStatus:self.resource.status];
 
     } else if ([cell isKindOfClass:[MITActionCell class]]) {
         MITActionCell *actionCell = (MITActionCell*)cell;
-        [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:@"6-338"];
+        [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:self.resource.room];
 
     } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]]) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-        [titleDescriptionCell setTitle:self.specificationsTitle[indexPath.row] setDescription:self.specificationsDescription[indexPath.row]];
+        
+        NSArray *orderedAttributes = [self.resource.attributes allObjects];
+
+        MITMartyResourceAttribute *rAttribute = orderedAttributes[indexPath.row];
+#warning go back and make descriptions a list of values
+        [titleDescriptionCell setTitle:rAttribute.attribute.label setDescription:[rAttribute.values firstObject]];
     }
 }
 

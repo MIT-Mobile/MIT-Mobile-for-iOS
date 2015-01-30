@@ -7,6 +7,8 @@
 @property(nonatomic,weak) IBOutlet NSLayoutConstraint *topViewHeightConstraint;
 @property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
 @property(nonatomic,readonly,strong) NSArray *resources;
+@property (nonatomic, strong) MITMartyResource *resource;
+
 @end
 
 @implementation MITMartyRootPhoneViewController
@@ -25,7 +27,7 @@
 
     MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
     self.dataSource = dataSource;
-    [dataSource resourcesWithQuery:@"lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+    [dataSource resourcesWithQuery:@"Slant-Bed+CNC+Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
         if (error) {
             DDLogWarn(@"Error: %@",error);
         } else {
@@ -34,15 +36,21 @@
 
                 [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
                     DDLogVerbose(@"Got resource with name: %@ [%@]",resource.name, resource.identifier);
+                    if ([resource.name isEqualToString:@"Slant-Bed CNC Lathe"]) {
+                        self.resource = resource;
+                        [self performSegueWithIdentifier:@"showDetail" sender:nil];
+                        *stop = YES;
+                        
+                    }
                 }];
-                [self performSegueWithIdentifier:@"showDetail" sender:nil];
 
             }];
         }
     }];
 }
 
-- (void)didReceiveMemoryWarning {
+- (void)didReceiveMemoryWarning
+{
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
@@ -67,5 +75,26 @@
     // Pass the selected object to the new view controller.
 }
 */
+
+- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+{
+    UIViewController *destinationViewController = [segue destinationViewController];
+    
+    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
+    
+    if ([segue.identifier isEqualToString:@"showDetail"]) {
+        if ([destinationViewController isKindOfClass:[MITMartyTableViewController class]]) {
+            
+            if (self.resource) {
+                MITMartyTableViewController *storyDetailViewController = (MITMartyTableViewController*)destinationViewController;
+                storyDetailViewController.resource = self.resource;
+            }
+        } else {
+            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
+                      NSStringFromClass([MITMartyTableViewController class]),
+                      NSStringFromClass([[segue destinationViewController] class]));
+        }
+    }
+}
 
 @end
