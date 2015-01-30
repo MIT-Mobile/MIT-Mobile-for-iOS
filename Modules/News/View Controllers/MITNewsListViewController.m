@@ -11,7 +11,7 @@
 #import "MITNewsStoryCell.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 #import "MITDisclosureHeaderView.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"

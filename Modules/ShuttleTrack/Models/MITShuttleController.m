@@ -5,8 +5,7 @@
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleVehicleList.h"
-#import <RestKit/RKManagedObjectMappingOperationDataSource.h>
-#import <RestKit/RKManagedObjectStore.h>
+#import <RestKit/CoreData.h>
 #import "MITShuttlePredictionList.h"
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);

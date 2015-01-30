@@ -6,7 +6,7 @@
 
 #import "MITAdditions.h"
 #import "MITCoreDataController.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;

@@ -1,5 +1,5 @@
 #import "MITNewsImageViewController.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
 #import "MITImageScrollView.h"

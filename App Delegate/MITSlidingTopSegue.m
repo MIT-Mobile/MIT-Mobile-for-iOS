@@ -1,5 +1,5 @@
 #import "MITSlidingTopSegue.h"
-#import "ECSlidingViewController.h"
+#import <ECSlidingViewController/ECSlidingViewController.h>
 
 @implementation MITSlidingTopSegue
 

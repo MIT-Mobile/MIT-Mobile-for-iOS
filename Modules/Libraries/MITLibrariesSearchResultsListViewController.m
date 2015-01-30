@@ -1,8 +1,9 @@
 #import "MITLibrariesSearchResultsListViewController.h"
 #import "MITLibrariesSearchController.h"
 #import "MITLibrariesWorldcatItemCell.h"
-#import "SVPullToRefresh.h"
 #import "MITLibrariesWorldcatItem.h"
+
+#import <SVPullToRefresh/SVPullToRefresh.h>
 
 static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifier = @"kMITLibrariesSearchResultsViewControllerItemCellIdentifier";
 

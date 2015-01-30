@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <RestKit/ISO8601DateFormatterValueTransformer.h>
+#import <ISO8601DateFormatterValueTransformer/ISO8601DateFormatterValueTransformer.h>
 
 extern NSInteger const kMITLibrariesSearchResultsLimit;
 

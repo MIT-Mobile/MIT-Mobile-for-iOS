@@ -1,7 +1,7 @@
 #import "MITLibrariesItemLoanFineCell.h"
 #import "MITLibrariesMITFineItem.h"
 #import "MITLibrariesMITLoanItem.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 
