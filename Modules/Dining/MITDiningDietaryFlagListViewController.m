@@ -79,4 +79,8 @@ static NSString *const kMITDiningDietaryFlagListCellNibName = @"MITDiningDietary
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
+    return 36.0;
+}
+
 @end
