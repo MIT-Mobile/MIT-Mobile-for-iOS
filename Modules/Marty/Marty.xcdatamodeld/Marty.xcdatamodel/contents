@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6252" systemVersion="14C94b" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Category" representedClassName="MITMartyCategory" parentEntity="MartyObject" syncable="YES">
         <attribute name="templateIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="category" inverseEntity="Resource" syncable="YES"/>
@@ -21,9 +21,9 @@
         <attribute name="reservable" optional="YES" attributeType="Boolean" syncable="YES"/>
         <attribute name="room" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ResourceAttribute" syncable="YES"/>
+        <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ResourceAttribute" inverseName="resources" inverseEntity="ResourceAttribute" syncable="YES"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="resources" inverseEntity="Category" syncable="YES"/>
-        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="ResourceOwner" inverseName="resource" inverseEntity="ResourceOwner" syncable="YES"/>
+        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ResourceOwner" inverseName="resource" inverseEntity="ResourceOwner" syncable="YES"/>
         <relationship name="searches" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ResourceSearch" inverseName="resources" inverseEntity="ResourceSearch" syncable="YES"/>
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" syncable="YES"/>
         <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Type" inverseName="resources" inverseEntity="Type" syncable="YES"/>
@@ -32,6 +32,7 @@
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="templateAttributeIdentifier" attributeType="String" syncable="YES"/>
         <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TemplateAttribute" inverseName="attributes" inverseEntity="TemplateAttribute" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="attributes" inverseEntity="Resource" syncable="YES"/>
         <relationship name="values" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ResourceAttributeValue" inverseName="attribute" inverseEntity="ResourceAttributeValue" syncable="YES"/>
     </entity>
     <entity name="ResourceAttributeValue" representedClassName="MITMartyResourceAttributeValue" syncable="YES">
@@ -71,13 +72,13 @@
     <elements>
         <element name="Category" positionX="-225" positionY="-279" width="128" height="105"/>
         <element name="MartyObject" positionX="-225" positionY="-115" width="128" height="135"/>
-        <element name="Resource" positionX="27" positionY="36" width="128" height="225"/>
-        <element name="ResourceAttribute" positionX="583" positionY="90" width="128" height="103"/>
+        <element name="Resource" positionX="27" positionY="36" width="128" height="223"/>
+        <element name="ResourceAttribute" positionX="583" positionY="90" width="128" height="118"/>
+        <element name="ResourceAttributeValue" positionX="-27" positionY="-171" width="128" height="73"/>
         <element name="ResourceOwner" positionX="396" positionY="198" width="128" height="73"/>
         <element name="ResourceSearch" positionX="-18" positionY="-162" width="128" height="73"/>
         <element name="Template" positionX="214" positionY="-112" width="128" height="103"/>
         <element name="TemplateAttribute" positionX="396" positionY="-99" width="128" height="163"/>
         <element name="Type" positionX="45" positionY="-313" width="128" height="105"/>
-        <element name="ResourceAttributeValue" positionX="-27" positionY="-171" width="128" height="73"/>
     </elements>
 </model>
