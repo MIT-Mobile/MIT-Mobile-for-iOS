@@ -25,7 +25,7 @@
                                @"_attribute" : @"templateAttributeIdentifier"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"values" toKeyPath:@"values   " withMapping:[MITMartyResourceAttributeValue objectMapping]];
+    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"value" toKeyPath:@"values" withMapping:[MITMartyResourceAttributeValue objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
     NSRelationshipDescription *attributeRelationship = [[self entityDescription] relationshipsByName][@"attribute"];
