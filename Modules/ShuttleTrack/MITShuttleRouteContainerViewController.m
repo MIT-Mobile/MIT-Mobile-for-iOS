@@ -498,6 +498,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setStopViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
+        self.routeViewController.shouldSuppressPredictionRefreshReloads = NO;
         [self.routeViewController.tableView reloadData];
     };
     
@@ -569,6 +570,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
 {
     [self.view bringSubviewToFront:self.mapContainerView];
+    
+    self.routeViewController.shouldSuppressPredictionRefreshReloads = YES;
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
         self.routeContainerViewTopSpaceConstraint.priority = UILayoutPriorityDefaultHigh;

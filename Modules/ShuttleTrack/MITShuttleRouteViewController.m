@@ -120,7 +120,9 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)predictionsDidUpdate
 {
     self.isUpdating = NO;
-    [self.tableView reloadDataAndMaintainSelection];
+    if (!self.shouldSuppressPredictionRefreshReloads) {
+        [self.tableView reloadDataAndMaintainSelection];
+    }
 }
 
 #pragma mark - Refresh Control
