@@ -15,9 +15,20 @@
     return YES;
 }
 
-- (void)loadRootViewController
+- (void)loadViewController
 {
-    
+    UIUserInterfaceIdiom userInterfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+
+    UIStoryboard *storyboard = nil;
+    if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        storyboard = [UIStoryboard storyboardWithName:@"Marty_pad" bundle:nil];
+    } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        storyboard = [UIStoryboard storyboardWithName:@"Marty_phone" bundle:nil];
+    } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unknown user interface idiom" userInfo:nil];
+    }
+
+    self.viewController = [storyboard instantiateInitialViewController];
 }
 	
 @end

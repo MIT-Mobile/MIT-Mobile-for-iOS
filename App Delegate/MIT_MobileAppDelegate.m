@@ -464,7 +464,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
                             @"QRReaderResult",
                             @"MITShuttleDataModel",
                             @"PeopleDataModel",
-                            @"MITToursDataModel"];
+                            @"MITToursDataModel",
+                            @"Marty"];
 
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
