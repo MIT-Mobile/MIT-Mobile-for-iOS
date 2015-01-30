@@ -8,9 +8,7 @@ Contributions are welcome!
 
 #Building the app
 
-Sensitive information like API keys for Facebook and Twitter are kept within Common/Configuration/Secret.m. If the configuration file does not exist, a default 'Secret.m' will be created the when the app is built (using the 'Secret.m.in' template).
-
-MIT Mobile for iPhone will build for the iPhone Simulator without any modifications. To build for a device, you'll need to change the `CFBundleIdentifier` in MIT_Mobile-Info.plist from `edu.mit.mitmobile` to your own app id.
+MIT Mobile is using <a href="https://cocoapods.org">cocoapods</a>, so make sure that you open **MIT Mobile.xcworkspace**, and not the project file.
 
 #Technical Details
 
