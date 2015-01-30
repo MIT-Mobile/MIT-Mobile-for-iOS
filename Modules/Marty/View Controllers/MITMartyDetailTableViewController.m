@@ -1,4 +1,4 @@
-#import "MITMartyTableViewController.h"
+#import "MITMartyDetailTableViewController.h"
 #import "MITActionCell.h"
 #import "MITMartyDetailCell.h"
 #import "UITableView+DynamicSizing.h"
@@ -15,11 +15,11 @@ static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptio
 static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
 static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
 
-@interface MITMartyTableViewController() <UITableViewDataSource, UITableViewDelegate, UITableViewDataSourceDynamicSizing>
+@interface MITMartyDetailTableViewController() <UITableViewDataSource, UITableViewDelegate, UITableViewDataSourceDynamicSizing>
 
 @end
 
-@implementation MITMartyTableViewController
+@implementation MITMartyDetailTableViewController
 
 - (void)viewDidLoad
 {

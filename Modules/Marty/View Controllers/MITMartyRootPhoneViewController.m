@@ -1,7 +1,7 @@
 #import "MITMartyRootPhoneViewController.h"
 #import "MITMartyResourceDataSource.h"
 #import "MITMartyModel.h"
-#import "MITMartyTableViewController.h"
+#import "MITMartyDetailTableViewController.h"
 
 @interface MITMartyRootPhoneViewController ()
 @property(nonatomic,weak) IBOutlet NSLayoutConstraint *topViewHeightConstraint;
@@ -83,10 +83,10 @@
     DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
     
     if ([segue.identifier isEqualToString:@"showDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITMartyTableViewController class]]) {
+        if ([destinationViewController isKindOfClass:[MITMartyDetailTableViewController class]]) {
             
             if (self.resource) {
-                MITMartyTableViewController *storyDetailViewController = (MITMartyTableViewController*)destinationViewController;
+                MITMartyDetailTableViewController *storyDetailViewController = (MITMartyDetailTableViewController*)destinationViewController;
                 storyDetailViewController.resource = self.resource;
             }
         } else {
