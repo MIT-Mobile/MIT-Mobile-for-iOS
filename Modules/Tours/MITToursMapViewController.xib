@@ -32,8 +32,8 @@
                                 <constraint firstAttribute="height" constant="1" id="p7I-MM-Omy"/>
                             </constraints>
                         </view>
-                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="k0g-YJ-H0l" userLabel="Videotaping and photography are prohibited inside MIT buildings.  Tour Details...">
-                            <rect key="frame" x="8" y="8" width="304" height="59"/>
+                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" usesAttributedText="YES" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="k0g-YJ-H0l" userLabel="Videotaping and photography are prohibited inside MIT buildings.  Tour Details...">
+                            <rect key="frame" x="8" y="8" width="304" height="42"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="304" id="RtA-lF-q8v"/>
                             </constraints>

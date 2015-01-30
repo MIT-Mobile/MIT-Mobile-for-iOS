@@ -17,8 +17,8 @@
             <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" misplaced="YES" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="9">
-                    <rect key="frame" x="10" y="79" width="300" height="134"/>
+                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="1000" verticalCompressionResistancePriority="1000" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" minimumFontSize="10" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="9">
+                    <rect key="frame" x="10" y="79" width="300" height="51"/>
                     <constraints>
                         <constraint firstAttribute="height" priority="750" constant="143.5" id="mDL-Iq-Nvd"/>
                     </constraints>
@@ -29,8 +29,8 @@ MIT Mobile's Scanner can recognize those codes and can provide special functiona
                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                     <nil key="highlightedColor"/>
                 </label>
-                <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dBo-g7-gdM">
-                    <rect key="frame" x="10" y="222" width="300" height="110"/>
+                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dBo-g7-gdM">
+                    <rect key="frame" x="10" y="138" width="300" height="193"/>
                     <subviews>
                         <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" image="scanner-sample-qr" translatesAutoresizingMaskIntoConstraints="NO" id="Ztt-ya-ed8">
                             <rect key="frame" x="0.0" y="0.0" width="100" height="100"/>
