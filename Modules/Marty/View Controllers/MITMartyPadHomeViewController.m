@@ -3,7 +3,7 @@
 #import "MITMapPlace.h"
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
-#import "MITMapResultsListViewController.h"
+#import "MITMartyResultsListViewController.h"
 #import "MITMapBrowseContainerViewController.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
+@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -299,7 +299,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)closeIpadResultsList
 {
     if (self.isShowingIpadResultsList) {
-        MITMapResultsListViewController *resultsVC = [self resultsListViewController];
+        MITMartyResultsListViewController *resultsVC = [self resultsListViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -311,7 +311,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)openIpadResultsList
 {
     if (!self.isShowingIpadResultsList) {
-        MITMapResultsListViewController *resultsVC = [self resultsListViewController];
+        MITMartyResultsListViewController *resultsVC = [self resultsListViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -523,11 +523,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
-- (MITMapResultsListViewController *)resultsListViewController
+- (MITMartyResultsListViewController *)resultsListViewController
 {
-    static MITMapResultsListViewController *resultsListViewController;
+    static MITMartyResultsListViewController *resultsListViewController;
     if (!resultsListViewController) {
-        resultsListViewController = [[MITMapResultsListViewController alloc] initWithPlaces:self.places];
+        resultsListViewController = [[MITMartyResultsListViewController alloc] initWithPlaces:self.places];
         resultsListViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
@@ -827,7 +827,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - MITMapResultsListViewControllerDelegate
 
-- (void)resultsListViewController:(MITMapResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
+- (void)resultsListViewController:(MITMartyResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
 {
     [self showCalloutForPlace:place];
 }
@@ -912,7 +912,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         _searchBar.searchBarStyle = UISearchBarStyleMinimal;
         _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        _searchBar.placeholder = @"Search MIT Campus";
+        _searchBar.placeholder = @"Search Marty";
     }
     return _searchBar;
 }
