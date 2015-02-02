@@ -199,6 +199,7 @@ static NSString *const kMITDiningLinksCell = @"kMITDiningLinksCell";
 - (void)refreshRequestComplete
 {
     [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
 }
 
 #pragma mark - Setters
