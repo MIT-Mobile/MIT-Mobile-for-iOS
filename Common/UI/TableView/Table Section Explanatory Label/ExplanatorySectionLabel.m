@@ -244,9 +244,9 @@ NSString * const labelText = @"Some Text";
     CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
     
     UIFont *labelFont = [UIFont fontWithName:[[self labelFont] fontName] size:fontSize];
-    CGSize fittedSize = [text sizeWithFont:labelFont
-                              constrainedToSize:CGSizeMake(labelWidth, 2000.0)
-                                  lineBreakMode:NSLineBreakByWordWrapping];
+    
+    NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    CGSize fittedSize = [text boundingRectWithSize:CGSizeMake(labelWidth, 2000.0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: labelFont, NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
 
     return fittedSize.height + insets.top + insets.bottom;
 }
