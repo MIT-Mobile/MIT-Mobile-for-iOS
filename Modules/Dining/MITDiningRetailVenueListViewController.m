@@ -141,6 +141,7 @@ static NSString *const kMITDiningVenueCell = @"MITDiningVenueCell";
 - (void)refreshRequestComplete
 {
     [self.refreshControl endRefreshing];
+    [self.tableView reloadData];
 }
 
 @end
