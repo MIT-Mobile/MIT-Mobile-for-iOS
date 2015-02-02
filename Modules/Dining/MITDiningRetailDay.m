@@ -19,6 +19,9 @@
                                                   @"end_time" : @"endTimeString"}];
     [mapping addAttributeMappingsFromArray:@[@"message"]];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
+    
     return mapping;
 }
 

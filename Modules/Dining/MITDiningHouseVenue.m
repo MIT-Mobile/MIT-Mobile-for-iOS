@@ -30,7 +30,9 @@
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"meals_by_day" toKeyPath:@"mealsByDay" withMapping:[MITDiningHouseDay objectMapping]]];
     
     [mapping setIdentificationAttributes:@[@"identifier"]];
+    
     mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
     
     return mapping;
 }

@@ -20,6 +20,9 @@
     
     [mapping setIdentificationAttributes:@[@"url"]];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
+    
     return mapping;
 }
 

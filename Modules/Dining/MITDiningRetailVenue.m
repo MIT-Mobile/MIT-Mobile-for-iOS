@@ -38,6 +38,9 @@
     
     [mapping setIdentificationAttributes:@[@"identifier"]];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
+    
     return mapping;
 }
 

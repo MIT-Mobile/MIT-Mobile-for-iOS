@@ -18,6 +18,8 @@
     [mapping addAttributeMappingsFromDictionary:@{@"description" : @"itemDescription",
                                                   @"dietary_flags" : @"dietaryFlags"}];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
     
     return mapping;
 }

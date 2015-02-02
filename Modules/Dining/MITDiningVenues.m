@@ -17,6 +17,9 @@
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"house" toKeyPath:@"house" withMapping:[MITDiningHouseVenue objectMapping]]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"retail" toKeyPath:@"retail" withMapping:[MITDiningRetailVenue objectMapping]]];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
+    
     return mapping;
 }
 

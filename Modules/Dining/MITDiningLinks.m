@@ -13,6 +13,9 @@
     
     [mapping addAttributeMappingsFromArray:@[@"name", @"url"]];
     
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
+    
     return mapping;
 }
 

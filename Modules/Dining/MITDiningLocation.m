@@ -24,6 +24,9 @@
                                                   @"zip_code" : @"zipCode"}];
     
     [mapping addAttributeMappingsFromArray:@[@"latitude", @"longitude", @"street", @"city", @"state"]];
+   
+    mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
     
     return mapping;
 }
