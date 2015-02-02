@@ -78,8 +78,10 @@
                     if (!xmlXPathNodeSetIsEmpty(nodeSet)) {
                         xmlNodePtr responseRelayState = xmlCopyNode(self.relayState, MIT_XML_COPY_RECURSIVE);
                         xmlNodePtr soapHeaderNode = xmlXPathNodeSetItem(nodeSet, 0);
-
-                        xmlNodePtr childNode = soapHeaderNode->children;
+                        xmlNodePtr childNode = NULL;
+                        if (soapHeaderNode != NULL) {
+                            childNode = soapHeaderNode->children;
+                        }
                         while (childNode != NULL) {
                             xmlNodePtr unlinkedNode = childNode;
                             childNode = unlinkedNode->next;
