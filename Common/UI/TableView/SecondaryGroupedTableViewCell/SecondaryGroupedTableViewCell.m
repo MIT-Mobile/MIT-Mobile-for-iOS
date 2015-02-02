@@ -34,9 +34,10 @@
         self.secondaryTextLabel.highlightedTextColor = [UIColor whiteColor];
 		self.secondaryTextLabel.backgroundColor = [UIColor clearColor];		
 		self.secondaryTextLabel.tag = SECONDARY_GROUP_VIEW_TAG;
-		
-		CGSize textSize = [self.textLabel.text sizeWithFont:self.textLabel.font];
-		CGSize detailTextSize = [self.secondaryTextLabel.text sizeWithFont:self.secondaryTextLabel.font];
+        
+        CGSize textSize = [self.textLabel.text sizeWithAttributes:@{NSFontAttributeName: self.textLabel.font}];
+        CGSize detailTextSize = [self.secondaryTextLabel.text sizeWithAttributes:@{NSFontAttributeName: self.secondaryTextLabel.font}];
+        
 		self.secondaryTextLabel.frame = CGRectMake(textSize.width + self.textLabel.frame.origin.x + 4.0, 
 												   self.textLabel.frame.origin.y,
 												   detailTextSize.width, 
