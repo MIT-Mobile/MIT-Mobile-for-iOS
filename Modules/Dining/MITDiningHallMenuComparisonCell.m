@@ -103,7 +103,9 @@
 
 - (CGRect) frameForLabel:(UILabel *)label constrainedToSize:(CGSize) constraint
 {
-    CGSize necessaryLabelSize = [[label text] sizeWithFont:label.font constrainedToSize:constraint lineBreakMode:label.lineBreakMode];
+    NSStringDrawingContext *context = [NSStringDrawingContext new];
+    context.minimumScaleFactor = label.minimumScaleFactor;
+    CGSize necessaryLabelSize = [label.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: label.font} context:context].size;
     
     CGRect newFrame = label.frame;
     newFrame.size   = CGSizeMake(constraint.width, necessaryLabelSize.height);
