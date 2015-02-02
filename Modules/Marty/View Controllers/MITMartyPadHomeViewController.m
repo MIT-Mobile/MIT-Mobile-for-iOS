@@ -1,18 +1,20 @@
 #import "MITMartyPadHomeViewController.h"
 #import "MITMapModelController.h"
-#import "MITMapPlace.h"
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
-#import "MITMartyResultsListViewController.h"
 #import "MITMapBrowseContainerViewController.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
-#import "MITMapPlaceDetailViewController.h"
 #import "MITMapPlaceSelector.h"
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITLocationManager.h"
 #import "SMCalloutView.h"
+
+#import "MITMartyResourceDataSource.H"
+#import "MITMartyResource.h"
+#import "MITMartyDetailTableViewController.h"
+#import "MITMartyResultsListViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -38,7 +40,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic) BOOL isShowingIpadResultsList;
 @property (nonatomic, strong) SMCalloutView *calloutView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
-@property (nonatomic, strong) MITMapPlace *currentlySelectedPlace;
 
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
@@ -48,12 +49,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 @property (nonatomic, copy) NSString *searchQuery;
-@property (nonatomic, copy) NSArray *places;
 @property (nonatomic, strong) MITMapCategory *category;
 @property (nonatomic, strong) UIView *searchBarView;
 @property (nonatomic) BOOL isKeyboardVisible;
 
 @property (nonatomic, strong) NSTimer *searchSuggestionsTimer;
+
+@property (nonatomic, strong) MITMartyResourceDataSource *dataSource;
+@property (nonatomic, strong) MITMartyResource *resource;
+@property (nonatomic, strong) NSArray *resources;
+@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic, strong) MITMartyResource *currentlySelectResource;
+
 @end
 
 @implementation MITMartyPadHomeViewController
@@ -112,6 +119,21 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
     }
+    
+    if (!self.managedObjectContext) {
+        self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
+    }
+}
+
+#pragma mark Public Properties
+- (NSArray*)resources
+{
+    __block NSArray *resourceObjects = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        resourceObjects = [self.managedObjectContext transferManagedObjects:self.dataSource.resources];
+    }];
+    
+    return resourceObjects;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -356,9 +378,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
-    if ([self.places count] > 0) {
+    if ([self.resources count] > 0) {
         MKMapRect zoomRect = MKMapRectNull;
-        for (id <MKAnnotation> annotation in self.places)
+        for (id <MKAnnotation> annotation in self.resources)
         {
             MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
             MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
@@ -373,15 +395,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - Places
 
-- (void)setPlaces:(NSArray *)places
+- (void)setResources:(NSArray *)resources
 {
-    [self setPlaces:places animated:NO];
+    [self setResources:resources animated:NO];
 }
 
-- (void)setPlaces:(NSArray *)places animated:(BOOL)animated
+- (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    _places = places;
-    [[self resultsListViewController] setPlaces:places];
+    [[self resultsListViewController] setResources:resources];
+    
     self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
     self.showFirstCalloutOnNextMapRegionChange = YES;
     [self setupMapBoundingBoxAnimated:animated];
@@ -392,13 +414,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.category = nil;
     self.searchQuery = nil;
     self.searchQueryType = MITMapSearchQueryTypeText;
-    [self setPlaces:nil animated:animated];
+    [self setResources:nil animated:animated];
 }
 
 - (void)refreshPlaceAnnotations
 {
     [self removeAllPlaceAnnotations];
-    [self.mapView addAnnotations:self.places];
+    [self.mapView addAnnotations:self.resources];
 }
 
 - (void)removeAllPlaceAnnotations
@@ -453,14 +475,28 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     self.searchQuery = query;
     [[MITMapModelController sharedController] addRecentSearch:query];
-    [[MITMapModelController sharedController] searchMapWithQuery:query
-                                                          loaded:^(NSArray *objects, NSError *error) {
-                                                              if (objects) {
-                                                                  [self setPlaces:objects animated:YES];
-                                                              }
-                                                          }];
+    
+    MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
+    self.dataSource = dataSource;
+    [dataSource resourcesWithQuery:@"Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+        if (error) {
+            DDLogWarn(@"Error: %@",error);
+        } else {
+            [self.managedObjectContext performBlockAndWait:^{
+                [self.managedObjectContext reset];
+                
+                [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
+                    DDLogVerbose(@"Got resource with name: %@ [%@]",resource.name, resource.identifier);
+                }];
+                [self setResources:self.resources animated:YES];
+
+                
+            }];
+        }
+    }];
 }
 
+/*
 - (void)getPlaceForObjectID:(NSString *)objectID
 {
     [[MITMapModelController sharedController] getPlacesForObjectID:objectID loaded:^(NSArray *objects, NSError *error) {
@@ -473,8 +509,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         }
     }];
 }
+*/
 
-- (void)setPlacesWithQuery:(NSString *)query
+- (void)setResourcesWithQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
     self.category = nil;
@@ -482,16 +519,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchQueryType = MITMapSearchQueryTypeText;
 }
 
-- (void)setPlacesWithPlace:(MITMapPlace *)place
+- (void)setResourceWithResource:(MITMartyResource *)resource
 {
-    [[MITMapModelController sharedController] addRecentSearch:place];
+    [[MITMapModelController sharedController] addRecentSearch:resource];
     self.searchQuery = nil;
     self.category = nil;
-    [self setPlaces:@[place] animated:YES];
-    self.searchBar.text = place.name;
+    
+    [self setResources:@[resource] animated:YES];
+    self.searchBar.text = resource.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
 }
 
+/*
 - (void)setPlacesWithCategory:(MITMapCategory *)category
 {
     [[MITMapModelController sharedController] addRecentSearch:category];
@@ -502,18 +541,19 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchBar.text = category.name;
     self.searchQueryType = MITMapSearchQueryTypeCategory;
 }
+ */
 
-- (void)pushDetailViewControllerForPlace:(MITMapPlace *)place
+- (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
-    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.place = place;
+    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.resource = self.resource;
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 
-- (void)showCalloutForPlace:(MITMapPlace *)place
+- (void)showCalloutForResource:(MITMartyResource *)resource
 {
-    if ([self.places containsObject:place]) {
-        [self.mapView selectAnnotation:place animated:YES];
+    if ([self.resources containsObject:resource]) {
+        [self.mapView selectAnnotation:resource animated:YES];
     }
 }
 
@@ -527,7 +567,9 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     static MITMartyResultsListViewController *resultsListViewController;
     if (!resultsListViewController) {
-        resultsListViewController = [[MITMartyResultsListViewController alloc] initWithPlaces:self.places];
+        
+        resultsListViewController = [[MITMartyResultsListViewController alloc] initWithResources:self.resources];
+        
         resultsListViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
@@ -551,7 +593,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             break;
         }
         case MITMapSearchQueryTypePlace: {
-            MITMapPlace *place = [self.places firstObject];
+            MITMapPlace *place = [self.resources firstObject];
             [resultsListViewController setTitle:place.name];
             break;
         }
@@ -671,7 +713,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 }
 
 #pragma mark - In App Linking
-
+/*
 - (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
 {
     if ([queryEndpoint isEqualToString:@"search"]) {
@@ -687,17 +729,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         self.searchQuery = query;
     }
 }
+*/
 
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-    if ([annotation isKindOfClass:[MITMapPlace class]]) {
+    if ([annotation isKindOfClass:[MITMartyResource class]]) {
         MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
-        NSInteger placeIndex = [self.places indexOfObject:annotation];
+        NSInteger placeIndex = [self.resources indexOfObject:annotation];
         [annotationView setNumber:(placeIndex + 1)];
         
         return annotationView;
@@ -728,15 +771,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
         [self.calloutView dismissCalloutAnimated:YES];
-        self.currentlySelectedPlace = nil;
+        self.currentlySelectResource = nil;
     }
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
-        [self pushDetailViewControllerForPlace:place];
+        MITMartyResource *resource = view.annotation;
+        [self pushDetailViewControllerForResource:resource];
     }
 }
 
@@ -748,8 +791,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }
     
     if (self.showFirstCalloutOnNextMapRegionChange) {
-        if (self.places.count > 0) {
-            [self showCalloutForPlace:[self.places firstObject]];
+        if (self.resources.count > 0) {
+            [self showCalloutForResource:[self.resources firstObject]];
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
@@ -760,10 +803,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
-    self.currentlySelectedPlace = place;
-    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.place = place;
+    MITMartyResource *resource = annotationView.annotation;
+
+    self.currentlySelectResource = resource;
+    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.resource = resource;
     
     detailVC.view.frame = CGRectMake(0, 0, 295, 500);
     
@@ -788,11 +832,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
+    MITMartyResource *resource = annotationView.annotation;
     
-    self.currentlySelectedPlace = place;
-    self.calloutView.title = place.title;
-    self.calloutView.subtitle = place.subtitle;
+    self.currentlySelectResource = resource;
+    self.calloutView.title = resource.title;
+    self.calloutView.subtitle = resource.subtitle;
     self.calloutView.calloutOffset = annotationView.calloutOffset;
 
     [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
@@ -813,7 +857,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)calloutViewClicked:(SMCalloutView *)calloutView
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self pushDetailViewControllerForPlace:self.currentlySelectedPlace];
+        [self pushDetailViewControllerForResource:self.currentlySelectResource];
     }
 }
 
@@ -825,16 +869,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return NO;
 }
 
-#pragma mark - MITMapResultsListViewControllerDelegate
+#pragma mark - MITMartyResultsListViewControllerDelegate
 
-- (void)resultsListViewController:(MITMartyResultsListViewController *)viewController didSelectPlace:(MITMapPlace *)place
+- (void)resultsListViewController:(MITMartyResultsListViewController *)viewController didSelectResource:(MITMartyResource *)resource
 {
-    [self showCalloutForPlace:place];
+    [self showCalloutForResource:resource];
 }
 
 #pragma mark - MITMapPlaceSelectionDelegate
 
-- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectPlace:(MITMapPlace *)place
+/*
+- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMartyResource *)resource
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         if (self.presentedViewController) {
@@ -887,7 +932,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self setPlacesWithQuery:query];
     }
 }
-
+*/
 #pragma mark - UIPopoverControllerDelegate
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController

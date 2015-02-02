@@ -24,16 +24,25 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 {
     [super viewDidLoad];
     
-    [self.tableView registerNib:[MITActionCell actionCellNib] forDynamicCellReuseIdentifier:MITActionCellIdentifier];
+    [self setupTableView:self.tableView];
+}
 
-    [self.tableView registerNib:[MITTitleDescriptionCell titleDescriptionCellNib] forDynamicCellReuseIdentifier:MITTitleDescriptionCellIdentifier];
-
-    [self.tableView registerNib:[MITMartyDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
+- (void)setupTableView:(UITableView *)tableView;
+{
+    tableView.dataSource = self;
+    tableView.delegate = self;
     
-    [self.tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
+    [tableView registerNib:[MITActionCell actionCellNib] forDynamicCellReuseIdentifier:MITActionCellIdentifier];
     
-    self.tableView.tableFooterView = [UIView new];
-    self.tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    [tableView registerNib:[MITTitleDescriptionCell titleDescriptionCellNib] forDynamicCellReuseIdentifier:MITTitleDescriptionCellIdentifier];
+    
+    [tableView registerNib:[MITMartyDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
+    
+    [tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
+    
+    tableView.tableFooterView = [UIView new];
+    
+    tableView.separatorStyle = UITableViewCellSelectionStyleNone;
 }
 
 - (void)viewWillAppear:(BOOL)animated

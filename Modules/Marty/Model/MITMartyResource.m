@@ -5,7 +5,6 @@
 #import "MITMartyTemplate.h"
 #import "MITMartyType.h"
 
-
 @implementation MITMartyResource
 
 @dynamic dlc;
@@ -19,7 +18,18 @@
 @dynamic owners;
 @dynamic template;
 @dynamic type;
+@dynamic searches;
+@dynamic coordinate;
 
+- (id)init
+{
+    self = [super init];
+    if (self) {
+        
+    }
+    
+    return self;
+}
 + (RKMapping *)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
@@ -57,6 +67,27 @@
     mapping.assignsNilForMissingRelationships = YES;
 
     return mapping;
+}
+
+#pragma mark MKAnnotation
+
+- (NSString*)title
+{
+    return self.name;
+}
+
+- (NSString*)subtitle
+{
+    if (![self.name isEqualToString:self.title]) {
+        return self.name;
+    } else {
+        return nil;
+    }
+}
+
+- (CLLocationCoordinate2D)coordinate
+{
+    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
 }
 
 @end

@@ -1,8 +1,8 @@
 #import "MITMartyResultsListViewController.h"
 #import "MITMapCategory.h"
-#import "MITMapPlace.h"
-#import "MITMapPlaceCell.h"
-#import "MITMapPlaceDetailViewController.h"
+#import "MITMartyResource.h"
+#import "MITMartyResourceCell.h"
+#import "MITMartyDetailTableViewController.h"
 
 static NSString * const kMITMapResultsListDefaultTitle = @"Results";
 
@@ -18,11 +18,11 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 #pragma mark - Init
 
-- (instancetype)initWithPlaces:(NSArray *)places
+- (instancetype)initWithResources:(NSArray *)resources
 {
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
-        _places = places;
+        _resources = resources;
     }
     return self;
 }
@@ -41,7 +41,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self setNoResultsViewHidden:([self.places count] > 0)];
+    [self setNoResultsViewHidden:([self.resources count] > 0)];
 }
 
 - (void)didReceiveMemoryWarning
@@ -63,7 +63,7 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (void)setupTableView
 {
-    UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMapPlaceCell class]) bundle:nil];
+    UINib *numberedResultCellNib = [UINib nibWithNibName:NSStringFromClass([MITMartyResourceCell class]) bundle:nil];
     [self.tableView registerNib:numberedResultCellNib forCellReuseIdentifier:kMITMapNumberedResultCellIdentifier];
 }
 
@@ -103,9 +103,9 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 #pragma mark - Public Methods
 
-- (void)setPlaces:(NSArray *)places
+- (void)setResources:(NSArray *)resources
 {
-    _places = places;
+    _resources = resources;
     [self.tableView reloadData];
 }
 
@@ -125,10 +125,10 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 #pragma mark - Table View Helpers
 
-- (void)configureCell:(MITMapPlaceCell *)cell forIndexPath:(NSIndexPath *)indexPath
+- (void)configureCell:(MITMartyResourceCell *)cell forIndexPath:(NSIndexPath *)indexPath
 {
     NSInteger index = indexPath.row;
-    [cell setPlace:self.places[index] order:(index + 1)];
+    [cell setResource:self.resources[index] order:(index + 1)];
 }
 
 #pragma mark - UITableViewDataSource
@@ -140,12 +140,12 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.places count];
+    return [self.resources count];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    MITMapPlaceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapNumberedResultCellIdentifier forIndexPath:indexPath];
+    MITMartyResourceCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITMapNumberedResultCellIdentifier forIndexPath:indexPath];
     [self configureCell:cell forIndexPath:indexPath];
     cell.accessoryType = self.hideDetailButton ? UITableViewCellAccessoryNone : UITableViewCellAccessoryDetailButton;
     return cell;
@@ -155,12 +155,12 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return kMapPlaceCellEstimatedHeight;
+    return kResourceCellEstimatedHeight;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    return [MITMapPlaceCell heightForPlace:self.places[indexPath.row] order:(indexPath.row + 1)
+    return [MITMartyResourceCell heightForResource:self.resources[indexPath.row] order:(indexPath.row + 1)
                             tableViewWidth:self.tableView.frame.size.width
                              accessoryType:UITableViewCellAccessoryDetailButton];
 }
@@ -169,14 +169,14 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
-            MITMapPlace *place = self.places[indexPath.row];
-            [self.delegate resultsListViewController:self didSelectPlace:place];
+            MITMartyResource *resource = self.resources[indexPath.row];
+            [self.delegate resultsListViewController:self didSelectResource:resource];
         }
     } else {
         [self dismissViewControllerAnimated:YES completion:^{
             if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
-                MITMapPlace *place = self.places[indexPath.row];
-                [self.delegate resultsListViewController:self didSelectPlace:place];
+                MITMartyResource *resource = self.resources[indexPath.row];
+                [self.delegate resultsListViewController:self didSelectResource:resource];
             }
         }];
     }
@@ -184,9 +184,9 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 
 - (void)tableView:(UITableView *)tableView accessoryButtonTappedForRowWithIndexPath:(NSIndexPath *)indexPath
 {
-    MITMapPlace *place = self.places[indexPath.row];
-    MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
-    detailVC.place = place;
+    MITMartyResource *resource = self.resources[indexPath.row];
+    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
+    detailVC.resource = resource;
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 

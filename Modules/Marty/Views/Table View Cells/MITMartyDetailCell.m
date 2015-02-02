@@ -62,8 +62,6 @@
 
 - (void)setStatus:(NSString *)status
 {
-    
-    
     if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
         _statusLabel.textColor = [UIColor mit_openGreenColor];
     } else if ([status caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
