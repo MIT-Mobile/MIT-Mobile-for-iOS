@@ -134,10 +134,10 @@ NSString * const labelText = @"Some Text";
     }
     
     CGFloat labelWidth = tableWidth - (insets.left + imageWidth + insets.right);
-    CGSize fittedSize = [self.text sizeWithFont:self.font
-                              constrainedToSize:CGSizeMake(labelWidth, 2000.0)
-                                  lineBreakMode:NSLineBreakByWordWrapping];
     
+    NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    
+    CGSize fittedSize = [self.text boundingRectWithSize:CGSizeMake(labelWidth, 2000.0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.font, NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
     // raise the label's origin.y so the text starts at padding.height and not just the view itself
     self.label.frame = CGRectMake(
                                   insets.left + imageWidth, 
