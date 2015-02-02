@@ -154,6 +154,11 @@
     return numberOfRows;
 }
 
+- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+{
+    NSString *buildingNumber = self.buildingSections[section];
+    return [NSString stringWithFormat:@"Building %@", buildingNumber];
+}
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellIdentifier = NSStringFromClass([MITMartyResourceTableViewCell class]);
@@ -168,7 +173,6 @@
 {
     return [tableView minimumHeightForCellWithReuseIdentifier:NSStringFromClass([MITMartyResourceTableViewCell class]) atIndexPath:indexPath];
 }
-
 
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
