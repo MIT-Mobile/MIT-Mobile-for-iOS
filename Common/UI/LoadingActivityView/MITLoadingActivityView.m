@@ -21,7 +21,9 @@
         
         NSString *loadingText = @"Loading...";
         
-        CGSize labelSize = [loadingText sizeWithFont:loadingLabel.font];
+        CGSize labelSize = [loadingText sizeWithAttributes:@{NSFontAttributeName: loadingLabel.font}];
+        labelSize.height = ceil(labelSize.height);
+        labelSize.width = ceil(labelSize.width);
         CGFloat labelLeftMargin = 6.0;
         loadingLabel.frame = CGRectMake(spinner.frame.size.width + labelLeftMargin,
                                         0.0,
