@@ -16,7 +16,7 @@
 
 - (void)setPlace:(MITMapPlace *)place
 {
-    [self.photoImageView setImageWithURL:place.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType) {
+    [self.photoImageView sd_setImageWithURL:place.imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
         if (image){
             [self resizeImageView:image];
         }
