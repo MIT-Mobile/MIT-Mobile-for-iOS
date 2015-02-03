@@ -16,6 +16,10 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
 @interface MITMartyDetailTableViewController() <UITableViewDataSourceDynamicSizing>
 
+//Temporary fix for remove blank description rows
+@property (nonatomic, strong) NSMutableArray *titles;
+@property (nonatomic, strong) NSMutableArray *descriptions;
+
 @end
 
 @implementation MITMartyDetailTableViewController
@@ -25,6 +29,32 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     [super viewDidLoad];
     
     [self setupTableView:self.tableView];
+    
+    [self removeBlankDescriptionsFromTitleDescriptionPairs];
+}
+
+- (void)removeBlankDescriptionsFromTitleDescriptionPairs
+{
+    self.titles = [[NSMutableArray alloc] init];
+    self.descriptions = [[NSMutableArray alloc] init];
+    
+    for(MITMartyResourceAttribute *rAttribute in self.resource.attributes) {
+        NSString *valueString = nil;
+        for (MITMartyResourceAttributeValue *value in rAttribute.values) {
+            if ([value.value length] != 0) {
+                if ([valueString length] == 0) {
+                    valueString = value.value;
+                } else {
+                    valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];
+                }
+            }
+        }
+        if (valueString.length != 0) {
+            [self.titles addObject:rAttribute.attribute.label];
+            [self.descriptions addObject:valueString];
+        }
+    }
+    
 }
 
 - (void)setupTableView:(UITableView *)tableView;
@@ -60,7 +90,7 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     if (section == 0 || section == 1) {
         return 1;
     } else if (section == 2) {
-        return [self.resource.attributes count];
+        return [self.titles count];
     }
     return 0;
 }
@@ -98,21 +128,9 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]]) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
 
-        MITMartyResourceAttribute *rAttribute = self.resource.attributes[indexPath.row];
-        
-        NSString *valueString = [[NSString alloc] init];
-        
-        for (MITMartyResourceAttributeValue *value in rAttribute.values) {
-            if ([value.value length] != 0) {
-                if ([valueString length] == 0) {
-                    valueString = value.value;
-                } else {
-                    valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];
-                }
-            }
-        }
-        
-        [titleDescriptionCell setTitle:rAttribute.attribute.label setDescription:valueString];
+        NSString *title = self.titles[indexPath.row];
+        NSString *description = self.descriptions[indexPath.row];
+        [titleDescriptionCell setTitle:title setDescription:description];
     }
 }
 
