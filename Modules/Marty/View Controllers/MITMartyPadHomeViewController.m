@@ -477,7 +477,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     
     MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
     self.dataSource = dataSource;
-    [dataSource resourcesWithQuery:@"Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+    [dataSource resourcesWithQuery:query completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
         if (error) {
             DDLogWarn(@"Error: %@",error);
         } else {
