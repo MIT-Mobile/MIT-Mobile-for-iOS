@@ -169,7 +169,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 //    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
     self.searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
-    self.searchBarView.autoresizingMask = 0;
+    self.searchBarView.autoresizingMask = UIViewAutoresizingNone;
     self.searchBar.delegate = self;
     [self.searchBarView addSubview:self.searchBar];
     
