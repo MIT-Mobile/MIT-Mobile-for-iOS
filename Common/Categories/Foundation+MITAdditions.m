@@ -836,7 +836,7 @@ typedef struct {
 - (NSDate *)dateByAddingWeek
 {
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
-    componentsToAdd.week = 1;
+    componentsToAdd.weekOfYear = 1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
@@ -850,7 +850,7 @@ typedef struct {
 - (NSDate *)dateBySubtractingWeek
 {
     NSDateComponents *componentsToAdd = [[NSDateComponents alloc] init];
-    componentsToAdd.week = -1;
+    componentsToAdd.weekOfYear = -1;
     return [[NSCalendar currentCalendar] dateByAddingComponents:componentsToAdd toDate:self options:0];
 }
 
