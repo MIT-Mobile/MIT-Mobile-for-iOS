@@ -44,6 +44,7 @@
                             </constraints>
                         </view>
                     </subviews>
+                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="width" secondItem="rq1-KP-oP6" secondAttribute="width" priority="999" id="1hh-ha-V58"/>
                         <constraint firstAttribute="centerX" secondItem="rq1-KP-oP6" secondAttribute="centerX" id="44S-P6-68X"/>
