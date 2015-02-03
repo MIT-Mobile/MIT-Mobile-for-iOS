@@ -809,7 +809,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.resource = resource;
     
-    detailVC.view.frame = CGRectMake(0, 0, 295, 500);
+    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
     
     SMCalloutView *calloutView = self.calloutView;
     calloutView.contentView = detailVC.view;
@@ -822,12 +822,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
     
     // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
-    if (calloutView.currentArrowDirection == SMCalloutArrowDirectionUp) {
-        detailVC.view.frame = CGRectMake(0, 15, 320, 496);
-    }
-    else {
-        detailVC.view.frame = CGRectMake(0, 2, 320, 496);
-    }
+    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
 }
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
