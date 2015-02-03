@@ -5,9 +5,7 @@
 #import "MITTitleDescriptionCell.h"
 #import "MITMartySpecificationsHeader.h"
 
-#import "MITMartyTemplateAttribute.h"
-#import "MITMartyResourceAttribute.h"
-#import "MITMartyResourceAttributeValue.h"
+#import "MITMartyModel.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
@@ -25,21 +23,37 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 @interface MITMartyDetailTableViewController() <UITableViewDataSourceDynamicSizing>
 
 //Temporary fix for remove blank description rows
-@property (nonatomic, strong) NSMutableArray *titles;
-@property (nonatomic, strong) NSMutableArray *descriptions;
+@property(nonatomic,strong) NSMutableArray *titles;
+@property(nonatomic,strong) NSMutableArray *descriptions;
+@property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
 
 @end
 
 @implementation MITMartyDetailTableViewController
+@synthesize managedObjectContext = _managedObjectContext;
+
+- (instancetype)init
+{
+    self = [self initWithStyle:UITableViewStylePlain];
+    if (self) {
+
+    }
+
+    return self;
+}
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
     [self setupTableView:self.tableView];
-    
-    [self removeBlankDescriptionsFromTitleDescriptionPairs];
 }
+
+- (void)viewWillAppear:(BOOL)animated
+{
+    [super viewWillAppear:animated];
+}
+
 
 - (void)removeBlankDescriptionsFromTitleDescriptionPairs
 {
@@ -82,9 +96,31 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     tableView.separatorStyle = UITableViewCellSelectionStyleNone;
 }
 
-- (void)viewWillAppear:(BOOL)animated
+- (NSManagedObjectContext*)managedObjectContext
 {
-    [super viewWillAppear:animated];
+    if (!_managedObjectContext) {
+        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+        managedObjectContext.retainsRegisteredObjects = YES;
+        _managedObjectContext = managedObjectContext;
+    }
+
+    return _managedObjectContext;
+}
+
+- (void)setResource:(MITMartyResource *)resource
+{
+    if (![_resource.objectID isEqual:resource.objectID]) {
+        if (resource) {
+            _resource = (MITMartyResource*)[self.managedObjectContext objectWithID:resource.objectID];
+            [self removeBlankDescriptionsFromTitleDescriptionPairs];
+        } else {
+            _resource = nil;
+            self.descriptions = nil;
+            self.titles = nil;
+        }
+
+        [self.tableView reloadData];
+    }
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
