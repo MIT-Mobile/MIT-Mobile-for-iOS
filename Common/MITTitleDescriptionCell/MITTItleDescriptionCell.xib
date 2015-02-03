@@ -46,8 +46,8 @@
                 </variation>
             </tableViewCellContentView>
             <connections>
-                <outlet property="descriptionTextView" destination="NKI-Fx-Rt7" id="Nfs-jO-jUb"/>
-                <outlet property="titleTextView" destination="lfF-58-8as" id="teD-oZ-css"/>
+                <outlet property="descriptionLabel" destination="NKI-Fx-Rt7" id="P1S-2N-dto"/>
+                <outlet property="titleLabel" destination="lfF-58-8as" id="Sh9-Cg-vnD"/>
             </connections>
             <point key="canvasLocation" x="405" y="150"/>
         </tableViewCell>

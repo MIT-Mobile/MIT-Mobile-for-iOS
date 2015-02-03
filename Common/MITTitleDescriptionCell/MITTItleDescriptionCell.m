@@ -2,8 +2,8 @@
 
 @interface MITTitleDescriptionCell()
 
-@property (weak, nonatomic) IBOutlet UILabel *titleTextView;
-@property (weak, nonatomic) IBOutlet UILabel *descriptionTextView;
+@property (weak, nonatomic) IBOutlet UILabel *titleLabel;
+@property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 
 @end
 
@@ -33,8 +33,8 @@
 
 - (void)setTitle:(NSString *)title withDescription:(NSString *)description
 {    
-    self.titleTextView.text = title;
-    self.descriptionTextView.text = description;
+    self.titleLabel.text = title;
+    self.descriptionLabel.text = description;
     [self setNeedsUpdateConstraints];
     [self updateConstraintsIfNeeded];
 }
@@ -42,8 +42,8 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.titleTextView.preferredMaxLayoutWidth = self.titleTextView.bounds.size.width;
-    self.descriptionTextView.preferredMaxLayoutWidth = self.descriptionTextView.bounds.size.width;
+    self.titleLabel.preferredMaxLayoutWidth = self.titleLabel.bounds.size.width;
+    self.descriptionLabel.preferredMaxLayoutWidth = self.descriptionLabel.bounds.size.width;
 }
 
 @end

@@ -21,12 +21,6 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
-typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
-    MITMapSearchQueryTypeText,
-    MITMapSearchQueryTypePlace,
-    MITMapSearchQueryTypeCategory
-};
-
 @interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
@@ -34,7 +28,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
-@property (nonatomic) MITMapSearchQueryType searchQueryType;
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
@@ -60,6 +53,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) NSArray *resources;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) MITMartyResource *currentlySelectResource;
+@property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
 
 @end
 
@@ -292,7 +286,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)bookmarksButtonPressed
 {
-    MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] initWithNibName:nil bundle:nil];
+    MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] init];
     [browseContainerViewController setDelegate:self];
     
     UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browseContainerViewController];
@@ -365,13 +359,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     searchBarTextField.textColor = color;
 }
 
-- (void)setSearchQueryType:(MITMapSearchQueryType)searchQueryType
-{
-    UIColor *searchBarTextColor = (searchQueryType == MITMapSearchQueryTypeText) ? [UIColor blackColor] : [UIColor mit_tintColor];
-    [self setSearchBarTextColor:searchBarTextColor];
-    _searchQueryType = searchQueryType;
-}
-
 #pragma mark - Map View
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -413,7 +400,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     self.category = nil;
     self.searchQuery = nil;
-    self.searchQueryType = MITMapSearchQueryTypeText;
     [self setResources:nil animated:animated];
 }
 
@@ -501,7 +487,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self performSearchWithQuery:query];
     self.category = nil;
     self.searchBar.text = query;
-    self.searchQueryType = MITMapSearchQueryTypeText;
 }
 
 - (void)setResourcesWithResource:(MITMartyResource *)resource
@@ -512,12 +497,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     [self setResources:@[resource] animated:YES];
     self.searchBar.text = resource.name;
-    self.searchQueryType = MITMapSearchQueryTypePlace;
 }
 
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
+    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
     detailVC.resource = self.resource;
     [self.navigationController pushViewController:detailVC animated:YES];
 }
@@ -539,17 +523,13 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (MITMartyResourcesTableViewController *)resourcesTableViewController
 {
-    static MITMartyResourcesTableViewController *resourcesTableViewController;
-    if (!resourcesTableViewController) {
+    if (!_resourcesTableViewController) {
         
-        resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+        MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
         resourcesTableViewController.resources = self.resources;
-        
-        
         resourcesTableViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            //resultsListViewController.hideDetailButton = YES;
             resourcesTableViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
             resourcesTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;
@@ -560,28 +540,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
             
             [resourcesTableViewController endAppearanceTransition];
             [resourcesTableViewController didMoveToParentViewController:self];
+            _resourcesTableViewController = resourcesTableViewController;
         }
     }
     
-    switch (self.searchQueryType) {
-        case MITMapSearchQueryTypeText: {
-          //  [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
-            break;
-        }
-        case MITMapSearchQueryTypePlace: {
-            MITMapPlace *place = [self.resources firstObject];
-            [resourcesTableViewController setTitle:place.name];
-            break;
-        }
-        case MITMapSearchQueryTypeCategory: {
-            [resourcesTableViewController setTitle:self.category.name];
-            break;
-        }
-        default:
-            break;
-    }
-    
-    return resourcesTableViewController;
+    return _resourcesTableViewController;
 }
 
 #pragma mark - Rotation
@@ -629,17 +592,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 {
     [searchBar resignFirstResponder];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    self.searchQueryType = MITMapSearchQueryTypeText;
     [self performSearchWithQuery:searchBar.text];
-}
-
-- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    if (self.searchQueryType != MITMapSearchQueryTypeText) {
-        searchBar.text = text;
-        self.searchQueryType = MITMapSearchQueryTypeText;
-    }
-    return YES;
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
@@ -763,7 +716,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
 
     self.currentlySelectResource = resource;
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
+    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
     detailVC.resource = resource;
     
     detailVC.view.frame = CGRectMake(0, 0, 320, 500);
