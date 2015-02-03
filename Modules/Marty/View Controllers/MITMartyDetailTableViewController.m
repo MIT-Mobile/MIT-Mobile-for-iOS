@@ -14,6 +14,14 @@ static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptio
 static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
 static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
 
+typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
+    MITMartyTableViewSectionDetail,
+    MITMartyTableViewSectionLocation,
+    MITMartyTableViewSectionFakeHours,
+    MITMartyTableViewSectionSpecificatons
+    
+};
+
 @interface MITMartyDetailTableViewController() <UITableViewDataSourceDynamicSizing>
 
 //Temporary fix for remove blank description rows
@@ -54,7 +62,6 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
             [self.descriptions addObject:valueString];
         }
     }
-    
 }
 
 - (void)setupTableView:(UITableView *)tableView;
@@ -69,7 +76,7 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     [tableView registerNib:[MITMartyDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
     
     [tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
-    
+
     tableView.tableFooterView = [UIView new];
     
     tableView.separatorStyle = UITableViewCellSelectionStyleNone;
@@ -83,15 +90,18 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
-    return 3;
+    return 4;
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == 0 || section == 1) {
+    if (section == MITMartyTableViewSectionDetail ||
+        section == MITMartyTableViewSectionLocation) {
         return 1;
-    } else if (section == 2) {
+    } else if (section == MITMartyTableViewSectionSpecificatons) {
         return [self.titles count];
+    } else if (section == MITMartyTableViewSectionFakeHours) {
+        return 2;
     }
     return 0;
 }
@@ -126,23 +136,35 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
         MITActionCell *actionCell = (MITActionCell*)cell;
         [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:self.resource.room];
 
-    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]]) {
+    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMartyTableViewSectionSpecificatons) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
 
         NSString *title = self.titles[indexPath.row];
         NSString *description = self.descriptions[indexPath.row];
         [titleDescriptionCell setTitle:title withDescription:description];
+    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMartyTableViewSectionFakeHours) {
+        MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
+        
+        
+        if (indexPath.row == 0) {
+            [titleDescriptionCell setTitle:@"mon-fri" withDescription:@"9am - 5pm"];
+        } else {
+            [titleDescriptionCell setTitle:@"sat-sun" withDescription:@"closed"];
+        }
+
     }
 }
 
 #pragma mark UITableView Data Source/Delegate Helper Methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (indexPath.section == 0) {
+    if (indexPath.section == MITMartyTableViewSectionDetail) {
         return MITMartyDetailCellIdentifier;
-    } else if (indexPath.section == 1) {
+    } else if (indexPath.section == MITMartyTableViewSectionLocation) {
         return MITActionCellIdentifier;
-    } else if (indexPath.section == 2) {
+    } else if (indexPath.section == MITMartyTableViewSectionFakeHours) {
+        return MITTitleDescriptionCellIdentifier;;
+    } else if (indexPath.section == MITMartyTableViewSectionSpecificatons) {
         return MITTitleDescriptionCellIdentifier;
     }
     
@@ -151,12 +173,21 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    if (section == 2) {
+    if (section == MITMartyTableViewSectionSpecificatons) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
         
         if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
             MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
             specificationsHeaderView.titleLabel.text = @"Specifications";
+        }
+        return headerView;
+        
+    } else if (section == MITMartyTableViewSectionFakeHours) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+        
+        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
+            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+            specificationsHeaderView.titleLabel.text = @"Hours";
         }
         
         return headerView;
@@ -166,13 +197,16 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == 2) {
+    if (section == MITMartyTableViewSectionSpecificatons || section == MITMartyTableViewSectionFakeHours) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
         
         if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
             MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
-            specificationsHeaderView.titleLabel.text = @"Specifications";
-            
+            if (section == MITMartyTableViewSectionFakeHours) {
+                specificationsHeaderView.titleLabel.text = @"Specifications";
+            } else {
+                specificationsHeaderView.titleLabel.text = @"Fake";
+            }
             CGRect frame = specificationsHeaderView.frame;
             frame.size.width = self.tableView.bounds.size.width;
             specificationsHeaderView.contentView.frame = frame;

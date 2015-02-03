@@ -1,9 +1,11 @@
 #import <UIKit/UIKit.h>
-#import "MITNewsSearchController.h"
+#import "MITMapPlaceSelector.h"
 
-@interface MITMartyRecentSearchController : UITableViewController
+@class MITMapPlace;
+@class MITMapCategory;
 
-@property MITNewsSearchController *searchController;
+@interface MITMartyRecentSearchController : UITableViewController <MITMapPlaceSelector>
+
 @property (nonatomic, readonly) UIActionSheet *confirmSheet;
 
 - (void)addRecentSearchItem:(NSString *)searchTerm;

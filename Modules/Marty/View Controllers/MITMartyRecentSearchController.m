@@ -16,6 +16,8 @@
 
 @implementation MITMartyRecentSearchController
 
+@synthesize delegate = _delegate;
+
 #pragma mark - properties
 - (MITMartyResourceDataSource *)modelController
 {
@@ -130,7 +132,11 @@
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
     NSError *error = nil;
     [self.modelController addRecentSearchItem:query.text error:error];
-    [self.searchController getResultsForString:query.text];
+    
+    if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectQuery:)]) {
+        [self.delegate placeSelectionViewController:self didSelectQuery:query.text];
+    }
     [self filterResultsUsingString:query.text];
+
 }
 @end
