@@ -25,7 +25,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 @interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
-@property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
@@ -205,8 +204,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     [self.searchBarView addConstraints:@[top, left, bottom, right]];
     self.navigationItem.titleView = self.searchBarView;
     
-    self.bookmarksBarButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemBookmarks target:self action:@selector(bookmarksButtonPressed)];
-    [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton];
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
     
     // Menu button set from MIT_MobileAppDelegate -- Capturing reference for search mode.
@@ -349,7 +346,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 - (void)closeSearchBar
 {
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
-    [self.navigationItem setRightBarButtonItem:self.bookmarksBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
     [self.typeAheadPopoverController dismissPopoverAnimated:YES];
 }
