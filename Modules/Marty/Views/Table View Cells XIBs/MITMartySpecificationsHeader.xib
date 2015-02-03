@@ -53,7 +53,6 @@
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
             <constraints>
                 <constraint firstItem="O1F-Dz-gdC" firstAttribute="leading" secondItem="w51-xu-vRG" secondAttribute="leading" id="80f-tQ-xFS"/>
                 <constraint firstAttribute="trailing" secondItem="O1F-Dz-gdC" secondAttribute="trailing" id="8SK-hX-Zgb"/>
