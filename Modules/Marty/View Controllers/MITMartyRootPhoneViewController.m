@@ -3,7 +3,6 @@
 #import "MITMartyModel.h"
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
-#import "MITMartyResourcesSearchTableViewController.h"
 #import "MITSlidingViewController.h"
 
 @interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
