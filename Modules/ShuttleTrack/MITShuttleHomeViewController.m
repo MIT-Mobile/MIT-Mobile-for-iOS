@@ -30,6 +30,7 @@ static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
 static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
 
 static const CGFloat kContactInformationCellHeight = 60.0;
+static const CGFloat kRouteCellHeight = 44.0;
 
 typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleSectionRoutes = 0,
@@ -616,7 +617,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes: {
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                return [MITShuttleRouteCell cellHeightForRoute:object];
+                return kRouteCellHeight;
             } else {
                 return tableView.rowHeight;
             }
