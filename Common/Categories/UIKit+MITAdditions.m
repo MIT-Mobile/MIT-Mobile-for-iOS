@@ -55,11 +55,11 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
         if (count > 0) {
             NSInteger index = 0;
             [mutableString appendString:[words objectAtIndex:index]];
-            CGSize fullSize = [mutableString sizeWithFont:font];
+            CGSize fullSize = [mutableString sizeWithAttributes:@{NSFontAttributeName: font}];
             index++;
             while (index < count && fullSize.width < size.width) {
                 [mutableString appendString:[NSString stringWithFormat:@" %@", [words objectAtIndex:index]]];
-                fullSize = [mutableString sizeWithFont:font];
+                fullSize = [mutableString sizeWithAttributes:@{NSFontAttributeName: font}];
                 index++;
             }
         }
@@ -359,7 +359,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 + (UIView *)groupedSectionHeaderWithTitle:(NSString *)title {
 	UIFont *font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-	CGSize size = [title sizeWithFont:font];
+	CGSize size = [title sizeWithAttributes:@{NSFontAttributeName: font}];
 	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(19.0, 7.0, appFrame.size.width - 19.0, size.height)];
 	
@@ -378,7 +378,7 @@ NSString* NSStringFromUIImageOrientation(UIImageOrientation orientation)
 
 + (UIView *)ungroupedSectionHeaderWithTitle:(NSString *)title {
 	UIFont *font = [UIFont boldSystemFontOfSize:STANDARD_CONTENT_FONT_SIZE];
-	CGSize size = [title sizeWithFont:font];
+	CGSize size = [title sizeWithAttributes:@{NSFontAttributeName: font}];
 	CGRect appFrame = [[UIScreen mainScreen] applicationFrame];
 	UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(10.0, 0.0, appFrame.size.width - 20.0, size.height)];
 	
