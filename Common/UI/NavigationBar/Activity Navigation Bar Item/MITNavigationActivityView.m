@@ -73,7 +73,10 @@
     }
 
     {
-        CGSize labelSize = [self.title sizeWithFont:self.titleView.font];
+        CGSize labelSize = [self.title sizeWithAttributes:@{NSFontAttributeName: self.titleView.font}];
+        labelSize.width = ceil(labelSize.width);
+        labelSize.height = ceil(labelSize.height);
+        
         CGRect labelFrame = CGRectMake(origin.x,
                                        origin.y + ((CGRectGetHeight(bounds) - labelSize.height) / 2.0),
                                        labelSize.width,
@@ -84,7 +87,10 @@
 
 - (CGSize)sizeThatFits:(CGSize)size
 {
-    CGSize minSize = [self.title sizeWithFont:self.titleView.font];
+    CGSize minSize = [self.title sizeWithAttributes:@{NSFontAttributeName: self.titleView.font}];
+    minSize.width = ceil(minSize.width);
+    minSize.height = ceil(minSize.height);
+    
     minSize.width += CGRectGetWidth(self.activityView.frame);
     minSize.height = MAX(minSize.height, CGRectGetHeight(self.activityView.frame));
 
