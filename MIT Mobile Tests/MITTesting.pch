@@ -1,0 +1,8 @@
+#ifndef MIT_Mobile_MITTesting_pch
+#define MIT_Mobile_MITTesting_pch
+
+    #import "MITAccessibilityConstants.h"
+    #import "KIFUITestActor+Navigation.h"
+    #import "KIFUITestActor+Util.h"
+
+#endif

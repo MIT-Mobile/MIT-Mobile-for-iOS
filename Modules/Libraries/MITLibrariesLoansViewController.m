@@ -34,6 +34,7 @@ static NSString *const kMITLibrariesItemLoanFineCell = @"MITLibrariesItemLoanFin
     [tableHeaderContainer addSubview:self.tableHeaderLabel];
     
     self.tableView.tableHeaderView = tableHeaderContainer;
+    self.tableView.accessibilityIdentifier = MITAccessibilityLibrariesMyAccountLoansTableViewIdentifier;
 }
 
 #pragma mark - Table view data source

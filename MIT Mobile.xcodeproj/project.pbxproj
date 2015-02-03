@@ -470,6 +470,9 @@
 		806205EB1A7ACEC1004BD08A /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 806205D71A7ACEC1004BD08A /* MITMobileRouteConstants.m */; };
 		806206631A8128ED004BD08A /* MITLibrariesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206621A8128ED004BD08A /* MITLibrariesTests.m */; };
 		806206661A812938004BD08A /* KIFUITestActor+Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206651A812938004BD08A /* KIFUITestActor+Navigation.m */; };
+		8062066A1A81493D004BD08A /* MITAccessibilityConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206691A81493D004BD08A /* MITAccessibilityConstants.m */; };
+		8062066B1A814A4C004BD08A /* MITAccessibilityConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206691A81493D004BD08A /* MITAccessibilityConstants.m */; };
+		8062066F1A815364004BD08A /* KIFUITestActor+Util.m in Sources */ = {isa = PBXBuildFile; fileRef = 8062066E1A815364004BD08A /* KIFUITestActor+Util.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80899D801A421EB0004E4953 /* MITTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 80899D7F1A421EB0004E4953 /* MITTileOverlay.m */; };
 		8089A4A41A422DA7004E4953 /* MITMapTiles in Resources */ = {isa = PBXBuildFile; fileRef = 8089A4A31A422DA7004E4953 /* MITMapTiles */; };
@@ -1519,6 +1522,11 @@
 		806206621A8128ED004BD08A /* MITLibrariesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesTests.m; path = KIF/MITLibrariesTests.m; sourceTree = "<group>"; };
 		806206641A812938004BD08A /* KIFUITestActor+Navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "KIFUITestActor+Navigation.h"; path = "KIF/ActorAdditions/KIFUITestActor+Navigation.h"; sourceTree = "<group>"; };
 		806206651A812938004BD08A /* KIFUITestActor+Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "KIFUITestActor+Navigation.m"; path = "KIF/ActorAdditions/KIFUITestActor+Navigation.m"; sourceTree = "<group>"; };
+		806206681A81493D004BD08A /* MITAccessibilityConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITAccessibilityConstants.h; path = AccessibilityConstants/MITAccessibilityConstants.h; sourceTree = "<group>"; };
+		806206691A81493D004BD08A /* MITAccessibilityConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITAccessibilityConstants.m; path = AccessibilityConstants/MITAccessibilityConstants.m; sourceTree = "<group>"; };
+		8062066C1A814EB2004BD08A /* MITTesting.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITTesting.pch; sourceTree = "<group>"; };
+		8062066D1A815364004BD08A /* KIFUITestActor+Util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "KIFUITestActor+Util.h"; path = "KIF/ActorAdditions/KIFUITestActor+Util.h"; sourceTree = "<group>"; };
+		8062066E1A815364004BD08A /* KIFUITestActor+Util.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "KIFUITestActor+Util.m"; path = "KIF/ActorAdditions/KIFUITestActor+Util.m"; sourceTree = "<group>"; };
 		80885CB41991410700D6661C /* MITEventsHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsHomeViewControllerPad.h; path = iPad/MITEventsHomeViewControllerPad.h; sourceTree = "<group>"; };
 		80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsHomeViewControllerPad.m; path = iPad/MITEventsHomeViewControllerPad.m; sourceTree = "<group>"; };
 		80899D7E1A421EB0004E4953 /* MITTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTileOverlay.h; path = Model/MITTileOverlay/MITTileOverlay.h; sourceTree = "<group>"; };
@@ -2929,6 +2937,8 @@
 		2C5D083A1A028328006E09C3 /* MIT Mobile Tests */ = {
 			isa = PBXGroup;
 			children = (
+				8062066C1A814EB2004BD08A /* MITTesting.pch */,
+				806206671A81491B004BD08A /* AccessibilityConstants */,
 				806206601A812870004BD08A /* KIF */,
 				2C5D08481A028367006E09C3 /* MITApplicationResourceTests.m */,
 				2C5D083D1A028328006E09C3 /* MIT_Mobile_Tests.m */,
@@ -4193,12 +4203,31 @@
 		806206601A812870004BD08A /* KIF */ = {
 			isa = PBXGroup;
 			children = (
+				806206701A815368004BD08A /* ActorAdditions */,
 				806206611A8128ED004BD08A /* MITLibrariesTests.h */,
 				806206621A8128ED004BD08A /* MITLibrariesTests.m */,
-				806206641A812938004BD08A /* KIFUITestActor+Navigation.h */,
-				806206651A812938004BD08A /* KIFUITestActor+Navigation.m */,
 			);
 			name = KIF;
+			sourceTree = "<group>";
+		};
+		806206671A81491B004BD08A /* AccessibilityConstants */ = {
+			isa = PBXGroup;
+			children = (
+				806206681A81493D004BD08A /* MITAccessibilityConstants.h */,
+				806206691A81493D004BD08A /* MITAccessibilityConstants.m */,
+			);
+			name = AccessibilityConstants;
+			sourceTree = "<group>";
+		};
+		806206701A815368004BD08A /* ActorAdditions */ = {
+			isa = PBXGroup;
+			children = (
+				806206641A812938004BD08A /* KIFUITestActor+Navigation.h */,
+				806206651A812938004BD08A /* KIFUITestActor+Navigation.m */,
+				8062066D1A815364004BD08A /* KIFUITestActor+Util.h */,
+				8062066E1A815364004BD08A /* KIFUITestActor+Util.m */,
+			);
+			name = ActorAdditions;
 			sourceTree = "<group>";
 		};
 		80885CAD19913F4E00D6661C /* iPad */ = {
@@ -5349,6 +5378,7 @@
 				806205EB1A7ACEC1004BD08A /* MITMobileRouteConstants.m in Sources */,
 				80C5D9E01A111A3E00E63FDD /* MITLibrariesFormSheetElementDepartment.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
+				8062066B1A814A4C004BD08A /* MITAccessibilityConstants.m in Sources */,
 				8062053C1A7AAF1A004BD08A /* Foundation+MITAdditions.m in Sources */,
 				2C18090B18F33B95008F9775 /* MITTouchstoneConstants.m in Sources */,
 				2C18090A18F33B95008F9775 /* MITTouchstoneNetworkIdentityProvider.m in Sources */,
@@ -5473,8 +5503,10 @@
 				806206661A812938004BD08A /* KIFUITestActor+Navigation.m in Sources */,
 				2C5D083E1A028328006E09C3 /* MIT_Mobile_Tests.m in Sources */,
 				806206631A8128ED004BD08A /* MITLibrariesTests.m in Sources */,
+				8062066A1A81493D004BD08A /* MITAccessibilityConstants.m in Sources */,
 				2C5D08491A028367006E09C3 /* MITApplicationResourceTests.m in Sources */,
 				806205941A7AC00C004BD08A /* MITResourceConstants.m in Sources */,
+				8062066F1A815364004BD08A /* KIFUITestActor+Util.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -5572,6 +5604,7 @@
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/MIT Mobile Tests/MITTesting.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -5617,6 +5650,7 @@
 					"$(inherited)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/MIT Mobile Tests/MITTesting.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;
@@ -5657,6 +5691,7 @@
 					"$(inherited)",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_PREFIX_HEADER = "$(SRCROOT)/MIT Mobile Tests/MITTesting.pch";
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
 				GCC_WARN_UNDECLARED_SELECTOR = YES;

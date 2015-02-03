@@ -171,6 +171,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     UIImage *image = [UIImage imageNamed:MITImageBarButtonMenu];
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_showModuleSelector:)];
+    leftBarButtonItem.accessibilityLabel = MITAccessibilityMainNavigationButtonLabel;
     return leftBarButtonItem;
 }
 
