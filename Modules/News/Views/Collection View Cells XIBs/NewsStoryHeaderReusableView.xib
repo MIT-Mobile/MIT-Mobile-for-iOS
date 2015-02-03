@@ -27,7 +27,7 @@
                                 <constraint firstAttribute="height" constant="1" id="deB-2m-SZz"/>
                             </constraints>
                         </view>
-                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="global-disclosure_right" translatesAutoresizingMaskIntoConstraints="NO" id="bIJ-UR-CSB">
+                        <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global-disclosure_right" translatesAutoresizingMaskIntoConstraints="NO" id="bIJ-UR-CSB">
                             <rect key="frame" x="141" y="15" width="14" height="17"/>
                         </imageView>
                     </subviews>
