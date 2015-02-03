@@ -19,3 +19,7 @@ post_install do | installer |
         config.build_settings['ONLY_ACTIVE_ARCH'] = 'NO'
     end
 end
+
+target 'MIT Mobile Tests', :exclusive => true do
+    pod 'KIF', '~> 3.0', :configurations => ['Debug']
+end

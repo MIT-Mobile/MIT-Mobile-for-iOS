@@ -189,6 +189,7 @@
 		22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E6BCBF19E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib */; };
 		22E6BCC519E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCC419E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m */; };
 		22F2D5AF19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */; };
+		239A60305D330C6563DF0026 /* libPods-MIT Mobile Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2F278458DFCD03F2641CEAB /* libPods-MIT Mobile Tests.a */; };
 		2737F34C1A333EC200E728C3 /* MITBatchScanningAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */; };
 		2737F3511A333EF400E728C3 /* MITBatchScanningAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */; };
 		274886991930286C00414552 /* People_iPad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 274886981930286C00414552 /* People_iPad.storyboard */; };
@@ -467,6 +468,8 @@
 		806205E91A7ACEC1004BD08A /* MITToursResource.m in Sources */ = {isa = PBXBuildFile; fileRef = 806205D01A7ACEC1004BD08A /* MITToursResource.m */; };
 		806205EA1A7ACEC1004BD08A /* MITMobile.m in Sources */ = {isa = PBXBuildFile; fileRef = 806205D41A7ACEC1004BD08A /* MITMobile.m */; };
 		806205EB1A7ACEC1004BD08A /* MITMobileRouteConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 806205D71A7ACEC1004BD08A /* MITMobileRouteConstants.m */; };
+		806206631A8128ED004BD08A /* MITLibrariesTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206621A8128ED004BD08A /* MITLibrariesTests.m */; };
+		806206661A812938004BD08A /* KIFUITestActor+Navigation.m in Sources */ = {isa = PBXBuildFile; fileRef = 806206651A812938004BD08A /* KIFUITestActor+Navigation.m */; };
 		80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */; };
 		80899D801A421EB0004E4953 /* MITTileOverlay.m in Sources */ = {isa = PBXBuildFile; fileRef = 80899D7F1A421EB0004E4953 /* MITTileOverlay.m */; };
 		8089A4A41A422DA7004E4953 /* MITMapTiles in Resources */ = {isa = PBXBuildFile; fileRef = 8089A4A31A422DA7004E4953 /* MITMapTiles */; };
@@ -1271,6 +1274,7 @@
 		569DC33E1282ADC000BA0794 /* CoreVideo.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreVideo.framework; path = System/Library/Frameworks/CoreVideo.framework; sourceTree = SDKROOT; };
 		569DC3411282ADCE00BA0794 /* libiconv.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libiconv.dylib; path = usr/lib/libiconv.dylib; sourceTree = SDKROOT; };
 		56D7DF51128854DF00E9E5C9 /* MapKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MapKit.framework; path = System/Library/Frameworks/MapKit.framework; sourceTree = SDKROOT; };
+		5AE527A69ACA5F1A92C2720F /* Pods-MIT Mobile Tests.testflight.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MIT Mobile Tests.testflight.xcconfig"; path = "Pods/Target Support Files/Pods-MIT Mobile Tests/Pods-MIT Mobile Tests.testflight.xcconfig"; sourceTree = "<group>"; };
 		5E0692F61945F7A0009D1449 /* MITShuttleRoute+MapKit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "MITShuttleRoute+MapKit.h"; path = "Categories/MITShuttleRoute+MapKit.h"; sourceTree = "<group>"; };
 		5E0692F71945F7A0009D1449 /* MITShuttleRoute+MapKit.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "MITShuttleRoute+MapKit.m"; path = "Categories/MITShuttleRoute+MapKit.m"; sourceTree = "<group>"; };
 		5E0693011947522A009D1449 /* MITShuttleRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRootViewController.h; sourceTree = "<group>"; };
@@ -1511,6 +1515,10 @@
 		806205D41A7ACEC1004BD08A /* MITMobile.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobile.m; sourceTree = "<group>"; };
 		806205D61A7ACEC1004BD08A /* MITMobileRouteConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobileRouteConstants.h; sourceTree = "<group>"; };
 		806205D71A7ACEC1004BD08A /* MITMobileRouteConstants.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobileRouteConstants.m; sourceTree = "<group>"; };
+		806206611A8128ED004BD08A /* MITLibrariesTests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITLibrariesTests.h; path = KIF/MITLibrariesTests.h; sourceTree = "<group>"; };
+		806206621A8128ED004BD08A /* MITLibrariesTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITLibrariesTests.m; path = KIF/MITLibrariesTests.m; sourceTree = "<group>"; };
+		806206641A812938004BD08A /* KIFUITestActor+Navigation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "KIFUITestActor+Navigation.h"; path = "KIF/ActorAdditions/KIFUITestActor+Navigation.h"; sourceTree = "<group>"; };
+		806206651A812938004BD08A /* KIFUITestActor+Navigation.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "KIFUITestActor+Navigation.m"; path = "KIF/ActorAdditions/KIFUITestActor+Navigation.m"; sourceTree = "<group>"; };
 		80885CB41991410700D6661C /* MITEventsHomeViewControllerPad.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITEventsHomeViewControllerPad.h; path = iPad/MITEventsHomeViewControllerPad.h; sourceTree = "<group>"; };
 		80885CB51991410700D6661C /* MITEventsHomeViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITEventsHomeViewControllerPad.m; path = iPad/MITEventsHomeViewControllerPad.m; sourceTree = "<group>"; };
 		80899D7E1A421EB0004E4953 /* MITTileOverlay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITTileOverlay.h; path = Model/MITTileOverlay/MITTileOverlay.h; sourceTree = "<group>"; };
@@ -1569,6 +1577,7 @@
 		80F6E2B8199A932A0060C971 /* MITDiningCustomSeparatorCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningCustomSeparatorCell.m; path = Dining/MITDiningCustomSeparatorCell.m; sourceTree = "<group>"; };
 		8A8CB9DF52659F18CB8914F9 /* libPods.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPods.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		8D1107310486CEB800E47090 /* MIT_Mobile-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "MIT_Mobile-Info.plist"; plistStructureDefinitionIdentifier = "com.apple.xcode.plist.structure-definition.iphone.info-plist"; sourceTree = "<group>"; };
+		9249CCAD605AAB965A5967D8 /* Pods-MIT Mobile Tests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MIT Mobile Tests.debug.xcconfig"; path = "Pods/Target Support Files/Pods-MIT Mobile Tests/Pods-MIT Mobile Tests.debug.xcconfig"; sourceTree = "<group>"; };
 		A50884DC19D1CB050047A21B /* MITLibrariesWorldcatItemCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesWorldcatItemCell.h; sourceTree = "<group>"; };
 		A50884DD19D1CB050047A21B /* MITLibrariesWorldcatItemCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesWorldcatItemCell.m; sourceTree = "<group>"; };
 		A50884DE19D1CB050047A21B /* MITLibrariesWorldcatItemCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesWorldcatItemCell.xib; sourceTree = "<group>"; };
@@ -1743,6 +1752,7 @@
 		A5FFD24919FAC235006A5921 /* MITLibrariesYourAccountCollectionViewHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesYourAccountCollectionViewHeader.xib; sourceTree = "<group>"; };
 		A63DEE271353CF37001C52BF /* EventKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKit.framework; path = System/Library/Frameworks/EventKit.framework; sourceTree = SDKROOT; };
 		A69826E41354A488004A8258 /* EventKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = EventKitUI.framework; path = System/Library/Frameworks/EventKitUI.framework; sourceTree = SDKROOT; };
+		ACE3665AF7BE19E83CB1A13C /* Pods-MIT Mobile Tests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MIT Mobile Tests.release.xcconfig"; path = "Pods/Target Support Files/Pods-MIT Mobile Tests/Pods-MIT Mobile Tests.release.xcconfig"; sourceTree = "<group>"; };
 		AF2F704919FA991700EE6398 /* MITToursMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITToursMapViewController.h; sourceTree = "<group>"; };
 		AF2F704A19FA991700EE6398 /* MITToursMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITToursMapViewController.m; sourceTree = "<group>"; };
 		AF2F704B19FA991700EE6398 /* MITToursMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITToursMapViewController.xib; sourceTree = "<group>"; };
@@ -1829,6 +1839,7 @@
 		EBCB4DED10D30AA2001219FD /* EmergencyContactsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EmergencyContactsViewController.m; sourceTree = "<group>"; };
 		EBF1120412A495170002D751 /* en.lproj */ = {isa = PBXFileReference; lastKnownFileType = folder; name = en.lproj; path = Resources/en.lproj; sourceTree = "<group>"; };
 		EBF8A77A12AF09CD00D39AE6 /* MediaPlayer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = MediaPlayer.framework; path = System/Library/Frameworks/MediaPlayer.framework; sourceTree = SDKROOT; };
+		F2F278458DFCD03F2641CEAB /* libPods-MIT Mobile Tests.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MIT Mobile Tests.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = Pods.debug.xcconfig; path = "Pods/Target Support Files/Pods/Pods.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1873,6 +1884,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				239A60305D330C6563DF0026 /* libPods-MIT Mobile Tests.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1885,6 +1897,9 @@
 				F72009479D6AA6970D740D25 /* Pods.debug.xcconfig */,
 				3E020E44F0FB2A8E6BEDE14F /* Pods.release.xcconfig */,
 				0BF55C6986088F557B3870C2 /* Pods.testflight.xcconfig */,
+				9249CCAD605AAB965A5967D8 /* Pods-MIT Mobile Tests.debug.xcconfig */,
+				ACE3665AF7BE19E83CB1A13C /* Pods-MIT Mobile Tests.release.xcconfig */,
+				5AE527A69ACA5F1A92C2720F /* Pods-MIT Mobile Tests.testflight.xcconfig */,
 			);
 			name = Pods;
 			sourceTree = "<group>";
@@ -2754,6 +2769,7 @@
 				1DF5F4DF0D08C38300B7A737 /* UIKit.framework */,
 				A63DEE271353CF37001C52BF /* EventKit.framework */,
 				8A8CB9DF52659F18CB8914F9 /* libPods.a */,
+				F2F278458DFCD03F2641CEAB /* libPods-MIT Mobile Tests.a */,
 			);
 			name = Frameworks;
 			sourceTree = SOURCE_ROOT;
@@ -2913,6 +2929,7 @@
 		2C5D083A1A028328006E09C3 /* MIT Mobile Tests */ = {
 			isa = PBXGroup;
 			children = (
+				806206601A812870004BD08A /* KIF */,
 				2C5D08481A028367006E09C3 /* MITApplicationResourceTests.m */,
 				2C5D083D1A028328006E09C3 /* MIT_Mobile_Tests.m */,
 				2C5D083B1A028328006E09C3 /* Supporting Files */,
@@ -4173,6 +4190,17 @@
 			path = RouteConstants;
 			sourceTree = "<group>";
 		};
+		806206601A812870004BD08A /* KIF */ = {
+			isa = PBXGroup;
+			children = (
+				806206611A8128ED004BD08A /* MITLibrariesTests.h */,
+				806206621A8128ED004BD08A /* MITLibrariesTests.m */,
+				806206641A812938004BD08A /* KIFUITestActor+Navigation.h */,
+				806206651A812938004BD08A /* KIFUITestActor+Navigation.m */,
+			);
+			name = KIF;
+			sourceTree = "<group>";
+		};
 		80885CAD19913F4E00D6661C /* iPad */ = {
 			isa = PBXGroup;
 			children = (
@@ -4646,9 +4674,11 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 2C5D08471A028329006E09C3 /* Build configuration list for PBXNativeTarget "MIT Mobile Tests" */;
 			buildPhases = (
+				A83B1B268AF872C70641B442 /* Check Pods Manifest.lock */,
 				2C5D08351A028328006E09C3 /* Sources */,
 				2C5D08361A028328006E09C3 /* Frameworks */,
 				2C5D08371A028328006E09C3 /* Resources */,
+				C05C328BDD6FC349FF8C5D9B /* Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -4894,6 +4924,36 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		A83B1B268AF872C70641B442 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [[ $? != 0 ]] ; then\n    cat << EOM\nerror: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\nEOM\n    exit 1\nfi\n";
+			showEnvVarsInLog = 0;
+		};
+		C05C328BDD6FC349FF8C5D9B /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-MIT Mobile Tests/Pods-MIT Mobile Tests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
 		DD85340A11CD22ACE02ABED6 /* Copy Pods Resources */ = {
@@ -5410,7 +5470,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				806206661A812938004BD08A /* KIFUITestActor+Navigation.m in Sources */,
 				2C5D083E1A028328006E09C3 /* MIT_Mobile_Tests.m in Sources */,
+				806206631A8128ED004BD08A /* MITLibrariesTests.m in Sources */,
 				2C5D08491A028367006E09C3 /* MITApplicationResourceTests.m in Sources */,
 				806205941A7AC00C004BD08A /* MITResourceConstants.m in Sources */,
 			);
@@ -5485,6 +5547,7 @@
 		};
 		2C5D08411A028329006E09C3 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 9249CCAD605AAB965A5967D8 /* Pods-MIT Mobile Tests.debug.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5530,6 +5593,7 @@
 		};
 		2C5D08421A028329006E09C3 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = ACE3665AF7BE19E83CB1A13C /* Pods-MIT Mobile Tests.release.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
@@ -5569,6 +5633,7 @@
 		};
 		2C5D08431A028329006E09C3 /* TestFlight */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 5AE527A69ACA5F1A92C2720F /* Pods-MIT Mobile Tests.testflight.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				BUNDLE_LOADER = "$(TEST_HOST)";
