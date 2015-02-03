@@ -323,7 +323,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)closeIpadResultsList
 {
     if (self.isShowingIpadResultsList) {
-        MITMartyResourcesTableViewController *resultsVC = [self resultsListViewController];
+        MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -335,7 +335,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)openIpadResultsList
 {
     if (!self.isShowingIpadResultsList) {
-        MITMartyResourcesTableViewController *resultsVC = [self resultsListViewController];
+        MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -346,7 +346,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)iphoneListButtonPressed
 {
-    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resultsListViewController]];
+    UINavigationController *resultsListNavigationController = [[UINavigationController alloc] initWithRootViewController:[self resourcesTableViewController]];
     [self presentViewController:resultsListNavigationController animated:YES completion:nil];
 }
 
@@ -404,7 +404,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    [[self resultsListViewController] setResources:resources];
+    [[self resourcesTableViewController] setResources:resources];
     
     self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
     self.showFirstCalloutOnNextMapRegionChange = YES;
@@ -554,8 +554,10 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)showCalloutForResource:(MITMartyResource *)resource
 {
-    if ([self.resources containsObject:resource]) {
-        [self.mapView selectAnnotation:resource animated:YES];
+    for (MITMartyResource *resource2 in self.resources) {
+        if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
+            [self.mapView selectAnnotation:resource2 animated:YES];
+        }
     }
 }
 
@@ -565,29 +567,29 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
-- (MITMartyResourcesTableViewController *)resultsListViewController
+- (MITMartyResourcesTableViewController *)resourcesTableViewController
 {
-    static MITMartyResourcesTableViewController *resultsListViewController;
-    if (!resultsListViewController) {
+    static MITMartyResourcesTableViewController *resourcesTableViewController;
+    if (!resourcesTableViewController) {
         
-        resultsListViewController = [[MITMartyResourcesTableViewController alloc] init];
-        resultsListViewController.resources = self.resources;
+        resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+        resourcesTableViewController.resources = self.resources;
         
         
-        resultsListViewController.delegate = self;
+        resourcesTableViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
             //resultsListViewController.hideDetailButton = YES;
-            resultsListViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
-            resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+            resourcesTableViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
+            resourcesTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;
             
-            [self addChildViewController:resultsListViewController];
-            [resultsListViewController beginAppearanceTransition:YES animated:NO];
-            [self.view addSubview:resultsListViewController.view];
+            [self addChildViewController:resourcesTableViewController];
+            [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
+            [self.view addSubview:resourcesTableViewController.view];
             
-            [resultsListViewController endAppearanceTransition];
-            [resultsListViewController didMoveToParentViewController:self];
+            [resourcesTableViewController endAppearanceTransition];
+            [resourcesTableViewController didMoveToParentViewController:self];
         }
     }
     
@@ -598,18 +600,18 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         }
         case MITMapSearchQueryTypePlace: {
             MITMapPlace *place = [self.resources firstObject];
-            [resultsListViewController setTitle:place.name];
+            [resourcesTableViewController setTitle:place.name];
             break;
         }
         case MITMapSearchQueryTypeCategory: {
-            [resultsListViewController setTitle:self.category.name];
+            [resourcesTableViewController setTitle:self.category.name];
             break;
         }
         default:
             break;
     }
     
-    return resultsListViewController;
+    return resourcesTableViewController;
 }
 
 #pragma mark - Rotation
@@ -868,14 +870,14 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return NO;
 }
 
-#pragma mark - MITMartyResultsListViewControllerDelegate
+#pragma mark - MITMartyResourcesTableViewControllerDelegate
 
-- (void)resultsListViewController:(MITMartyResourcesTableViewController *)viewController didSelectResource:(MITMartyResource *)resource
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
     [self showCalloutForResource:resource];
 }
 
-#pragma mark - MITMartyResultsListViewControllerDelegate
+#pragma mark - MITMartyResourcesTableViewControllerDelegate
 
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMartyResource *)resource
 {

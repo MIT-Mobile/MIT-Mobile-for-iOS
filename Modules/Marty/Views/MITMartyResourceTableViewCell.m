@@ -1,5 +1,6 @@
 #import "MITMartyResourceTableViewCell.h"
 #import "MITMartyModel.h"
+#import "UIKit+MITAdditions.h"
 
 @interface MITMartyResourceTableViewCell ()
 @property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
@@ -57,11 +58,11 @@
     
     switch (status) {
         case MITMartyResourceStatusOffline: {
-            self.statusLabel.textColor = [UIColor redColor];
+            self.statusLabel.textColor = [UIColor mit_closedRedColor];
         } break;
             
         case MITMartyResourceStatusOnline: {
-            self.statusLabel.textColor = [UIColor greenColor];
+            self.statusLabel.textColor = [UIColor mit_openGreenColor];
         } break;
             
         case MITMartyResourceStatusUnknown: {
@@ -71,7 +72,6 @@
     
     [self.statusLabel sizeToFit];
 }
-
 
 - (void)_updateMachineName
 {
