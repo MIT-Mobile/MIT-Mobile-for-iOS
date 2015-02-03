@@ -168,13 +168,13 @@ static NSString * const kMITMapNumberedResultCellIdentifier = @"MITMapNumberedRe
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
+        if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectResource:)]) {
             MITMartyResource *resource = self.resources[indexPath.row];
             [self.delegate resultsListViewController:self didSelectResource:resource];
         }
     } else {
         [self dismissViewControllerAnimated:YES completion:^{
-            if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectPlace:)]) {
+            if ([self.delegate respondsToSelector:@selector(resultsListViewController:didSelectResource:)]) {
                 MITMartyResource *resource = self.resources[indexPath.row];
                 [self.delegate resultsListViewController:self didSelectResource:resource];
             }

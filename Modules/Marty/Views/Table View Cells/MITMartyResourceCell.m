@@ -29,6 +29,8 @@ const CGFloat kResourceCellEstimatedHeight = 50.0;
 {
     self.titleLabel.preferredMaxLayoutWidth = self.titleLabel.frame.size.width;
     self.subtitleLabel.preferredMaxLayoutWidth = self.subtitleLabel.frame.size.width;
+    self.statusLabel.preferredMaxLayoutWidth = self.statusLabel.frame.size.width;
+    
 }
 
 #pragma mark - Resource
@@ -44,24 +46,25 @@ const CGFloat kResourceCellEstimatedHeight = 50.0;
 {
     self.titleLabel.text = [NSString stringWithFormat:@"%ld. %@", (long)order, resource.title];
     self.subtitleLabel.text = resource.subtitle;
+    self.statusLabel.text = resource.status;
 }
 
 #pragma mark - Cell Sizing
 
-+ (CGFloat)heightForResource:(MITMartyResource *)place
++ (CGFloat)heightForResource:(MITMartyResource *)resource
                     order:(NSInteger)order
            tableViewWidth:(CGFloat)width
             accessoryType:(UITableViewCellAccessoryType)accessoryType
 {
-    [[MITMartyResourceCell sizingCell] setResource:place order:order];
+    [[MITMartyResourceCell sizingCell] setResource:resource order:order];
     return [MITMartyResourceCell heightForCell:[MITMartyResourceCell sizingCell] TableWidth:width accessoryType:accessoryType];
 }
 
-+ (CGFloat)heightForResource:(MITMartyResource *)place
++ (CGFloat)heightForResource:(MITMartyResource *)resource
            tableViewWidth:(CGFloat)width
             accessoryType:(UITableViewCellAccessoryType)accessoryType
 {
-    [[MITMartyResourceCell sizingCell] setResource:place];
+    [[MITMartyResourceCell sizingCell] setResource:resource];
     return [MITMartyResourceCell heightForCell:[MITMartyResourceCell sizingCell] TableWidth:width accessoryType:accessoryType];
 }
 

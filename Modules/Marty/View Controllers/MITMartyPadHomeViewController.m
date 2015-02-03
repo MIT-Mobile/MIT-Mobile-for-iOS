@@ -83,6 +83,17 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     return self;
 }
 
+#pragma mark Public Properties
+- (NSArray*)resources
+{
+    __block NSArray *resourceObjects = nil;
+    [self.managedObjectContext performBlockAndWait:^{
+        resourceObjects = [self.managedObjectContext transferManagedObjects:self.dataSource.resources];
+    }];
+    
+    return resourceObjects;
+}
+
 #pragma mark - View Lifecycle
 
 - (void)viewDidLoad
@@ -123,17 +134,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
     }
-}
-
-#pragma mark Public Properties
-- (NSArray*)resources
-{
-    __block NSArray *resourceObjects = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        resourceObjects = [self.managedObjectContext transferManagedObjects:self.dataSource.resources];
-    }];
-    
-    return resourceObjects;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -519,7 +519,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchQueryType = MITMapSearchQueryTypeText;
 }
 
-- (void)setResourceWithResource:(MITMartyResource *)resource
+- (void)setResourcesWithResource:(MITMartyResource *)resource
 {
     [[MITMapModelController sharedController] addRecentSearch:resource];
     self.searchQuery = nil;
@@ -876,27 +876,26 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self showCalloutForResource:resource];
 }
 
-#pragma mark - MITMapPlaceSelectionDelegate
+#pragma mark - MITMartyResultsListViewControllerDelegate
 
-/*
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMartyResource *)resource
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         if (self.presentedViewController) {
             [self dismissViewControllerAnimated:YES completion:^{
-                [self setPlacesWithPlace:place];
+                [self setResourcesWithResource:resource];
             }];
         } else {
-            [self setPlacesWithPlace:place];
+            [self setResourcesWithResource:resource];
             [self.searchBar resignFirstResponder];
         }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
-        [self setPlacesWithPlace:place];
+        [self setResourcesWithResource:resource];
     }
 }
-
+/*
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectCategory:(MITMapCategory *)category
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
@@ -914,25 +913,25 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [self setPlacesWithCategory:category];
     }
 }
-
+*/
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector> *)viewController didSelectQuery:(NSString *)query
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         if (self.presentedViewController) {
             [self dismissViewControllerAnimated:YES completion:^{
-                [self setPlacesWithQuery:query];
+                [self setResourcesWithQuery:query];
             }];
         } else {
-            [self setPlacesWithQuery:query];
+            [self setResourcesWithQuery:query];
             [self.searchBar resignFirstResponder];
         }
     } else {
         [self.searchBar resignFirstResponder];
         [self closePopoversAnimated:YES];
-        [self setPlacesWithQuery:query];
+        [self setResourcesWithQuery:query];
     }
 }
-*/
+
 #pragma mark - UIPopoverControllerDelegate
 
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController

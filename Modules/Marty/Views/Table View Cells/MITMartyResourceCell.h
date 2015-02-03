@@ -7,14 +7,14 @@ extern const CGFloat kResourceCellEstimatedHeight;
 
 @interface MITMartyResourceCell : UITableViewCell
 
-- (void)setResource:(MITMartyResource *)place;
-- (void)setResource:(MITMartyResource *)place order:(NSInteger)order;
+- (void)setResource:(MITMartyResource *)resource;
+- (void)setResource:(MITMartyResource *)resource order:(NSInteger)order;
 
-+ (CGFloat)heightForResource:(MITMartyResource *)place
++ (CGFloat)heightForResource:(MITMartyResource *)resource
            tableViewWidth:(CGFloat)width
      accessoryType:(UITableViewCellAccessoryType)accessoryType;
 
-+ (CGFloat)heightForResource:(MITMartyResource *)place
++ (CGFloat)heightForResource:(MITMartyResource *)resource
                     order:(NSInteger)order
            tableViewWidth:(CGFloat)width
             accessoryType:(UITableViewCellAccessoryType)accessoryType;
