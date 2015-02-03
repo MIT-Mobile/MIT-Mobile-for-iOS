@@ -252,9 +252,14 @@ static NSString* const MITLinksDataTitleKey = @"name";
     NSString *url = currentLink[MITLinksDataURLKey];
 
     CGFloat linkTitleWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
-    CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
     
-    CGSize urlSize = [url sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(linkTitleWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    
+    CGSize titleSize = [title boundingRectWithSize:CGSizeMake(linkTitleWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont buttonFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+    
+    paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+    
+    CGSize urlSize = [url boundingRectWithSize:CGSizeMake(linkTitleWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
 
     return MAX(titleSize.height + urlSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
 }

@@ -432,7 +432,6 @@
 		806205551A7AAF1A004BD08A /* MITAutoSizingCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204DA1A7AAF1A004BD08A /* MITAutoSizingCell.m */; };
 		806205561A7AAF1A004BD08A /* HighlightLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204DD1A7AAF1A004BD08A /* HighlightLabel.m */; };
 		806205571A7AAF1A004BD08A /* HighlightTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204DF1A7AAF1A004BD08A /* HighlightTableViewCell.m */; };
-		806205581A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204E21A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.m */; };
 		806205591A7AAF1A004BD08A /* ExplanatorySectionLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204E51A7AAF1A004BD08A /* ExplanatorySectionLabel.m */; };
 		8062055B1A7AAF1A004BD08A /* MITActionSheetHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204EC1A7AAF1A004BD08A /* MITActionSheetHandler.m */; };
 		8062055C1A7AAF1A004BD08A /* MITBuildInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 806204EF1A7AAF1A004BD08A /* MITBuildInfo.m */; };
@@ -1440,8 +1439,6 @@
 		806204DD1A7AAF1A004BD08A /* HighlightLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightLabel.m; sourceTree = "<group>"; };
 		806204DE1A7AAF1A004BD08A /* HighlightTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HighlightTableViewCell.h; sourceTree = "<group>"; };
 		806204DF1A7AAF1A004BD08A /* HighlightTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HighlightTableViewCell.m; sourceTree = "<group>"; };
-		806204E11A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SecondaryGroupedTableViewCell.h; sourceTree = "<group>"; };
-		806204E21A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SecondaryGroupedTableViewCell.m; sourceTree = "<group>"; };
 		806204E41A7AAF1A004BD08A /* ExplanatorySectionLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ExplanatorySectionLabel.h; sourceTree = "<group>"; };
 		806204E51A7AAF1A004BD08A /* ExplanatorySectionLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ExplanatorySectionLabel.m; sourceTree = "<group>"; };
 		806204EB1A7AAF1A004BD08A /* MITActionSheetHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITActionSheetHandler.h; sourceTree = "<group>"; };
@@ -3755,7 +3752,6 @@
 			children = (
 				806204D81A7AAF1A004BD08A /* AutoSizingCell */,
 				806204DB1A7AAF1A004BD08A /* HighlightTableViewCell */,
-				806204E01A7AAF1A004BD08A /* SecondaryGroupedTableViewCell */,
 				806204E31A7AAF1A004BD08A /* Table Section Explanatory Label */,
 			);
 			path = TableView;
@@ -3779,15 +3775,6 @@
 				806204DF1A7AAF1A004BD08A /* HighlightTableViewCell.m */,
 			);
 			path = HighlightTableViewCell;
-			sourceTree = "<group>";
-		};
-		806204E01A7AAF1A004BD08A /* SecondaryGroupedTableViewCell */ = {
-			isa = PBXGroup;
-			children = (
-				806204E11A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.h */,
-				806204E21A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.m */,
-			);
-			path = SecondaryGroupedTableViewCell;
 			sourceTree = "<group>";
 		};
 		806204E31A7AAF1A004BD08A /* Table Section Explanatory Label */ = {
@@ -5074,7 +5061,6 @@
 				22CFC1B219AE79CB003BD72A /* MITDiningHouseVenueInfoViewController.m in Sources */,
 				AF9282CD1A0BE3AE00CCC25A /* MITToursStopInfiniteScrollCollectionViewManager.m in Sources */,
 				806205541A7AAF1A004BD08A /* MITSingleWebViewCellTableViewController.m in Sources */,
-				806205581A7AAF1A004BD08A /* SecondaryGroupedTableViewCell.m in Sources */,
 				2247B77B19F98C69000E1725 /* UIFont+MITTours.m in Sources */,
 				22D9031F199BE2CC00AEBC7D /* MITDiningWebservices.m in Sources */,
 				806205561A7AAF1A004BD08A /* HighlightLabel.m in Sources */,

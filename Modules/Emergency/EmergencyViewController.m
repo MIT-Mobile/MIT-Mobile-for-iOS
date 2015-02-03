@@ -188,9 +188,14 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         NSString *phone = contacts[indexPath.row][@"phone"];
         
         CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
-        CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
         
-        CGSize phoneSize = [phone sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        
+        CGSize titleSize = [title boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont buttonFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+        
+        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+        
+        CGSize phoneSize = [phone boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
         
         return MAX(titleSize.height + phoneSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
     } else {

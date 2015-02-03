@@ -59,7 +59,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.imageView cancelCurrentImageLoad];
+    [self.imageView sd_cancelCurrentImageLoad];
 }
 
 - (void)viewDidDisappear:(BOOL)animated

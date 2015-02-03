@@ -45,7 +45,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleResourceSection) {
     self.view.backgroundColor = [UIColor groupTableViewBackgroundColor];
     self.tableView.scrollEnabled = NO;
     self.tableView.sectionFooterHeight = 0.0;
-    self.contentSizeForViewInPopover = kPopoverContentSize;
+    self.preferredContentSize = kPopoverContentSize;
 }
 
 - (void)didReceiveMemoryWarning

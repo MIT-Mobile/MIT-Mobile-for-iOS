@@ -17,6 +17,7 @@
 
 @protocol MITEventSearchResultsViewControllerDelegate <NSObject>
 
+@optional
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didLoadResults:(NSArray *)results;
 - (void)eventSearchResultsViewController:(MITEventSearchResultsViewController *)resultsViewController didSelectEvent:(MITCalendarsEvent *)event;
 

@@ -396,13 +396,6 @@ CGFloat const refreshControlTextHeight = 19;
     }
 }
 
-- (void)reloadSearchData
-{
-    self.lastUpdated = self.searchDataSource.refreshedAt;
-    [self updateRefreshStatusWithLastUpdatedTime];
-    [self reloadData];
-}
-
 - (void)reloadData
 {
     if (self.activeViewController == _gridViewController) {
@@ -991,6 +984,13 @@ CGFloat const refreshControlTextHeight = 19;
 #pragma mark MITNewsStoryDetailPagingDelegate
 
 @implementation MITNewsViewController (NewsDelegate)
+
+- (void)reloadSearchData
+{
+    self.lastUpdated = self.searchDataSource.refreshedAt;
+    [self updateRefreshStatusWithLastUpdatedTime];
+    [self reloadData];
+}
 
 - (MITNewsStory*)viewController:(UIViewController *)viewController didSelectCategoryInSection:(NSUInteger)index;
 {

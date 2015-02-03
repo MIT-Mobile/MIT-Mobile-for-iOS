@@ -180,8 +180,7 @@ static NSInteger const kMITEventDetailsEmailAlertTag = 1124;
     CGFloat titleWidth;
     titleWidth = tableFrame.size.width - titlePadding * 2;
 	UIFont *titleFont = [UIFont boldSystemFontOfSize:20.0];
-	CGSize titleSize = [self.event.title sizeWithFont:titleFont
-									constrainedToSize:CGSizeMake(titleWidth, 2010.0)];
+    CGSize titleSize = [self.event.title boundingRectWithSize:CGSizeMake(titleWidth, 2010.0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: titleFont} context:nil].size;
     titleSize = CGSizeMake(ceil(titleSize.width), ceil(titleSize.height));
 	UILabel *titleLabel = [[UILabel alloc] initWithFrame:CGRectMake(titlePadding, titlePadding, titleSize.width, titleSize.height)];
 	titleLabel.lineBreakMode = NSLineBreakByWordWrapping;

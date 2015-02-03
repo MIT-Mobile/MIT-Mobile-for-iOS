@@ -226,7 +226,17 @@
     self.statusLabel.text = string;
     CGFloat margin = 20.0;
     CGRect labelFrame = self.statusLabel.frame;
-    CGSize fittedSize = [string sizeWithFont:self.statusLabel.font constrainedToSize:CGSizeMake(labelFrame.size.width, 2000.0) lineBreakMode:self.statusLabel.lineBreakMode];
+    
+    NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+    paragraphStyle.lineBreakMode = self.statusLabel.lineBreakMode;
+    
+    NSStringDrawingContext *context = [NSStringDrawingContext new];
+    context.minimumScaleFactor = self.statusLabel.minimumScaleFactor;
+    
+    CGSize fittedSize = [string boundingRectWithSize:CGSizeMake(labelFrame.size.width, 2000.0) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: self.statusLabel.font, NSParagraphStyleAttributeName: paragraphStyle} context:context].size;
+    fittedSize.width = ceil(fittedSize.width);
+    fittedSize.height = ceil(fittedSize.height);
+    
     labelFrame.size.height = fittedSize.height;
     labelFrame.origin.y = CGRectGetMinY(self.progressView.frame) - labelFrame.size.height - margin;
     self.statusLabel.frame = labelFrame;
