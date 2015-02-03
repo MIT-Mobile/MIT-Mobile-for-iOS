@@ -6,7 +6,6 @@
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMapPlaceSelector.h"
-#import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITLocationManager.h"
 #import "SMCalloutView.h"
@@ -15,6 +14,7 @@
 #import "MITMartyResource.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyResourcesTableViewController.h"
+#import "MITMartyTypeAheadTableViewController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -28,7 +28,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
-@property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
+@property (nonatomic, strong) MITMartyTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
 @property (nonatomic, strong) SMCalloutView *calloutView;
@@ -241,7 +241,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 - (void)setupTypeAheadTableView
 {
     if (!self.typeAheadViewController) {
-        self.typeAheadViewController = [[MITMapTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
+        self.typeAheadViewController = [[MITMartyTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
         self.typeAheadViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
