@@ -31,7 +31,7 @@
     // Configure the view for the selected state
 }
 
-- (void)setTitle:(NSString *)title setDescription:(NSString *)description
+- (void)setTitle:(NSString *)title withDescription:(NSString *)description
 {    
     self.titleTextView.text = title;
     self.descriptionTextView.text = description;

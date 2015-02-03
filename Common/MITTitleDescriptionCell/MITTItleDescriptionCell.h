@@ -4,6 +4,6 @@
 
 + (NSString *)titleDescriptionCellNibName;
 + (UINib *)titleDescriptionCellNib;
-- (void)setTitle:(NSString *)title setDescription:(NSString *)description;
+- (void)setTitle:(NSString *)title withDescription:(NSString *)description;
 
 @end

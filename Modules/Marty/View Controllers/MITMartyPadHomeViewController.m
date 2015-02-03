@@ -14,9 +14,7 @@
 #import "MITMartyResourceDataSource.H"
 #import "MITMartyResource.h"
 #import "MITMartyDetailTableViewController.h"
-//#import "MITMartyResultsListViewController.h"
 #import "MITMartyResourcesTableViewController.h"
-
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -498,21 +496,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     }];
 }
 
-/*
-- (void)getPlaceForObjectID:(NSString *)objectID
-{
-    [[MITMapModelController sharedController] getPlacesForObjectID:objectID loaded:^(NSArray *objects, NSError *error) {
-        if (objects) {
-            [self setPlaces:objects animated:YES];
-            MITMapPlace *place = objects.firstObject;
-            if (place) {
-                [[MITMapModelController sharedController] addRecentSearch:place.name];
-            }
-        }
-    }];
-}
-*/
-
 - (void)setResourcesWithQuery:(NSString *)query
 {
     [self performSearchWithQuery:query];
@@ -531,19 +514,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchBar.text = resource.name;
     self.searchQueryType = MITMapSearchQueryTypePlace;
 }
-
-/*
-- (void)setPlacesWithCategory:(MITMapCategory *)category
-{
-    [[MITMapModelController sharedController] addRecentSearch:category];
-    self.category = category;
-    self.searchQuery = nil;
-    NSArray *places = category.allPlaces;
-    [self setPlaces:places animated:YES];
-    self.searchBar.text = category.name;
-    self.searchQueryType = MITMapSearchQueryTypeCategory;
-}
- */
 
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
@@ -718,25 +688,6 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     self.searchBarView.bounds = bounds;
 }
 
-#pragma mark - In App Linking
-/*
-- (void)handleInternalURLQuery:(NSString *)query forQueryEndpoint:(NSString *)queryEndpoint
-{
-    if ([queryEndpoint isEqualToString:@"search"]) {
-        query = [query stringByRemovingPercentEncoding];
-        [self performSearchWithQuery:query];
-        self.searchQuery = query;
-    }
-    else if ([queryEndpoint isEqualToString:@"places"]) {
-        [self getPlaceForObjectID:query];
-        // Remove the `object-` prefix for the user visible string
-        NSRange range = [query rangeOfString:@"object-"];
-        query = [query substringFromIndex:range.length];
-        self.searchQuery = query;
-    }
-}
-*/
-
 #pragma mark - MKMapViewDelegate
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
@@ -784,7 +735,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMartyResource *resource = view.annotation;
+        MITMartyResource *resource = (MITMartyResource *)view.annotation;
         [self pushDetailViewControllerForResource:resource];
     }
 }
@@ -809,7 +760,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = annotationView.annotation;
+    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
 
     self.currentlySelectResource = resource;
     MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] initWithNibName:nil bundle:nil];
@@ -833,7 +784,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = annotationView.annotation;
+    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
     self.calloutView.title = resource.title;

@@ -130,7 +130,7 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
 
         NSString *title = self.titles[indexPath.row];
         NSString *description = self.descriptions[indexPath.row];
-        [titleDescriptionCell setTitle:title setDescription:description];
+        [titleDescriptionCell setTitle:title withDescription:description];
     }
 }
 
