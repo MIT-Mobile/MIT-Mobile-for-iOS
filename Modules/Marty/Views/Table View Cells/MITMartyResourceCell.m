@@ -1,5 +1,6 @@
 #import "MITMartyResourceCell.h"
 #import "MITMartyResource.h"
+#import "UIKit+MITAdditions.h"
 
 const CGFloat kResourceCellEstimatedHeight = 50.0;
 
@@ -47,6 +48,16 @@ const CGFloat kResourceCellEstimatedHeight = 50.0;
     self.titleLabel.text = [NSString stringWithFormat:@"%ld. %@", (long)order, resource.title];
     self.subtitleLabel.text = resource.subtitle;
     self.statusLabel.text = resource.status;
+    [self setStatusLabelColor:self.statusLabel];
+}
+
+- (void)setStatusLabelColor:(UILabel *)statusLabel
+{
+    if ([statusLabel.text caseInsensitiveCompare:@"online"] == NSOrderedSame) {
+        statusLabel.textColor = [UIColor mit_openGreenColor];
+    } else if ([statusLabel.text caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
+        statusLabel.textColor = [UIColor mit_closedRedColor];
+    }
 }
 
 #pragma mark - Cell Sizing
@@ -91,6 +102,5 @@ const CGFloat kResourceCellEstimatedHeight = 50.0;
     });
     return sizingCell;
 }
-
 
 @end

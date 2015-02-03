@@ -78,11 +78,7 @@
 
 - (NSString*)subtitle
 {
-    if (![self.name isEqualToString:self.title]) {
-        return self.name;
-    } else {
-        return nil;
-    }
+    return self.room;
 }
 
 - (CLLocationCoordinate2D)coordinate
