@@ -7,6 +7,9 @@
 #import "MITAdditions.h"
 #import "MITMartyResource.h"
 
+#import "MITMartyRecentSearchList.h"
+#import "MITMartyRecentSearchQuery.h"
+
 static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
 static NSString* const MITMartyResourcePathPattern = @"resource";
 
@@ -116,6 +119,83 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     }];
 
     [self.mappingOperationQueue addOperation:requestOperation];
+}
+
+#pragma mark - Recent Search List
+
+- (MITMartyRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMartyRecentSearchList entityName]];
+    NSError *error = nil;
+    
+    NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
+    if (error) {
+        return nil;
+    } else if ([fetchedObjects count] == 0) {
+        return [[MITMartyRecentSearchList alloc] initWithEntity:[MITMartyRecentSearchList entityDescription] insertIntoManagedObjectContext:context];
+    } else {
+        return [fetchedObjects firstObject];
+    }
+}
+
+#pragma mark - Recent Search Items
+
+- (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
+{
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
+    NSArray *recentSearchItems = [[recentSearchList.recentQueries reversedOrderedSet] array];
+    
+    NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
+    
+    if (filterString && ![filterString isEqualToString:@""]) {
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
+        return [[recentSearchItems filteredArrayUsingPredicate:predicate] sortedArrayUsingDescriptors:@[sortDescriptor]];
+    }
+    
+    return [[recentSearchList.recentQueries array] sortedArrayUsingDescriptors:@[sortDescriptor]];
+}
+
+- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *)error
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+        
+        MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        NSArray *recentSearchItems = [recentSearchList.recentQueries array];
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchTerm ];
+        NSArray *searchTermAlreadyExists = [recentSearchItems filteredArrayUsingPredicate:predicate];
+        
+        if ([searchTermAlreadyExists count]) {
+            MITMartyRecentSearchQuery *searchItem = [searchTermAlreadyExists firstObject];
+            searchItem.date = [NSDate date];
+            return YES;
+        } else {
+            MITMartyRecentSearchQuery *searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+            if (searchItem) {
+                searchItem.text = searchTerm;
+                searchItem.date = [NSDate date];
+                [recentSearchList addRecentQueriesObject:searchItem];
+                return YES;
+            } else {
+                return NO;
+            }
+        }
+    } error:&error];
+}
+
+- (void)clearRecentSearchesWithError:(NSError *)error
+{
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+        MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        [context deleteObject:recentSearchList];
+        recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        
+        if (recentSearchList) {
+            return YES;
+        } else {
+            return NO;
+        }
+    } error:&error];
 }
 
 @end

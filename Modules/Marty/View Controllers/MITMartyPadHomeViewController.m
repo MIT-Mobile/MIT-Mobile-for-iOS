@@ -1,5 +1,5 @@
 #import "MITMartyPadHomeViewController.h"
-#import "MITMapModelController.h"
+#import "MITMartyResourceDataSource.h"
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITMapBrowseContainerViewController.h"
@@ -14,7 +14,8 @@
 #import "MITMartyResource.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyResourcesTableViewController.h"
-#import "MITMartyTypeAheadTableViewController.h"
+#import "MITCoreDataController.h"
+#import "MITMartyRecentSearchController.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -28,7 +29,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
 @property (nonatomic) BOOL searchBarShouldBeginEditing;
-@property (nonatomic, strong) MITMartyTypeAheadTableViewController *typeAheadViewController;
+@property (nonatomic, strong) MITMartyRecentSearchController *searchViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
 @property (nonatomic, strong) SMCalloutView *calloutView;
@@ -54,10 +55,21 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) MITMartyResource *currentlySelectResource;
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
+@property (strong, nonatomic) MITMartyResourceDataSource *modelController;
 
 @end
 
 @implementation MITMartyPadHomeViewController
+
+#pragma mark - properties
+- (MITMartyResourceDataSource *)modelController
+{
+    if(!_modelController) {
+        MITMartyResourceDataSource *modelController = [[MITMartyResourceDataSource alloc] init];
+        _modelController = modelController;
+    }
+    return _modelController;
+}
 
 #pragma mark - Map View
 
@@ -240,19 +252,20 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
 - (void)setupTypeAheadTableView
 {
-    if (!self.typeAheadViewController) {
-        self.typeAheadViewController = [[MITMartyTypeAheadTableViewController alloc] initWithStyle:UITableViewStylePlain];
-        self.typeAheadViewController.delegate = self;
+    if (!self.searchViewController) {
+        self.searchViewController = [[MITMartyRecentSearchController alloc] initWithStyle:UITableViewStylePlain];
+      //  self.searchViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:self.typeAheadViewController];
-            self.typeAheadViewController.showsTitleHeader = YES;
+            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.searchViewController];
+
+            self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
         } else {
-            [self addChildViewController:self.typeAheadViewController];
-            self.typeAheadViewController.view.hidden = YES;
-            self.typeAheadViewController.view.frame = CGRectZero;
-            [self.view addSubview:self.typeAheadViewController.view];
-            [self.typeAheadViewController didMoveToParentViewController:self];
+            [self addChildViewController:self.searchViewController];
+            self.searchViewController.view.hidden = YES;
+            self.searchViewController.view.frame = CGRectZero;
+            [self.view addSubview:self.searchViewController.view];
+            [self.searchViewController didMoveToParentViewController:self];
         }
     }
 }
@@ -413,7 +426,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITMapPlace class]]) {
+        if ([annotation isKindOfClass:[MITMartyResource class]]) {
             [annotationsToRemove addObject:annotation];
         }
     }
@@ -428,10 +441,10 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         self.isKeyboardVisible = YES;
 
         [UIView performWithoutAnimation:^{
-            self.typeAheadViewController.view.frame = self.view.bounds;
+            self.searchViewController.view.frame = self.view.bounds;
         }];
 
-        self.typeAheadViewController.view.hidden = NO;
+        self.searchViewController.view.hidden = NO;
     }
 }
 
@@ -439,7 +452,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         self.isKeyboardVisible = NO;
-        self.typeAheadViewController.view.hidden = YES;
+        self.searchViewController.view.hidden = YES;
     }
 }
 
@@ -454,13 +467,15 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
 - (void)updateSearchResultsForSearchString:(NSString *)searchString
 {
-    [self.typeAheadViewController updateResultsWithSearchTerm:searchString];
+    [self.searchViewController filterResultsUsingString:searchString];
 }
 
 - (void)performSearchWithQuery:(NSString *)query
 {
     self.searchQuery = query;
-    [[MITMapModelController sharedController] addRecentSearch:query];
+
+    NSError *error = nil;
+    [self.modelController addRecentSearchItem:query error:error];
     
     MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
     self.dataSource = dataSource;
@@ -491,7 +506,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
 - (void)setResourcesWithResource:(MITMartyResource *)resource
 {
-    [[MITMapModelController sharedController] addRecentSearch:resource];
     self.searchQuery = nil;
     self.category = nil;
     
@@ -556,7 +570,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     
     if (!self.isKeyboardVisible && [self.searchBar isFirstResponder] && [[UIDevice currentDevice] userInterfaceIdiom] != UIUserInterfaceIdiomPad) {
         CGFloat tableViewHeight = self.view.frame.size.height;
-        self.typeAheadViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
+        self.searchViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
     }
 }
 
@@ -573,8 +587,8 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         [self resizeAndAlignSearchBar];
         
         CGFloat tableViewHeight = self.view.frame.size.height;
-        self.typeAheadViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
-        self.typeAheadViewController.view.hidden = NO;
+        self.searchViewController.view.frame = CGRectMake(0, 0, self.view.frame.size.width, tableViewHeight);
+        self.searchViewController.view.hidden = NO;
     }
     
     [self updateSearchResultsForSearchString:self.searchQuery];
@@ -584,7 +598,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 {
     [self closeSearchBar];
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        self.typeAheadViewController.view.hidden = YES;
+        self.searchViewController.view.hidden = YES;
     }
 }
 
