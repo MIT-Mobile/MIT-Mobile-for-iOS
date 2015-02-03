@@ -232,7 +232,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
         self.todaysDateLabel.text = dateString;
     } else {
         CGPoint dateLabelCenter = self.todaysDateLabel.center;
-        CGPoint initialTempLabelCenter;
+        CGPoint initialTempLabelCenter = CGPointZero;
         switch (animationType) {
             case MITSlidingAnimationTypeForward:
                 initialTempLabelCenter = CGPointApplyAffineTransform(dateLabelCenter,

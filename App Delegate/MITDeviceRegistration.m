@@ -382,9 +382,14 @@ static NSString* const MITDeviceIdentityPasscodeKey = @"Passcode";
 {
     NSAssert(self.deviceToken, @"deviceToken is nil, a valid token is required for device registration");
 
-    NSMutableDictionary *parameters = [NSMutableDictionary dictionaryWithDictionary:@{MITDeviceIdKey : self.deviceIdentifier,
-                                                                                      MITPassCodeKey : self.passcode,
-                                                                                      MITDeviceTypeKey : MITDeviceTypeApple}];
+    NSMutableDictionary *parameters = [NSMutableDictionary dictionary];
+    if (self.deviceIdentifier) {
+        parameters[MITDeviceIdKey] = self.deviceIdentifier;
+    }
+    if (self.passcode) {
+        parameters[MITPassCodeKey] = self.passcode;
+    }
+    parameters[MITDeviceTypeKey] = MITDeviceTypeApple;
     parameters[@"device_token"] = MITHexStringFromNSData(self.deviceToken);
     parameters[@"app_id"] = [[NSBundle mainBundle] objectForInfoDictionaryKey:(__bridge NSString*)kCFBundleIdentifierKey];
 

@@ -139,7 +139,9 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response)
             }
         }
 
-        parameters[key] = value;
+        if (key && value) {
+            parameters[key] = value;
+        }
     }];
     
     return parameters;

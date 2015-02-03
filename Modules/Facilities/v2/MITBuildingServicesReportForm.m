@@ -29,7 +29,10 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
     NSMutableDictionary *params = [NSMutableDictionary dictionaryWithCapacity:8];
     params[@"name"] = @"";
     
-    params[@"email"] = self.email;
+    NSString *email = self.email;
+    if (email) {
+        params[@"email"] = email;
+    }
     
     FacilitiesLocation *location = self.location;
     FacilitiesRoom *room = self.room;

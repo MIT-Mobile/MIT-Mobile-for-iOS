@@ -331,7 +331,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
         self.stopSubtitleLabel.text = stop.title;
     } else {
         CGPoint stopSubtitleLabelCenter = self.stopSubtitleLabel.center;
-        CGPoint initialTempLabelCenter;
+        CGPoint initialTempLabelCenter = CGPointZero;
         switch (animationType) {
             case MITShuttleStopSubtitleLabelAnimationTypeForward:
                 initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
