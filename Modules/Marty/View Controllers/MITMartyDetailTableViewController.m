@@ -73,6 +73,7 @@ static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpeci
     tableView.tableFooterView = [UIView new];
     
     tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    tableView.allowsSelection = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
