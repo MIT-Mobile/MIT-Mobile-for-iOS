@@ -14,7 +14,9 @@
 #import "MITMartyResourceDataSource.H"
 #import "MITMartyResource.h"
 #import "MITMartyDetailTableViewController.h"
-#import "MITMartyResultsListViewController.h"
+//#import "MITMartyResultsListViewController.h"
+#import "MITMartyResourcesTableViewController.h"
+
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -27,7 +29,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
+@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -321,7 +323,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)closeIpadResultsList
 {
     if (self.isShowingIpadResultsList) {
-        MITMartyResultsListViewController *resultsVC = [self resultsListViewController];
+        MITMartyResourcesTableViewController *resultsVC = [self resultsListViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -333,7 +335,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)openIpadResultsList
 {
     if (!self.isShowingIpadResultsList) {
-        MITMartyResultsListViewController *resultsVC = [self resultsListViewController];
+        MITMartyResourcesTableViewController *resultsVC = [self resultsListViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
@@ -563,17 +565,19 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
 }
 
-- (MITMartyResultsListViewController *)resultsListViewController
+- (MITMartyResourcesTableViewController *)resultsListViewController
 {
-    static MITMartyResultsListViewController *resultsListViewController;
+    static MITMartyResourcesTableViewController *resultsListViewController;
     if (!resultsListViewController) {
         
-        resultsListViewController = [[MITMartyResultsListViewController alloc] initWithResources:self.resources];
+        resultsListViewController = [[MITMartyResourcesTableViewController alloc] init];
+        resultsListViewController.resources = self.resources;
+        
         
         resultsListViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            resultsListViewController.hideDetailButton = YES;
+            //resultsListViewController.hideDetailButton = YES;
             resultsListViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
             resultsListViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
             self.isShowingIpadResultsList = NO;
@@ -589,7 +593,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     
     switch (self.searchQueryType) {
         case MITMapSearchQueryTypeText: {
-            [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
+          //  [resultsListViewController setTitleWithSearchQuery:self.searchQuery];
             break;
         }
         case MITMapSearchQueryTypePlace: {
@@ -866,7 +870,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 #pragma mark - MITMartyResultsListViewControllerDelegate
 
-- (void)resultsListViewController:(MITMartyResultsListViewController *)viewController didSelectResource:(MITMartyResource *)resource
+- (void)resultsListViewController:(MITMartyResourcesTableViewController *)viewController didSelectResource:(MITMartyResource *)resource
 {
     [self showCalloutForResource:resource];
 }

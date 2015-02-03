@@ -1,17 +1,20 @@
 #import "MITMartyRootPhoneViewController.h"
 #import "MITMartyResourceDataSource.h"
 #import "MITMartyModel.h"
-#import "MITMartyDetailTableViewController.h"
+#import "MITMartyResourcesTableViewController.h"
 
-@interface MITMartyRootPhoneViewController ()
+@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate>
 @property(nonatomic,weak) IBOutlet NSLayoutConstraint *topViewHeightConstraint;
 @property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
 @property(nonatomic,readonly,strong) NSArray *resources;
-@property (nonatomic, strong) MITMartyResource *resource;
 
+@property(nonatomic,readonly,weak) MITMartyResource *resource;
+@property(nonatomic,readonly,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
 @end
 
 @implementation MITMartyRootPhoneViewController
+@synthesize resource = _resource;
+@synthesize resourcesTableViewController = _resourcesTableViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -27,30 +30,44 @@
 
     MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
     self.dataSource = dataSource;
-    [dataSource resourcesWithQuery:@"Lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+    [dataSource resourcesWithQuery:@"lathe" completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
         if (error) {
             DDLogWarn(@"Error: %@",error);
         } else {
             [self.managedObjectContext performBlockAndWait:^{
                 [self.managedObjectContext reset];
-
-                [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                    DDLogVerbose(@"Got resource with name: %@ [%@]",resource.name, resource.identifier);
-
-                }];
-
+                
+                self.resourcesTableViewController.resources = self.resources;
             }];
         }
     }];
 }
 
-- (void)didReceiveMemoryWarning
-{
+
+- (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
 }
 
 #pragma mark Public Properties
+- (MITMartyResourcesTableViewController*)resourcesTableViewController
+{
+    if (!_resourcesTableViewController) {
+        MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+        resourcesTableViewController.delegate = self;
+        
+        [self addChildViewController:resourcesTableViewController];
+        [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
+        [self.tableViewContainer addSubview:resourcesTableViewController.view];
+        [resourcesTableViewController endAppearanceTransition];
+        [resourcesTableViewController didMoveToParentViewController:self];
+        
+        _resourcesTableViewController = resourcesTableViewController;
+    }
+    
+    return _resourcesTableViewController;
+}
+
 - (NSArray*)resources
 {
     __block NSArray *resourceObjects = nil;
@@ -61,35 +78,10 @@
     return resourceObjects;
 }
 
-/*
-#pragma mark - Navigation
-
-// In a storyboard-based application, you will often want to do a little preparation before navigation
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender {
-    // Get the new view controller using [segue destinationViewController].
-    // Pass the selected object to the new view controller.
-}
-*/
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(id)sender
+#pragma mark Delegation
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
-    UIViewController *destinationViewController = [segue destinationViewController];
     
-    DDLogVerbose(@"Performing segue with identifier '%@'",[segue identifier]);
-    
-    if ([segue.identifier isEqualToString:@"showDetail"]) {
-        if ([destinationViewController isKindOfClass:[MITMartyDetailTableViewController class]]) {
-            
-            if (self.resource) {
-                MITMartyDetailTableViewController *storyDetailViewController = (MITMartyDetailTableViewController*)destinationViewController;
-                storyDetailViewController.resource = self.resource;
-            }
-        } else {
-            DDLogWarn(@"unexpected class for segue %@. Expected %@ but got %@",segue.identifier,
-                      NSStringFromClass([MITMartyDetailTableViewController class]),
-                      NSStringFromClass([[segue destinationViewController] class]));
-        }
-    }
 }
 
 @end
