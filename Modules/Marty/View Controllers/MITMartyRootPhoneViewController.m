@@ -4,6 +4,7 @@
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITSlidingViewController.h"
+#import "MITMartyResourcesMapViewController.h"
 
 @interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
 @property(nonatomic,weak) IBOutlet NSLayoutConstraint *topViewHeightConstraint;
@@ -12,6 +13,7 @@
 
 @property(nonatomic,readonly,weak) MITMartyResource *resource;
 @property(nonatomic,readonly,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
+@property(nonatomic,readonly,weak) MITMartyResourcesMapViewController *mapViewController;
 
 
 @property(nonatomic,weak) UIView *searchBarContainer;
@@ -25,6 +27,7 @@
 @implementation MITMartyRootPhoneViewController
 @synthesize resource = _resource;
 @synthesize resourcesTableViewController = _resourcesTableViewController;
+@synthesize mapViewController = _mapViewController;
 @synthesize typeAheadViewController = _typeAheadViewController;
 
 - (void)viewDidLoad {
@@ -34,6 +37,12 @@
     }
 
     self.contentContainerView.hidden = YES;
+}
+
+- (void)viewDidLayoutSubviews
+{
+    [super viewDidLayoutSubviews];
+    [self resizeAndAlignSearchBar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -80,48 +89,48 @@
     return _dataSource;
 }
 
-
-
 - (void)setupNavigationBar
 {
     //self.edgesForExtendedLayout = UIRectEdgeNone;
     self.searchBar.delegate = self;
 
-    UIView *searchBarContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
-    searchBarContainer.autoresizingMask = UIViewAutoresizingNone;
-    [searchBarContainer addSubview:self.searchBar];
-    self.searchBarContainer = searchBarContainer;
+    if (!_searchBarContainer) {
+        UIView *searchBarContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
+        searchBarContainer.autoresizingMask = UIViewAutoresizingNone;
+        [searchBarContainer addSubview:self.searchBar];
 
-    NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:self.searchBarContainer
-                                                           attribute:NSLayoutAttributeTop
-                                                           relatedBy:NSLayoutRelationEqual
-                                                              toItem:self.searchBar
-                                                           attribute:NSLayoutAttributeTop
-                                                          multiplier:1.0
-                                                            constant:0];
-    NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:self.searchBarContainer
-                                                            attribute:NSLayoutAttributeLeft
-                                                            relatedBy:NSLayoutRelationEqual
-                                                               toItem:self.searchBar
-                                                            attribute:NSLayoutAttributeLeft
-                                                           multiplier:1.0
-                                                             constant:0];
-    NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:self.searchBarContainer
-                                                              attribute:NSLayoutAttributeBottom
-                                                              relatedBy:NSLayoutRelationEqual
-                                                                 toItem:self.searchBar
-                                                              attribute:NSLayoutAttributeBottom
-                                                             multiplier:1.0
-                                                               constant:0];
-    NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:self.searchBarContainer
-                                                             attribute:NSLayoutAttributeBottom
-                                                             relatedBy:NSLayoutRelationEqual
-                                                                toItem:self.searchBar
-                                                             attribute:NSLayoutAttributeBottom
-                                                            multiplier:1.0
-                                                              constant:0];
-    [self.searchBarContainer addConstraints:@[top, left, bottom, right]];
-    self.navigationItem.titleView = self.searchBarContainer;
+        NSLayoutConstraint *top = [NSLayoutConstraint constraintWithItem:searchBarContainer
+                                                               attribute:NSLayoutAttributeTop
+                                                               relatedBy:NSLayoutRelationEqual
+                                                                  toItem:self.searchBar
+                                                               attribute:NSLayoutAttributeTop
+                                                              multiplier:1.0
+                                                                constant:0];
+        NSLayoutConstraint *left = [NSLayoutConstraint constraintWithItem:searchBarContainer
+                                                                attribute:NSLayoutAttributeLeft
+                                                                relatedBy:NSLayoutRelationEqual
+                                                                   toItem:self.searchBar
+                                                                attribute:NSLayoutAttributeLeft
+                                                               multiplier:1.0
+                                                                 constant:0];
+        NSLayoutConstraint *bottom = [NSLayoutConstraint constraintWithItem:searchBarContainer
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                  relatedBy:NSLayoutRelationEqual
+                                                                     toItem:self.searchBar
+                                                                  attribute:NSLayoutAttributeBottom
+                                                                 multiplier:1.0
+                                                                   constant:0];
+        NSLayoutConstraint *right = [NSLayoutConstraint constraintWithItem:searchBarContainer
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                 relatedBy:NSLayoutRelationEqual
+                                                                    toItem:self.searchBar
+                                                                 attribute:NSLayoutAttributeBottom
+                                                                multiplier:1.0
+                                                                  constant:0];
+        [searchBarContainer addConstraints:@[top, left, bottom, right]];
+        self.navigationItem.titleView = searchBarContainer;
+        self.searchBarContainer = searchBarContainer;
+    }
 
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
 }
@@ -171,6 +180,26 @@
     }
     
     return _resourcesTableViewController;
+}
+
+- (MITMartyResourcesMapViewController*)mapViewController
+{
+    if (!_mapViewController) {
+        MITMartyResourcesMapViewController *mapViewController = [[MITMartyResourcesMapViewController alloc] init];
+
+        [self addChildViewController:mapViewController];
+        [mapViewController beginAppearanceTransition:YES animated:NO];
+        mapViewController.view.frame = self.mapViewContainer.bounds;
+        mapViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        mapViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        [self.mapViewContainer addSubview:mapViewController.view];
+        [mapViewController endAppearanceTransition];
+        [mapViewController didMoveToParentViewController:self];
+
+        _mapViewController = mapViewController;
+    }
+
+    return _mapViewController;
 }
 
 - (UITableViewController*)typeAheadViewController
@@ -270,6 +299,7 @@
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
         self.resourcesTableViewController.resources = self.dataSource.resources;
+        self.mapViewController.resources = self.dataSource.resources;
     }];
 }
 
@@ -279,6 +309,7 @@
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
         self.resourcesTableViewController.resources = self.dataSource.resources;
+        self.mapViewController.resources = self.dataSource.resources;
     }];
 }
 
