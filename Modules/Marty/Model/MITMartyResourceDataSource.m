@@ -14,6 +14,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
+@property (nonatomic,copy) NSString *queryString;
 @end
 
 @implementation MITMartyResourceDataSource
@@ -92,6 +93,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 
         NSManagedObjectContext *context = blockSelf.managedObjectContext;
         [context performBlock:^{
+            blockSelf.queryString = queryString;
             blockSelf.lastFetched = [NSDate date];
             blockSelf.resourceObjectIdentifiers = [NSManagedObjectContext objectIDsForManagedObjects:[mappingResult array]];
 
