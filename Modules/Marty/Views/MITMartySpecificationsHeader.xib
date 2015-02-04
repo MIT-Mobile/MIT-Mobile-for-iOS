@@ -18,14 +18,14 @@
                             <rect key="frame" x="0.0" y="0.0" width="268" height="48"/>
                             <subviews>
                                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MdW-LF-lsd" userLabel="Separator">
-                                    <rect key="frame" x="15" y="5" width="253" height="1"/>
+                                    <rect key="frame" x="15" y="0.0" width="253" height="1"/>
                                     <color key="backgroundColor" red="0.91372549020000005" green="0.91372549020000005" blue="0.91372549020000005" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <constraints>
                                         <constraint firstAttribute="height" constant="1" id="hUM-xK-lve"/>
                                     </constraints>
                                 </view>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Header" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                                    <rect key="frame" x="15" y="11" width="59" height="32"/>
+                                    <rect key="frame" x="15" y="6" width="59" height="37"/>
                                     <constraints>
                                         <constraint firstAttribute="width" relation="greaterThanOrEqual" id="C2e-lU-qC5"/>
                                     </constraints>
@@ -39,7 +39,7 @@
                                 <constraint firstItem="las-NX-67L" firstAttribute="top" secondItem="MdW-LF-lsd" secondAttribute="bottom" constant="5" id="T7t-Qs-3ih"/>
                                 <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="15" id="WEC-3o-98q"/>
                                 <constraint firstAttribute="bottom" secondItem="las-NX-67L" secondAttribute="bottom" constant="5" id="oNO-jN-qUF"/>
-                                <constraint firstItem="MdW-LF-lsd" firstAttribute="top" secondItem="rq1-KP-oP6" secondAttribute="top" constant="5" id="p6O-kR-Ikw"/>
+                                <constraint firstItem="MdW-LF-lsd" firstAttribute="top" secondItem="rq1-KP-oP6" secondAttribute="top" id="p6O-kR-Ikw"/>
                                 <constraint firstAttribute="trailing" secondItem="MdW-LF-lsd" secondAttribute="trailing" id="uV7-kj-V14"/>
                             </constraints>
                         </view>
