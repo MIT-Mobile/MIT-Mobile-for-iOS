@@ -14,6 +14,13 @@
         <attribute name="modifiedBy" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
+    <entity name="MartyRecentSearchList" representedClassName="MITMartyRecentSearchList" syncable="YES">
+        <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMartyRecentSearchQuery" syncable="YES"/>
+    </entity>
+    <entity name="MITMartyRecentSearchQuery" representedClassName="MITMartyRecentSearchQuery" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="Resource" representedClassName="MITMartyResource" parentEntity="MartyObject" syncable="YES">
         <attribute name="dlc" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
@@ -70,15 +77,17 @@
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="types" inverseEntity="Template" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Category" positionX="-225" positionY="-279" width="128" height="105"/>
-        <element name="MartyObject" positionX="-225" positionY="-115" width="128" height="135"/>
-        <element name="Resource" positionX="27" positionY="36" width="128" height="223"/>
-        <element name="ResourceAttribute" positionX="583" positionY="90" width="128" height="118"/>
-        <element name="ResourceAttributeValue" positionX="-27" positionY="-171" width="128" height="73"/>
-        <element name="ResourceOwner" positionX="396" positionY="198" width="128" height="73"/>
-        <element name="ResourceSearch" positionX="-18" positionY="-162" width="128" height="73"/>
-        <element name="Template" positionX="214" positionY="-112" width="128" height="103"/>
-        <element name="TemplateAttribute" positionX="396" positionY="-99" width="128" height="163"/>
-        <element name="Type" positionX="45" positionY="-313" width="128" height="105"/>
+        <element name="Category" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MartyObject" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="MartyRecentSearchList" positionX="0" positionY="0" width="128" height="60"/>
+        <element name="MITMartyRecentSearchQuery" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="Resource" positionX="0" positionY="0" width="128" height="225"/>
+        <element name="ResourceAttribute" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="ResourceAttributeValue" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="ResourceOwner" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="ResourceSearch" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="Template" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="TemplateAttribute" positionX="0" positionY="0" width="128" height="165"/>
+        <element name="Type" positionX="0" positionY="0" width="128" height="105"/>
     </elements>
 </model>
