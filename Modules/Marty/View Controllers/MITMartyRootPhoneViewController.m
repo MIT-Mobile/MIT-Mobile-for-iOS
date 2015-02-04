@@ -91,9 +91,6 @@
 
 - (void)setupNavigationBar
 {
-    //self.edgesForExtendedLayout = UIRectEdgeNone;
-    self.searchBar.delegate = self;
-
     if (!_searchBarContainer) {
         UIView *searchBarContainer = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         searchBarContainer.autoresizingMask = UIViewAutoresizingNone;
@@ -255,6 +252,7 @@
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
         searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         searchBar.placeholder = @"Search Marty";
+        searchBar.delegate = self;
 
         _searchBar = searchBar;
     }

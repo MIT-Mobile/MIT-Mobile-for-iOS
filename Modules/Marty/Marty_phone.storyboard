@@ -3,6 +3,7 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
+        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -26,7 +27,7 @@
         <!--Home View Controller-->
         <scene sceneID="rYA-bu-8CK">
             <objects>
-                <viewController storyboardIdentifier="MartyHomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMartyRootPhoneViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MartyHomeViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMartyRootPhoneViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Kfz-sO-XOH"/>
                         <viewControllerLayoutGuide type="bottom" id="IC8-GW-1cV"/>
@@ -36,26 +37,17 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
                                         <constraints>
                                             <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="1.66667" id="SPD-ui-Po2"/>
                                         </constraints>
-                                        <variation key="default">
-                                            <mask key="constraints">
-                                                <exclude reference="SPD-ui-Po2"/>
-                                            </mask>
-                                        </variation>
-                                        <variation key="heightClass=regular-widthClass=compact">
-                                            <mask key="constraints">
-                                                <include reference="SPD-ui-Po2"/>
-                                            </mask>
-                                        </variation>
+                                        <variation key="heightClass=regular-widthClass=compact"/>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
-                                        <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                        <rect key="frame" x="0.0" y="360" width="600" height="176"/>
                                     </view>
                                 </subviews>
                                 <constraints>
@@ -67,39 +59,10 @@
                                     <constraint firstItem="hye-Ag-mVg" firstAttribute="top" secondItem="RFz-L3-5Vl" secondAttribute="bottom" id="fa3-yf-gTp"/>
                                     <constraint firstItem="RFz-L3-5Vl" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="z24-B0-iwK"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="subviews">
-                                        <exclude reference="RFz-L3-5Vl"/>
-                                        <exclude reference="hye-Ag-mVg"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <exclude reference="8tF-8Y-l2j"/>
-                                        <exclude reference="RG4-B0-FyX"/>
-                                        <exclude reference="z24-B0-iwK"/>
-                                        <exclude reference="3yU-d3-Akd"/>
-                                        <exclude reference="Gi0-r2-40h"/>
-                                        <exclude reference="dRp-2e-h5e"/>
-                                        <exclude reference="fa3-yf-gTp"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="subviews">
-                                        <include reference="RFz-L3-5Vl"/>
-                                        <include reference="hye-Ag-mVg"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <include reference="8tF-8Y-l2j"/>
-                                        <include reference="RG4-B0-FyX"/>
-                                        <include reference="z24-B0-iwK"/>
-                                        <include reference="3yU-d3-Akd"/>
-                                        <include reference="Gi0-r2-40h"/>
-                                        <include reference="dRp-2e-h5e"/>
-                                        <include reference="fa3-yf-gTp"/>
-                                    </mask>
-                                </variation>
+                                <variation key="heightClass=regular-widthClass=compact"/>
                             </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
-                                <rect key="frame" x="0.0" y="0.0" width="320" height="568"/>
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use this tool to find machines and machine shops at MIT" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Sy-mP-TMp">
                                         <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
@@ -147,38 +110,7 @@
                             <constraint firstItem="IC8-GW-1cV" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="bottom" id="vvR-QZ-P3a"/>
                             <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="top" id="xFH-fi-60c"/>
                         </constraints>
-                        <variation key="default">
-                            <mask key="subviews">
-                                <exclude reference="Hx1-pQ-i3W"/>
-                                <exclude reference="Gc0-hW-Xee"/>
-                            </mask>
-                            <mask key="constraints">
-                                <exclude reference="LbG-of-Acp"/>
-                                <exclude reference="vvR-QZ-P3a"/>
-                                <exclude reference="C3r-6D-8JA"/>
-                                <exclude reference="nqE-oC-LwH"/>
-                                <exclude reference="vY8-4Y-MLg"/>
-                                <exclude reference="a37-uX-OX6"/>
-                                <exclude reference="jO8-tY-H5J"/>
-                                <exclude reference="xFH-fi-60c"/>
-                            </mask>
-                        </variation>
-                        <variation key="heightClass=regular-widthClass=compact">
-                            <mask key="subviews">
-                                <include reference="Hx1-pQ-i3W"/>
-                                <include reference="Gc0-hW-Xee"/>
-                            </mask>
-                            <mask key="constraints">
-                                <include reference="LbG-of-Acp"/>
-                                <include reference="vvR-QZ-P3a"/>
-                                <include reference="C3r-6D-8JA"/>
-                                <include reference="nqE-oC-LwH"/>
-                                <include reference="vY8-4Y-MLg"/>
-                                <include reference="a37-uX-OX6"/>
-                                <include reference="jO8-tY-H5J"/>
-                                <include reference="xFH-fi-60c"/>
-                            </mask>
-                        </variation>
+                        <variation key="heightClass=regular-widthClass=compact"/>
                     </view>
                     <navigationItem key="navigationItem" id="cSb-3Z-2e2">
                         <nil key="title"/>
