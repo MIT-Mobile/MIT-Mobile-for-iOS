@@ -5,6 +5,9 @@
 #import "Foundation+MITAdditions.h"
 #import "MITAdditions.h"
 
+static CGFloat const MITDiningHouseMealSelectorActiveSwipeSelectionScale = 1.25;
+static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
+
 @interface MITDiningHouseMealSelectorPad ()
 
 @property (nonatomic, strong) NSArray *venues;
@@ -17,6 +20,7 @@
 @property (nonatomic, weak) UILabel *currentlySelectedLetterView;
 
 @property (nonatomic, strong) NSArray *mealLetterViews;
+@property (nonatomic, weak) UILabel *currentlyHighlightedLetterView;
 @end
 
 @implementation MITDiningHouseMealSelectorPad
@@ -350,26 +354,41 @@
 
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self handleTouch:touches.anyObject];
+    [self handleTouch:touches.anyObject isDragging:NO];
 }
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self handleTouch:touches.anyObject];
+    [self handleTouch:touches.anyObject isDragging:YES];
 }
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
     [self updateForCurrentlySelectedLetterView];
+    [UIView animateWithDuration:0.25 animations:^{
+        self.selectedMealBackground.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+    }];
 }
 
-- (void)handleTouch:(UITouch *)touch
+- (void)handleTouch:(UITouch *)touch isDragging:(BOOL)isDragging
 {
     CGPoint location = [touch locationInView:self];
     for (UILabel *v in self.mealLetterViews) {
-        if (CGRectContainsPoint(v.frame, location)) {
+        CGRect frame = v.frame;
+        frame.origin.y -= MITDiningHouseMealSelectorHitPointPadding;
+        frame.size.height += MITDiningHouseMealSelectorHitPointPadding * 2.0;
+        if (CGRectContainsPoint(frame, location)) {
             if (v != self.currentlySelectedLetterView) {
                 [self deselectLetterView:self.currentlySelectedLetterView];
                 [self selectLetterView:v];
+                if (isDragging) {
+                    self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                    self.currentlyHighlightedLetterView = v;
+                    
+                    CGFloat scale = MITDiningHouseMealSelectorActiveSwipeSelectionScale;
+                    v.transform = CGAffineTransformMakeScale(scale, scale);
+                    self.selectedMealBackground.transform = CGAffineTransformMakeScale(scale, scale);
+                }
             }
             break;
         }
