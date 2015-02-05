@@ -17,7 +17,7 @@
         <attribute name="stopTitle" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="stopURL" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="updatedTime" optional="YES" attributeType="Date" syncable="YES"/>
-        <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="ShuttlePrediction" inverseName="list" inverseEntity="ShuttlePrediction" syncable="YES"/>
+        <relationship name="predictions" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ShuttlePrediction" inverseName="list" inverseEntity="ShuttlePrediction" syncable="YES"/>
         <relationship name="route" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleRoute" inverseName="predictionLists" inverseEntity="ShuttleRoute" syncable="YES"/>
         <relationship name="stop" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ShuttleStop" inverseName="predictionList" inverseEntity="ShuttleStop" syncable="YES"/>
     </entity>
@@ -76,7 +76,7 @@
     </entity>
     <elements>
         <element name="ShuttlePrediction" positionX="207" positionY="-81" width="128" height="28"/>
-        <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="195"/>
+        <element name="ShuttlePredictionList" positionX="-0" positionY="-207" width="128" height="30"/>
         <element name="ShuttleRoute" positionX="-713" positionY="-414" width="128" height="313"/>
         <element name="ShuttleStop" positionX="-434" positionY="-414" width="128" height="223"/>
         <element name="ShuttleVehicle" positionX="-369" positionY="-0" width="128" height="28"/>
