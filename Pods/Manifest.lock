@@ -8,6 +8,9 @@ PODS:
   - ECSlidingViewController (2.0.3)
   - ISO8601DateFormatterValueTransformer (0.5.0):
     - RKValueTransformers (~> 1.0.0)
+  - KIF (3.1.2):
+    - KIF/XCTest (= 3.1.2)
+  - KIF/XCTest (3.1.2)
   - KissXML (5.0)
   - RestKit (0.22.0):
     - RestKit/Core (= 0.22.0)
@@ -40,6 +43,7 @@ PODS:
 DEPENDENCIES:
   - CocoaLumberjack (= 1.8.0)
   - ECSlidingViewController (= 2.0.3)
+  - KIF (~> 3.0)
   - KissXML (= 5.0)
   - RestKit (= 0.22.0)
   - SDWebImage (= 3.7.1)
@@ -52,6 +56,7 @@ SPEC CHECKSUMS:
   CocoaLumberjack: 2799baf46a4587116e97e85483538e0e92818430
   ECSlidingViewController: e79fe856bfb1a99a39c995377a1943e50f7647eb
   ISO8601DateFormatterValueTransformer: a7e1ecf4380d0b561306ced1a3f01bd5f65d2213
+  KIF: 068074b24dd455025e7f2a488ba4fb07b9ce047b
   KissXML: e537c38b18ede903ee6de45953a9bd86c131ebe9
   RestKit: 6b82f862848cbe026ddc297985aa9a766b7e1a38
   RKValueTransformers: 994503e34bffdbe0159ff6b497290dd1f8d5657f

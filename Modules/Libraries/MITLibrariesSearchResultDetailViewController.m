@@ -444,6 +444,7 @@ static NSString * const kAvailableCopiesForDisplayKey = @"kAvailableCopiesForDis
 {
     UITableViewCell *citationsCell = [self.tableView dequeueReusableCellWithIdentifier:kDefaultCellIdentifier];
     citationsCell.textLabel.text = @"Citations";
+    citationsCell.accessibilityLabel = MITAccessibilityLibrariesSearchResultDetailCellLabelCitations;
     citationsCell.accessoryView = nil;
     citationsCell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     return citationsCell;

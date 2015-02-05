@@ -33,6 +33,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     
     UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
     [self.resultsTableView registerNib:librariesItemCellNib forCellReuseIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier];
+    self.resultsTableView.accessibilityIdentifier = MITAccessibilityLibrariesSearchResultsTableViewIdentifier;
     
     self.resultsTableView.showsInfiniteScrolling = NO;
     [self.resultsTableView addInfiniteScrollingWithActionHandler:^{
