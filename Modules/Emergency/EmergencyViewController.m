@@ -69,9 +69,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    
-	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
-	[emergencyModule syncUnreadNotifications];
 }
 
 - (UIWebView *)infoWebView
@@ -285,10 +282,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     
     self.htmlString = [[EmergencyData sharedData] htmlString];
     [self.tableView reloadData];
-    if (self.navigationController.visibleViewController == self) {
-        EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
-        [emergencyModule syncUnreadNotifications];
-    }
     
     [self.refreshControl endRefreshing];
 }
