@@ -24,31 +24,40 @@
 - (void)updateVersionInformation {
     NSURLRequest *request = [NSURLRequest requestForModule:@"version" command:@"list" parameters:nil];
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, id jsonResult, NSString *contentType, NSError *error) {
-        if (!error) {
-            NSDictionary *remoteDates = (NSDictionary *)jsonResult;
-            NSMutableDictionary *dict = [NSMutableDictionary dictionary];
-            
-            for (NSString *key in remoteDates) {
-                NSDictionary *moduleDates = [remoteDates objectForKey:key];
-                NSMutableDictionary *dateDict = [NSMutableDictionary dictionary];
-                
-                for (NSString *key in moduleDates) {
-                    NSString *epochString = [moduleDates objectForKey:key];
-                    NSTimeInterval epochTime = [epochString integerValue];
-                    NSDate *date = [[NSDate alloc] initWithTimeIntervalSince1970:epochTime];
-                    
-                    [dateDict setObject:date
-                                 forKey:key];
-                }
-                
-                [dict setObject:dateDict
-                         forKey:key];
-            }
-            
-            self.moduleDates = dict;
+
+    __weak ModuleVersions *weakSelf = self;
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *moduleVersionResponse) {
+        ModuleVersions *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (![moduleVersionResponse isKindOfClass:[NSDictionary class]]) {
+            DDLogError(@"invalid response for %@: result is kind of %@, expected %@", request.URL.path, NSStringFromClass([moduleVersionResponse class]), NSStringFromClass([NSDictionary class]));
+        } else {
+            NSMutableDictionary *moduleDates = [[NSMutableDictionary alloc] init];
+            [moduleVersionResponse enumerateKeysAndObjectsUsingBlock:^(NSString *moduleName, NSDictionary *dateInformation, BOOL *stop) {
+                NSAssert([moduleName isKindOfClass:[NSString class]], @"module name is kind of %@, expected %@", NSStringFromClass([moduleName class]),NSStringFromClass([NSString class]));
+                NSAssert([dateInformation isKindOfClass:[NSDictionary class]], @"date information is kind of %@, expected %@", NSStringFromClass([dateInformation class]),NSStringFromClass([NSDictionary class]));
+
+                NSMutableDictionary *datesForModule = [[NSMutableDictionary alloc] init];
+                [dateInformation enumerateKeysAndObjectsUsingBlock:^(NSString *fieldName, NSString *timestampString, BOOL *stop) {
+                    NSTimeInterval timestamp = [timestampString doubleValue];
+                    datesForModule[fieldName] = [NSDate dateWithTimeIntervalSince1970:timestamp];
+                }];
+
+                moduleDates[moduleName] = datesForModule;
+            }];
+
+            self.moduleDates = moduleDates;
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        ModuleVersions *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else {
+            DDLogWarn(@"request for %@ failed: %@",request.URL.path,error);
+            self.moduleDates = nil;
+        }
+    }];
 
     [[NSOperationQueue mainQueue] addOperation:requestOperation];
 }

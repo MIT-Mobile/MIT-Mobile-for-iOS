@@ -43,7 +43,6 @@
 
                                                                                   if (blockSelf) {
                                                                                       blockSelf.emergencyMessageLoaded = YES;
-                                                                                      [blockSelf syncUnreadNotifications];
                                                                                   }
                                                                               }];
         // check for new emergency info on app launch
@@ -82,16 +81,6 @@
 {
     [super didReceiveNotification:userInfo];
     [self.rootViewController refreshInfo];
-}
-
-- (void) syncUnreadNotifications {
-	// if emergency module on the screen
-	// and the emergency module has received data from the server (does not have to be new data)
-	// since the last time it was on screen, we tell the server to clear the emergency badge
-	
-	if(self.emergencyMessageLoaded) {
-		[MITUnreadNotifications removeNotificationsForModuleTag:self.name];
-	}
 }
 
 #pragma mark - User Interface Idiom Support

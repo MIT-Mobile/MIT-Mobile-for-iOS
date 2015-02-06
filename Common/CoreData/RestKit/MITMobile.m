@@ -188,7 +188,8 @@ NSString* const MITMobileErrorDomain = @"MITMobileErrorDomain";
     RKObjectManager *objectManager = self.objectManagers[url];
     if (!objectManager) {
         
-#warning Incompatible with AFNetworking 2.0
+        // Incompatible with AFNetworking 2.0.
+        // TODO: Be sure to upgrade this once RestKit updates (although it will likely break anyway)
         AFHTTPClient *httpClient = [AFHTTPClient clientWithBaseURL:url];
         [httpClient registerHTTPOperationClass:[MITTouchstoneRequestOperation class]];
         objectManager = [[RKObjectManager alloc] initWithHTTPClient:httpClient];

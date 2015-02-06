@@ -2,7 +2,7 @@
 #import "MITMapHomeViewController.h"
 
 @interface CMModule : MITNavigationModule
-@property(nonatomic,weak) MITMapHomeViewController* rootViewController;
+@property(nonatomic,strong) MITMapHomeViewController* rootViewController;
 
 - (instancetype)init;
 @end

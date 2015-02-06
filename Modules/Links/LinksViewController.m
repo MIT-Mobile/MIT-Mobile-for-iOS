@@ -135,14 +135,13 @@ static NSString* const MITLinksDataTitleKey = @"name";
     MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
 
     __weak LinksViewController *weakSelf = self;
-    requestOperation.completeBlock = ^(MITTouchstoneRequestOperation *operation, NSArray *jsonResult, NSString *contentType, NSError *error) {
+    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *jsonResult) {
         LinksViewController *blockSelf = weakSelf;
-
         if (!blockSelf) {
             return;
         } else if (blockSelf.linksRequestOperation != operation) {
             return;
-        } else if (error || ![jsonResult isKindOfClass:[NSArray class]]) {
+        } else if (![jsonResult isKindOfClass:[NSArray class]]) {
             // If there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache.
             // If there is no cache, report the error.
             if ([blockSelf.linkResults count] == 0) {
@@ -151,7 +150,20 @@ static NSString* const MITLinksDataTitleKey = @"name";
         } else {
             [self updateLinksIfNeeded:jsonResult];
         }
-    };
+    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+        LinksViewController *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        } else if (blockSelf.linksRequestOperation != operation) {
+            return;
+        } else if (error) {
+            // If there was an error or if the jsonResult is not an array as expected, ignore this call and rely on the cache.
+            // If there is no cache, report the error.
+            if ([blockSelf.linkResults count] == 0) {
+                [self displayLoadingError];
+            }
+        }
+    }];
 
     [self.linksRequestOperation cancel];
     self.linksRequestOperation = requestOperation;
