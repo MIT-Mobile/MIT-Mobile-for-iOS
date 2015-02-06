@@ -767,10 +767,14 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 {
     MITNotification *notification = [self.pendingNotifications lastObject];
     [self.pendingNotifications removeLastObject];
-    [MITUnreadNotifications removeNotifications:@[notification]];
 
     MITModule *module = [self moduleWithTag:notification.moduleName];
     [module didReceiveNotification:notification.userInfo];
+
+    NSString *activeModuleName = self.rootViewController.visibleViewController.moduleItem.name;
+    if ([activeModuleName isEqualToString:notification.moduleName]) {
+        [MITUnreadNotifications removeNotificationsForModuleTag:notification.moduleName];
+    }
 
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
     if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
@@ -785,6 +789,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     if (moduleItem.type == MITModulePresentationFullScreen) {
         self.lastActiveModuleName = moduleItem.name;
     }
+
+    [MITUnreadNotifications removeNotificationsForModuleTag:moduleItem.name];
 }
 
 #pragma mark - Global App Styling
