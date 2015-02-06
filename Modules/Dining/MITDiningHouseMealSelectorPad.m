@@ -361,13 +361,15 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
 {
     [self handleTouch:touches.anyObject isDragging:YES];
 }
+
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
 {
-    [self updateForCurrentlySelectedLetterView];
-    [UIView animateWithDuration:0.25 animations:^{
-        self.selectedMealBackground.transform = CGAffineTransformMakeScale(1.0, 1.0);
-        self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
-    }];
+    [self touchesFinished];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self touchesFinished];
 }
 
 - (void)handleTouch:(UITouch *)touch isDragging:(BOOL)isDragging
@@ -393,6 +395,15 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
             break;
         }
     }
+}
+
+- (void)touchesFinished
+{
+    [self updateForCurrentlySelectedLetterView];
+    [UIView animateWithDuration:0.25 animations:^{
+        self.selectedMealBackground.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+    }];
 }
 
 - (void)updateForCurrentlySelectedLetterView
