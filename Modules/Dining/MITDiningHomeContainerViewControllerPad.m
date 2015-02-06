@@ -60,13 +60,13 @@
     [self showDiningHouseViewController];
     
     [self setupFetchedResultsController];
+    [MITDiningWebservices getDiningWithCompletion:NULL];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
-    [MITDiningWebservices getDiningWithCompletion:NULL];
 }
 
 - (void)didReceiveMemoryWarning
