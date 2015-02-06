@@ -28,6 +28,7 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 @property (nonatomic, strong) NSString *currentlySelectedMeal;
 @property (nonatomic, strong) NSArray *menuItemsBySection;
 @property (nonatomic, strong) NSArray *filteredMenuItemsBySection;
+@property (nonatomic, strong) UIRefreshControl *refreshControl;
 
 @end
 
@@ -52,6 +53,10 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
     self.collectionView.collectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionCellNib bundle:nil] forCellWithReuseIdentifier:kMITDiningHallMealCollectionCellIdentifier];
     [self.collectionView registerNib:[UINib nibWithNibName:kMITDiningHallMealCollectionHeaderNib bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kMITDiningHallMealCollectionHeaderIdentifier];
+    
+    self.refreshControl = [[UIRefreshControl alloc] init];
+    [self.refreshControl addTarget:self action:@selector(refreshControlValueChanged) forControlEvents:UIControlEventValueChanged];
+    [self.collectionView addSubview:self.refreshControl];
 }
 
 - (void)didReceiveMemoryWarning
@@ -330,6 +335,20 @@ static CGFloat const kMITDiningHallCollectionViewSectionHorizontalPadding = 60.0
 - (void)diningHallHeaderInfoButtonPressedForHouse:(MITDiningHouseVenue *)houseVenue
 {
     [self showInfoForVenue:houseVenue];
+}
+
+#pragma mark - Refresh Control
+
+- (void)refreshControlValueChanged
+{
+    if (self.refreshControl.refreshing && [self.refreshDelegate respondsToSelector:@selector(viewControllerRequestsDataUpdate:)]) {
+        [self.refreshDelegate viewControllerRequestsDataUpdate:self];
+    }
+}
+
+- (void)refreshRequestComplete
+{
+    [self.refreshControl endRefreshing];
 }
 
 @end

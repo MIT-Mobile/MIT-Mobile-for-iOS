@@ -12,8 +12,9 @@
 #import "UINavigationBar+ExtensionPrep.h"
 #import "MITDiningMapsViewController.h"
 #import "MITTiledMapView.h"
+#import "MITDiningRefreshDataProtocols.h"
 
-@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate, MITSingleWebViewCellTableViewControllerDelegate>
+@interface MITDiningHomeContainerViewControllerPad () <NSFetchedResultsControllerDelegate, MITDiningFilterDelegate, MITSingleWebViewCellTableViewControllerDelegate, MITDiningRefreshRequestDelegate>
 
 @property (nonatomic, strong) NSFetchedResultsController *fetchedResultsController;
 @property (nonatomic, strong) MITDiningDining *diningData;
@@ -132,6 +133,7 @@
 - (void)setupDiningHouseViewController
 {
     self.diningHouseViewController = [[MITDiningHouseHomeViewControllerPad alloc] initWithNibName:nil bundle:nil];
+    self.diningHouseViewController.refreshDelegate = self;
 }
 
 - (void)setupDiningRetailViewController
@@ -293,6 +295,13 @@
         [self.diningRetailViewController refreshForNewData];
         [self.activityIndicator stopAnimating];
     }
+}
+
+#pragma mark - Refreshing Delegate
+- (void)viewControllerRequestsDataUpdate:(UIViewController<MITDiningRefreshableViewController> *)viewController{
+    [MITDiningWebservices getDiningWithCompletion:^(MITDiningDining *dining, NSError *error) {
+        [viewController refreshRequestComplete];
+    }];
 }
 
 @end
