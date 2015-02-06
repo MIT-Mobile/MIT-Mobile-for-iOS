@@ -7,6 +7,8 @@
 
 static CGFloat const MITDiningHouseMealSelectorActiveSwipeSelectionScale = 1.25;
 static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
+static CGFloat const MITDiningHouseMealSelectorHighlightOffset = -30.0;
+static NSTimeInterval const MITDiningHouseMealSelectorLongPressTimerDuration = 0.4;
 
 @interface MITDiningHouseMealSelectorPad ()
 
@@ -21,6 +23,8 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
 
 @property (nonatomic, strong) NSArray *mealLetterViews;
 @property (nonatomic, weak) UILabel *currentlyHighlightedLetterView;
+@property (nonatomic, strong) NSTimer *longPressTimer;
+@property (nonatomic) CGFloat letterViewsCenterY;
 @end
 
 @implementation MITDiningHouseMealSelectorPad
@@ -280,6 +284,11 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
         for (NSInteger j = 0; j < letterViews.count; j++) {
             UILabel *letterView = letterViews[j];
             letterView.frame = CGRectMake(currentXOffset, self.bounds.size.height - selectedMealNameLabelHeight - mealLetterLabelSize - verticalPadding, mealLetterLabelSize, mealLetterLabelSize);
+            if (letterView == self.currentlyHighlightedLetterView) {
+                CGPoint center = letterView.center;
+                center.y += MITDiningHouseMealSelectorHighlightOffset;
+                letterView.center = center;
+            }
             
             currentXOffset += mealLetterLabelSize;
             if (j != letterViews.count - 1) {
@@ -305,6 +314,7 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
     
     if (self.currentlySelectedLetterView) {
         self.selectedMealBackground.center = self.currentlySelectedLetterView.center;
+        self.letterViewsCenterY = self.currentlySelectedLetterView.center.y;
         [self bringSubviewToFront:self.currentlySelectedLetterView];
         
         self.selectedMealNameLabel.frame = CGRectMake(0, self.bounds.size.height - selectedMealNameLabelHeight - verticalPadding, self.selectedMealNameLabel.frame.size.width, self.selectedMealNameLabel.frame.size.height);
@@ -359,6 +369,7 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
 
 - (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
 {
+    [self endLongPressTimer];
     [self handleTouch:touches.anyObject isDragging:YES];
 }
 
@@ -384,12 +395,9 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
                 [self deselectLetterView:self.currentlySelectedLetterView];
                 [self selectLetterView:v];
                 if (isDragging) {
-                    self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
-                    self.currentlyHighlightedLetterView = v;
-                    
-                    CGFloat scale = MITDiningHouseMealSelectorActiveSwipeSelectionScale;
-                    v.transform = CGAffineTransformMakeScale(scale, scale);
-                    self.selectedMealBackground.transform = CGAffineTransformMakeScale(scale, scale);
+                    [self highlightLetterView:v];
+                } else {
+                    [self startLongPressTimer];
                 }
             }
             break;
@@ -397,13 +405,55 @@ static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
     }
 }
 
+- (void)highlightLetterView:(UILabel *)letterView {
+    self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+    CGPoint currentCenter = self.currentlySelectedLetterView.center;
+    currentCenter.y = self.letterViewsCenterY;
+    self.currentlyHighlightedLetterView.center = currentCenter;
+    
+    self.currentlyHighlightedLetterView = letterView;
+    CGFloat scale = MITDiningHouseMealSelectorActiveSwipeSelectionScale;
+    letterView.transform = CGAffineTransformMakeScale(scale, scale);
+    CGPoint center = letterView.center;
+    center.y += MITDiningHouseMealSelectorHighlightOffset;
+    letterView.center = center;
+    self.selectedMealBackground.transform = CGAffineTransformMakeScale(scale, scale);
+}
+
 - (void)touchesFinished
 {
+    [self endLongPressTimer];
     [self updateForCurrentlySelectedLetterView];
+    UILabel *currentlyHighlightedLetterView = self.currentlyHighlightedLetterView;
+    self.currentlyHighlightedLetterView = nil;
     [UIView animateWithDuration:0.25 animations:^{
         self.selectedMealBackground.transform = CGAffineTransformMakeScale(1.0, 1.0);
-        self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        CGPoint center = currentlyHighlightedLetterView.center;
+        center.y = self.letterViewsCenterY;
+        currentlyHighlightedLetterView.center = center;
     }];
+}
+
+- (void)startLongPressTimer
+{
+    [self endLongPressTimer];
+    self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:MITDiningHouseMealSelectorLongPressTimerDuration
+                                                           target:self
+                                                         selector:@selector(longPressTimerFired)
+                                                         userInfo:nil
+                                                          repeats:NO];
+}
+
+- (void)endLongPressTimer
+{
+    [self.longPressTimer invalidate];
+    self.longPressTimer = nil;
+}
+
+- (void)longPressTimerFired
+{
+    [self highlightLetterView:self.currentlySelectedLetterView];
 }
 
 - (void)updateForCurrentlySelectedLetterView
