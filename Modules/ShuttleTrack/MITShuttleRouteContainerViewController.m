@@ -94,7 +94,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    [self setupNavBar];
     [self displayAllChildViewControllers];
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
@@ -105,6 +104,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
+    [self setupNavBar];
     
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self configureLayoutForState:self.state animated:NO];
@@ -115,6 +115,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewWillDisappear:animated];
     [self setNavigationBarExtended:NO];
+    [self.navigationController.navigationBar restoreShadow];
 }
 
 - (void)didReceiveMemoryWarning
