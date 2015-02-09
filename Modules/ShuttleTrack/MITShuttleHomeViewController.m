@@ -17,6 +17,7 @@
 #import "MITTelephoneHandler.h"
 #import "MITShuttleRoutesDataSource.h"
 #import "CoreData+MITAdditions.h"
+#import "UINavigationBar+ExtensionPrep.h"
 
 static const NSTimeInterval kShuttleHomeAllRoutesRefreshInterval = 60.0;
 
@@ -101,6 +102,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    [self.navigationController.navigationBar restoreShadow];
     
     self.shouldAddPredictionsDependencies = YES;
     self.forceRefreshForNextDependencies = YES;

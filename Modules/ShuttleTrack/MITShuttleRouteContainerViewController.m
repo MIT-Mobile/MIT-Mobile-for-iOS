@@ -150,8 +150,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 
 - (void)setupNavBar
 {
-    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor whiteColor]];
-    
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor mit_navBarColor]];
+    self.navigationBarExtensionView.backgroundColor = [UIColor mit_navBarColor];
     self.navigationBarExtensionViewHeightConstraint.constant = kNavigationBarStopStateExtensionHeight;
 }
 
