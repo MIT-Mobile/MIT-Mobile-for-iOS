@@ -193,18 +193,18 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     if (!self.routesRefreshTimer) {
         [self fetchRoutes];
-        
-        NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
-                                                                     target:self
-                                                                   selector:@selector(fetchRoutes)
-                                                                   userInfo:nil
-                                                                    repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
-        self.routesRefreshTimer = routesAndPredictionsTimer;
+        self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
+                                                                   target:self
+                                                                 selector:@selector(timedFetchRoutes:)
+                                                                 userInfo:nil
+                                                                  repeats:YES];
     }
 }
 
-- (void)fetchRoutes
+- (void)timedFetchRoutes:(NSTimer*)timer
+{
+    [self fetchRoutes];
+}
 {
     [self beginRefreshing];
     [self updateRoutesData:^{
