@@ -85,7 +85,7 @@
 - (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
 {
     for (MITShuttlePrediction *prediction in self.predictionList.predictions) {
-        if ([vehicle isEqual:prediction.vehicle]) {
+        if ([vehicle.identifier isEqualToString:prediction.vehicleId]) {
             return prediction;
         }
     }

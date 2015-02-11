@@ -7,6 +7,7 @@
 #import "MITShuttlePredictionList.h"
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
+#import "MITShuttlePrediction.h"
 
 @implementation MITShuttleRoutesResource
 
@@ -103,6 +104,38 @@
     }
     
     return self;
+}
+
+- (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
+{
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativeString]];
+    
+    NSDictionary *parameters = nil;
+    BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
+    
+    if (matches) {
+        NSFetchRequest *fetchRequestForPredictions = [NSFetchRequest fetchRequestWithEntityName:[MITShuttlePrediction entityName]];
+        
+        NSString *stopsParameter = [parameters objectForKey:@"stops"];
+        NSArray *routeStopTuples = [stopsParameter componentsSeparatedByString:@";"];
+        NSMutableArray *subPredicates = [NSMutableArray array];
+        for (NSInteger i = 0; i < routeStopTuples.count; i++) {
+            NSString *routeStopTuple = routeStopTuples[i];
+            NSInteger indexOfComma = [routeStopTuple rangeOfString:@","].location;
+            NSString *routeId = [routeStopTuple substringToIndex:indexOfComma];
+            NSString *stopId = [routeStopTuple substringFromIndex:indexOfComma + 1];
+            NSPredicate *predicate = [NSPredicate predicateWithFormat:@"routeId LIKE %@ AND stopId LIKE %@", routeId, stopId];
+            [subPredicates addObject:predicate];
+        }
+        
+        NSPredicate *predicate = [NSCompoundPredicate orPredicateWithSubpredicates:subPredicates];
+        [fetchRequestForPredictions setPredicate:predicate];
+        
+        fetchRequestForPredictions.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"stopId" ascending:YES]];
+        return fetchRequestForPredictions;
+    }
+    
+    return nil;
 }
 
 @end

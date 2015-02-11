@@ -8,10 +8,10 @@
 
 @dynamic seconds;
 @dynamic stopId;
+@dynamic routeId;
 @dynamic timestamp;
 @dynamic vehicleId;
 @dynamic list;
-@dynamic vehicle;
 
 + (RKMapping *)objectMapping
 {
@@ -19,7 +19,6 @@
     [mapping addAttributeMappingsFromDictionary:@{@"vehicle_id": @"vehicleId",
                                                   @"timestamp": @"timestamp",
                                                   @"seconds": @"seconds"}];
-    [mapping addConnectionForRelationship:@"vehicle" connectedBy:@{@"vehicleId": @"identifier"}];
     [mapping setIdentificationAttributes:@[@"vehicleId", @"timestamp", @"stopId", @"routeId"]];
     return mapping;
 }
