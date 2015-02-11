@@ -176,7 +176,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self fetchRoutes];
+    [self updateRoutesData:NO completion:nil];
 }
 
 #pragma mark - Data Refresh Timers
@@ -184,15 +184,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)stopRefreshingData
 {
     [self.routesRefreshTimer invalidate];
-    self.routesRefreshTimer = nil;
 }
 
 #pragma mark - Data Refresh
 
 - (void)startRefreshingRoutes
 {
-    if (!self.routesRefreshTimer) {
-        [self fetchRoutes];
+    if (![self.routesRefreshTimer isValid]) {
+        if (!self.routesRefreshTimer) {
+            [self updateRoutesData:YES completion:nil];
+        } else {
+            [self updateRoutesData:NO completion:nil];
+        }
+
         self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
                                                                    target:self
                                                                  selector:@selector(timedFetchRoutes:)
@@ -203,20 +207,18 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)timedFetchRoutes:(NSTimer*)timer
 {
-    [self fetchRoutes];
-}
-{
-    [self beginRefreshing];
-    [self updateRoutesData:^{
-        [self endRefreshing];
-    }];
+    [self updateRoutesData:NO completion:nil];
 }
 
-- (void)updateRoutesData:(void(^)(void))completion
+- (void)updateRoutesData:(BOOL)showsRefreshControl completion:(void(^)(void))completion
 {
+    [self beginRefreshing:showsRefreshControl];
+
     [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
         [self refreshFlatRouteArray:^{
             [self.tableView reloadDataAndMaintainSelection];
+            [self endRefreshing];
+
             if (completion) {
                 completion();
             }
@@ -229,12 +231,12 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self.tableView reloadDataAndMaintainSelection];
 }
 
-- (void)beginRefreshing
+- (void)beginRefreshing:(BOOL)showRefreshControl
 {
     if (!self.isUpdating) {
         self.updating = YES;
         
-        if (!self.refreshControl.isRefreshing) {
+        if (showRefreshControl && !self.refreshControl.isRefreshing) {
             [self.refreshControl beginRefreshing];
             // Necessary because tableview doesn't automatically scroll to show refreshControl
             [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
