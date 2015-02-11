@@ -670,4 +670,16 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }
 }
 
+// Below methods are added to give the abilitiy to change the status bar style of the individual modules
+// Mark Novak 2-5-2015 MXN
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+    return self.visibleViewController;
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+    return self.visibleViewController;
+}
+
 @end
