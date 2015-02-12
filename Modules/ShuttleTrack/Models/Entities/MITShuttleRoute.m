@@ -137,20 +137,6 @@
     return NO;
 }
 
-- (NSArray *)nextStops
-{
-    NSMutableArray *nextStops = [NSMutableArray array];
-    if (self.status == MITShuttleRouteStatusInService) {
-        for (MITShuttleVehicle *vehicle in self.vehicles) {
-            MITShuttleStop *nextStop = [self nextStopForVehicle:vehicle];
-            if (nextStop) {
-                [nextStops addObject:nextStop];
-            }
-        }
-    }
-    return [NSArray arrayWithArray:nextStops];
-}
-
 - (MITShuttleStop *)nextStopForVehicle:(MITShuttleVehicle *)vehicle
 {
     NSOrderedSet *stopsForVehicle = [self.stops filteredOrderedSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {

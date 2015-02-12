@@ -9,10 +9,10 @@
 
 @property (nonatomic, retain) NSNumber * seconds;
 @property (nonatomic, retain) NSString * stopId;
+@property (nonatomic, retain) NSString * routeId;
 @property (nonatomic, retain) NSNumber * timestamp;
 @property (nonatomic, retain) NSString * vehicleId;
 @property (nonatomic, retain) MITShuttlePredictionList *list;
-@property (nonatomic, retain) MITShuttleVehicle *vehicle;
 
 + (RKMapping *)objectMappingFromPredictionList;
 

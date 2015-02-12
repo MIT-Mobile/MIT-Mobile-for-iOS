@@ -38,7 +38,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
 - (MITShuttleRouteStatus)status;
 - (BOOL)isNextStop:(MITShuttleStop *)stop;
-- (NSArray *)nextStops;
 
 @end
 

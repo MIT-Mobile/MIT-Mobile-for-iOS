@@ -14,7 +14,6 @@
 @dynamic speedKph;
 @dynamic route;
 @dynamic vehicleList;
-@dynamic predictions;
 
 + (RKMapping *)objectMapping
 {
