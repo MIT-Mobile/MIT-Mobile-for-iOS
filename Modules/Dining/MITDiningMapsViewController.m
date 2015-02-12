@@ -9,13 +9,14 @@
 #import "MITDiningRetailVenueDetailViewController.h"
 #import "MITDiningHouseVenueDetailViewController.h"
 #import "MITLocationManager.h"
+#import "MITCalloutView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
 static NSString * const kMITEntityNameDiningHouseVenue = @"MITDiningHouseVenue";
 static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue";
 
-@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate, SMCalloutViewDelegate>
+@interface MITDiningMapsViewController () <NSFetchedResultsControllerDelegate, MKMapViewDelegate, MITDiningRetailVenueDetailViewControllerDelegate, MITCalloutViewDelegate>
 
 @property (strong, nonatomic) NSArray *places;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
@@ -26,7 +27,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 @property (nonatomic, strong) UIToolbar *toolbar;
 @property (nonatomic, strong) IBOutlet NSLayoutConstraint *mapBottomConstraint;
 @property (nonatomic, strong) NSArray *toolbarConstraints;
-@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic, strong) MKAnnotationView *currentlySelectedPlace;
 @property (nonatomic, readonly) MITCalloutMapView *mapView;
 
@@ -113,19 +114,13 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 
 - (void)setupCalloutView
 {
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
+    MITCalloutView *calloutView = [MITCalloutView new];
     calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        calloutView.shouldHighlightOnTouch = NO;
     }
-    
     self.calloutView = calloutView;
-    
-    self.tiledMapView.mapView.calloutView = self.calloutView;
+    self.tiledMapView.mapView.mitCalloutView = self.calloutView;
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -222,7 +217,7 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
-        [self.calloutView dismissCalloutAnimated:YES];
+        [self.calloutView dismissCallout];
         self.currentlySelectedPlace = nil;
     }
 }
@@ -301,37 +296,30 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     MITDiningPlace *place = annotationView.annotation;
     
     self.currentlySelectedPlace = annotationView;
-    self.calloutView.title = place.title;
-    self.calloutView.calloutOffset = annotationView.calloutOffset;
+    self.calloutView.titleText = place.title;
     
-    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    // For whatever reason, an annotation view takes up the left half of its view.  Adjust this for proper presentation
+    CGRect annotationBounds = annotationView.bounds;
+    annotationBounds.size.width /= 2.0;
+    [self.calloutView presentFromRect:annotationBounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
-#pragma mark - SMCalloutViewDelegate Methods
+#pragma mark - MITCalloutViewDelegate
 
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offscreenOffset
 {
     MKMapView *mapView = self.mapView;
-    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
-                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CGPoint adjustedCenter = CGPointMake(offscreenOffset.x + mapView.bounds.size.width * 0.5,
+                                         offscreenOffset.y + mapView.bounds.size.height * 0.5);
     CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
     [mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self showDetailForAnnotationView:self.currentlySelectedPlace];
     }
-}
-
-- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        return YES;
-    }
-    return NO;
 }
 
 - (void)showRetailPopoverForAnnotationView:(MKAnnotationView *)view
