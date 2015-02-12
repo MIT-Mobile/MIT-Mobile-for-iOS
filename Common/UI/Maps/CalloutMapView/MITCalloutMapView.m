@@ -25,13 +25,9 @@
 {
     if (view == nil || [view isKindOfClass:[MITCalloutMapView class]]) {
         return false;
-    }
-    else if ([view isKindOfClass:[SMCalloutView class]]) {
-        return true;
     } else if ([view isKindOfClass:[MITCalloutView class]]) {
         return true;
-    }
-    else {
+    } else {
         return [self hasCalloutParentView:view.superview];
     }
 }
@@ -40,13 +36,9 @@
 // See this for some discussion of why we need to override this: https://github.com/nfarina/calloutview/pull/9
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-    UIView *smcalloutMaybe = [self.calloutView hitTest:[self.calloutView convertPoint:point fromView:self] withEvent:event];
-    if (smcalloutMaybe) {
-        return smcalloutMaybe;
-    }
-    UIView *mitcalloutMaybe = [self.mitCalloutView hitTest:[self.mitCalloutView convertPoint:point fromView:self] withEvent:event];
-    if (mitcalloutMaybe) {
-        return mitcalloutMaybe;
+    UIView *calloutMaybe = [self.mitCalloutView hitTest:[self.mitCalloutView convertPoint:point fromView:self] withEvent:event];
+    if (calloutMaybe) {
+        return calloutMaybe;
     }
     return [super hitTest:point withEvent:event];
 }
