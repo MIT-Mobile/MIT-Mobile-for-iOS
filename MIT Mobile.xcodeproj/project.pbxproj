@@ -228,6 +228,7 @@
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
+		2C107D7D1A8D0596006414D6 /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C107D7C1A8D0596006414D6 /* MultiLineLabel.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
 		2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C17C7C9137AECF2006888EB /* FacilitiesRoom.m */; };
 		2C18073C1382C32D000CCB6F /* FacilitiesTypeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C18073B1382C32D000CCB6F /* FacilitiesTypeViewController.m */; };
@@ -1066,6 +1067,8 @@
 		2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationViewController.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
+		2C107D7B1A8D0596006414D6 /* MultiLineLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineLabel.h; sourceTree = "<group>"; };
+		2C107D7C1A8D0596006414D6 /* MultiLineLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineLabel.m; sourceTree = "<group>"; };
 		2C15EB7415A349B200C9C345 /* MITScannerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerViewController.h; sourceTree = "<group>"; };
 		2C15EB7515A349B200C9C345 /* MITScannerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerViewController.m; sourceTree = "<group>"; };
 		2C17C7C8137AECF2006888EB /* FacilitiesRoom.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRoom.h; sourceTree = "<group>"; };
@@ -2782,6 +2785,15 @@
 			name = Frameworks;
 			sourceTree = SOURCE_ROOT;
 		};
+		2C107D7A1A8D0596006414D6 /* MultiLineLabel */ = {
+			isa = PBXGroup;
+			children = (
+				2C107D7B1A8D0596006414D6 /* MultiLineLabel.h */,
+				2C107D7C1A8D0596006414D6 /* MultiLineLabel.m */,
+			);
+			path = MultiLineLabel;
+			sourceTree = "<group>";
+		};
 		2C1807391382C2DA000CCB6F /* FacilitiesType */ = {
 			isa = PBXGroup;
 			children = (
@@ -3653,6 +3665,7 @@
 				806204B51A7AAF1A004BD08A /* CenterText */,
 				806204BE1A7AAF1A004BD08A /* LoadingActivityView */,
 				8062057A1A7AAF7A004BD08A /* Maps */,
+				2C107D7A1A8D0596006414D6 /* MultiLineLabel */,
 				806204C11A7AAF1A004BD08A /* NavigationBar */,
 				806204C81A7AAF1A004BD08A /* NavigationController */,
 				806204CB1A7AAF1A004BD08A /* PlaceholderTextView */,
@@ -5116,6 +5129,7 @@
 				2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */,
 				2247B73C19F59418000E1725 /* MITToursDataModel.xcdatamodeld in Sources */,
 				2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */,
+				2C107D7D1A8D0596006414D6 /* MultiLineLabel.m in Sources */,
 				2C17C7CA137AECF2006888EB /* FacilitiesRoom.m in Sources */,
 				229FFAB9198FF89400ABF029 /* MITAcademicHolidaysCalendarViewController.m in Sources */,
 				5E70E396192F7F9900165B41 /* MITShuttleStopViewController.m in Sources */,
