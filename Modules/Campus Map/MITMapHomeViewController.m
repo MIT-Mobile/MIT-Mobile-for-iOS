@@ -310,7 +310,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-        self.calloutView.externalInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width + 10, 0, 0);
+        self.calloutView.externalInsets = UIEdgeInsetsMake(10, resultsVC.view.frame.size.width + 10, 10, 10);
         [self.calloutView updatePresentation];
         self.isShowingIpadResultsList = YES;
     }

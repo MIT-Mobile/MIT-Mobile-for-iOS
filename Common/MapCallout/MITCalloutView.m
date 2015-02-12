@@ -587,6 +587,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 - (void)dismissCallout {
     // TODO: Add animation
     [self removeFromSuperview];
+    if ([self.delegate respondsToSelector:@selector(calloutViewRemovedFromViewHierarchy:)]) {
+        [self.delegate calloutViewRemovedFromViewHierarchy:self];
+    }
 }
 
 #pragma mark - Calculation Helpers

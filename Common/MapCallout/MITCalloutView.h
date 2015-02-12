@@ -33,6 +33,13 @@ typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
  *  @param calloutView the callout that was tapped
  */
 - (void)calloutViewTapped:(MITCalloutView *)calloutView;
+
+/**
+ *  Called when the callout is removed from the view hierarchy.
+ *
+ *  @param calloutView the callout that was removed
+ */
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView;
 @end
 
 @interface MITCalloutView : UIView

@@ -775,9 +775,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.calloutView.externalInsets = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 10, 10, 10);
     self.calloutView.contentView = nav.view;
     
-    CGRect bounds = stopAnnotationView.bounds;
-    bounds.size.width /= 2.0;
-    [self.calloutView presentFromRect:bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
+    [self.calloutView presentFromRect:stopAnnotationView.bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
@@ -825,14 +823,6 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     
     self.calloutView.subtitleText = calloutSubtitle;
     
-    UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-    chevronImageView.contentMode = UIViewContentModeRight;
-    // TODO: Add support for specific image.
-//    self.calloutView.rightAccessoryView = chevronImageView;
-    
-//    self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
-//    [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    
     CGRect bounds = stopAnnotationView.bounds;
     bounds.size.width /= 2.0;
     [self.calloutView presentFromRect:bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
@@ -861,14 +851,13 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
-// TODO: This.
-#warning This looks important, add a method to MITCalloutView to account for this.
-//- (void)calloutViewDidDisappear:(SMCalloutView *)calloutView
-//{
-//    [self.calloutStopViewController willMoveToParentViewController:nil];
-//    [self.calloutStopViewController removeFromParentViewController];
-//    self.calloutStopViewController = nil;
-//}
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView {
+    [self.calloutStopViewController willMoveToParentViewController:nil];
+    [self.calloutStopViewController removeFromParentViewController];
+    calloutView.contentView = nil;
+    [self.calloutStopViewController didMoveToParentViewController:nil];
+    self.calloutStopViewController = nil;
+}
 
 #pragma mark - MKMapViewDelegate Methods
 
