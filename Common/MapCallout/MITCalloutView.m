@@ -640,6 +640,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 #pragma mark - Touch Handling
 
+// TODO: Account for masking in touches
+/*
+ Touch to the side of the arrow, but not on it and this receives a touch because it is technically within the bounds.  It doesn't appear so because of masking.
+ */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self highlight];
 }
