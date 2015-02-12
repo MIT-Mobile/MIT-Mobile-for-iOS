@@ -646,11 +646,20 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 - (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event {
     [self unhighlight];
-    [self.delegate calloutViewTapped:self];
+    [self handleTouchesFinishedWithTouch:touches.anyObject];
 }
 
 - (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event {
     [self unhighlight];
+    [self handleTouchesFinishedWithTouch:touches.anyObject];
+}
+
+// In some cases cancelled is called on a legitimate touch.  This is likely related to the hit overrides necessary to present a view outside of its bounds and receive touches.  This is a workaround.
+- (void)handleTouchesFinishedWithTouch:(UITouch *)touch {
+    CGPoint location = [touch locationInView:self];
+    if (CGRectContainsPoint(self.bounds, location)) {
+        [self.delegate calloutViewTapped:self];
+    }
 }
 
 #pragma mark - Highlight
