@@ -156,13 +156,27 @@
 
 - (NSFetchRequest *)fetchRequestForURL:(NSURL *)url
 {
-    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[[url relativePath] stringByAppendingString:@"/"]];
+    RKPathMatcher *pathMatcher = [RKPathMatcher pathMatcherWithPath:[url relativeString]];
     
     NSDictionary *parameters = nil;
     BOOL matches = [pathMatcher matchesPattern:self.pathPattern tokenizeQueryStrings:YES parsedArguments:&parameters];
 
     if (matches) {
         NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
+        
+        NSString *routesParameter = [parameters objectForKey:@"routes"];
+        if (routesParameter) {
+            NSArray *routesStringArray = [routesParameter componentsSeparatedByString:@","];
+            NSMutableArray *predicates = [NSMutableArray array];
+            for (NSInteger i = 0; i < routesStringArray.count; i++) {
+                NSString *routeId = routesStringArray[i];
+                NSPredicate *predicate = [NSPredicate predicateWithFormat:@"routeId LIKE %@", routeId];
+                [predicates addObject:predicate];
+            }
+            
+            NSCompoundPredicate *compoundPredicate = [NSCompoundPredicate orPredicateWithSubpredicates:predicates];
+            [fetchRequest setPredicate:compoundPredicate];
+        }
         fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
         return fetchRequest;
     }
