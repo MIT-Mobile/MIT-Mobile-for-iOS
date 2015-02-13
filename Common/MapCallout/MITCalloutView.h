@@ -92,7 +92,7 @@ typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
  *  @param rect the rectangle to position off of
  *  @param view the view to add the callout and constrain it within
  */
-- (void)presentFromRect:(CGRect)rect inView:(UIView *)view;
+- (void)presentFromRect:(CGRect)presentationRect inView:(UIView *)view;
 
 /**
  *  Present the callout
@@ -101,7 +101,7 @@ typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
  *  @param view             the view to add the callout to
  *  @param constrainingView the view to constrain the callout positioning
  */
-- (void)presentFromRect:(CGRect)rect inView:(UIView *)view withConstrainingView:(UIView *)constrainingView;
+- (void)presentFromRect:(CGRect)presentationRect inView:(UIView *)view withConstrainingView:(UIView *)constrainingView;
 
 /**
  *  Dismiss the callout

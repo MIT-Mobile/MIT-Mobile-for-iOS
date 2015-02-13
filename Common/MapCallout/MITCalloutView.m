@@ -416,6 +416,11 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 }
 
 - (void)presentFromRect:(CGRect)presentationRect inView:(UIView *)view withConstrainingView:(UIView *)constrainingView {
+    [self presentFromRect:presentationRect inView:view withConstrainingView:constrainingView animated:YES];
+}
+
+- (void)presentFromRect:(CGRect)presentationRect inView:(UIView *)view withConstrainingView:(UIView *)constrainingView animated:(BOOL)animated {
+
     self.presentationRect = presentationRect;
     self.presentationView = view;
     self.constrainingView = constrainingView;
@@ -572,20 +577,52 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     // We've been positioning the view in the constraining view, now lets translate it back to the presentation view
     targetFrame = [constrainingView convertRect:targetFrame toView:view];
     
-    if (![view.subviews containsObject:self]) {
-        [view addSubview:self];
-    }
-    
-    // TODO: Animate this and the layer redraw.
+    // TODO: Animate this with the layer redraw.
     self.frame = targetFrame;
     
-    if (!CGPointEqualToPoint(offscreenOffset, CGPointZero)) {
-        [self.delegate calloutView:self positionedOffscreenWithOffset:offscreenOffset];
+    __weak __typeof(self) weakSelf = self;
+    [self addToView:view animated:animated withCompletion:^{
+        __strong __typeof(weakSelf) strongSelf = weakSelf;
+        if (!CGPointEqualToPoint(offscreenOffset, CGPointZero)) {
+            [strongSelf.delegate calloutView:strongSelf positionedOffscreenWithOffset:offscreenOffset];
+        }
+    }];
+
+}
+
+- (void)addToView:(UIView *)view animated:(BOOL)animated withCompletion:(void(^)(void))completion {
+    if (![view.subviews containsObject:self]) {
+        if (animated) {
+            self.alpha = 0.4;
+            self.transform = CGAffineTransformMakeScale(0.82, 0.82);
+            [view addSubview:self];
+            [UIView animateWithDuration:0.25
+                                  delay:0.0
+                 usingSpringWithDamping:0.5
+                  initialSpringVelocity:1.0
+                                options:UIViewAnimationOptionCurveEaseOut
+                             animations:^{
+                                    self.alpha = 1;
+                                    self.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                                } completion:^(BOOL finished) {
+                                    if (completion) {
+                                        completion();
+                                    }
+                                }];
+        } else {
+            self.alpha = 1.0;
+            self.transform = CGAffineTransformMakeScale(1.0, 1.0);
+            [view addSubview:self];
+            if (completion) {
+                completion();
+            }
+        }
+    } else if (completion) {
+        completion();
     }
 }
 
 - (void)dismissCallout {
-    // TODO: Add animation
     [self removeFromSuperview];
     if ([self.delegate respondsToSelector:@selector(calloutViewRemovedFromViewHierarchy:)]) {
         [self.delegate calloutViewRemovedFromViewHierarchy:self];
