@@ -1,11 +1,3 @@
-//
-//  MITCalloutView.m
-//  MIT Mobile
-//
-//  Created by Logan Wright on 2/9/15.
-//
-//
-
 #import "MITCalloutView.h"
 #import "MITCalloutDefaultContentView.h"
 
@@ -24,9 +16,11 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 @property (nonatomic) CGPoint controlPoint;
 @property (nonatomic) CGFloat cornerRadius;
 @property (nonatomic) CGFloat arrowOffset; // Distance from presentation rect to arrow
+@property (nonatomic, readonly) CGRect framingRect;
 
 @property (strong, nonatomic) CAShapeLayer *maskingShapeLayer;
 @property (strong, nonatomic) CAShapeLayer *shadowShapeLayer;
+@property (strong, nonatomic) UIBezierPath *maskingPath;
 
 // Retain presentation values for reorienting when view changes
 @property (nonatomic) CGRect presentationRect;
@@ -121,7 +115,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 }
 
 - (void)updateConstraintsForArrowDirection:(MITCalloutArrowDirection)arrowDirection {
-
+    
     CGFloat top = self.internalInsets.top;
     CGFloat left = self.internalInsets.left;
     CGFloat bottom = -self.internalInsets.bottom;
@@ -129,16 +123,16 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     switch (arrowDirection) {
         case MITCalloutArrowDirectionTop:
-            top += [self arrowSize].height;
+            top += self.arrowSize.height;
             break;
         case MITCalloutArrowDirectionLeft:
-            left += [self arrowSize].height;
+            left += self.arrowSize.height;
             break;
         case MITCalloutArrowDirectionBottom:
-            bottom -= [self arrowSize].height;
+            bottom -= self.arrowSize.height;
             break;
         case MITCalloutArrowDirectionRight:
-            right -= [self arrowSize].height;
+            right -= self.arrowSize.height;
             break;
         case MITCalloutArrowDirectionNone:
             break;
@@ -162,41 +156,21 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 - (void)drawPointerForControlPoint:(CGPoint)controlPoint animated:(BOOL)animated {
     
-    CGSize arrowSize = [self arrowSize];
+    CGSize arrowSize = self.arrowSize;
     CGFloat arrowWidth = arrowSize.width;
     CGFloat arrowHeight = arrowSize.height;
     CGFloat halfArrowWidth = arrowWidth / 2.0;
     
-    CGFloat width = CGRectGetWidth(self.bounds);
-    CGFloat height = CGRectGetHeight(self.bounds);
-    CGFloat adjustedOriginY = 0;
-    CGFloat adjustedOriginX = 0;
-    CGFloat adjustedWidth = width;
-    CGFloat adjustedHeight = height;
+    CGRect framingRect = self.framingRect;
+    CGFloat originX = CGRectGetMinX(framingRect);
+    CGFloat originY = CGRectGetMinY(framingRect);
+    CGFloat rightEdge = CGRectGetMaxX(framingRect);
+    CGFloat bottomEdge = CGRectGetMaxY(framingRect);
     
-    switch (self.currentArrowDirection) {
-        case MITCalloutArrowDirectionTop:
-            adjustedOriginY = arrowHeight;
-            adjustedHeight = height - arrowHeight;
-            break;
-        case MITCalloutArrowDirectionLeft:
-            adjustedOriginX = arrowHeight;
-            adjustedWidth = width - arrowHeight;
-            break;
-        case MITCalloutArrowDirectionBottom:
-            adjustedHeight = height - arrowHeight;
-            break;
-        case MITCalloutArrowDirectionRight:
-            adjustedWidth = width - arrowHeight;
-            break;
-        case MITCalloutArrowDirectionNone:
-            break;
-    }
-    
-    CGPoint topLeft = CGPointMake(adjustedOriginX, adjustedOriginY);
-    CGPoint topRight = CGPointMake(adjustedOriginX + adjustedWidth, adjustedOriginY);
-    CGPoint lowerRight = CGPointMake(adjustedOriginX + adjustedWidth, adjustedOriginY + adjustedHeight);
-    CGPoint lowerLeft = CGPointMake(adjustedOriginX, adjustedOriginY + adjustedHeight);
+    CGPoint topLeft = CGPointMake(originX, originY);
+    CGPoint topRight = CGPointMake(rightEdge, originY);
+    CGPoint lowerRight = CGPointMake(rightEdge, bottomEdge);
+    CGPoint lowerLeft = CGPointMake(originX, bottomEdge);
     
     UIBezierPath *path = [UIBezierPath bezierPath];
     
@@ -238,7 +212,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     // Bottom right corner
     [path addQuadCurveToPoint:CGPointMake(lowerRight.x - self.cornerRadius, lowerRight.y)
                  controlPoint:lowerRight];
-
+    
     // Bottom edge arrow
     if (self.currentArrowDirection == MITCalloutArrowDirectionBottom) {
         CGFloat arrowRightX = controlPoint.x + halfArrowWidth;
@@ -252,11 +226,11 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Bottom edge finisher
     [path addLineToPoint:CGPointMake(lowerLeft.x + self.cornerRadius, lowerLeft.y)];
-
+    
     // Bottom left corner
     [path addQuadCurveToPoint:CGPointMake(lowerLeft.x, lowerLeft.y - self.cornerRadius)
                  controlPoint:lowerLeft];
-   
+    
     if (self.currentArrowDirection == MITCalloutArrowDirectionLeft) {
         CGFloat arrowBottomY = controlPoint.y + halfArrowWidth;
         CGFloat arrowMidY = controlPoint.y;
@@ -269,7 +243,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Left edge finisher
     [path closePath];
-
+    
+    self.maskingPath = path;
+    
     [self updateLayersForNewPath:path animated:animated];
 }
 
@@ -287,7 +263,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         animGroup.fillMode = kCAFillModeBoth;
         
         [self.maskingShapeLayer addAnimation:animGroup forKey:nil];
-                [self.shadowShapeLayer addAnimation:animGroup forKey:nil];
+        [self.shadowShapeLayer addAnimation:animGroup forKey:nil];
     } else {
         for (CAShapeLayer *layer in @[self.maskingShapeLayer, self.shadowShapeLayer]) {
             layer.path = path.CGPath;
@@ -420,13 +396,13 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 }
 
 - (void)presentFromRect:(CGRect)presentationRect inView:(UIView *)view withConstrainingView:(UIView *)constrainingView animated:(BOOL)animated {
-
+    
     self.presentationRect = presentationRect;
     self.presentationView = view;
     self.constrainingView = constrainingView;
     
     presentationRect = [view convertRect:presentationRect toView:constrainingView];
-
+    
     CGFloat availableTopSpace = CGRectGetMinY(presentationRect);
     CGFloat availableRightSpace = CGRectGetWidth(constrainingView.bounds) - CGRectGetMaxX(presentationRect);
     CGFloat availableBottomSpace = CGRectGetHeight(constrainingView.bounds) - CGRectGetMaxY(presentationRect);
@@ -437,16 +413,16 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Reset to none to readjust our views for none and measure
     self.currentArrowDirection = MITCalloutArrowDirectionNone;
-    CGFloat necessaryWidth = CGRectGetWidth(self.bounds) + self.externalInsets.left + self.externalInsets.right + [self arrowSize].height + self.arrowOffset;
-    CGFloat necessaryHeight = CGRectGetHeight(self.bounds) + self.externalInsets.top + self.externalInsets.bottom + [self arrowSize].height + self.arrowOffset;
+    CGFloat necessaryWidth = CGRectGetWidth(self.bounds) + self.externalInsets.left + self.externalInsets.right + self.arrowSize.height + self.arrowOffset;
+    CGFloat necessaryHeight = CGRectGetHeight(self.bounds) + self.externalInsets.top + self.externalInsets.bottom + self.arrowSize.height + self.arrowOffset;
     
     // If arrow is top or bottom, this is the maximum x control point allowed for proper drawing
-    CGFloat maximumTopBottomX = CGRectGetWidth(constrainingView.bounds) - [self minControlPointX] - self.externalInsets.right;
+    CGFloat maximumTopBottomX = CGRectGetWidth(constrainingView.bounds) - self.minControlPointX - self.externalInsets.right;
     CGFloat minimumTopBottomX = [self minControlPointX] + self.externalInsets.left;
     CGFloat midRectX = CGRectGetMidX(presentationRect);
     
     // If arrow is left or right, what's the maximum y position that would be allowed
-    CGFloat maximumLeftRightY = CGRectGetHeight(constrainingView.bounds) - [self minControlPointY] - self.externalInsets.bottom;
+    CGFloat maximumLeftRightY = CGRectGetHeight(constrainingView.bounds) - self.minControlPointY - self.externalInsets.bottom;
     CGFloat minimumLeftRightY = [self minControlPointY] + self.externalInsets.top;
     CGFloat midRectY = CGRectGetMidY(presentationRect);
     
@@ -469,7 +445,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
         originY = CGRectGetMidY(presentationRect) - (CGRectGetHeight(self.bounds) / 2.0);
     }
-
+    
     switch (self.currentArrowDirection) {
         case MITCalloutArrowDirectionTop:
         case MITCalloutArrowDirectionBottom:
@@ -572,7 +548,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     } else if (CGRectGetMaxY(targetFrame) > CGRectGetHeight(constrainingView.bounds) - self.externalInsets.bottom) {
         offscreenOffset.y = CGRectGetMaxY(targetFrame) - (CGRectGetHeight(constrainingView.bounds) - self.externalInsets.bottom);
     }
-
+    
     
     // We've been positioning the view in the constraining view, now lets translate it back to the presentation view
     targetFrame = [constrainingView convertRect:targetFrame toView:view];
@@ -587,7 +563,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
             [strongSelf.delegate calloutView:strongSelf positionedOffscreenWithOffset:offscreenOffset];
         }
     }];
-
+    
 }
 
 - (void)addToView:(UIView *)view animated:(BOOL)animated withCompletion:(void(^)(void))completion {
@@ -602,13 +578,13 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
                   initialSpringVelocity:1.0
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
-                                    self.alpha = 1;
-                                    self.transform = CGAffineTransformMakeScale(1.0, 1.0);
-                                } completion:^(BOOL finished) {
-                                    if (completion) {
-                                        completion();
-                                    }
-                                }];
+                                 self.alpha = 1;
+                                 self.transform = CGAffineTransformMakeScale(1.0, 1.0);
+                             } completion:^(BOOL finished) {
+                                 if (completion) {
+                                     completion();
+                                 }
+                             }];
         } else {
             self.alpha = 1.0;
             self.transform = CGAffineTransformMakeScale(1.0, 1.0);
@@ -647,7 +623,40 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     return self.arrowSize.width + (self.cornerRadius * 2.0);
 }
 
-#pragma mark - 
+- (CGRect)framingRect {
+    
+    CGFloat arrowHeight = self.arrowSize.height;
+    
+    CGFloat width = CGRectGetWidth(self.bounds);
+    CGFloat height = CGRectGetHeight(self.bounds);
+    CGFloat adjustedOriginY = 0;
+    CGFloat adjustedOriginX = 0;
+    CGFloat adjustedWidth = width;
+    CGFloat adjustedHeight = height;
+    
+    switch (self.currentArrowDirection) {
+        case MITCalloutArrowDirectionTop:
+            adjustedOriginY = arrowHeight;
+            adjustedHeight = height - arrowHeight;
+            break;
+        case MITCalloutArrowDirectionLeft:
+            adjustedOriginX = arrowHeight;
+            adjustedWidth = width - arrowHeight;
+            break;
+        case MITCalloutArrowDirectionBottom:
+            adjustedHeight = height - arrowHeight;
+            break;
+        case MITCalloutArrowDirectionRight:
+            adjustedWidth = width - arrowHeight;
+            break;
+        case MITCalloutArrowDirectionNone:
+            break;
+    }
+    
+    return CGRectMake(adjustedOriginX, adjustedOriginY, adjustedWidth, adjustedHeight);
+}
+
+#pragma mark -
 
 - (BOOL)isDefaultContentView {
     return [self.contentView isKindOfClass:[MITCalloutViewDefaultContentView class]];
@@ -662,7 +671,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         _shadowShapeLayer.fillColor = [UIColor clearColor].CGColor;
         _shadowShapeLayer.strokeColor = [UIColor colorWithWhite:0.85 alpha:0.62].CGColor;
         // Must have default path set for animations to work
-        _shadowShapeLayer.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+        _shadowShapeLayer.path = [UIBezierPath bezierPath].CGPath;
         [self.layer addSublayer:_shadowShapeLayer];
     }
     return _shadowShapeLayer;
@@ -672,7 +681,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     if (!_maskingShapeLayer) {
         _maskingShapeLayer = [CAShapeLayer new];
         // Must have default path set for animations to work
-        _maskingShapeLayer.path = [UIBezierPath bezierPathWithRect:self.bounds].CGPath;
+        _maskingShapeLayer.path = [UIBezierPath bezierPath].CGPath;
         self.layer.mask = _maskingShapeLayer;
     }
     return _maskingShapeLayer;
@@ -680,10 +689,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 #pragma mark - Touch Handling
 
-// TODO: Account for masking in touches
-/*
- Touch to the side of the arrow, but not on it and this receives a touch because it is technically within the bounds.  It doesn't appear so because of masking.
- */
 - (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
     [self highlight];
 }
@@ -701,7 +706,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 // In some cases cancelled is called on a legitimate touch.  This is likely related to the hit overrides necessary to present a view outside of its bounds and receive touches.  This is a workaround.
 - (void)handleTouchesFinishedWithTouch:(UITouch *)touch {
     CGPoint location = [touch locationInView:self];
-    if (CGRectContainsPoint(self.bounds, location)) {
+    if ([self.maskingPath containsPoint:location]) {
         [self.delegate calloutViewTapped:self];
     }
 }
@@ -726,42 +731,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     }
 }
 
+#pragma mark - Hit Test
+
+- (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event {
+    return [self.maskingPath containsPoint:point];
+}
+
 @end
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
