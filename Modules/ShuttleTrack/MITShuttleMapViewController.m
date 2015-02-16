@@ -775,7 +775,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.calloutView.externalInsets = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 10, 10, 10);
     self.calloutView.contentView = nav.view;
     
-    [self.calloutView presentFromRect:stopAnnotationView.bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
+    CGRect bounds = stopAnnotationView.bounds;
+    if (self.shouldUsePinAnnotations) {
+        bounds.size.width /= 2.0;
+    }
+    [self.calloutView presentFromRect:bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
