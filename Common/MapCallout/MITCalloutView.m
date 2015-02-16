@@ -428,7 +428,11 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     CGRect targetFrame = CGRectZero;
     CGFloat originX = 0, originY = 0;
-    if (necessaryHeight < availableBottomSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
+    if (necessaryHeight < availableTopSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
+        self.currentArrowDirection = MITCalloutArrowDirectionBottom;
+        originX = CGRectGetMidX(presentationRect) - (CGRectGetWidth(self.bounds) / 2.0);
+        originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
+    } else if (necessaryHeight < availableBottomSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
         self.currentArrowDirection = MITCalloutArrowDirectionTop;
         originX = CGRectGetMidX(presentationRect) - (CGRectGetWidth(self.bounds) / 2.0);
         originY = CGRectGetMaxY(presentationRect) + self.arrowOffset;
@@ -436,10 +440,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         self.currentArrowDirection = MITCalloutArrowDirectionLeft;
         originX = CGRectGetMaxX(presentationRect) + self.arrowOffset;
         originY = CGRectGetMidY(presentationRect) - (CGRectGetHeight(self.bounds) / 2.0);
-    } else if (necessaryHeight < availableTopSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
-        self.currentArrowDirection = MITCalloutArrowDirectionBottom;
-        originX = CGRectGetMidX(presentationRect) - (CGRectGetWidth(self.bounds) / 2.0);
-        originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
     } else if (necessaryWidth < availableLeftSpace && minimumLeftRightY <= midRectY && midRectY <= maximumLeftRightY) {
         self.currentArrowDirection = MITCalloutArrowDirectionRight;
         originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
@@ -476,7 +476,15 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat constraintHalfHeight = constrainHeight / 2.0;
     
     if (self.currentArrowDirection == MITCalloutArrowDirectionNone) {
-        if (availableBottomSpace >= availableLeftSpace && availableBottomSpace >= availableRightSpace && availableBottomSpace >= availableTopSpace) {
+        if (availableTopSpace >= availableRightSpace && availableTopSpace >= availableBottomSpace && availableTopSpace >= availableLeftSpace) {
+            self.currentArrowDirection = MITCalloutArrowDirectionBottom;
+            if (presentationRectMiddleX <= constraintHalfWidth) {
+                originX = presentationRectMiddleX - [self minControlPointX];
+            } else {
+                originX = presentationRectMiddleX - [self maxControlPointX];
+            }
+            originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
+        } else if (availableBottomSpace >= availableLeftSpace && availableBottomSpace >= availableRightSpace && availableBottomSpace >= availableTopSpace) {
             self.currentArrowDirection = MITCalloutArrowDirectionTop;
             if (presentationRectMiddleX <= constraintHalfWidth) {
                 originX = presentationRectMiddleX - [self minControlPointX];
@@ -492,14 +500,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
             } else {
                 originY = presentationRectMiddleY - [self maxControlPointY];
             }
-        } else if (availableTopSpace >= availableRightSpace && availableTopSpace >= availableBottomSpace && availableTopSpace >= availableLeftSpace) {
-            self.currentArrowDirection = MITCalloutArrowDirectionBottom;
-            if (presentationRectMiddleX <= constraintHalfWidth) {
-                originX = presentationRectMiddleX - [self minControlPointX];
-            } else {
-                originX = presentationRectMiddleX - [self maxControlPointX];
-            }
-            originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
         } else {
             self.currentArrowDirection = MITCalloutArrowDirectionRight;
             originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
