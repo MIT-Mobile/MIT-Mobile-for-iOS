@@ -1,6 +1,8 @@
 #import "MITCalloutView.h"
 #import "MITCalloutDefaultContentView.h"
 
+NSInteger const MITCalloutPermittedArrowDirectionAny = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionLeft | MITCalloutArrowDirectionBottom | MITCalloutArrowDirectionRight;
+
 static CGSize const kMITCalloutViewDefaultArrowSize = {30,30};
 static CGFloat const kMITCalloutViewDefaultCornerRadius = 10;
 static CGFloat const kMITCalloutViewDefaultArrowOffset = 5.0;
@@ -47,6 +49,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         _internalInsets = kMITCalloutViewDefaultInternalInsets;
         _externalInsets = kMITCalloutViewDefaultExternalInsets;
         _shouldHighlightOnTouch = YES;
+        _permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
         self.backgroundColor = [UIColor whiteColor];
     }
     return self;
@@ -428,19 +431,20 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     CGRect targetFrame = CGRectZero;
     CGFloat originX = 0, originY = 0;
-    if (necessaryHeight < availableTopSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
+    
+    if ([self isArrowDirectionPermitted:MITCalloutArrowDirectionBottom] && necessaryHeight < availableTopSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
         self.currentArrowDirection = MITCalloutArrowDirectionBottom;
         originX = CGRectGetMidX(presentationRect) - (CGRectGetWidth(self.bounds) / 2.0);
         originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
-    } else if (necessaryHeight < availableBottomSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
+    } else if ([self isArrowDirectionPermitted:MITCalloutArrowDirectionTop] && necessaryHeight < availableBottomSpace && minimumTopBottomX <= midRectX && midRectX <= maximumTopBottomX) {
         self.currentArrowDirection = MITCalloutArrowDirectionTop;
         originX = CGRectGetMidX(presentationRect) - (CGRectGetWidth(self.bounds) / 2.0);
         originY = CGRectGetMaxY(presentationRect) + self.arrowOffset;
-    } else if (necessaryWidth < availableRightSpace && minimumLeftRightY <= midRectY && midRectY <= maximumLeftRightY) {
+    } else if ([self isArrowDirectionPermitted:MITCalloutArrowDirectionLeft] && necessaryWidth < availableRightSpace && minimumLeftRightY <= midRectY && midRectY <= maximumLeftRightY) {
         self.currentArrowDirection = MITCalloutArrowDirectionLeft;
         originX = CGRectGetMaxX(presentationRect) + self.arrowOffset;
         originY = CGRectGetMidY(presentationRect) - (CGRectGetHeight(self.bounds) / 2.0);
-    } else if (necessaryWidth < availableLeftSpace && minimumLeftRightY <= midRectY && midRectY <= maximumLeftRightY) {
+    } else if ([self isArrowDirectionPermitted:MITCalloutArrowDirectionRight] && necessaryWidth < availableLeftSpace && minimumLeftRightY <= midRectY && midRectY <= maximumLeftRightY) {
         self.currentArrowDirection = MITCalloutArrowDirectionRight;
         originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
         originY = CGRectGetMidY(presentationRect) - (CGRectGetHeight(self.bounds) / 2.0);
@@ -475,40 +479,52 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat presentationRectMiddleY = CGRectGetMidY(presentationRect);
     CGFloat constraintHalfHeight = constrainHeight / 2.0;
     
-    if (self.currentArrowDirection == MITCalloutArrowDirectionNone) {
-        if (availableTopSpace >= availableRightSpace && availableTopSpace >= availableBottomSpace && availableTopSpace >= availableLeftSpace) {
-            self.currentArrowDirection = MITCalloutArrowDirectionBottom;
-            if (presentationRectMiddleX <= constraintHalfWidth) {
-                originX = presentationRectMiddleX - [self minControlPointX];
-            } else {
-                originX = presentationRectMiddleX - [self maxControlPointX];
-            }
-            originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
-        } else if (availableBottomSpace >= availableLeftSpace && availableBottomSpace >= availableRightSpace && availableBottomSpace >= availableTopSpace) {
-            self.currentArrowDirection = MITCalloutArrowDirectionTop;
-            if (presentationRectMiddleX <= constraintHalfWidth) {
-                originX = presentationRectMiddleX - [self minControlPointX];
-            } else {
-                originX = presentationRectMiddleX - [self maxControlPointX];
-            }
-            originY = CGRectGetMaxY(presentationRect) + self.arrowOffset;
-        } else if (availableRightSpace >= availableTopSpace && availableRightSpace >= availableBottomSpace && availableRightSpace >= availableLeftSpace) {
-            self.currentArrowDirection = MITCalloutArrowDirectionLeft;
-            originX = CGRectGetMaxX(presentationRect) + self.arrowOffset;
-            if (presentationRectMiddleY <= constraintHalfHeight) {
-                originY = presentationRectMiddleY - [self minControlPointY];
-            } else {
-                originY = presentationRectMiddleY - [self maxControlPointY];
-            }
-        } else {
-            self.currentArrowDirection = MITCalloutArrowDirectionRight;
-            originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
-            if (presentationRectMiddleY <= constraintHalfHeight) {
-                originY = presentationRectMiddleY - [self minControlPointY];
-            } else {
-                originY = presentationRectMiddleY - [self maxControlPointY];
+    NSSortDescriptor *highestToLowest = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:NO];
+    NSArray *availableSpace = [@[@(availableTopSpace), @(availableBottomSpace), @(availableLeftSpace), @(availableRightSpace)] sortedArrayUsingDescriptors:@[highestToLowest]];
+    if (self.currentArrowDirection == MITCalloutArrowDirectionNone && self.permittedArrowDirections != MITCalloutArrowDirectionNone) {
+        for (NSNumber *space in availableSpace) {
+            CGFloat availableSpace = space.floatValue;
+            if (availableSpace == availableTopSpace && [self isArrowDirectionPermitted:MITCalloutArrowDirectionBottom]) {
+                self.currentArrowDirection = MITCalloutArrowDirectionBottom;
+                if (presentationRectMiddleX <= constraintHalfWidth) {
+                    originX = presentationRectMiddleX - [self minControlPointX];
+                } else {
+                    originX = presentationRectMiddleX - [self maxControlPointX];
+                }
+                originY = CGRectGetMinY(presentationRect) - self.arrowOffset - CGRectGetHeight(self.bounds);
+                break;
+            } else if (availableSpace == availableBottomSpace && [self isArrowDirectionPermitted:MITCalloutArrowDirectionTop]) {
+                self.currentArrowDirection = MITCalloutArrowDirectionTop;
+                if (presentationRectMiddleX <= constraintHalfWidth) {
+                    originX = presentationRectMiddleX - [self minControlPointX];
+                } else {
+                    originX = presentationRectMiddleX - [self maxControlPointX];
+                }
+                originY = CGRectGetMaxY(presentationRect) + self.arrowOffset;
+                break;
+            } else if (availableSpace == availableRightSpace && [self isArrowDirectionPermitted:MITCalloutArrowDirectionLeft]) {
+                self.currentArrowDirection = MITCalloutArrowDirectionLeft;
+                originX = CGRectGetMaxX(presentationRect) + self.arrowOffset;
+                if (presentationRectMiddleY <= constraintHalfHeight) {
+                    originY = presentationRectMiddleY - [self minControlPointY];
+                } else {
+                    originY = presentationRectMiddleY - [self maxControlPointY];
+                }
+                break;
+            } else if (availableSpace == availableLeftSpace && [self isArrowDirectionPermitted:MITCalloutArrowDirectionRight]) {
+                self.currentArrowDirection = MITCalloutArrowDirectionRight;
+                originX = CGRectGetMinX(presentationRect) - self.arrowOffset - CGRectGetWidth(self.bounds);
+                if (presentationRectMiddleY <= constraintHalfHeight) {
+                    originY = presentationRectMiddleY - [self minControlPointY];
+                } else {
+                    originY = presentationRectMiddleY - [self maxControlPointY];
+                }
+                break;
             }
         }
+    } else if (self.permittedArrowDirections == MITCalloutArrowDirectionNone) {
+        originX = presentationRectMiddleX - CGRectGetMidX(self.bounds);
+        originY = presentationRectMiddleY - CGRectGetMidY(self.bounds);
     }
     
     CGRect frame = self.frame;
@@ -532,6 +548,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
             self.controlPoint = CGPointMake(CGRectGetWidth(targetFrame), controlY);
             break;
         case MITCalloutArrowDirectionNone:
+            self.controlPoint = CGPointZero;
             break;
     }
     
@@ -654,6 +671,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     }
     
     return CGRectMake(adjustedOriginX, adjustedOriginY, adjustedWidth, adjustedHeight);
+}
+
+- (BOOL)isArrowDirectionPermitted:(MITCalloutArrowDirection)direction {
+    return ((direction & self.permittedArrowDirections) == direction);
 }
 
 #pragma mark -

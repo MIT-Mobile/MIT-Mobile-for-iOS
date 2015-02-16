@@ -1,12 +1,14 @@
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
-    MITCalloutArrowDirectionNone,
-    MITCalloutArrowDirectionTop,
-    MITCalloutArrowDirectionLeft,
-    MITCalloutArrowDirectionBottom,
-    MITCalloutArrowDirectionRight
+    MITCalloutArrowDirectionNone   = 0,
+    MITCalloutArrowDirectionTop    = 1,
+    MITCalloutArrowDirectionLeft   = 1 << 1,
+    MITCalloutArrowDirectionBottom = 1 << 2,
+    MITCalloutArrowDirectionRight  = 1 << 3
 };
+
+extern NSInteger const MITCalloutPermittedArrowDirectionAny;
 
 @class MITCalloutView;
 
@@ -72,6 +74,12 @@ typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
  *  The current arrow direction of the callout
  */
 @property (nonatomic, readonly) MITCalloutArrowDirection currentArrowDirection;
+
+/**
+ *  The available arrow directions declared w/ bitwise or -- MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom
+ *  @default - MITCalloutPermittedArrowDirectionAny
+ */
+@property (nonatomic) NSInteger permittedArrowDirections;
 
 /**
  *  If the constraining view has changed, and you want the callout to readjust itself based on new parameters.
