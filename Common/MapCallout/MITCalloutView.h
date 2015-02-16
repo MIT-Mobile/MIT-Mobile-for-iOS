@@ -1,11 +1,3 @@
-//
-//  MITCalloutView.h
-//  MIT Mobile
-//
-//  Created by Logan Wright on 2/9/15.
-//
-//
-
 #import <UIKit/UIKit.h>
 
 typedef NS_ENUM(NSInteger, MITCalloutArrowDirection) {
