@@ -517,6 +517,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
         animationBlock();
         completionBlock(YES);
     }
+    
+    self.stop = nil;
+    [self.mapViewController setRoute:self.route stop:nil];
 }
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
@@ -763,6 +766,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     self.stop = stop;
     [self setState:MITShuttleRouteContainerStateStop animated:YES];
+}
+
+#pragma mark - UINavigationBarDelegate
+
+-(BOOL)navigationShouldPopOnBackButton
+{
+    if (self.state == MITShuttleRouteContainerStateRoute) {
+        return YES;
+    } else {
+        [self configureLayoutForState:MITShuttleRouteContainerStateRoute animated:YES];
+        self.state = MITShuttleRouteContainerStateRoute;
+        return NO;
+    }
 }
 
 @end

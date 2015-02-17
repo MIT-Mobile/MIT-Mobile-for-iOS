@@ -481,6 +481,7 @@
 		808DCE671A6583C300A1FF80 /* MITDiningHouseMealListViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 808DCE651A6583C300A1FF80 /* MITDiningHouseMealListViewController.xib */; };
 		80A7CBCF199E853300BFDD39 /* MITDiningMapsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 80A7CBCD199E853300BFDD39 /* MITDiningMapsViewController.m */; };
 		80A7CBD0199E853300BFDD39 /* MITDiningMapsViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 80A7CBCE199E853300BFDD39 /* MITDiningMapsViewController.xib */; };
+		80AAFFC61A939841004CA0C7 /* UIViewController+BackButtonHandler.m in Sources */ = {isa = PBXBuildFile; fileRef = 80AAFFC51A939841004CA0C7 /* UIViewController+BackButtonHandler.m */; };
 		80C252471A8D438300042DB1 /* MITCalloutDefaultContentView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C252411A8D438300042DB1 /* MITCalloutDefaultContentView.m */; };
 		80C252481A8D438300042DB1 /* MITCalloutView.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C252431A8D438300042DB1 /* MITCalloutView.m */; };
 		80C5D9C31A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m in Sources */ = {isa = PBXBuildFile; fileRef = 80C5D9C21A110A6B00E63FDD /* MITLibrariesFormSheetGroupTechnicalHelp.m */; };
@@ -1541,6 +1542,8 @@
 		80A7CBCC199E853300BFDD39 /* MITDiningMapsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningMapsViewController.h; path = Dining/MITDiningMapsViewController.h; sourceTree = "<group>"; };
 		80A7CBCD199E853300BFDD39 /* MITDiningMapsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningMapsViewController.m; path = Dining/MITDiningMapsViewController.m; sourceTree = "<group>"; };
 		80A7CBCE199E853300BFDD39 /* MITDiningMapsViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITDiningMapsViewController.xib; path = Dining/MITDiningMapsViewController.xib; sourceTree = "<group>"; };
+		80AAFFC41A939841004CA0C7 /* UIViewController+BackButtonHandler.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "UIViewController+BackButtonHandler.h"; sourceTree = "<group>"; };
+		80AAFFC51A939841004CA0C7 /* UIViewController+BackButtonHandler.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "UIViewController+BackButtonHandler.m"; sourceTree = "<group>"; };
 		80C252401A8D438300042DB1 /* MITCalloutDefaultContentView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalloutDefaultContentView.h; sourceTree = "<group>"; };
 		80C252411A8D438300042DB1 /* MITCalloutDefaultContentView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalloutDefaultContentView.m; sourceTree = "<group>"; };
 		80C252421A8D438300042DB1 /* MITCalloutView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalloutView.h; sourceTree = "<group>"; };
@@ -3747,6 +3750,7 @@
 			children = (
 				806204C91A7AAF1A004BD08A /* MITNavigationController.h */,
 				806204CA1A7AAF1A004BD08A /* MITNavigationController.m */,
+				80AAFFC31A939841004CA0C7 /* BackButtonOverride */,
 			);
 			path = NavigationController;
 			sourceTree = "<group>";
@@ -4260,6 +4264,15 @@
 				80899D7F1A421EB0004E4953 /* MITTileOverlay.m */,
 			);
 			name = MITTileOverlay;
+			sourceTree = "<group>";
+		};
+		80AAFFC31A939841004CA0C7 /* BackButtonOverride */ = {
+			isa = PBXGroup;
+			children = (
+				80AAFFC41A939841004CA0C7 /* UIViewController+BackButtonHandler.h */,
+				80AAFFC51A939841004CA0C7 /* UIViewController+BackButtonHandler.m */,
+			);
+			path = BackButtonOverride;
 			sourceTree = "<group>";
 		};
 		80C2523C1A8D438300042DB1 /* MapCallout */ = {
@@ -5285,6 +5298,7 @@
 				5EE17BE61962F41700F375B5 /* MITMapResultsListViewController.m in Sources */,
 				2279E183199AAE3F006BBFC5 /* MITDiningDataModel.xcdatamodeld in Sources */,
 				2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */,
+				80AAFFC61A939841004CA0C7 /* UIViewController+BackButtonHandler.m in Sources */,
 				A56390D919DDDD56001DE763 /* MITLibrariesAvailabilityDetailViewController.m in Sources */,
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
 				806205521A7AAF1A004BD08A /* MITPopoverBackgroundView.m in Sources */,
