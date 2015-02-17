@@ -5,7 +5,7 @@ platform :ios, '7.0'
 inhibit_all_warnings!
 
 pod 'SVPullToRefresh', '0.4.1'
-pod 'RestKit', '0.22.0'
+pod 'RestKit', '0.24.0'
 pod 'KissXML', '5.0'
 pod 'SVProgressHud', '1.1.2'
 pod 'SDWebImage', '3.7.1'
