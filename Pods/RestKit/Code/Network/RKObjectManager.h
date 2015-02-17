@@ -23,6 +23,12 @@
 #import "RKMacros.h"
 #import "AFNetworking.h"
 
+#ifdef _COREDATADEFINES_H
+#if __has_include("RKCoreData.h")
+#define RKCoreDataIncluded
+#endif
+#endif
+
 @protocol RKSerialization;
 @class RKManagedObjectStore, RKObjectRequestOperation, RKManagedObjectRequestOperation,
 RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
@@ -225,7 +231,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  * `appropriateObjectRequestOperationWithObject:method:path:parameters:` - Used to construct all object request operations for the manager, both managed and unmanaged. Invokes either `objectRequestOperationWithRequest:success:failure:` or `managedObjectRequestOperationWithRequest:managedObjectContext:success:failure:` to construct the actual request. Provide a subclass implementation to alter behaviors for all object request operations constructed by the manager.
  * `enqueueObjectRequestOperation:` - Invoked to enqueue all operations constructed by the manager that are to be started as soon as possible. Provide a subclass implementation if you wish to work with object request operations as they are be enqueued.
  
- If you wish to more specifically customize the behavior of the lower level HTTP details, you have several options. All HTTP requests made by the `RKObjectManager` class are made with an instance of the `RKHTTPRequestOperation` class, which is a subclass of the `AFHTTPRequestOperation` class from AFNetworking. This operation class implements the `NSURLConnectionDelegate` and `NSURLConnectionDataDelegate` protocols and as such, has full access to all details of the HTTP request/response cycle exposed by `NSURLConnection`. You can provide the object manager with your own custom subclass of `RKHTTPRequestOperation` to the manager via the `setHTTPOperationClass:` method and all HTTP requests made through the manager will pass through your operation.
+ If you wish to more specifically customize the behavior of the lower level HTTP details, you have several options. All HTTP requests made by the `RKObjectManager` class are made with an instance of the `RKHTTPRequestOperation` class, which is a subclass of the `AFHTTPRequestOperation` class from AFNetworking. This operation class implements the `NSURLConnectionDelegate` and `NSURLConnectionDataDelegate` protocols and as such, has full access to all details of the HTTP request/response cycle exposed by `NSURLConnection`. You can provide the object manager with your own custom subclass of `RKHTTPRequestOperation` to the manager via the `registerRequestOperationClass:` method and all HTTP requests made through the manager will pass through your operation.
 
  You can also customize the HTTP details at the AFNetworking level by subclassing `AFHTTPClient` and using an instance of your subclassed client to initialize the manager.
  
@@ -477,7 +483,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
  
  @see `RKManagedObjectRequestOperation`
  */
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 - (RKManagedObjectRequestOperation *)managedObjectRequestOperationWithRequest:(NSURLRequest *)request
                                                          managedObjectContext:(NSManagedObjectContext *)managedObjectContext
                                                                       success:(void (^)(RKObjectRequestOperation *operation, RKMappingResult *mappingResult))success
@@ -814,7 +820,7 @@ RKMappingResult, RKRequestDescriptor, RKResponseDescriptor;
 /// @name Configuring Core Data Integration
 ///----------------------------------------
 
-#ifdef _COREDATADEFINES_H
+#ifdef RKCoreDataIncluded
 /**
  A Core Data backed object store for persisting objects that have been fetched from the Web
  */
