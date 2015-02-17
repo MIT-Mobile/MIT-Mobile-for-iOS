@@ -36,6 +36,11 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
 }
 
 - (void)setupAccessoryView {
+    self.accessoryView = [UIImageView new];
+    [self.accessoryView setImage:[UIImage imageNamed:@"disclosure-indicator"]];
+    self.accessoryView.contentMode = UIViewContentModeScaleAspectFit;
+    self.accessoryView.clipsToBounds = YES;
+    self.accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
     [self addSubview:self.accessoryView];
     
     NSLayoutConstraint *verticalCenter, *height, *width, *right;
@@ -46,6 +51,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                                   attribute:NSLayoutAttributeCenterY
                                                  multiplier:1.0
                                                    constant:0];
+    
     height = [NSLayoutConstraint constraintWithItem:self.accessoryView
                                           attribute:NSLayoutAttributeHeight
                                           relatedBy:NSLayoutRelationEqual
@@ -53,6 +59,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                           attribute:NSLayoutAttributeNotAnAttribute
                                          multiplier:1.0
                                            constant:15];
+    
     width = [NSLayoutConstraint constraintWithItem:self.accessoryView
                                          attribute:NSLayoutAttributeWidth
                                          relatedBy:NSLayoutRelationEqual
@@ -60,6 +67,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                          attribute:NSLayoutAttributeNotAnAttribute
                                         multiplier:1.0
                                           constant:15];
+    
     right = [NSLayoutConstraint constraintWithItem:self.accessoryView
                                          attribute:NSLayoutAttributeRight
                                          relatedBy:NSLayoutRelationEqual
@@ -67,6 +75,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                          attribute:NSLayoutAttributeRight
                                         multiplier:1.0
                                           constant:0];
+    
     [self addConstraints:@[verticalCenter, height, width, right]];
     
     self.accessoryViewWidthConstraint = width;
@@ -74,6 +83,9 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
 }
 
 - (void)setupTitleLabel {
+    self.titleLabel = [UILabel new];
+    self.titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.titleLabel.font = [UIFont systemFontOfSize:17.0];
     [self addSubview:self.titleLabel];
     
     NSLayoutConstraint *top, *left, *right, *height;
@@ -84,6 +96,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                        attribute:NSLayoutAttributeTop
                                       multiplier:1.0
                                         constant:0];
+    
     left = [NSLayoutConstraint constraintWithItem:self.titleLabel
                                         attribute:NSLayoutAttributeLeft
                                         relatedBy:NSLayoutRelationEqual
@@ -91,6 +104,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                         attribute:NSLayoutAttributeLeft
                                        multiplier:1.0
                                          constant:0];
+    
     right = [NSLayoutConstraint constraintWithItem:self.titleLabel
                                          attribute:NSLayoutAttributeRight
                                          relatedBy:NSLayoutRelationLessThanOrEqual
@@ -98,6 +112,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                          attribute:NSLayoutAttributeLeft
                                         multiplier:1.0
                                           constant:-kMITCalloutViewLabelToAccessorySpacing];
+    
     height = [NSLayoutConstraint constraintWithItem:self.titleLabel
                                           attribute:NSLayoutAttributeHeight
                                           relatedBy:NSLayoutRelationEqual
@@ -121,6 +136,9 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
 }
 
 - (void)setupSubtitleLabel {
+    self.subtitleLabel = [UILabel new];
+    self.subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    self.subtitleLabel.font = [UIFont systemFontOfSize:13.0];
     [self addSubview:self.subtitleLabel];
     
     NSLayoutConstraint *height, *left, *right, *bottom;
@@ -131,6 +149,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                           attribute:NSLayoutAttributeHeight
                                          multiplier:0.5
                                            constant:0];
+    
     left = [NSLayoutConstraint constraintWithItem:self.subtitleLabel
                                         attribute:NSLayoutAttributeLeft
                                         relatedBy:NSLayoutRelationEqual
@@ -138,6 +157,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                         attribute:NSLayoutAttributeLeft
                                        multiplier:1.0
                                          constant:0];
+    
     right = [NSLayoutConstraint constraintWithItem:self.subtitleLabel
                                          attribute:NSLayoutAttributeRight
                                          relatedBy:NSLayoutRelationLessThanOrEqual
@@ -145,6 +165,7 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                          attribute:NSLayoutAttributeLeft
                                         multiplier:1.0
                                           constant:-5];
+    
     bottom = [NSLayoutConstraint constraintWithItem:self.subtitleLabel
                                           attribute:NSLayoutAttributeBottom
                                           relatedBy:NSLayoutRelationEqual
@@ -152,38 +173,8 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
                                           attribute:NSLayoutAttributeBottom
                                          multiplier:1.0
                                            constant:0];
+    
     [self addConstraints:@[height, left, right, bottom]];
-}
-
-#pragma mark - Getters
-
-- (UIImageView *)accessoryView {
-    if (!_accessoryView) {
-        _accessoryView = [UIImageView new];
-        [_accessoryView setImage:[UIImage imageNamed:@"disclosure-indicator"]];
-        _accessoryView.contentMode = UIViewContentModeScaleAspectFit;
-        _accessoryView.clipsToBounds = YES;
-        _accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
-    }
-    return _accessoryView;
-}
-
-- (UILabel *)titleLabel {
-    if (!_titleLabel) {
-        _titleLabel = [UILabel new];
-        _titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _titleLabel.font = [UIFont systemFontOfSize:17.0];
-    }
-    return _titleLabel;
-}
-
-- (UILabel *)subtitleLabel {
-    if (!_subtitleLabel) {
-        _subtitleLabel = [UILabel new];
-        _subtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-        _subtitleLabel.font = [UIFont systemFontOfSize:13.0];
-    }
-    return _subtitleLabel;
 }
 
 #pragma mark - Sizing

@@ -14,7 +14,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 @property (nonatomic) MITCalloutArrowDirection currentArrowDirection;
 
 @property (nonatomic) CGSize arrowSize;
-@property (nonatomic) CGSize contentViewPreferredSize;
 @property (nonatomic) CGPoint controlPoint;
 @property (nonatomic) CGFloat cornerRadius;
 @property (nonatomic) CGFloat arrowOffset; // Distance from presentation rect to arrow
@@ -28,7 +27,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 @property (nonatomic) CGRect presentationRect;
 @property (weak, nonatomic) UIView *presentationView;
 @property (weak, nonatomic) UIView *constrainingView;
-@property (nonatomic, readonly) BOOL isDefaultContentView;
+@property (nonatomic, readonly) BOOL hasDefaultContentView;
 
 @property (weak, nonatomic) NSLayoutConstraint *topContentConstraint;
 @property (weak, nonatomic) NSLayoutConstraint *leftContentConstraint;
@@ -77,13 +76,12 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 - (void)resizeAndPositionSubviews {
     
     CGFloat maxWidth, maxHeight;
-    if (self.isDefaultContentView) {
+    if (self.hasDefaultContentView) {
         MITCalloutViewDefaultContentView *contentView = (MITCalloutViewDefaultContentView *)self.contentView;
         CGSize contentSize = [contentView sizeThatFits:CGSizeMake(CGFLOAT_MAX, CGFLOAT_MAX)];
         
         maxHeight = contentSize.height + self.internalInsets.top + self.internalInsets.bottom;
         maxWidth = contentSize.width + self.internalInsets.left + self.internalInsets.right;
-        
     } else {
         // Save preferred size at time of set because constraints will resize
         maxHeight = self.contentViewPreferredSize.height + self.internalInsets.top + self.internalInsets.bottom;
@@ -254,7 +252,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 - (void)updateLayersForNewPath:(UIBezierPath *)path animated:(BOOL)animated {
     
-    // TODO: Ensure best way to animate && Sync w/ bounds change?
+    // Possibly better ways to implement this animation and sync w/ bounds change.  Currently full animation support is not implemented.
     if (animated) {
         CABasicAnimation *pathAnim = [CABasicAnimation animationWithKeyPath:@"path"];
         pathAnim.toValue = (id)path.CGPath;
@@ -262,7 +260,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         CAAnimationGroup *animGroup = [CAAnimationGroup animation];
         animGroup.animations = @[pathAnim];
         animGroup.removedOnCompletion = NO;
-        animGroup.duration = 0.25; // TODO: Constant animation duration
+        animGroup.duration = 0.25;
         animGroup.fillMode = kCAFillModeBoth;
         
         [self.maskingShapeLayer addAnimation:animGroup forKey:nil];
@@ -278,7 +276,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 #pragma mark - Setters
 
 - (void)setTitleText:(NSString *)titleText {
-    if (self.isDefaultContentView) {
+    if (self.hasDefaultContentView) {
         MITCalloutViewDefaultContentView *contentView = (MITCalloutViewDefaultContentView *)self.contentView;
         contentView.titleLabel.text = titleText;
         [self reorientPresentation];
@@ -287,7 +285,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 }
 
 - (void)setSubtitleText:(NSString *)subtitleText {
-    if (self.isDefaultContentView) {
+    if (self.hasDefaultContentView) {
         MITCalloutViewDefaultContentView *contentView = (MITCalloutViewDefaultContentView *)self.contentView;
         contentView.subtitleLabel.text = subtitleText;
         [self reorientPresentation];
@@ -312,8 +310,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     if (contentView) {
         [self addSubview:contentView];
         
-        // Might be better way -- Need this size to be stored.
-        self.contentViewPreferredSize = contentView.bounds.size;
+        // Store size at time of setting if not already set -- Can also be set explicitly
+        if (CGSizeEqualToSize(self.contentViewPreferredSize, CGSizeZero)) {
+            self.contentViewPreferredSize = contentView.bounds.size;
+        }
         
         CGRect bounds = self.bounds;
         bounds.size.height = CGRectGetHeight(contentView.bounds) + self.internalInsets.top + self.internalInsets.bottom;
@@ -342,6 +342,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
                                            attribute:NSLayoutAttributeTop
                                           multiplier:1.0
                                             constant:self.internalInsets.top];
+        
         left = [NSLayoutConstraint constraintWithItem:contentView
                                             attribute:NSLayoutAttributeLeft
                                             relatedBy:NSLayoutRelationEqual
@@ -349,6 +350,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
                                             attribute:NSLayoutAttributeLeft
                                            multiplier:1.0
                                              constant:self.internalInsets.left];
+        
         right = [NSLayoutConstraint constraintWithItem:contentView
                                              attribute:NSLayoutAttributeRight
                                              relatedBy:NSLayoutRelationEqual
@@ -356,6 +358,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
                                              attribute:NSLayoutAttributeRight
                                             multiplier:1.0
                                               constant:-self.internalInsets.right];
+        
         bottom = [NSLayoutConstraint constraintWithItem:contentView
                                               attribute:NSLayoutAttributeBottom
                                               relatedBy:NSLayoutRelationEqual
@@ -374,6 +377,8 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         self.rightContentConstraint = right;
         
         [self reorientPresentation];
+    } else {
+        self.contentViewPreferredSize = CGSizeZero;
     }
 }
 
@@ -569,8 +574,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // We've been positioning the view in the constraining view, now lets translate it back to the presentation view
     targetFrame = [constrainingView convertRect:targetFrame toView:view];
-    
-    // TODO: Animate this with the layer redraw.
     self.frame = targetFrame;
     
     __weak __typeof(self) weakSelf = self;
@@ -679,7 +682,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 
 #pragma mark -
 
-- (BOOL)isDefaultContentView {
+- (BOOL)hasDefaultContentView {
     return [self.contentView isKindOfClass:[MITCalloutViewDefaultContentView class]];
 }
 

@@ -66,6 +66,11 @@ extern NSInteger const MITCalloutPermittedArrowDirectionAny;
 @property (nonatomic) UIEdgeInsets externalInsets;
 
 /**
+ *  The preferred size of the contentView contained within the callout
+ */
+@property (nonatomic) CGSize contentViewPreferredSize;
+
+/**
  *  Whether or not to highlight in response to user touch.  Defaults to YES.
  */
 @property (nonatomic) BOOL shouldHighlightOnTouch;
