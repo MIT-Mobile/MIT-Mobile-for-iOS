@@ -365,9 +365,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
                 self.forceRefreshForNextDependencies = YES;
+                self.nearestStops = stopsByRouteIdentifier;
+                [self updateNearestStopsPredictionsDependencies];
             }
-            self.nearestStops = stopsByRouteIdentifier;
-            [self updateNearestStopsPredictionsDependencies];
             
             if (completion) {
                 completion();
