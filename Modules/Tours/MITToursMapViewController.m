@@ -4,11 +4,11 @@
 #import "MITToursStopAnnotation.h"
 #import "MITMapPlaceAnnotationView.h"
 #import "MITToursDirectionsToStop.h"
-#import "SMCalloutView.h"
 #import "MITToursCalloutContentView.h"
 #import "MITToursStopDetailContainerViewController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITLocationManager.h"
+#import "MITCalloutView.h"
 
 #define MILES_PER_METER 0.000621371
 
@@ -19,9 +19,9 @@ static NSInteger kAnnotationMarginBottom = 200;
 static NSInteger kAnnotationMarginLeft = 50;
 static NSInteger kAnnotationMarginRight = 50;
 
-@interface MITToursMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate, MITTiledMapViewUserTrackingDelegate>
+@interface MITToursMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate, MITTiledMapViewUserTrackingDelegate>
 
-@property (strong, nonatomic) SMCalloutView *calloutView;
+@property (strong, nonatomic) MITCalloutView *calloutView;
 @property (strong, nonatomic) NSMutableArray *dismissingPopoverControllers;
 @property (nonatomic) UIEdgeInsets annotationMarginInsets;
 
@@ -96,17 +96,14 @@ static NSInteger kAnnotationMarginRight = 50;
 
 - (void)setupCalloutView
 {
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
+    MITCalloutView *calloutView = [MITCalloutView new];
     calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
     
     self.calloutView = calloutView;
     [self updateCalloutViewInsets];
     
     MITCalloutMapView *mapView = self.tiledMapView.mapView;
-    mapView.calloutView = calloutView;
+    mapView.mitCalloutView = calloutView;
 }
 
 - (void)updateCalloutViewInsets
@@ -118,7 +115,7 @@ static NSInteger kAnnotationMarginRight = 50;
     if (self.shouldShowTourDetailsPanel) {
         topInset = self.tourDetailsHeightConstraint.constant;
     }
-    self.calloutView.constrainedInsets = UIEdgeInsetsMake(topInset, 0, 0, 0);
+    self.calloutView.externalInsets = UIEdgeInsetsMake(topInset, 10, 10, 10);
 }
 
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
@@ -280,34 +277,32 @@ static NSInteger kAnnotationMarginRight = 50;
     MITToursCalloutContentView *contentView = [[MITToursCalloutContentView alloc] initWithFrame:CGRectZero];
     [contentView configureForStop:stop userLocation:mapView.userLocation.location];
     
-    SMCalloutView *calloutView = self.calloutView;
-    UIImage *disclosureImage = [UIImage imageNamed:@"global-callout-disclosure"];
-    UIImageView *disclosureView = [[UIImageView alloc] initWithImage:disclosureImage];
-    calloutView.rightAccessoryView = disclosureView;
+    MITCalloutView *calloutView = self.calloutView;
+    calloutView.internalInsets = UIEdgeInsetsZero;
     calloutView.contentView = contentView;
-    calloutView.calloutOffset = annotationView.calloutOffset;
 
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    CGRect bounds = annotationView.bounds;
+    bounds.size.width /= 2.0;
+    [calloutView presentFromRect:bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)dismissCurrentCallout
 {
-    [self.calloutView dismissCalloutAnimated:YES];
+    [self.calloutView dismissCallout];
 }
 
-#pragma mark - SMCalloutViewDelegate Methods
+#pragma mark - MITCalloutViewDelegate
 
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offscreenOffset
 {
     MKMapView *mapView = self.tiledMapView.mapView;
-    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
-                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CGPoint adjustedCenter = CGPointMake(offscreenOffset.x + mapView.bounds.size.width * 0.5,
+                                         offscreenOffset.y + mapView.bounds.size.height * 0.5);
     CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
     [mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     MITToursCalloutContentView *contentView = (MITToursCalloutContentView *)calloutView.contentView;
     if ([self.delegate respondsToSelector:@selector(mapViewController:didSelectCalloutForStop:)]) {

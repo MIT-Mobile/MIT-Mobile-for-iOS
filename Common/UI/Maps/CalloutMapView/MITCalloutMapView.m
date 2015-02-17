@@ -1,4 +1,5 @@
 #import "MITCalloutMapView.h"
+#import "MITCalloutView.h"
 
 @interface MKMapView (UIGestureRecognizer)
 
@@ -24,11 +25,9 @@
 {
     if (view == nil || [view isKindOfClass:[MITCalloutMapView class]]) {
         return false;
-    }
-    else if ([view isKindOfClass:[SMCalloutView class]]) {
+    } else if ([view isKindOfClass:[MITCalloutView class]]) {
         return true;
-    }
-    else {
+    } else {
         return [self hasCalloutParentView:view.superview];
     }
 }
@@ -37,7 +36,7 @@
 // See this for some discussion of why we need to override this: https://github.com/nfarina/calloutview/pull/9
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-    UIView *calloutMaybe = [self.calloutView hitTest:[self.calloutView convertPoint:point fromView:self] withEvent:event];
+    UIView *calloutMaybe = [self.mitCalloutView hitTest:[self.mitCalloutView convertPoint:point fromView:self] withEvent:event];
     if (calloutMaybe) {
         return calloutMaybe;
     }
