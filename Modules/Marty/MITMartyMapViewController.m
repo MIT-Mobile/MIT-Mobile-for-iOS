@@ -5,7 +5,6 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "MITMapPlaceSelector.h"
 #import "MITLocationManager.h"
-#import "MITMartyResource.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
 
@@ -13,13 +12,11 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 
 
-@interface MITMartyMapViewController ()
+@interface MITMartyMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, readonly) MITCalloutMapView *mapView;
-@property (nonatomic, strong) SMCalloutView *calloutView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
-@property (nonatomic, strong) NSArray *resources;
 @property (nonatomic, strong) MITMartyResource *currentlySelectResource;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
@@ -47,6 +44,11 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (UIBarButtonItem *)userLocationButton
+{
+    return self.tiledMapView.userLocationButton;
 }
 
 #pragma mark - Map View
@@ -82,6 +84,16 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     
     self.tiledMapView.mapView.calloutView = self.calloutView;
 }
+
+- (void)resourcesChanged:(BOOL)animated
+{
+    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
+    
+    self.showFirstCalloutOnNextMapRegionChange = YES;
+    [self setupMapBoundingBoxAnimated:animated];
+    [self refreshPlaceAnnotations];
+}
+
 
 #pragma mark - Map View
 

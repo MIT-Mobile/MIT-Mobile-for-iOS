@@ -3,7 +3,6 @@
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITSlidingViewController.h"
-#import "SMCalloutView.h"
 
 #import "MITMartyResourceDataSource.H"
 #import "MITMartyResource.h"
@@ -11,7 +10,9 @@
 #import "MITCoreDataController.h"
 #import "MITMartyRecentSearchController.h"
 
-@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
+#import "MITMartyMapViewController.h"
+
+@interface MITMartyPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
@@ -33,6 +34,7 @@
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
 @property (strong, nonatomic) MITMartyResourceDataSource *modelController;
+@property (nonatomic, strong) MITMartyMapViewController *mapViewController;
 
 @end
 
@@ -46,6 +48,15 @@
         _modelController = modelController;
     }
     return _modelController;
+}
+
+- (MITMartyMapViewController *)mapViewController
+{
+    if(!_mapViewController) {
+        MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
+        _mapViewController = mapViewController;
+    }
+    return _mapViewController;
 }
 
 #pragma mark - Init
@@ -78,6 +89,7 @@
     
     [self setupNavigationBar];
     [self setupRecentSearchTableView];
+    [self setupMapViewController];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {        
         // We use actual UIButtons so that we can easily change the selected state
@@ -95,18 +107,16 @@
         self.listViewToggleButton.selected = self.isShowingIpadResultsList;
 
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
-#warning add back buttons
-
-        //UIBarButtonItem *currentLocationBarButton = nil; self.tiledMapView.userLocationButton;
+        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-        self.toolbarItems = @[listBarButton, flexibleSpace/*, currentLocationBarButton*/];
+        self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
  
     } else {
         
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
-       // UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
+        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-        self.toolbarItems = @[/*currentLocationBarButton, */flexibleSpace, listBarButton];
+        self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
         
     }
     
@@ -213,6 +223,16 @@
     }
 }
 
+- (void)setupMapViewController
+{
+    self.mapViewController.view.frame = self.view.frame;
+    self.mapViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+
+    [self addChildViewController:self.mapViewController];
+    [self.view addSubview:self.mapViewController.view];
+    [self.mapViewController didMoveToParentViewController:self];
+}
+
 - (void)registerForKeyboardNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
@@ -278,8 +298,7 @@
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-#warning callout
-        //self.calloutView.constrainedInsets = UIEdgeInsetsZero;
+        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
         self.isShowingIpadResultsList = NO;
     }
 }
@@ -291,8 +310,7 @@
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-#warning callout
-        //self.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
+        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
         self.isShowingIpadResultsList = YES;
     }
 }
@@ -330,12 +348,9 @@
 {
     [[self resourcesTableViewController] setResources:resources];
     
-
-#warning callout
-    //self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
-
-    //self.showFirstCalloutOnNextMapRegionChange = YES;
-    //[self setupMapBoundingBoxAnimated:animated];
+    [[self mapViewController] setResources:resources];
+    
+    [self.mapViewController resourcesChanged:animated];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
@@ -537,8 +552,7 @@
 
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
-#warning callout
-    //[self showCalloutForResource:resource];
+    [self.mapViewController showCalloutForResource:resource];
 }
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
