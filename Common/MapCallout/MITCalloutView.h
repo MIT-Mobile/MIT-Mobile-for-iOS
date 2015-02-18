@@ -66,7 +66,8 @@ extern NSInteger const MITCalloutPermittedArrowDirectionAny;
 @property (nonatomic) UIEdgeInsets externalInsets;
 
 /**
- *  The preferred size of the contentView contained within the callout
+ *  The preferred size of the contentView contained within the callout when using a custom content view
+ *  @warning must be set AFTER setting the contentView
  */
 @property (nonatomic) CGSize contentViewPreferredSize;
 

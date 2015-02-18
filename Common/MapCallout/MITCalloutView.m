@@ -311,9 +311,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         [self addSubview:contentView];
         
         // Store size at time of setting if not already set -- Can also be set explicitly
-        if (CGSizeEqualToSize(self.contentViewPreferredSize, CGSizeZero)) {
-            self.contentViewPreferredSize = contentView.bounds.size;
-        }
+        self.contentViewPreferredSize = contentView.bounds.size;
         
         CGRect bounds = self.bounds;
         bounds.size.height = CGRectGetHeight(contentView.bounds) + self.internalInsets.top + self.internalInsets.bottom;
@@ -377,8 +375,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         self.rightContentConstraint = right;
         
         [self reorientPresentation];
-    } else {
-        self.contentViewPreferredSize = CGSizeZero;
     }
 }
 

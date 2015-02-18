@@ -280,7 +280,8 @@ static NSInteger kAnnotationMarginRight = 50;
     MITCalloutView *calloutView = self.calloutView;
     calloutView.internalInsets = UIEdgeInsetsZero;
     calloutView.contentView = contentView;
-
+    calloutView.contentViewPreferredSize = contentView.bounds.size;
+    
     CGRect bounds = annotationView.bounds;
     bounds.size.width /= 2.0;
     [calloutView presentFromRect:bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
