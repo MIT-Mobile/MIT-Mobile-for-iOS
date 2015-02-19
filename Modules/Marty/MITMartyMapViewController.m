@@ -85,15 +85,15 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
-- (void)resourcesChanged:(BOOL)animated
+- (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
+    self.resources = resources;
     
+    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
     self.showFirstCalloutOnNextMapRegionChange = YES;
     [self setupMapBoundingBoxAnimated:animated];
     [self refreshPlaceAnnotations];
 }
-
 
 #pragma mark - Map View
 

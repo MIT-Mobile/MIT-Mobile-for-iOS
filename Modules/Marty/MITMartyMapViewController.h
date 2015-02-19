@@ -9,7 +9,7 @@
 @property (nonatomic, strong) SMCalloutView *calloutView;
 
 - (UIBarButtonItem *)userLocationButton;
-- (void)resourcesChanged:(BOOL)animated;
+- (void)setResources:(NSArray *)resources animated:(BOOL)animated;
 - (void)showCalloutForResource:(MITMartyResource *)resource;
 
 @end

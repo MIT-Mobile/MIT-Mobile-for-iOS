@@ -348,9 +348,7 @@
 {
     [[self resourcesTableViewController] setResources:resources];
     
-    [[self mapViewController] setResources:resources];
-    
-    [self.mapViewController resourcesChanged:animated];
+    [[self mapViewController] setResources:resources animated:animated];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
