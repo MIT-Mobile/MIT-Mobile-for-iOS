@@ -306,7 +306,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
     MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
-    detailVC.resource = self.resource;
+    detailVC.resource = resource;
     [self.navigationController pushViewController:detailVC animated:YES];
 }
 
