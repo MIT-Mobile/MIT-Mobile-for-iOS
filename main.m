@@ -28,6 +28,6 @@ void mit_logger_init( void )
         }
 #endif //DEBUG
         
-        DDLogCVerbose(@"Lumberjack logging initialized");
+        DDLogCVerbose(@"Logging initialized");
     });
 }
