@@ -41,6 +41,7 @@ static NSString * const MITPersistentStoreMetadataRevisionKey = @"MITPersistentS
 
         _managedObjectStore = [[RKManagedObjectStore alloc] initWithPersistentStoreCoordinator:_persistentStoreCoordinator];
         [_managedObjectStore createManagedObjectContexts];
+        _managedObjectStore.managedObjectCache = [[RKInMemoryManagedObjectCache alloc] initWithManagedObjectContext:self.mainQueueContext];
     }
 
     return self;
