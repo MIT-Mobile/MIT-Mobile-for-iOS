@@ -110,7 +110,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
             zoomRect = MKMapRectUnion(zoomRect, pointRect);
         }
         double inset = -zoomRect.size.width * 0.1;
-        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
+        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) edgePadding:self.mapEdgeInsets animated:YES];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }

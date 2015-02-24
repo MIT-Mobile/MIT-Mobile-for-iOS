@@ -300,6 +300,7 @@
         } completion:nil];
         self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
         self.isShowingIpadResultsList = NO;
+        self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
     }
 }
 
@@ -312,6 +313,7 @@
         } completion:nil];
         self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
         self.isShowingIpadResultsList = YES;
+        self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
     }
 }
 

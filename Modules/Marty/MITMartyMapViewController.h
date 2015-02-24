@@ -7,6 +7,7 @@
 
 @property (nonatomic, strong) NSArray *resources;
 @property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic) UIEdgeInsets mapEdgeInsets;
 
 - (UIBarButtonItem *)userLocationButton;
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated;
