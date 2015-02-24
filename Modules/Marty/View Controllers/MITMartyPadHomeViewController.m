@@ -1,29 +1,18 @@
 #import "MITMartyPadHomeViewController.h"
 #import "MITMartyResourceDataSource.h"
-#import "MITTiledMapView.h"
-#import "MITMapPlaceAnnotationView.h"
-#import "MITMapBrowseContainerViewController.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
-#import "MITMapPlaceSelector.h"
 #import "MITSlidingViewController.h"
-#import "MITLocationManager.h"
-#import "SMCalloutView.h"
 
 #import "MITMartyResourceDataSource.H"
 #import "MITMartyResource.h"
-#import "MITMartyDetailTableViewController.h"
 #import "MITMartyResourcesTableViewController.h"
-#import "MITMartyCalloutContentView.h"
 #import "MITCoreDataController.h"
 #import "MITMartyRecentSearchController.h"
 
-static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
+#import "MITMartyMapViewController.h"
 
-static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
-static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
-
-@interface MITMartyPadHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
+@interface MITMartyPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
@@ -32,31 +21,20 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 @property (nonatomic, strong) MITMartyRecentSearchController *searchViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
-@property (nonatomic, strong) SMCalloutView *calloutView;
-@property (nonatomic, strong) UIViewController *calloutViewController;
 
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
-
-@property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MITCalloutMapView *mapView;
-@property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
-@property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 @property (nonatomic, copy) NSString *searchQuery;
 @property (nonatomic, strong) MITMapCategory *category;
 @property (nonatomic, strong) UIView *searchBarView;
 @property (nonatomic) BOOL isKeyboardVisible;
 
-@property (nonatomic, strong) NSTimer *searchSuggestionsTimer;
-
 @property (nonatomic, strong) MITMartyResourceDataSource *dataSource;
-@property (nonatomic, strong) MITMartyResource *resource;
 @property (nonatomic, strong) NSArray *resources;
 @property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
-@property (nonatomic, strong) MITMartyResource *currentlySelectResource;
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
 @property (strong, nonatomic) MITMartyResourceDataSource *modelController;
+@property (nonatomic, strong) MITMartyMapViewController *mapViewController;
 
 @end
 
@@ -72,11 +50,13 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     return _modelController;
 }
 
-#pragma mark - Map View
-
-- (MITCalloutMapView *)mapView
+- (MITMartyMapViewController *)mapViewController
 {
-    return self.tiledMapView.mapView;
+    if(!_mapViewController) {
+        MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
+        _mapViewController = mapViewController;
+    }
+    return _mapViewController;
 }
 
 #pragma mark - Init
@@ -108,8 +88,8 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     [super viewDidLoad];
     
     [self setupNavigationBar];
-    [self setupMapView];
     [self setupRecentSearchTableView];
+    [self setupMapViewController];
     
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {        
         // We use actual UIButtons so that we can easily change the selected state
@@ -127,15 +107,17 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         self.listViewToggleButton.selected = self.isShowingIpadResultsList;
 
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
-
-        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
+        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
+ 
     } else {
+        
         UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
-        UIBarButtonItem *currentLocationBarButton = self.tiledMapView.userLocationButton;
+        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
         UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
         self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
+        
     }
     
     if (!self.managedObjectContext) {
@@ -147,7 +129,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 {
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(locationManagerDidUpdateAuthorizationStatus:) name:kLocationManagerDidUpdateAuthorizationStatusNotification object:nil];
     [self.navigationItem setHidesBackButton:YES animated:NO];
     [self registerForKeyboardNotifications];
     self.searchBar.text = self.searchQuery;
@@ -222,33 +203,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     self.menuBarButton = self.navigationItem.leftBarButtonItem;
 }
 
-- (void)setupMapView
-{
-    [self.tiledMapView setMapDelegate:self];
-    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
-    
-    [self setupMapBoundingBoxAnimated:NO];
-
-    [self setupCalloutView];
-}
-
-- (void)setupCalloutView
-{
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
-    calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-    }
-    
-    self.calloutView = calloutView;
-    
-    self.tiledMapView.mapView.calloutView = self.calloutView;
-}
-
 - (void)setupRecentSearchTableView
 {
     if (!self.searchViewController) {
@@ -267,6 +221,16 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
             [self.searchViewController didMoveToParentViewController:self];
         }
     }
+}
+
+- (void)setupMapViewController
+{
+    self.mapViewController.view.frame = self.view.frame;
+    self.mapViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+
+    [self addChildViewController:self.mapViewController];
+    [self.view addSubview:self.mapViewController.view];
+    [self.mapViewController didMoveToParentViewController:self];
 }
 
 - (void)registerForKeyboardNotifications
@@ -296,6 +260,8 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
 #pragma mark - Button Actions
 
+//  BOOKSMARKS ARE NOT NEEDED IN THIS VERSION
+/*
 - (void)bookmarksButtonPressed
 {
     MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] init];
@@ -313,6 +279,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         [self presentViewController:navigationController animated:YES completion:nil];
     }
 }
+ */
 
 - (void)ipadListButtonPressed
 {
@@ -331,8 +298,9 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-        self.calloutView.constrainedInsets = UIEdgeInsetsZero;
+        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
         self.isShowingIpadResultsList = NO;
+        self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
     }
 }
 
@@ -343,8 +311,9 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-        self.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
+        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
         self.isShowingIpadResultsList = YES;
+        self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
     }
 }
 
@@ -370,27 +339,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     searchBarTextField.textColor = color;
 }
 
-#pragma mark - Map View
-
-- (void)setupMapBoundingBoxAnimated:(BOOL)animated
-{
-    [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-    
-    if ([self.resources count] > 0) {
-        MKMapRect zoomRect = MKMapRectNull;
-        for (id <MKAnnotation> annotation in self.resources)
-        {
-            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
-            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
-            zoomRect = MKMapRectUnion(zoomRect, pointRect);
-        }
-        double inset = -zoomRect.size.width * 0.1;
-        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) animated:YES];
-    } else {
-        [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
-    }
-}
-
 #pragma mark - Places
 
 - (void)setResources:(NSArray *)resources
@@ -402,9 +350,7 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 {
     [[self resourcesTableViewController] setResources:resources];
     
-    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
-    self.showFirstCalloutOnNextMapRegionChange = YES;
-    [self setupMapBoundingBoxAnimated:animated];
+    [[self mapViewController] setResources:resources animated:animated];
 }
 
 - (void)clearPlacesAnimated:(BOOL)animated
@@ -414,22 +360,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     [self setResources:nil animated:animated];
 }
 
-- (void)refreshPlaceAnnotations
-{
-    [self removeAllPlaceAnnotations];
-    [self.mapView addAnnotations:self.resources];
-}
-
-- (void)removeAllPlaceAnnotations
-{
-    NSMutableArray *annotationsToRemove = [NSMutableArray array];
-    for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITMartyResource class]]) {
-            [annotationsToRemove addObject:annotation];
-        }
-    }
-    [self.mapView removeAnnotations:annotationsToRemove];
-}
 
 #pragma mark - Search Results
 
@@ -451,15 +381,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         self.isKeyboardVisible = NO;
         self.searchViewController.view.hidden = YES;
-    }
-}
-
-- (void)searchSuggestionsTimerFired:(NSTimer *)timer
-{
-    NSDictionary *userInfo = timer.userInfo;
-    NSString *searchText = userInfo[kMITMapSearchSuggestionsTimerUserInfoKeySearchText];
-    if (searchText) {
-        [self updateSearchResultsForSearchString:searchText];
     }
 }
 
@@ -509,22 +430,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     
     [self setResources:@[resource] animated:YES];
     self.searchBar.text = resource.name;
-}
-
-- (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
-{
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
-    detailVC.resource = self.resource;
-    [self.navigationController pushViewController:detailVC animated:YES];
-}
-
-- (void)showCalloutForResource:(MITMartyResource *)resource
-{
-    for (MITMartyResource *resource2 in self.resources) {
-        if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
-            [self.mapView selectAnnotation:resource2 animated:YES];
-        }
-    }
 }
 
 - (void)showTypeAheadPopover
@@ -609,17 +514,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    [self.searchSuggestionsTimer invalidate];
-    NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    if (searchText) {
-        userInfo[kMITMapSearchSuggestionsTimerUserInfoKeySearchText] = searchText;
-    }
-    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:kMITMapSearchSuggestionsTimerWaitDuration
-                                                                   target:self
-                                                                 selector:@selector(searchSuggestionsTimerFired:)
-                                                                 userInfo:userInfo
-                                                                  repeats:NO];
-    
     if (searchBar.isFirstResponder) {
         if (!self.typeAheadPopoverController.popoverVisible) {
             [self showTypeAheadPopover];
@@ -653,172 +547,12 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     self.searchBarView.bounds = bounds;
 }
 
-#pragma mark - MKMapViewDelegate
-
-- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
-{
-    if ([annotation isKindOfClass:[MITMartyResource class]]) {
-        MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
-        if (!annotationView) {
-            annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
-        }
-        NSInteger placeIndex = [self.resources indexOfObject:annotation];
-        [annotationView setNumber:(placeIndex + 1)];
-        
-        return annotationView;
-    }
-    return nil;
-}
-
-- (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay
-{
-    if ([overlay isKindOfClass:[MKTileOverlay class]]) {
-        return [[MKTileOverlayRenderer alloc] initWithTileOverlay:overlay];
-    }
-    return nil;
-}
-
-- (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
-{
-    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            [self presentCalloutForMapView:mapView annotationView:view];
-            self.resourceAnnotationView = view;
-        } else {
-            [self presentIPhoneCalloutForAnnotationView:view];
-        }
-    }
-}
-
-- (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
-{
-    [self dismissCurrentCallout];
-    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
-        [self.calloutView dismissCalloutAnimated:YES];
-        self.currentlySelectResource = nil;
-    }
-}
-
-- (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
-{
-    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMartyResource *resource = (MITMartyResource *)view.annotation;
-        [self pushDetailViewControllerForResource:resource];
-    }
-}
-
-- (void)mapView:(MKMapView *)mapView regionDidChangeAnimated:(BOOL)animated
-{
-    if (self.shouldRefreshAnnotationsOnNextMapRegionChange) {
-        [self refreshPlaceAnnotations];
-        self.shouldRefreshAnnotationsOnNextMapRegionChange = NO;
-    }
-    
-    if (self.showFirstCalloutOnNextMapRegionChange) {
-        if (self.resources.count > 0) {
-            [self showCalloutForResource:[self.resources firstObject]];
-        }
-        
-        self.showFirstCalloutOnNextMapRegionChange = NO;
-    }
-}
-
-#pragma mark - Custom Callout
-
-- (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
-{
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
-    
-    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForResource:resource];
-    
-    SMCalloutView *calloutView = self.calloutView;
-    calloutView.contentView = contentView;
-    calloutView.calloutOffset = annotationView.calloutOffset;
-    calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    self.calloutView = calloutView;
-}
-
-- (void)dismissCurrentCallout
-{
-    [self.calloutView dismissCalloutAnimated:YES];
-}
-
-#pragma mark - Callout View
-
-- (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
-{
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
-
-    self.currentlySelectResource = resource;
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
-    detailVC.resource = resource;
-    
-    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
-    
-    SMCalloutView *calloutView = self.calloutView;
-    calloutView.contentView = detailVC.view;
-    calloutView.contentView.clipsToBounds = YES;
-    calloutView.calloutOffset = annotationView.calloutOffset;
-    calloutView.rightAccessoryView = nil;
-    self.calloutView = calloutView;
-    self.calloutViewController = detailVC;
-    
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    
-    // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
-    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
-}
-
-- (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
-{
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
-    
-    self.currentlySelectResource = resource;
-    self.calloutView.title = resource.title;
-    self.calloutView.subtitle = resource.subtitle;
-    self.calloutView.calloutOffset = annotationView.calloutOffset;
-
-    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-}
-
-#pragma mark - SMCalloutViewDelegate Methods
-
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
-{
-    MKMapView *mapView = self.mapView;
-    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
-                                         -offset.height + mapView.bounds.size.height * 0.5);
-    CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
-    [mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
-}
-
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self pushDetailViewControllerForResource:self.currentlySelectResource];
-    } else {
-        
-        [self presentIPadCalloutForAnnotationView:self.resourceAnnotationView];
-    }
-}
-
-- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        return YES;
-    }
-    return NO;
-}
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
 
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
-    [self showCalloutForResource:resource];
+    [self.mapViewController showCalloutForResource:resource];
 }
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
@@ -867,12 +601,6 @@ static NSTimeInterval const kMITMapSearchSuggestionsTimerWaitDuration = 0.3;
     }
 }
 
-#pragma mark - Location Notifications
-
-- (void)locationManagerDidUpdateAuthorizationStatus:(NSNotification *)notification
-{
-    self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
-}
 
 #pragma mark - Getters | Setters
 
