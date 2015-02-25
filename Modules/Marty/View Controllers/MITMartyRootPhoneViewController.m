@@ -56,8 +56,7 @@
     self.mapViewContainer.userInteractionEnabled = NO;
 
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
-    gestureRecognizer.enabled = NO;
-    [self.mapViewContainer addGestureRecognizer:gestureRecognizer];
+    [self.contentContainerView addGestureRecognizer:gestureRecognizer];
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
 }
 
