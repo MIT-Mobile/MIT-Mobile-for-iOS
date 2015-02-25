@@ -100,17 +100,9 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)setupMapBoundingBoxAnimated:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-    
-    if ([self.resources count] > 0) {
-        MKMapRect zoomRect = MKMapRectNull;
-        for (id <MKAnnotation> annotation in self.resources)
-        {
-            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
-            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
-            zoomRect = MKMapRectUnion(zoomRect, pointRect);
-        }
-        double inset = -zoomRect.size.width * 0.1;
-        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) edgePadding:self.mapEdgeInsets animated:YES];
+
+    if ([self.resources count]) {
+        [self.mapView showAnnotations:self.resources animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
