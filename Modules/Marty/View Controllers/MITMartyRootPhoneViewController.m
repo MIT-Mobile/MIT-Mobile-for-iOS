@@ -317,7 +317,11 @@
 - (void)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        self.mapFullScreen = YES;
+        CGPoint location = [gestureRecognizer locationInView:self.contentContainerView];
+
+        if (CGRectContainsPoint(self.mapViewContainer.frame, location)) {
+            [self setMapFullScreen:YES animated:YES];
+        }
     }
 }
 
