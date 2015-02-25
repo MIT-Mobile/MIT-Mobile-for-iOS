@@ -71,6 +71,33 @@
     [self resizeAndAlignSearchBar];
 }
 
+- (void)updateViewConstraints
+{
+    [super updateViewConstraints];
+
+    if ([self isMapFullScreen]) {
+        self.mapHeightConstraint.constant = CGRectGetHeight(self.contentContainerView.bounds);
+
+        if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
+            self.mapHeightConstraint.active = YES;
+            self.defaultMapHeightConstraint.active = NO;
+        } else {
+            self.mapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+            self.defaultMapHeightConstraint.priority = UILayoutPriorityDefaultLow;
+        }
+    } else {
+        self.mapHeightConstraint.constant = 0;
+
+        if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
+            self.mapHeightConstraint.active = NO;
+            self.defaultMapHeightConstraint.active = YES;
+        } else {
+            self.mapHeightConstraint.priority = UILayoutPriorityDefaultLow;
+            self.defaultMapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+        }
+    }
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
