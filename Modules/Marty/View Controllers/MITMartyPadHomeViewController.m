@@ -348,8 +348,7 @@
 
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    [[self resourcesTableViewController] setResources:resources];
-    
+    self.resourcesTableViewController.resources = resources;
     [[self mapViewController] setResources:resources animated:animated];
 }
 
