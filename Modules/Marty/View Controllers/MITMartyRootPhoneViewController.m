@@ -57,6 +57,11 @@
 
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
+
+    UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
+    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_dismissFullScreenMap:)];
+    self.toolbarItems = @[[UIBarButtonItem flexibleSpace],dismissMapButton];
+
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
 }
 
@@ -304,6 +309,11 @@
 }
 
 #pragma mark Private
+- (void)_dismissFullScreenMap:(UIBarButtonItem*)sender
+{
+    [self setMapFullScreen:NO animated:YES];
+}
+
 - (void)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
