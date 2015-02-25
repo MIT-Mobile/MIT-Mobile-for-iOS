@@ -51,8 +51,6 @@
     }
 
     self.contentContainerView.hidden = YES;
-    [self.contentContainerView insertSubview:self.mapViewContainer aboveSubview:self.tableViewContainer];
-
 
     _previousMapTransform = CGAffineTransformIdentity;
     self.mapViewContainer.userInteractionEnabled = NO;
@@ -60,6 +58,7 @@
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
     gestureRecognizer.enabled = NO;
     [self.mapViewContainer addGestureRecognizer:gestureRecognizer];
+    [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
 }
 
 - (void)viewDidLayoutSubviews
