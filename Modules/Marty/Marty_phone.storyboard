@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14D87h" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -52,7 +51,6 @@
                                     <constraint firstItem="1Sy-mP-TMp" firstAttribute="leading" secondItem="Gc0-hW-Xee" secondAttribute="leading" constant="32" id="JU0-ee-Lue"/>
                                     <constraint firstItem="1Sy-mP-TMp" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="topMargin" constant="32" id="QsI-WA-Nft"/>
                                 </constraints>
-                                <variation key="heightClass=regular-widthClass=compact"/>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
@@ -60,7 +58,8 @@
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="5:3" id="FQx-zw-qKg"/>
+                                            <constraint firstAttribute="height" priority="250" id="6xb-VA-nM2"/>
+                                            <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="5:3" priority="750" id="FQx-zw-qKg"/>
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
@@ -95,7 +94,9 @@
                     </navigationItem>
                     <connections>
                         <outlet property="contentContainerView" destination="Hx1-pQ-i3W" id="EPe-h4-c1G"/>
+                        <outlet property="defaultMapHeightConstraint" destination="FQx-zw-qKg" id="oU9-Kj-VEt"/>
                         <outlet property="helpTextView" destination="Gc0-hW-Xee" id="Shl-ad-Fy2"/>
+                        <outlet property="mapHeightConstraint" destination="6xb-VA-nM2" id="FfP-vB-reD"/>
                         <outlet property="mapViewContainer" destination="RFz-L3-5Vl" id="WrW-JI-8XS"/>
                         <outlet property="tableViewContainer" destination="hye-Ag-mVg" id="k4i-iR-3BE"/>
                         <outlet property="view" destination="9Jw-qO-vKS" id="ztL-Zy-ImC"/>
