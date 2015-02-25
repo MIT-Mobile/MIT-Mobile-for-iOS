@@ -8,9 +8,15 @@
 #import "DDLog.h"
 
 @interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
-@property(nonatomic,weak) IBOutlet NSLayoutConstraint *mapHeightConstraint;
-@property(nonatomic,weak) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
-@property(nonatomic,weak) IBOutlet NSLayoutConstraint *mapTopAlignmentLayoutConstraint;
+
+// These are currently strong since, if they are weak,
+// they are being released during the various animations and
+// wreaking havoc. Guessing it's either in the updateViewConstraints
+// or the toggle animation.
+// TODO: Figure out exactly where the 'weak' semantics go off the rails
+// (bskinner 2015.02.25)
+@property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
+@property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
 
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
