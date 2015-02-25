@@ -6,6 +6,7 @@
 #import "MITSlidingViewController.h"
 #import "MITMartyMapViewController.h"
 #import "DDLog.h"
+#import "MITAdditions.h"
 
 @interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
 
@@ -193,36 +194,48 @@
 #pragma mark Public Properties
 - (void)setMapFullScreen:(BOOL)mapFullScreen
 {
+    [self setMapFullScreen:mapFullScreen animated:NO];
+}
+
+- (void)setMapFullScreen:(BOOL)mapFullScreen animated:(BOOL)animated
+{
     if (_mapFullScreen != mapFullScreen) {
         _mapFullScreen = mapFullScreen;
 
+        NSTimeInterval duration = (animated ? 0.5 : 0);
         if (_mapFullScreen) {
-            [UIView animateWithDuration:0.25
+            _previousMapTransform = self.mapViewContainer.transform;
+
+            [UIView animateWithDuration:duration
                                   delay:0
                                 options:0
                              animations:^{
-                                 _previousMapTransform = self.mapViewContainer.transform;
-                                 self.mapViewContainer.transform = CGAffineTransformIdentity;
-                                 
-
                                  CGFloat tableContainerTranslation = CGRectGetMaxY(self.contentContainerView.bounds) - CGRectGetMinY(self.tableViewContainer.frame);
                                  self.tableViewContainer.transform = CGAffineTransformMakeTranslation(0, tableContainerTranslation);
+                                 [self.navigationController setToolbarHidden:NO animated:YES];
+
+                                 [self.view setNeedsUpdateConstraints];
+                                 [self.view layoutIfNeeded];
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = NO;
                                  self.mapViewContainer.userInteractionEnabled = YES;
-                                 [self.navigationController setToolbarHidden:NO animated:YES];
                              }];
         } else {
-            [UIView animateWithDuration:0.25
+            [UIView animateWithDuration:duration
                                   delay:0
                                 options:0
                              animations:^{
                                  [self.navigationController setToolbarHidden:YES animated:NO];
                                  self.tableViewContainer.transform = CGAffineTransformIdentity;
                                  self.mapViewContainer.transform = _previousMapTransform;
+
+                                 [self.view setNeedsUpdateConstraints];
+                                 [self.view layoutIfNeeded];
+                                 [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = YES;
                                  self.mapViewContainer.userInteractionEnabled = NO;
+                                 _previousMapTransform = CGAffineTransformIdentity;
                              }];
         }
     }
