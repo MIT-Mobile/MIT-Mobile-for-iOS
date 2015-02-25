@@ -13,4 +13,10 @@
 @protocol MITMartyResourcesTableViewControllerDelegate <NSObject>
 @required
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController didSelectResource:(MITMartyResource*)resource;
+
+@optional
+- (void)resourcesTableViewControllerDidSelectPlaceholderCell:(MITMartyResourcesTableViewController*)tableViewController;
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController didScrollToContentOffset:(CGPoint)contentOffset;
+- (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController;
+- (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController;
 @end
