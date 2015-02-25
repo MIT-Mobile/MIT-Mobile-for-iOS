@@ -4,17 +4,22 @@
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITSlidingViewController.h"
-#import "MITMartyResourcesMapViewController.h"
+#import "MITMartyMapViewController.h"
+#import "DDLog.h"
 
 @interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
-@property(nonatomic,weak) IBOutlet NSLayoutConstraint *topViewHeightConstraint;
+@property(nonatomic,weak) IBOutlet NSLayoutConstraint *mapHeightConstraint;
+@property(nonatomic,weak) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
+@property(nonatomic,weak) IBOutlet NSLayoutConstraint *mapTopAlignmentLayoutConstraint;
+
+@property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
+@property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
+
 @property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
-@property(nonatomic,readonly,strong) NSArray *resources;
 
 @property(nonatomic,readonly,weak) MITMartyResource *resource;
 @property(nonatomic,readonly,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property(nonatomic,readonly,weak) MITMartyResourcesMapViewController *mapViewController;
-
+@property(nonatomic,readonly,weak) MITMartyMapViewController *mapViewController;
 
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
@@ -24,7 +29,10 @@
 - (IBAction)didTapSearchItem:(UIBarButtonItem*)sender;
 @end
 
-@implementation MITMartyRootPhoneViewController
+@implementation MITMartyRootPhoneViewController {
+    CGAffineTransform _previousMapTransform;
+}
+
 @synthesize resource = _resource;
 @synthesize resourcesTableViewController = _resourcesTableViewController;
 @synthesize mapViewController = _mapViewController;
@@ -37,6 +45,15 @@
     }
 
     self.contentContainerView.hidden = YES;
+    [self.contentContainerView insertSubview:self.mapViewContainer aboveSubview:self.tableViewContainer];
+
+
+    _previousMapTransform = CGAffineTransformIdentity;
+    self.mapViewContainer.userInteractionEnabled = NO;
+
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
+    gestureRecognizer.enabled = NO;
+    [self.mapViewContainer addGestureRecognizer:gestureRecognizer];
 }
 
 - (void)viewDidLayoutSubviews
@@ -59,24 +76,29 @@
 
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
 {
-    [self.dataSource resourcesWithQuery:queryString completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
-        if (error) {
-            DDLogWarn(@"Error: %@",error);
-            self.contentContainerView.hidden = YES;
-            self.helpTextView.hidden = NO;
-        } else {
-            self.contentContainerView.hidden = NO;
-            self.helpTextView.hidden = YES;
-            
-            [self.managedObjectContext performBlockAndWait:^{
-                [self.managedObjectContext reset];
+    if ([queryString length]) {
+        [self.dataSource resourcesWithQuery:queryString completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+            if (error) {
+                DDLogWarn(@"Error: %@",error);
+                self.contentContainerView.hidden = YES;
+                self.helpTextView.hidden = NO;
+            } else {
+                self.contentContainerView.hidden = NO;
+                self.helpTextView.hidden = YES;
 
-                if (block) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                }
-            }];
-        }
-    }];
+                [self.managedObjectContext performBlockAndWait:^{
+                    [self.managedObjectContext reset];
+
+                    if (block) {
+                        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+                    }
+                }];
+            }
+        }];
+    } else {
+        self.contentContainerView.hidden = YES;
+        self.helpTextView.hidden = NO;
+    }
 }
 
 - (MITMartyResourceDataSource*)dataSource
@@ -133,6 +155,43 @@
 }
 
 #pragma mark Public Properties
+- (void)setMapFullScreen:(BOOL)mapFullScreen
+{
+    if (_mapFullScreen != mapFullScreen) {
+        _mapFullScreen = mapFullScreen;
+
+        if (_mapFullScreen) {
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:0
+                             animations:^{
+                                 _previousMapTransform = self.mapViewContainer.transform;
+                                 self.mapViewContainer.transform = CGAffineTransformIdentity;
+                                 
+
+                                 CGFloat tableContainerTranslation = CGRectGetMaxY(self.contentContainerView.bounds) - CGRectGetMinY(self.tableViewContainer.frame);
+                                 self.tableViewContainer.transform = CGAffineTransformMakeTranslation(0, tableContainerTranslation);
+                             } completion:^(BOOL finished) {
+                                 self.fullScreenMapGesture.enabled = NO;
+                                 self.mapViewContainer.userInteractionEnabled = YES;
+                                 [self.navigationController setToolbarHidden:NO animated:YES];
+                             }];
+        } else {
+            [UIView animateWithDuration:0.25
+                                  delay:0
+                                options:0
+                             animations:^{
+                                 [self.navigationController setToolbarHidden:YES animated:NO];
+                                 self.tableViewContainer.transform = CGAffineTransformIdentity;
+                                 self.mapViewContainer.transform = _previousMapTransform;
+                             } completion:^(BOOL finished) {
+                                 self.fullScreenMapGesture.enabled = YES;
+                                 self.mapViewContainer.userInteractionEnabled = NO;
+                             }];
+        }
+    }
+}
+
 - (void)setSearching:(BOOL)searching
 {
     [self setSearching:searching animated:NO];
@@ -179,10 +238,10 @@
     return _resourcesTableViewController;
 }
 
-- (MITMartyResourcesMapViewController*)mapViewController
+- (MITMartyMapViewController*)mapViewController
 {
     if (!_mapViewController) {
-        MITMartyResourcesMapViewController *mapViewController = [[MITMartyResourcesMapViewController alloc] init];
+        MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
 
         [self addChildViewController:mapViewController];
         [mapViewController beginAppearanceTransition:YES animated:NO];
@@ -202,20 +261,19 @@
 - (UITableViewController*)typeAheadViewController
 {
     if (!_typeAheadViewController) {
-        MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
-        resourcesTableViewController.delegate = self;
+        UITableViewController *typeAheadViewController = [[UITableViewController alloc] init];
 
-        [self addChildViewController:resourcesTableViewController];
-        [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
+        [self addChildViewController:typeAheadViewController];
+        [typeAheadViewController beginAppearanceTransition:YES animated:NO];
 
-        resourcesTableViewController.view.frame = self.view.bounds;
-        resourcesTableViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        resourcesTableViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        [self.tableViewContainer addSubview:resourcesTableViewController.view];
-        [resourcesTableViewController endAppearanceTransition];
-        [resourcesTableViewController didMoveToParentViewController:self];
+        typeAheadViewController.view.frame = self.view.bounds;
+        typeAheadViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+        typeAheadViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        [self.view addSubview:typeAheadViewController.view];
+        [typeAheadViewController endAppearanceTransition];
+        [typeAheadViewController didMoveToParentViewController:self];
 
-        _resourcesTableViewController = resourcesTableViewController;
+        _typeAheadViewController = typeAheadViewController;
     }
 
     return _typeAheadViewController;
@@ -241,6 +299,13 @@
     return resourceObjects;
 }
 
+#pragma mark Private
+- (void)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
+{
+    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+        self.mapFullScreen = YES;
+    }
+}
 
 #pragma mark Search accessory methods
 - (UISearchBar*)searchBar
@@ -279,6 +344,22 @@
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
+- (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController
+{
+    return YES;
+}
+
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
+{
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -contentOffset.y);
+    self.mapViewContainer.transform = transform;
+}
+
+- (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController
+{
+    return CGRectGetHeight(self.mapViewContainer.bounds);
+}
+
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
@@ -297,7 +378,7 @@
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
         self.resourcesTableViewController.resources = self.dataSource.resources;
-        self.mapViewController.resources = self.dataSource.resources;
+        [self.mapViewController setResources:self.dataSource.resources animated:YES];
     }];
 }
 
