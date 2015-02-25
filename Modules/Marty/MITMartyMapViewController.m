@@ -7,6 +7,7 @@
 #import "MITLocationManager.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
+#import "MITMartyModel.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -85,14 +86,24 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
+- (void)setResources:(NSArray *)resources
+{
+    [self setResources:resources animated:NO];
+}
+
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    self.resources = resources;
-    
-    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
-    self.showFirstCalloutOnNextMapRegionChange = YES;
-    [self setupMapBoundingBoxAnimated:animated];
+    if (![_resources isEqualToArray:resources]) {
+        _resources = [[[MITCoreDataController defaultController] mainQueueContext] transferManagedObjects:resources];
+
+        [self _didChangeResources:animated];
+    }
+}
+
+- (void)_didChangeResources:(BOOL)animated
+{
     [self refreshPlaceAnnotations];
+    [self setupMapBoundingBoxAnimated:animated];
 }
 
 #pragma mark - Map View
