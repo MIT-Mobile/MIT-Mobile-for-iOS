@@ -491,7 +491,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 }
 
-- (void)_dismissFullScreenMap:(UIBarButtonItem*)sender
+- (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
 {
     if (self.currentState != MITMartyRootViewControllerStateResults) {
         return;
@@ -500,7 +500,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     [self setMapFullScreen:NO animated:YES];
 }
 
-- (void)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
+- (IBAction)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer == self.fullScreenMapGesture) {
         if (self.currentState != MITMartyRootViewControllerStateResults) {
