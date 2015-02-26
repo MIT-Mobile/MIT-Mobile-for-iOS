@@ -216,6 +216,12 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 {
     if (_mapFullScreen != mapFullScreen) {
         _mapFullScreen = mapFullScreen;
+        
+        if (_mapFullScreen) {
+            [self.navigationController setToolbarHidden:NO animated:animated];
+        } else {
+            [self.navigationController setToolbarHidden:YES animated:animated];
+        }
 
         NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
         if (_mapFullScreen) {
@@ -239,7 +245,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                                   delay:0
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
-                                 [self.navigationController setToolbarHidden:YES animated:YES];
                                  self.tableViewContainer.transform = CGAffineTransformIdentity;
                                  self.mapViewContainer.transform = _previousMapTransform;
                                  
@@ -451,8 +456,11 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
         } break;
             
         case MITMartyRootViewControllerStateResults: {
-            [self setMapFullScreen:NO animated:animated];
             self.contentContainerView.alpha = 1;
+            
+            if (self.isMapFullScreen) {
+                [self.navigationController setToolbarHidden:NO animated:animated];
+            }
         } break;
     }
     
@@ -469,6 +477,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
             
         case MITMartyRootViewControllerStateResults: {
             self.contentContainerView.alpha = 0;
+            [self.navigationController setToolbarHidden:YES animated:animated];
         } break;
     }
 }
@@ -602,17 +611,29 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     self.searching = NO;
     
     if ([self.searchBar.text length]) {
-        [self reloadDataSourceForSearch:searchBar.text completion:^{
-            MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateResults;
-            if ([self.dataSource.resources count] == 0) {
-                newState = MITMartyRootViewControllerStateNoResults;
+        NSString *queryString = [[searchBar.text lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+        if ([queryString caseInsensitiveCompare:self.dataSource.queryString] != NSOrderedSame) {
+            [self reloadDataSourceForSearch:searchBar.text completion:^{
+                MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateNoResults;
+                
+                if ([self.dataSource.resources count]) {
+                    newState = MITMartyRootViewControllerStateResults;
+                    self.mapFullScreen = NO;
+                }
+                
+                [self _transitionToState:newState animated:YES completion:^{
+                    self.resourcesTableViewController.resources = self.dataSource.resources;
+                    [self.mapViewController setResources:self.dataSource.resources animated:YES];
+                }];
+            }];
+        } else {
+            MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateNoResults;
+            if ([self.dataSource.resources count]) {
+                newState = MITMartyRootViewControllerStateResults;
             }
             
-            [self _transitionToState:newState animated:YES completion:^{
-                self.resourcesTableViewController.resources = self.dataSource.resources;
-                [self.mapViewController setResources:self.dataSource.resources animated:YES];
-            }];
-        }];
+            [self _transitionToState:newState animated:YES completion:nil];
+        }
     } else {
         [self _transitionToState:MITMartyRootViewControllerStateNoResults animated:YES completion:nil];
     }
