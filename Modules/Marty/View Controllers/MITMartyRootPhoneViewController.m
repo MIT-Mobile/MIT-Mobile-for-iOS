@@ -84,6 +84,11 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
+    
+    if (self.currentState == MITMartyRootViewControllerStateSearch) {
+        UIEdgeInsets contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame), 0, 0, 0);
+        self.typeAheadViewController.tableView.contentInset = contentInset;
+    }
 }
 
 - (void)updateViewConstraints
