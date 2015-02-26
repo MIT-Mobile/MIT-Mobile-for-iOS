@@ -16,7 +16,6 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 @interface MITMartyMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MITCalloutMapView *mapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
 @property (nonatomic, strong) MITMartyResource *currentlySelectResource;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;

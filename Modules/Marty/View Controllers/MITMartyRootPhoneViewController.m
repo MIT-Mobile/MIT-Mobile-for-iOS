@@ -4,6 +4,7 @@
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITSlidingViewController.h"
+#import "MITCalloutMapView.h"
 
 #import "MITMartyMapViewController.h"
 #import "MITMartyRecentSearchController.h"
@@ -218,7 +219,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
         NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
         if (_mapFullScreen) {
-            [self.navigationController setToolbarHidden:NO animated:YES];
+            [self.mapViewController.mapView showAnnotations:self.mapViewController.resources animated:YES];
             
             [UIView animateWithDuration:duration
                                   delay:0
