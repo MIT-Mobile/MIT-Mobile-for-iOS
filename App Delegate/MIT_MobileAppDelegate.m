@@ -11,25 +11,25 @@
 
 // CoreData persistence and Mobile API access
 #import "MITAdditions.h"
-#import "MITCoreData.h"
-#import "MITMobileResources.h"
+//#import "MITCoreData.h"
+//#import "MITMobileResources.h"
 
 // Module headers
-#import "AboutModule.h"
-#import "CalendarModule.h"
-#import "CMModule.h"
-#import "DiningModule.h"
-#import "EmergencyModule.h"
-#import "FacilitiesModule.h"
-#import "LibrariesModule.h"
-#import "LinksModule.h"
-#import "MITMobileServerConfiguration.h"
-#import "NewsModule.h"
-#import "PeopleModule.h"
-#import "MITScannerModule.h"
-#import "SettingsModule.h"
+//#import "AboutModule.h"
+//#import "CalendarModule.h"
+//#import "CMModule.h"
+//#import "DiningModule.h"
+//#import "EmergencyModule.h"
+//#import "FacilitiesModule.h"
+//#import "LibrariesModule.h"
+//#import "LinksModule.h"
+//#import "MITMobileServerConfiguration.h"
+//#import "NewsModule.h"
+//#import "PeopleModule.h"
+//#import "MITScannerModule.h"
+//#import "SettingsModule.h"
 #import "ShuttleModule.h"
-#import "ToursModule.h"
+//#import "ToursModule.h"
 
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
@@ -39,7 +39,7 @@
 static NSString* const MITMobileButtonTitleView = @"View";
 static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveModuleName";
 
-@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate,MITTouchstoneAuthenticationDelegate,UIAlertViewDelegate,MITSlidingViewControllerDelegate >
+@interface MIT_MobileAppDelegate () <UINavigationControllerDelegate, UIAlertViewDelegate,MITSlidingViewControllerDelegate >
 @property (nonatomic,strong) MITTouchstoneController *sharedTouchstoneController;
 @property NSInteger networkActivityCounter;
 
@@ -441,7 +441,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
 - (void)loadCoreDataController
 {
-    _coreDataController = [[MITCoreDataController alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    _coreDataController = [[MITCoreDataController alloc] initWithManagedObjectModel:self.managedObjectModel];
 }
 
 - (void)loadManagedObjectModel
@@ -474,141 +474,141 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     // Modules are listed in the order they are added here.
     NSMutableArray *modules = [[NSMutableArray alloc] init];
 
-    NewsModule *newsModule = [[NewsModule alloc] init];
-    [modules addObject:newsModule];
-
+//    NewsModule *newsModule = [[NewsModule alloc] init];
+//    [modules addObject:newsModule];
+//
     ShuttleModule *shuttlesModule = [[ShuttleModule alloc] init];
     [modules addObject:shuttlesModule];
-
-    CMModule *campusMapModule = [[CMModule alloc] init];
-    [modules addObject:campusMapModule];
-
-    CalendarModule *calendarModule = [[CalendarModule alloc] init];
-    [modules addObject:calendarModule];
-
-    PeopleModule *peopleModule = [[PeopleModule alloc] init];
-    [modules addObject:peopleModule];
-
-    ToursModule *toursModule = [[ToursModule alloc] init];
-    [modules addObject:toursModule];
-
-    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
-    [modules addObject:emergencyModule];
-
-    LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
-    [modules addObject:librariesModule];
-
-    DiningModule *diningModule = [[DiningModule alloc] init];
-    [modules addObject:diningModule];
-    
-    FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
-    [modules addObject:facilitiesModule];
-
-    MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
-    [modules addObject:scannerModule];
-
-    LinksModule *linksModule = [[LinksModule alloc] init];
-    [modules addObject:linksModule];
-
-    SettingsModule *settingsModule = [[SettingsModule alloc] init];
-    [modules addObject:settingsModule];
-
-    AboutModule *aboutModule = [[AboutModule alloc] init];
-    [modules addObject:aboutModule];
+//
+//    CMModule *campusMapModule = [[CMModule alloc] init];
+//    [modules addObject:campusMapModule];
+//
+//    CalendarModule *calendarModule = [[CalendarModule alloc] init];
+//    [modules addObject:calendarModule];
+//
+//    PeopleModule *peopleModule = [[PeopleModule alloc] init];
+//    [modules addObject:peopleModule];
+//
+//    ToursModule *toursModule = [[ToursModule alloc] init];
+//    [modules addObject:toursModule];
+//
+//    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
+//    [modules addObject:emergencyModule];
+//
+//    LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
+//    [modules addObject:librariesModule];
+//
+//    DiningModule *diningModule = [[DiningModule alloc] init];
+//    [modules addObject:diningModule];
+//    
+//    FacilitiesModule *facilitiesModule = [[FacilitiesModule alloc] init];
+//    [modules addObject:facilitiesModule];
+//
+//    MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
+//    [modules addObject:scannerModule];
+//
+//    LinksModule *linksModule = [[LinksModule alloc] init];
+//    [modules addObject:linksModule];
+//
+//    SettingsModule *settingsModule = [[SettingsModule alloc] init];
+//    [modules addObject:settingsModule];
+//
+//    AboutModule *aboutModule = [[AboutModule alloc] init];
+//    [modules addObject:aboutModule];
 
     _modules = modules;
 }
 
 - (void)loadRemoteObjectManager
 {
-    MITMobile *remoteObjectManager = [[MITMobile alloc] init];
-    [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
-
-    MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:mapPlaces];
-    
-    MITMobileResource *mapObjectPlaces = [[MITMapObjectResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:mapObjectPlaces];
-
-    MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:mapCategories];
-
-    MITMobileResource *newsStories = [[MITNewsStoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:newsStories];
-
-    MITMobileResource *newsCategories = [[MITNewsCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:newsCategories];
-
-    MITMobileResource *personResource = [[MITPersonResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:personResource];
-
-    MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:peopleResource];
-
-    MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:shuttleRoutesResource];
-
-    MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:shuttleRouteDetailResource];
-
-    MITMobileResource *shuttleStopDetailResource = [[MITShuttleStopDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:shuttleStopDetailResource];
-
-    MITMobileResource *shuttlePredictionsResource = [[MITShuttlePredictionsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:shuttlePredictionsResource];
-
-    MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:shuttleVehiclesResource];
-
-    MITMobileResource *calendarsCalendarsResource = [[MITCalendarsCalendarsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:calendarsCalendarsResource];
-
-    MITMobileResource *calendarsCalendarResource = [[MITCalendarsCalendarResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:calendarsCalendarResource];
-
-    MITMobileResource *calendarsEventsResource = [[MITCalendarsEventsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:calendarsEventsResource];
-
-    MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:calendarsEventResource];
-
-    MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:diningResource];
-
-    MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
-    [remoteObjectManager addResource:librariesResource];
-
-    MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
-    [remoteObjectManager addResource:librariesLinksResource];
-
-    MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
-    [remoteObjectManager addResource:librariesAskUsResource];
-
-    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
-    [remoteObjectManager addResource:librariesSearchResource];
-
-    MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
-    [remoteObjectManager addResource:librariesUserResource];
-
-    MITMobileResource *librariesMITIdentityResource = [[MITLibrariesMITIdentityResource alloc] init];
-    [remoteObjectManager addResource:librariesMITIdentityResource];
-
-    MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
-    [remoteObjectManager addResource:librariesItemDetailResource];
-
-    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:toursToursResource];
-
-    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
-    [remoteObjectManager addResource:toursTourResource];
-
-    MITMobileResource *emergencyInfoContactResource = [[MITEmergencyInfoContactsResource alloc] init];
-    [remoteObjectManager addResource:emergencyInfoContactResource];
-    
-    MITMobileResource *emergencyInfoAnnouncementResource =[[MITEmergencyInfoAnnouncementResource alloc] init];
-    [remoteObjectManager addResource:emergencyInfoAnnouncementResource];
-    
-    _remoteObjectManager = remoteObjectManager;
+//    MITMobile *remoteObjectManager = [[MITMobile alloc] init];
+//    [remoteObjectManager setManagedObjectStore:self.coreDataController.managedObjectStore];
+//
+//    MITMobileResource *mapPlaces = [[MITMapPlacesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:mapPlaces];
+//    
+//    MITMobileResource *mapObjectPlaces = [[MITMapObjectResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:mapObjectPlaces];
+//
+//    MITMobileResource *mapCategories = [[MITMapCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:mapCategories];
+//
+//    MITMobileResource *newsStories = [[MITNewsStoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:newsStories];
+//
+//    MITMobileResource *newsCategories = [[MITNewsCategoriesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:newsCategories];
+//
+//    MITMobileResource *personResource = [[MITPersonResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:personResource];
+//
+//    MITMobileResource *peopleResource = [[MITPeopleResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:peopleResource];
+//
+//    MITMobileResource *shuttleRoutesResource = [[MITShuttleRoutesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:shuttleRoutesResource];
+//
+//    MITMobileResource *shuttleRouteDetailResource = [[MITShuttleRouteDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:shuttleRouteDetailResource];
+//
+//    MITMobileResource *shuttleStopDetailResource = [[MITShuttleStopDetailResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:shuttleStopDetailResource];
+//
+//    MITMobileResource *shuttlePredictionsResource = [[MITShuttlePredictionsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:shuttlePredictionsResource];
+//
+//    MITMobileResource *shuttleVehiclesResource = [[MITShuttleVehiclesResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:shuttleVehiclesResource];
+//
+//    MITMobileResource *calendarsCalendarsResource = [[MITCalendarsCalendarsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:calendarsCalendarsResource];
+//
+//    MITMobileResource *calendarsCalendarResource = [[MITCalendarsCalendarResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:calendarsCalendarResource];
+//
+//    MITMobileResource *calendarsEventsResource = [[MITCalendarsEventsResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:calendarsEventsResource];
+//
+//    MITMobileResource *calendarsEventResource = [[MITCalendarsEventResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:calendarsEventResource];
+//
+//    MITMobileResource *diningResource = [[MITDiningResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:diningResource];
+//
+//    MITMobileResource *librariesResource = [[MITLibrariesResource alloc] init];
+//    [remoteObjectManager addResource:librariesResource];
+//
+//    MITMobileResource *librariesLinksResource = [[MITLibrariesLinksResource alloc] init];
+//    [remoteObjectManager addResource:librariesLinksResource];
+//
+//    MITMobileResource *librariesAskUsResource = [[MITLibrariesAskUsResource alloc] init];
+//    [remoteObjectManager addResource:librariesAskUsResource];
+//
+//    MITMobileResource *librariesSearchResource = [[MITLibrariesSearchResource alloc] init];
+//    [remoteObjectManager addResource:librariesSearchResource];
+//
+//    MITMobileResource *librariesUserResource = [[MITLibrariesUserResource alloc] init];
+//    [remoteObjectManager addResource:librariesUserResource];
+//
+//    MITMobileResource *librariesMITIdentityResource = [[MITLibrariesMITIdentityResource alloc] init];
+//    [remoteObjectManager addResource:librariesMITIdentityResource];
+//
+//    MITMobileResource *librariesItemDetailResource = [[MITLibrariesItemDetailResource alloc] init];
+//    [remoteObjectManager addResource:librariesItemDetailResource];
+//
+//    MITMobileResource *toursToursResource = [[MITToursResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:toursToursResource];
+//
+//    MITMobileResource *toursTourResource = [[MITToursTourResource alloc] initWithManagedObjectModel:self.managedObjectModel];
+//    [remoteObjectManager addResource:toursTourResource];
+//
+//    MITMobileResource *emergencyInfoContactResource = [[MITEmergencyInfoContactsResource alloc] init];
+//    [remoteObjectManager addResource:emergencyInfoContactResource];
+//    
+//    MITMobileResource *emergencyInfoAnnouncementResource =[[MITEmergencyInfoAnnouncementResource alloc] init];
+//    [remoteObjectManager addResource:emergencyInfoAnnouncementResource];
+//    
+//    _remoteObjectManager = remoteObjectManager;
 }
 
 #pragma mark Private
@@ -642,35 +642,35 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
         return;
     } else {
-        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
-        parameters[@"module_name"] = name;
-        parameters[@"enabled"] = (enabled ? @"1" : @"0");
-
-        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
-        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registrationResult) {
-            if (![registrationResult isKindOfClass:[NSDictionary class]]) {
-                DDLogError(@"fatal error: invalid response for push configuration");
-            } else if (registrationResult[@"error"]) {
-                DDLogError(@"failed to enable notifications for module %@ with error %@",name,registrationResult[@"error"]);
-            }
-
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block();
-                }
-            }];
-        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-            DDLogError(@"failed to enable notifications for module %@ with error %@",name,error);
-
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block();
-                }
-            }];
-        }];
-
-        [[NSOperationQueue mainQueue] addOperation:requestOperation];
+//        NSMutableDictionary *parameters = [[MITDeviceRegistration identity] mutableDictionary];
+//        parameters[@"module_name"] = name;
+//        parameters[@"enabled"] = (enabled ? @"1" : @"0");
+//
+//        NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:@"moduleSetting" parameters:parameters];
+//        MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+//        [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSDictionary *registrationResult) {
+//            if (![registrationResult isKindOfClass:[NSDictionary class]]) {
+//                DDLogError(@"fatal error: invalid response for push configuration");
+//            } else if (registrationResult[@"error"]) {
+//                DDLogError(@"failed to enable notifications for module %@ with error %@",name,registrationResult[@"error"]);
+//            }
+//
+//            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//                if (block) {
+//                    block();
+//                }
+//            }];
+//        } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+//            DDLogError(@"failed to enable notifications for module %@ with error %@",name,error);
+//
+//            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//                if (block) {
+//                    block();
+//                }
+//            }];
+//        }];
+//
+//        [[NSOperationQueue mainQueue] addOperation:requestOperation];
     }
 }
 

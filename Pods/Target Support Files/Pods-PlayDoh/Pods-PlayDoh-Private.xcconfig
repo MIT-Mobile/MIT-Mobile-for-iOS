@@ -1,0 +1,5 @@
+#include "Pods-PlayDoh.xcconfig"
+GCC_PREPROCESSOR_DEFINITIONS = $(inherited) COCOAPODS=1
+HEADER_SEARCH_PATHS = "${PODS_ROOT}/Headers/Build" "${PODS_ROOT}/Headers/Build/PlayDoh" "${PODS_ROOT}/Headers/Public" "${PODS_ROOT}/Headers/Public/AFNetworking" "${PODS_ROOT}/Headers/Public/CocoaLumberjack" "${PODS_ROOT}/Headers/Public/ECSlidingViewController" "${PODS_ROOT}/Headers/Public/JSONMapping" "${PODS_ROOT}/Headers/Public/KIF" "${PODS_ROOT}/Headers/Public/KissXML" "${PODS_ROOT}/Headers/Public/PlayDoh" "${PODS_ROOT}/Headers/Public/Realm" "${PODS_ROOT}/Headers/Public/Realm/Realm" "${PODS_ROOT}/Headers/Public/SDWebImage" "${PODS_ROOT}/Headers/Public/SVProgressHUD" "${PODS_ROOT}/Headers/Public/SVPullToRefresh" "${PODS_ROOT}/Headers/Public/UIImage+PDF"
+OTHER_LDFLAGS = -ObjC
+PODS_ROOT = ${SRCROOT}

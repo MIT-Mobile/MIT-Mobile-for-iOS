@@ -12,7 +12,7 @@
 #import "MITShuttleRouteCell.h"
 #import "MITShuttleRouteContainerViewController.h"
 #import "MITShuttlePredictionLoader.h"
-#import "MITCoreDataController.h"
+//#import "MITCoreDataController.h"
 
 NSString * const kMITShuttleStopViewControllerAlarmCellReuseIdentifier = @"kMITShuttleStopViewControllerAlarmCellReuseIdentifier";
 NSString * const kMITShuttleStopViewControllerRouteCellReuseIdentifier = @"kMITShuttleStopViewControllerRouteCellReuseIdentifier";
@@ -27,7 +27,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
     MITShuttleStopViewControllerSectionTypeRoutes
 };
 
-@interface MITShuttleStopViewController () <MITShuttleStopAlarmCellDelegate, NSFetchedResultsControllerDelegate, UITableViewDataSource, UITableViewDelegate>
+@interface MITShuttleStopViewController () <MITShuttleStopAlarmCellDelegate, UITableViewDataSource, UITableViewDelegate>
 
 @property (nonatomic, strong) NSArray *intersectingRoutes;
 @property (nonatomic, strong) NSArray *vehicles;
@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 
 @property (nonatomic, strong) NSArray *sectionTypes;
 
-@property (strong, nonatomic) NSFetchedResultsController *stopsWithSameIdentifierFetchedResultsController;
+//@property (strong, nonatomic) NSFetchedResultsController *stopsWithSameIdentifierFetchedResultsController;
 
 @property (strong, nonatomic) UIRefreshControl *refreshControl;
 @end
@@ -78,30 +78,30 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 }
 
 #pragma mark - FetchedResultsControllers
-
-- (NSFetchedResultsController *)stopsWithSameIdentifierFetchedResultsController
-{
-    if (!_stopsWithSameIdentifierFetchedResultsController) {
-        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-        
-        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
-        
-        NSEntityDescription *entity = [NSEntityDescription entityForName:[MITShuttleStop entityName] inManagedObjectContext:managedObjectContext];
-        [fetchRequest setEntity:entity];
-        
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier = %@", self.stop.identifier];
-        [fetchRequest setPredicate:predicate];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-        
-        _stopsWithSameIdentifierFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                            managedObjectContext:managedObjectContext
-                                                                              sectionNameKeyPath:nil
-                                                                                       cacheName:nil];
-        _stopsWithSameIdentifierFetchedResultsController.delegate = self;
-    }
-    return _stopsWithSameIdentifierFetchedResultsController;
-}
-
+//
+//- (NSFetchedResultsController *)stopsWithSameIdentifierFetchedResultsController
+//{
+//    if (!_stopsWithSameIdentifierFetchedResultsController) {
+//        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+//        
+//        NSFetchRequest *fetchRequest = [[NSFetchRequest alloc] init];
+//        
+//        NSEntityDescription *entity = [NSEntityDescription entityForName:[MITShuttleStop entityName] inManagedObjectContext:managedObjectContext];
+//        [fetchRequest setEntity:entity];
+//        
+//        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"identifier = %@", self.stop.identifier];
+//        [fetchRequest setPredicate:predicate];
+//        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+//        
+//        _stopsWithSameIdentifierFetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+//                                                                            managedObjectContext:managedObjectContext
+//                                                                              sectionNameKeyPath:nil
+//                                                                                       cacheName:nil];
+//        _stopsWithSameIdentifierFetchedResultsController.delegate = self;
+//    }
+//    return _stopsWithSameIdentifierFetchedResultsController;
+//}
+//
 #pragma mark - Refresh Control
 
 - (void)refreshControlActivated:(id)sender
@@ -160,19 +160,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
 
 - (void)refreshIntersectingRoutes
 {
-    [self.stopsWithSameIdentifierFetchedResultsController performFetch:nil];
+//    [self.stopsWithSameIdentifierFetchedResultsController performFetch:nil];
     
-    if (self.route) {
-        NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
-        for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
-            if (![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
-                [newIntersectingRoutes addObject:stop.route];
-            }
-        }
-        self.intersectingRoutes = [NSArray arrayWithArray:newIntersectingRoutes];
-    } else {
-        self.intersectingRoutes = [self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects valueForKey:@"route"];
-    }
+//    if (self.route) {
+//        NSMutableArray *newIntersectingRoutes = [NSMutableArray array];
+//        for (MITShuttleStop *stop in self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects) {
+//            if (![stop.stopAndRouteIdTuple isEqualToString:self.stop.stopAndRouteIdTuple]) {
+//                [newIntersectingRoutes addObject:stop.route];
+//            }
+//        }
+//        self.intersectingRoutes = [NSArray arrayWithArray:newIntersectingRoutes];
+//    } else {
+//        self.intersectingRoutes = [self.stopsWithSameIdentifierFetchedResultsController.fetchedObjects valueForKey:@"route"];
+//    }
 }
 
 #pragma mark - UITableViewDataSource

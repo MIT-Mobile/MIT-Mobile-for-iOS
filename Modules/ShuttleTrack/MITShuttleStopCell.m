@@ -41,7 +41,7 @@ static NSString * const kTimeUnavailableText = @"—";
 {
     self.nameLabel.text = stop.title;
     if (prediction) {
-        NSInteger minutes = floor([prediction.seconds doubleValue] / 60);
+        NSInteger minutes = floor(prediction.seconds / 60);
         if (minutes > 0) {
             self.timeLabel.text = [NSString stringWithFormat:@"%ldm", (long)minutes];
             self.timeLabel.textColor = [UIColor darkTextColor];

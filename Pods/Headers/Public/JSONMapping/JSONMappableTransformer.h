@@ -1,0 +1,1 @@
+../../../JSONMapping/JSONMapping/Source/JSONMappableTransformer.h

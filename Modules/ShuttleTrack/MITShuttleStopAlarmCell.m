@@ -39,7 +39,7 @@
         return;
     }
     
-    NSInteger minutesLeft = floor([prediction.seconds doubleValue] / 60);
+    NSInteger minutesLeft = floor(prediction.seconds / 60);
     if (minutesLeft < 1) {
         self.timeRemainingLabel.text = @"now";
         self.timeRemainingLabel.textColor = [UIColor mit_tintColor];
@@ -54,7 +54,7 @@
 - (void)updateNotificationButtonWithPrediction:(MITShuttlePrediction *)prediction
 {
     self.selectionStyle = UITableViewCellSelectionStyleDefault;
-    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
+    NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:prediction.timestamp];
     UILocalNotification *scheduledNotification = [[MITShuttleStopNotificationManager sharedManager] notificationForPrediction:prediction];
     if (scheduledNotification) {
         [self.alertButton setImage:[UIImage imageNamed:MITImageShuttlesAlertOn] forState:UIControlStateNormal];

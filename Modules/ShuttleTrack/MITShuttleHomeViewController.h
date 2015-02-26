@@ -1,12 +1,11 @@
 #import <UIKit/UIKit.h>
-#import "MITCoreData.h"
 
 @class MITShuttleRoute;
 @class MITShuttleStop;
 
 @protocol MITShuttleHomeViewControllerDelegate;
 
-@interface MITShuttleHomeViewController : UITableViewController <NSFetchedResultsControllerDelegate>
+@interface MITShuttleHomeViewController : UITableViewController
 
 @property (nonatomic, weak) id <MITShuttleHomeViewControllerDelegate> delegate;
 

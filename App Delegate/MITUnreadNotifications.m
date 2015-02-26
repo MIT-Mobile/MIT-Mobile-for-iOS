@@ -2,7 +2,7 @@
 #import "MITDeviceRegistration.h"
 #import "MIT_MobileAppDelegate.h"
 #import "MITModule.h"
-#import "MITTouchstoneRequestOperation+MITMobileV2.h"
+//#import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITModuleItem.h"
 
 NSString* const MITNotificationModuleTagKey = @"tag";
@@ -68,37 +68,37 @@ NSString* const MITNotificationModuleTagKey = @"tag";
 }
 		
 
-+ (MITTouchstoneRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
-    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:command parameters:params];
-    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
-
-    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *notices) {
-        NSAssert([notices isKindOfClass:[NSArray class]], @"expected an instance of NSArray, got %@", NSStringFromClass([notices class]));
-
-        NSMutableArray *notifications = [NSMutableArray array];
-        for(NSString *notice in notices) {
-            [notifications addObject:[MITNotification fromString:notice]];
-        }
-
-        [MITUnreadNotifications saveUnreadNotifications:notifications];
-        [MITUnreadNotifications updateUI];
-
-        NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
-        for (MITModule *module in modules) {
-            NSMutableArray *moduleNotifications = [NSMutableArray array];
-
-            for (MITNotification *notification in notifications) {
-                if([notification.moduleName isEqualToString:module.name]) {
-                    [moduleNotifications addObject:notification];
-                }
-            }
-        }
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-        DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
-    }];
-
-    return requestOperation;
-}
+//+ (MITTouchstoneRequestOperation *)requestOperationForCommand:(NSString *)command parameters:(NSDictionary *)params {
+//    NSURLRequest *request = [NSURLRequest requestForModule:@"push" command:command parameters:params];
+//    MITTouchstoneRequestOperation *requestOperation = [[MITTouchstoneRequestOperation alloc] initWithRequest:request];
+//
+//    [requestOperation setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, NSArray *notices) {
+//        NSAssert([notices isKindOfClass:[NSArray class]], @"expected an instance of NSArray, got %@", NSStringFromClass([notices class]));
+//
+//        NSMutableArray *notifications = [NSMutableArray array];
+//        for(NSString *notice in notices) {
+//            [notifications addObject:[MITNotification fromString:notice]];
+//        }
+//
+//        [MITUnreadNotifications saveUnreadNotifications:notifications];
+//        [MITUnreadNotifications updateUI];
+//
+//        NSArray *modules = ((MIT_MobileAppDelegate *)[[UIApplication sharedApplication] delegate]).modules;
+//        for (MITModule *module in modules) {
+//            NSMutableArray *moduleNotifications = [NSMutableArray array];
+//
+//            for (MITNotification *notification in notifications) {
+//                if([notification.moduleName isEqualToString:module.name]) {
+//                    [moduleNotifications addObject:notification];
+//                }
+//            }
+//        }
+//    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
+//        DDLogWarn(@"request for v2:%@/%@ failed with error %@",@"push",command,[error localizedDescription]);
+//    }];
+//
+//    return requestOperation;
+//}
 
 // this method will get the most recent unread data from the MIT server
 // and save it on the phone
@@ -106,36 +106,36 @@ NSString* const MITNotificationModuleTagKey = @"tag";
 	MITIdentity *identity = [MITDeviceRegistration identity];
 	
 	if(identity) {
-		NSMutableDictionary *parameters = [identity mutableDictionary];
-        MITTouchstoneRequestOperation *request = [MITUnreadNotifications requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
-        [[NSOperationQueue mainQueue] addOperation:request];
+//		NSMutableDictionary *parameters = [identity mutableDictionary];
+//        MITTouchstoneRequestOperation *request = [MITUnreadNotifications requestOperationForCommand:@"getUnreadNotifications" parameters:parameters];
+//        [[NSOperationQueue mainQueue] addOperation:request];
 	}
 }
 
 // method calls MIT to tell it to remove the notification
 // then syncs with the data MIT returns
 + (void)removeNotifications: (NSArray *)notifications {
-	if([notifications count]) {
-		MITIdentity *identity = [MITDeviceRegistration identity];
-		
-		if(identity) {
-			NSMutableArray *noticeStrings = [NSMutableArray array];
-			for(MITNotification *notification in notifications) {
-				[noticeStrings addObject:[notification string]];
-			}
-
-			NSMutableDictionary *parameters = [identity mutableDictionary];
-
-            NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
-            parameters[@"tags"] = [[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding];
-
-            MITTouchstoneRequestOperation *requestOperation = [MITUnreadNotifications requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
-
-            [[NSOperationQueue mainQueue] addOperation:requestOperation];
-		}
-        
-        [MITUnreadNotifications updateUI];
-	}
+//	if([notifications count]) {
+//		MITIdentity *identity = [MITDeviceRegistration identity];
+//		
+//		if(identity) {
+//			NSMutableArray *noticeStrings = [NSMutableArray array];
+//			for(MITNotification *notification in notifications) {
+//				[noticeStrings addObject:[notification string]];
+//			}
+//
+//			NSMutableDictionary *parameters = [identity mutableDictionary];
+//
+//            NSData *noticeData = [NSJSONSerialization dataWithJSONObject:noticeStrings options:0 error:nil];
+//            parameters[@"tags"] = [[NSString alloc] initWithData:noticeData encoding:NSUTF8StringEncoding];
+//
+//            MITTouchstoneRequestOperation *requestOperation = [MITUnreadNotifications requestOperationForCommand:@"markNotificationsAsRead" parameters:parameters];
+//
+//            [[NSOperationQueue mainQueue] addOperation:requestOperation];
+//		}
+//        
+//        [MITUnreadNotifications updateUI];
+//	}
 }
 
 + (void) removeNotificationsForModuleTag: (NSString *)moduleTag {

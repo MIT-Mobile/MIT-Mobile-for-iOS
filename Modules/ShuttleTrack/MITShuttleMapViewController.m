@@ -6,7 +6,7 @@
 #import "MITShuttlePrediction.h"
 #import "MITShuttleVehicle.h"
 #import "MITShuttleMapBusAnnotationView.h"
-#import "MITCoreDataController.h"
+//#import "MITCoreDataController.h"
 #import "MITShuttleController.h"
 #import "UIKit+MITAdditions.h"
 #import "MITShuttleStopViewController.h"
@@ -38,7 +38,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic, strong) MITShuttleVehiclesDataSource *vehiclesDataSource;
 
 @property (nonatomic, strong) NSArray *routes;
-@property (nonatomic, strong) NSArray *stops;
+@property (nonatomic, strong) RLMArray<MITShuttleStop> *stops;
 @property (nonatomic, strong) NSArray *vehicles;
 
 @property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
@@ -288,23 +288,23 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 #pragma mark - Fetch Requests
 
-- (NSFetchRequest *)routesFetchRequest
-{
-    if (!_routesFetchRequest) {
-        _routesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITShuttleRoute entityName]];
-        
-        NSPredicate *predicate = nil;
-        if (self.route) {
-            predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
-        }
-        [_routesFetchRequest setPredicate:predicate];
-        
-        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"identifier" ascending:NO];
-        [_routesFetchRequest setSortDescriptors:@[sortDescriptor]];
-    }
-    
-    return _routesFetchRequest;
-}
+//- (NSFetchRequest *)routesFetchRequest
+//{
+//    if (!_routesFetchRequest) {
+//        _routesFetchRequest = [[NSFetchRequest alloc] initWithEntityName:[MITShuttleRoute entityName]];
+//        
+//        NSPredicate *predicate = nil;
+//        if (self.route) {
+//            predicate = [NSPredicate predicateWithFormat:@"SELF = %@", self.route];
+//        }
+//        [_routesFetchRequest setPredicate:predicate];
+//        
+//        NSSortDescriptor *sortDescriptor = [[NSSortDescriptor alloc] initWithKey:@"identifier" ascending:NO];
+//        [_routesFetchRequest setSortDescriptors:@[sortDescriptor]];
+//    }
+//    
+//    return _routesFetchRequest;
+//}
 
 - (void)resetFetchedResults
 {
@@ -436,13 +436,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)updateStops
 {
     if (self.route != nil) {
-        self.stops = [self.route.stops array];
+        self.stops = self.route.stops;
     } else {
-        NSMutableArray *newStops = [NSMutableArray array];
         for (MITShuttleRoute *route in self.routes) {
-            [newStops addObjectsFromArray:[route.stops array]];
+            [self.stops addObjects:route.stops];
         }
-        self.stops = [NSArray arrayWithArray:newStops];
     }
 }
 
@@ -467,19 +465,19 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)fetchRoutes:(void(^)(void))completion
 {
-    [[MITCoreDataController defaultController] performBackgroundFetch:self.routesFetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
-        NSMutableArray *newRoutes = [NSMutableArray array];
-        for (NSManagedObjectID *objectId in fetchedObjectIDs) {
-            NSManagedObject *route = [[[MITCoreDataController defaultController] mainQueueContext] existingObjectWithID:objectId error:nil];
-            if (route) {
-                [newRoutes addObject:route];
-            }
-        }
-        self.routes = [NSArray arrayWithArray:newRoutes];
-        if (completion) {
-            completion();
-        }
-    }];
+//    [[MITCoreDataController defaultController] performBackgroundFetch:self.routesFetchRequest completion:^(NSOrderedSet *fetchedObjectIDs, NSError *error) {
+//        NSMutableArray *newRoutes = [NSMutableArray array];
+//        for (NSManagedObjectID *objectId in fetchedObjectIDs) {
+//            NSManagedObject *route = [[[MITCoreDataController defaultController] mainQueueContext] existingObjectWithID:objectId error:nil];
+//            if (route) {
+//                [newRoutes addObject:route];
+//            }
+//        }
+//        self.routes = [NSArray arrayWithArray:newRoutes];
+//        if (completion) {
+//            completion();
+//        }
+//    }];
 }
 
 - (void)fetchVehicles:(void(^)(void))completion
@@ -792,38 +790,38 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     self.calloutView.titleText = stop.title;
     
     NSString *calloutSubtitle = nil;
-    switch ([self.route status]) {
-        case MITShuttleRouteStatusNotInService: {
-            calloutSubtitle = @"Not in service";
-            break;
-        }
-        case MITShuttleRouteStatusInService: {
-            MITShuttlePrediction *nextPrediction = [stop nextPrediction];
-            
-            if (nextPrediction == nil) {
-                calloutSubtitle = @"No current predictions";
-                break;
-            }
-            
-            NSString *arrivalTime = nil;
-            NSInteger minutesLeft = floor([nextPrediction.seconds doubleValue] / 60);
-            if (minutesLeft < 1) {
-                arrivalTime = @"now";
-            } else {
-                arrivalTime = [NSString stringWithFormat:@"in %li minutes", (long)minutesLeft];
-            }
-            calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
-            break;
-        }
-        case MITShuttleRouteStatusUnknown: {
-            calloutSubtitle = @"No current predictions";
-            break;
-        }
-        default: {
-            calloutSubtitle = @"No current predictions";
-            break;
-        }
-    }
+//    switch ([self.route status]) {
+//        case MITShuttleRouteStatusNotInService: {
+//            calloutSubtitle = @"Not in service";
+//            break;
+//        }
+//        case MITShuttleRouteStatusInService: {
+//            MITShuttlePrediction *nextPrediction = [stop nextPrediction];
+//            
+//            if (nextPrediction == nil) {
+//                calloutSubtitle = @"No current predictions";
+//                break;
+//            }
+//            
+//            NSString *arrivalTime = nil;
+//            NSInteger minutesLeft = floor([nextPrediction.seconds doubleValue] / 60);
+//            if (minutesLeft < 1) {
+//                arrivalTime = @"now";
+//            } else {
+//                arrivalTime = [NSString stringWithFormat:@"in %li minutes", (long)minutesLeft];
+//            }
+//            calloutSubtitle = [NSString stringWithFormat:@"Arriving %@", arrivalTime];
+//            break;
+//        }
+//        case MITShuttleRouteStatusUnknown: {
+//            calloutSubtitle = @"No current predictions";
+//            break;
+//        }
+//        default: {
+//            calloutSubtitle = @"No current predictions";
+//            break;
+//        }
+//    }
     
     self.calloutView.subtitleText = calloutSubtitle;
     

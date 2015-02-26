@@ -1,12 +1,11 @@
 #import "MITShuttleController.h"
-#import "MITCoreData.h"
-#import "MITMobileResources.h"
 #import "MITAdditions.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttleStop.h"
 #import "MITShuttleVehicleList.h"
-#import <RestKit/CoreData.h>
 #import "MITShuttlePredictionList.h"
+
+#import "MITShuttleEndpoints.h"
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
@@ -32,21 +31,14 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 - (void)getRoutes:(MITShuttleRoutesCompletionBlock)completion
 {
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesRoutesResourceName
-                                                parameters:nil
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (!error) {
-                                                        NSDate *timestamp = [NSDate date];
-                                                        for (MITShuttleRoute *route in result.array) {
-                                                            route.updatedTime = timestamp;
-                                                        }
-                                                    }
-                                                    [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
-                                                }];
+    PDEndpoint *ep = [MITShuttleRoutesEndpoint endpoint];
+    [ep getWithCompletion:completion];
 }
 
 - (void)getRouteDetail:(MITShuttleRoute *)route completion:(MITShuttleRouteDetailCompletionBlock)completion
 {
+    PDEndpoint *ep = [MITShuttleRoutesEndpoint endpointWithSlug:route];
+    
     [self getObjectForURL:[NSURL URLWithString:route.url] completion:^(id object, NSError *error) {
         if (!error) {
             NSDate *timestamp = [NSDate date];
@@ -143,28 +135,28 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             [stopAndRouteIdTuples appendString:tuples[i]];
         }
         
-        [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
-                                                    parameters:@{@"agency": agency,
-                                                                 @"stops": [NSString stringWithString:stopAndRouteIdTuples]}
-                                                    completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                        if (!error) {
-                                                            NSDate *timestamp = [NSDate date];
-                                                            for (MITShuttlePredictionList *list in result.array) {
-                                                                list.updatedTime = timestamp;
-                                                                list.route.updatedTime = timestamp;
-                                                            }
-                                                        }
-                                                        [self handleResult:result error:error completion:^(id object, NSError *error) {
-                                                            if (error) {
-                                                                if (aggregateErrorDescription.length > 0) {
-                                                                    [aggregateErrorDescription appendString:@", "];
-                                                                }
-                                                                [aggregateErrorDescription appendFormat:@"Request for agency: %@ failed with info: %@", agency, error.localizedDescription];
-                                                            }
-                                                            [aggregatePredictions addObjectsFromArray:object];
-                                                            dispatch_group_leave(agencyRequestGroup);
-                                                        } returnObjectShouldBeArray:YES];
-                                                    }];
+//        [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
+//                                                    parameters:@{@"agency": agency,
+//                                                                 @"stops": [NSString stringWithString:stopAndRouteIdTuples]}
+//                                                    completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+//                                                        if (!error) {
+//                                                            NSDate *timestamp = [NSDate date];
+//                                                            for (MITShuttlePredictionList *list in result.array) {
+//                                                                list.updatedTime = timestamp;
+//                                                                list.route.updatedTime = timestamp;
+//                                                            }
+//                                                        }
+//                                                        [self handleResult:result error:error completion:^(id object, NSError *error) {
+//                                                            if (error) {
+//                                                                if (aggregateErrorDescription.length > 0) {
+//                                                                    [aggregateErrorDescription appendString:@", "];
+//                                                                }
+//                                                                [aggregateErrorDescription appendFormat:@"Request for agency: %@ failed with info: %@", agency, error.localizedDescription];
+//                                                            }
+//                                                            [aggregatePredictions addObjectsFromArray:object];
+//                                                            dispatch_group_leave(agencyRequestGroup);
+//                                                        } returnObjectShouldBeArray:YES];
+//                                                    }];
     }
     
     dispatch_group_notify(agencyRequestGroup, dispatch_get_main_queue(), ^{
@@ -183,123 +175,126 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 - (void)getVehicles:(MITShuttleVehiclesCompletionBlock)completion
 {
-    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
-                                                parameters:nil
-                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-                                                    if (!error) {
-                                                        NSDate *timestamp = [NSDate date];
-                                                        for (MITShuttleVehicleList *vehicleList in result.array) {
-                                                            vehicleList.route.updatedTime = timestamp;
-                                                        }
-                                                    }
-                                                    [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
-                                                }];
+//    [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesVehiclesResourceName
+//                                                parameters:nil
+//                                                completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+//                                                    if (!error) {
+//                                                        NSDate *timestamp = [NSDate date];
+//                                                        for (MITShuttleVehicleList *vehicleList in result.array) {
+//                                                            vehicleList.route.updatedTime = timestamp;
+//                                                        }
+//                                                    }
+//                                                    [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
+//                                                }];
 }
 
 - (void)getVehiclesForRoute:(MITShuttleRoute *)route completion:(MITShuttleVehiclesCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:^(id object, NSError *error) {
-        if (!error) {
-            NSDate *timestamp = [NSDate date];
-            for (MITShuttleVehicleList *vehicleList in object) {
-                vehicleList.route.updatedTime = timestamp;
-            }
-        }
-        completion(object, error);
-    }];
+//    [self getObjectsForURL:[NSURL URLWithString:route.vehiclesURL] completion:^(id object, NSError *error) {
+//        if (!error) {
+//            NSDate *timestamp = [NSDate date];
+//            for (MITShuttleVehicleList *vehicleList in object) {
+//                vehicleList.route.updatedTime = timestamp;
+//            }
+//        }
+//        completion(object, error);
+//    }];
 }
 
 #pragma mark - Helper Methods
 
 - (void)getObjectForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
-    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:NO];
-    }];
+//    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+//        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:NO];
+//    }];
 }
 
 - (void)getObjectsForURL:(NSURL *)url completion:(MITShuttleCompletionBlock)completion
 {
-    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
-        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
-    }];
+//    [[MITMobile defaultManager] getObjectsForURL:url completion:^(RKMappingResult *result, NSHTTPURLResponse *response, NSError *error) {
+//        [self handleResult:result error:error completion:completion returnObjectShouldBeArray:YES];
+//    }];
 }
 
-- (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITShuttleCompletionBlock)completion returnObjectShouldBeArray:(BOOL)alwaysReturnArray
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        if (!error) {
-            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
-            if (completion) {
-                if ([objects count] > 1 || alwaysReturnArray) {
-                    completion(objects, nil);
-                } else {
-                    completion([objects firstObject], nil);
-                }
-            }
-        } else {
-            if (completion) {
-                completion(nil, error);
-            }
-        }
-    }];
-}
+//- (void)handleResult:(RKMappingResult *)result error:(NSError *)error completion:(MITShuttleCompletionBlock)completion returnObjectShouldBeArray:(BOOL)alwaysReturnArray
+//{
+//    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//        if (!error) {
+//            NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+//            NSArray *objects = [mainQueueContext transferManagedObjects:[result array]];
+//            if (completion) {
+//                if ([objects count] > 1 || alwaysReturnArray) {
+//                    completion(objects, nil);
+//                } else {
+//                    completion([objects firstObject], nil);
+//                }
+//            }
+//        } else {
+//            if (completion) {
+//                completion(nil, error);
+//            }
+//        }
+//    }];
+//}
 
 #pragma mark - Default Routes Data
 
 - (NSArray *)loadDefaultShuttleRoutes
 {
-    if (![self hasLoadedDefaultRoutes]) {
-        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"MITShuttlesDefaultRoutesData" ofType:@"json"];
-        NSData *data = [NSData dataWithContentsOfFile:filePath];
-        NSArray *defaultRoutes;
-        if (data) {
-            NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
-            
-            NSString* MIMEType = @"application/json";
-            NSError* error;
-            NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
-            id parsedData = [RKMIMETypeSerialization objectFromData:data MIMEType:MIMEType error:&error];
-            if (parsedData == nil && error) {
-                NSLog(@"Error parsing default shuttle routes! %@", error);
-            } else {
-                NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
-                NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMappingFromAllRoutes]};
-                RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
-                RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:[MITMobile defaultManager].managedObjectStore.managedObjectCache];
-                mapper.mappingOperationDataSource = dataSource;
-                [mapper execute:nil];
-                defaultRoutes = mapper.mappingResult.array;
-            }
-        }
-        return defaultRoutes;
-    } else {
-        return nil;
-    }
+//    if (![self hasLoadedDefaultRoutes]) {
+//        NSString *filePath = [[NSBundle mainBundle] pathForResource:@"MITShuttlesDefaultRoutesData" ofType:@"json"];
+//        NSData *data = [NSData dataWithContentsOfFile:filePath];
+//        NSArray *defaultRoutes;
+//        if (data) {
+//            NSString *jsonString = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+//            
+//            NSString* MIMEType = @"application/json";
+//            NSError* error;
+//            NSData *data = [jsonString dataUsingEncoding:NSUTF8StringEncoding];
+//            id parsedData = [RKMIMETypeSerialization objectFromData:data MIMEType:MIMEType error:&error];
+//            if (parsedData == nil && error) {
+//                NSLog(@"Error parsing default shuttle routes! %@", error);
+//            } else {
+//                NSManagedObjectContext *context = [[MITCoreDataController defaultController] mainQueueContext];
+//                NSDictionary *mappings = @{[NSNull new] : [MITShuttleRoute objectMappingFromAllRoutes]};
+//                RKMapperOperation *mapper = [[RKMapperOperation alloc] initWithRepresentation:parsedData mappingsDictionary:mappings];
+//                RKManagedObjectMappingOperationDataSource *dataSource = [[RKManagedObjectMappingOperationDataSource alloc] initWithManagedObjectContext:context cache:[MITMobile defaultManager].managedObjectStore.managedObjectCache];
+//                mapper.mappingOperationDataSource = dataSource;
+//                [mapper execute:nil];
+//                defaultRoutes = mapper.mappingResult.array;
+//            }
+//        }
+//        return defaultRoutes;
+//    } else {
+//        return nil;
+//    }
+    return nil;
 }
 
 - (BOOL)hasLoadedDefaultRoutes
 {
+    return YES;
     return [self numberOfStoredShuttleRoutes] > 0;
 }
 
 - (NSInteger)numberOfStoredShuttleRoutes
 {
-    NSFetchRequest *request = [[NSFetchRequest alloc] init];
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-    NSEntityDescription *entity = [NSEntityDescription entityForName:@"ShuttleRoute" inManagedObjectContext:managedObjectContext];
-    [request setEntity:entity];
-    
-    NSError *error = nil;
-    NSUInteger count = [managedObjectContext countForFetchRequest:request error:&error];
-    
-    if (!error) {
-        return count;
-    }
-    else {
-        return -1;
-    }
+    return 13;
+    //    NSFetchRequest *request = [[NSFetchRequest alloc] init];
+//    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+//    NSEntityDescription *entity = [NSEntityDescription entityForName:@"ShuttleRoute" inManagedObjectContext:managedObjectContext];
+//    [request setEntity:entity];
+//    
+//    NSError *error = nil;
+//    NSUInteger count = [managedObjectContext countForFetchRequest:request error:&error];
+//    
+//    if (!error) {
+//        return count;
+//    }
+//    else {
+//        return -1;
+//    }
     
 }
 

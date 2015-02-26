@@ -9,7 +9,6 @@
 #import "UITableView+MITAdditions.h"
 #import "MITShuttlePrediction.h"
 #import "MITShuttlePredictionList.h"
-#import "MITCoreDataController.h"
 #import "MITShuttlePredictionLoader.h"
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
@@ -220,9 +219,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
         if (routeStatus != MITShuttleRouteStatusUnknown && [stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
-            MITShuttlePrediction *prediction = [stop nextPrediction];
+#warning Add next prediction support and uncomment these
+            MITShuttlePrediction *prediction;
+//            prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
-            [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
+//            [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];
         } else {
             [cell setStop:stop prediction:nil];
             [cell setIsNextStop:NO];

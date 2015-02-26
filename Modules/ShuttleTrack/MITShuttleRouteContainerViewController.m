@@ -180,9 +180,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 
 - (void)setupStopViewControllers
 {
-    NSArray *stops = [self.route.stops array];
-    NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:[stops count]];
-    for (MITShuttleStop *stop in stops) {
+    NSMutableArray *stopViewControllers = [NSMutableArray arrayWithCapacity:self.route.stops.count];
+    for (MITShuttleStop *stop in self.route.stops) {
         MITShuttleStopViewController *stopVC = [[MITShuttleStopViewController alloc] initWithStyle:UITableViewStyleGrouped
                                                                                               stop:stop
                                                                                              route:self.route];

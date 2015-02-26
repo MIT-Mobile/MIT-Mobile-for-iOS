@@ -1,9 +1,10 @@
 #import "MITTiledMapView.h"
 #import "MITMapDelegateInterceptor.h"
-#import "MITToursStop.h"
-#import "MITToursDirectionsToStop.h"
+//#import "MITToursStop.h"
+//#import "MITToursDirectionsToStop.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTileOverlay.h"
+
 
 const MKCoordinateRegion kMITShuttleDefaultMapRegion = {{42.357353, -71.095098}, {0.02, 0.02}};
 const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {0.0053103, 0.0123639}};
@@ -121,20 +122,20 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
 
 - (void)showRouteForStops:(NSArray *)stops
 {
-    for (MITToursStop *stop in stops) {
-        MITToursDirectionsToStop *directionsToNextStop = stop.directionsToNextStop;
-        NSArray *routePoints = (NSArray *)directionsToNextStop.path;
-        CLLocationCoordinate2D segmentPoints[routePoints.count];
-        for (NSInteger i = 0; i < routePoints.count; i++) {
-            NSArray *point = [routePoints objectAtIndex:i];
-            // Convert to location coordinate
-            NSNumber *longitude = [point objectAtIndex:0];
-            NSNumber *latitude = [point objectAtIndex:1];
-            segmentPoints[i] = CLLocationCoordinate2DMake([latitude doubleValue],[longitude doubleValue]);
-        }
-        MKPolyline *polyline = [MKPolyline polylineWithCoordinates:segmentPoints count:routePoints.count];
-        [self.mapView addOverlay:polyline];
-    }
+//    for (MITToursStop *stop in stops) {
+//        MITToursDirectionsToStop *directionsToNextStop = stop.directionsToNextStop;
+//        NSArray *routePoints = (NSArray *)directionsToNextStop.path;
+//        CLLocationCoordinate2D segmentPoints[routePoints.count];
+//        for (NSInteger i = 0; i < routePoints.count; i++) {
+//            NSArray *point = [routePoints objectAtIndex:i];
+//            // Convert to location coordinate
+//            NSNumber *longitude = [point objectAtIndex:0];
+//            NSNumber *latitude = [point objectAtIndex:1];
+//            segmentPoints[i] = CLLocationCoordinate2DMake([latitude doubleValue],[longitude doubleValue]);
+//        }
+//        MKPolyline *polyline = [MKPolyline polylineWithCoordinates:segmentPoints count:routePoints.count];
+//        [self.mapView addOverlay:polyline];
+//    }
 }
 
 - (MKOverlayRenderer *)mapView:(MKMapView *)mapView rendererForOverlay:(id<MKOverlay>)overlay

@@ -181,7 +181,7 @@
         MKMapPoint mapPoint = MKMapPointForCoordinate(coordinate);
         CGPoint destinationPoint = [self.mapView convertCoordinate:coordinate toPointToView:self.mapView];
         
-        CGFloat rawVehicleHeading = [self.vehicle.heading floatValue];
+        CGFloat rawVehicleHeading = self.vehicle.heading;
         
         // Convert mapHeading to 360 degree scale.
         CGFloat mapHeading = self.mapView.camera.heading;

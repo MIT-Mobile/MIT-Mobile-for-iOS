@@ -1,5 +1,5 @@
 #import <Foundation/Foundation.h>
-#import <RestKit/RestKit.h>
+//#import <RestKit/RestKit.h>
 
 @class MITShuttleRoute;
 @class MITShuttleStop;

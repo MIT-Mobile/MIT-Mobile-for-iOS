@@ -18,6 +18,9 @@
 #import "MITShuttleRoutesDataSource.h"
 #import "CoreData+MITAdditions.h"
 
+#import <Realm/Realm.h>
+#import "RealmManager.h"
+
 static const NSTimeInterval kShuttleHomeAllRoutesRefreshInterval = 60.0;
 
 static NSString * const kMITShuttlePhoneNumberCellIdentifier = @"MITPhoneNumberCell";
@@ -316,7 +319,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             MITShuttleRouteStatus leftStatus = [left status];
             MITShuttleRouteStatus rightStatus = [right status];
             if (leftStatus == rightStatus) {
-                return [left.order compare:right.order];
+                return [@(left.order) compare:@(right.order)];
             } else if (leftStatus == MITShuttleRouteStatusInService) {
                 return NSOrderedAscending;
             } else if (rightStatus == MITShuttleRouteStatusInService) {
@@ -326,7 +329,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
             } else if (rightStatus == MITShuttleRouteStatusUnknown) {
                 return NSOrderedDescending;
             }
-            return [left.order compare:right.order];
+            return [@(left.order) compare:@(right.order)];
         }];
         
         for (MITShuttleRoute *route in sortedRoutes) {
@@ -350,30 +353,50 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)refreshNearestStops:(void(^)(void))completion
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
-    [managedObjectContext performBlock:^{
-        NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
-        NSArray *blockRoutes = [managedObjectContext transferManagedObjects:self.routes];
-        
-        NSMutableDictionary *stopsByRouteIdentifier = [NSMutableDictionary dictionary];
-        for (MITShuttleRoute *route in blockRoutes) {
-            if (route.identifier) {
-                stopsByRouteIdentifier[route.identifier] = [mainQueueContext transferManagedObjects:[route nearestStopsWithCount:kNearestStopDisplayCount]];
-            }
+#warning REbuild
+    RLMResults *results = [MITShuttleRoute allObjectsInRealm:[RealmManager shuttlesRealm]];
+    NSMutableDictionary *stopsByRouteIdentifier = [NSMutableDictionary dictionary];
+    for (MITShuttleRoute *route in results) {
+        if (route.identifier) {
+            NSArray *nearestStops = [route nearestStopsWithCount:kNearestStopDisplayCount];
+            stopsByRouteIdentifier[route.identifier] = nearestStops;
         }
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
-                self.forceRefreshForNextDependencies = YES;
-                self.nearestStops = stopsByRouteIdentifier;
-                [self updateNearestStopsPredictionsDependencies];
-            }
-            
-            if (completion) {
-                completion();
-            }
-        }];
-    }];
+    }
+    
+    if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
+        self.forceRefreshForNextDependencies = YES;
+        self.nearestStops = stopsByRouteIdentifier;
+        [self updateNearestStopsPredictionsDependencies];
+    }
+    
+    if (completion) {
+        completion();
+    }
+    
+//    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
+//    [managedObjectContext performBlock:^{
+//        NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
+//        NSArray *blockRoutes = [managedObjectContext transferManagedObjects:self.routes];
+//        
+//        NSMutableDictionary *stopsByRouteIdentifier = [NSMutableDictionary dictionary];
+//        for (MITShuttleRoute *route in blockRoutes) {
+//            if (route.identifier) {
+//                stopsByRouteIdentifier[route.identifier] = [mainQueueContext transferManagedObjects:[route nearestStopsWithCount:kNearestStopDisplayCount]];
+//            }
+//        }
+//        
+//        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+//            if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
+//                self.forceRefreshForNextDependencies = YES;
+//                self.nearestStops = stopsByRouteIdentifier;
+//                [self updateNearestStopsPredictionsDependencies];
+//            }
+//            
+//            if (completion) {
+//                completion();
+//            }
+//        }];
+//    }];
 }
 
 - (MITShuttleStop *)nearestStopForRoute:(MITShuttleRoute *)route atIndex:(NSInteger)index
@@ -415,29 +438,29 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)addNearestStopsPredictionsDependencies
 {
-    if (![MITLocationManager locationServicesAuthorized] || !self.shouldAddPredictionsDependencies) {
-        return;
-    }
-    
-    NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
-    for (NSArray *stopArray in [self.nearestStops allValues]) {
-        for (MITShuttleStop *stop in stopArray) {
-            if (stop.route.status == MITShuttleRouteStatusInService) {
-                [newPredictionsDependentStops addObject:stop];
-            }
-        }
-    }
-    
-    if (newPredictionsDependentStops.count > 0) {
-        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
-        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
-        if (self.forceRefreshForNextDependencies) {
-            self.forceRefreshForNextDependencies = NO;
-            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
-        }
-    } else {
-        self.predictionsDependentStops = nil;
-    }
+//    if (![MITLocationManager locationServicesAuthorized] || !self.shouldAddPredictionsDependencies) {
+//        return;
+//    }
+//    
+//    NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
+//    for (NSArray *stopArray in [self.nearestStops allValues]) {
+//        for (MITShuttleStop *stop in stopArray) {
+//            if (stop.route.status == MITShuttleRouteStatusInService) {
+//                [newPredictionsDependentStops addObject:stop];
+//            }
+//        }
+//    }
+//    
+//    if (newPredictionsDependentStops.count > 0) {
+//        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+//        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
+//        if (self.forceRefreshForNextDependencies) {
+//            self.forceRefreshForNextDependencies = NO;
+//            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+//        }
+//    } else {
+//        self.predictionsDependentStops = nil;
+//    }
 }
 
 - (void)removeNearestStopsPredictionsDependencies
@@ -536,7 +559,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleStop *stop = self.flatRouteArray[row];
     MITShuttlePrediction *prediction = nil;
     if ([stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
-        prediction = [stop nextPrediction];
+#warning Fix all `nextPrediction` calls
+//        prediction = [stop nextPrediction];
     }
     [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];

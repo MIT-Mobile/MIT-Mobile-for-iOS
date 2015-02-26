@@ -1,6 +1,5 @@
 #import "MITShuttleVehiclesDataSource.h"
 #import <CoreData/CoreData.h>
-#import "MITCoreData.h"
 #import "MITAdditions.h"
 #import "MITShuttleVehicle.h"
 #import "MITShuttleController.h"
@@ -34,27 +33,28 @@
     // Force recreate fetch results controller next time we fetch
     self.fetchedResultsController = nil;
 }
-
-- (NSFetchRequest *)fetchRequest
-{
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
-    NSPredicate *predicate = nil;
-    if (self.route) {
-        predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
-    }
-    fetchRequest.predicate = predicate;
-    return fetchRequest;
-}
+//
+//- (NSFetchRequest *)fetchRequest
+//{
+//    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITShuttleVehicle entityName]];
+//    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"identifier" ascending:YES]];
+//    NSPredicate *predicate = nil;
+//    if (self.route) {
+//        predicate = [NSPredicate predicateWithFormat:@"route = %@", self.route];
+//    }
+//    fetchRequest.predicate = predicate;
+//    return fetchRequest;
+//}
 
 - (NSArray*)vehicles
 {
-    if (self.fetchedResultsController.fetchedObjects) {
-        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
-        return [managedObjectContext transferManagedObjects:self.fetchedResultsController.fetchedObjects];
-    } else {
-        return nil;
-    }
+    return nil;
+    //    if (self.fetchedResultsController.fetchedObjects) {
+////        NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] mainQueueContext];
+//        return [managedObjectContext transferManagedObjects:self.fetchedResultsController.fetchedObjects];
+//    } else {
+//        return nil;
+//    }
 }
 
 - (void)updateVehicles:(void(^)(MITShuttleVehiclesDataSource *dataSource, NSError *error))completion

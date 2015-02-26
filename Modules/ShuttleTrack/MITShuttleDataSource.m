@@ -1,5 +1,4 @@
 #import "MITShuttleDataSource.h"
-#import "MITCoreData.h"
 #import "MITAdditions.h"
 #import "MITShuttleRoute.h"
 #import "MITShuttlePredictionList.h"
@@ -26,8 +25,9 @@ NSError* MITDispatcherDeallocatedError(void *block) {
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
-    return [self initWithManagedObjectContext:managedObjectContext];
+    return [super init];
+//    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
+//    return [self initWithManagedObjectContext:managedObjectContext];
 }
 
 - (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext
