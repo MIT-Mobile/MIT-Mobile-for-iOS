@@ -46,6 +46,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
 @property(nonatomic) MITMartyRootViewControllerState currentState;
+@property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
 @end
 
@@ -504,6 +505,11 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 }
 
+- (void)_searchSuggestionsTimerFired:(NSTimer*)timer
+{
+    [self.typeAheadViewController filterResultsUsingString:self.searchBar.text];
+}
+
 - (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
 {
     if (self.currentState != MITMartyRootViewControllerStateResults) {
@@ -659,21 +665,12 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
- /*   NSMutableDictionary *userInfo = [NSMutableDictionary dictionary];
-    if (searchText) {
-        userInfo[kMITMapSearchSuggestionsTimerUserInfoKeySearchText] = searchText;
-    }
-
-    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:kMITMapSearchSuggestionsTimerWaitDuration
+    [self.searchSuggestionsTimer invalidate];
+    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                    target:self
-                                                                 selector:@selector(searchSuggestionsTimerFired:)
-                                                                 userInfo:userInfo
+                                                                 selector:@selector(_searchSuggestionsTimerFired:)
+                                                                 userInfo:nil
                                                                   repeats:NO];
-
-    if (!searchBar.isFirstResponder) {
-        //self.searchBarShouldBeginEditing = NO;
-        //   [self clearPlacesAnimated:YES];
-    }*/
 }
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
