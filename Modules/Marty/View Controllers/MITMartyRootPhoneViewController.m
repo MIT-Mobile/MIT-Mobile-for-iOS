@@ -57,7 +57,9 @@
     self.mapViewContainer.userInteractionEnabled = NO;
 
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
+    gestureRecognizer.cancelsTouchesInView = NO;
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
+    self.fullScreenMapGesture = gestureRecognizer;
 
     UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
     UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_dismissFullScreenMap:)];
