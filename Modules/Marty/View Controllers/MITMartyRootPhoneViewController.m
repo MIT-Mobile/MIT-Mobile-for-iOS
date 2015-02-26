@@ -32,20 +32,20 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
 
+@property(nonatomic) MITMartyRootViewControllerState currentState;
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
-@property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
+
 
 @property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
 
-@property(nonatomic,readonly,weak) MITMartyResource *resource;
 @property(nonatomic,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
 @property(nonatomic,weak) MITMartyMapViewController *mapViewController;
+@property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
+@property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
 @property(nonatomic,getter=isSearching) BOOL searching;
-@property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
-@property(nonatomic) MITMartyRootViewControllerState currentState;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
 @end
@@ -54,7 +54,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     CGAffineTransform _previousMapTransform;
 }
 
-@synthesize resource = _resource;
 @synthesize resourcesTableViewController = _resourcesTableViewController;
 @synthesize mapViewController = _mapViewController;
 @synthesize typeAheadViewController = _typeAheadViewController;
@@ -262,11 +261,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 }
 
 #pragma mark resourcesTableViewController
-- (BOOL)isResourcesTableViewControllerLoaded
-{
-    return (_resourcesTableViewController != nil);
-}
-
 - (void)loadResourcesTableViewController
 {
     MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
@@ -286,11 +280,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 
 #pragma mark mapViewController
-- (BOOL)isMapViewControllerLoaded
-{
-    return (_mapViewController != nil);
-}
-
 - (MITMartyMapViewController*)mapViewController
 {
     if (!_mapViewController) {
@@ -310,11 +299,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 
 #pragma mark typeAheadViewController
-- (BOOL)isTypeAheadViewControllerLoaded
-{
-    return (_typeAheadViewController != nil);
-}
-
 - (UITableViewController*)typeAheadViewController
 {
     if (!_typeAheadViewController) {
@@ -684,9 +668,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-    if ([searchBar.text length] == 0) {
-        //[self clearPlacesAnimated:YES];
-    }
 }
 
 @end
