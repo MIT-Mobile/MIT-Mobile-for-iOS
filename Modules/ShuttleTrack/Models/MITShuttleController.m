@@ -6,6 +6,7 @@
 #import "MITShuttlePredictionList.h"
 
 #import "MITShuttleEndpoints.h"
+#import "RealmManager.h"
 
 typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
@@ -32,7 +33,15 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 - (void)getRoutes:(MITShuttleRoutesCompletionBlock)completion
 {
     PDEndpoint *ep = [MITShuttleRoutesEndpoint endpoint];
-    [ep getWithCompletion:completion];
+    [ep getWithCompletion:^(NSArray *routes, NSError *error) {
+        RLMRealm *shuttlesRealm = [RealmManager shuttlesRealm];
+        [shuttlesRealm beginWriteTransaction];
+        [shuttlesRealm addOrUpdateObjectsFromArray:routes];
+        [shuttlesRealm commitWriteTransaction];
+        if (completion) {
+            completion(routes, error);
+        }
+    }];
 }
 
 - (void)getRouteDetail:(MITShuttleRoute *)route completion:(MITShuttleRouteDetailCompletionBlock)completion
@@ -65,32 +74,18 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
 
 - (void)getPredictionsForRoute:(MITShuttleRoute *)route completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    [self getObjectsForURL:[NSURL URLWithString:route.predictionsURL] completion:^(id object, NSError *error) {
-        if (!error) {
-            NSDate *timestamp = [NSDate date];
-            for (MITShuttlePredictionList *list in object) {
-                list.updatedTime = timestamp;
-                list.route.updatedTime = timestamp;
-            }
-        }
-        completion(object, error);
-    }];
+    MITShuttlePredictionsRequestData *requestData = [[MITShuttlePredictionsRequestData alloc] init];
+
+    for (MITShuttleStop *stop in route.stops) {
+        [requestData addStop:stop];
+    }
+
+    [self getPredictionsForPredictionsRequestData:requestData completion:completion];
 }
 
 - (void)getPredictionsForStop:(MITShuttleStop *)stop completion:(MITShuttlePredictionsCompletionBlock)completion
 {
-    if (stop.predictionsURL) {
-        [self getObjectsForURL:[NSURL URLWithString:stop.predictionsURL] completion:^(id object, NSError *error) {
-            NSDate *timestamp = [NSDate date];
-            for (MITShuttlePredictionList *list in object) {
-                list.updatedTime = timestamp;
-                list.route.updatedTime = timestamp;
-            }
-            completion(object, error);
-        }];
-    } else {
-        completion(nil, [NSError errorWithDomain:NSURLErrorDomain code:NSURLErrorBadURL userInfo:nil]);
-    }
+    [self getPredictionsForStops:@[stop] completion:completion];
 }
 
 - (void)getPredictionsForStops:(NSArray *)stops completion:(MITShuttlePredictionsCompletionBlock)completion
@@ -134,6 +129,32 @@ typedef void(^MITShuttleCompletionBlock)(id object, NSError *error);
             [stopAndRouteIdTuples appendString:@";"];
             [stopAndRouteIdTuples appendString:tuples[i]];
         }
+        
+        NSDictionary *params = @{
+                                 @"agency" : agency,
+                                 @"stops"  : stopAndRouteIdTuples
+                                 };
+        PDEndpoint *ep = [MITShuttlesPredictionsEndpoint endpointWithParameters:params];
+        [ep getWithCompletion:^(NSArray *predictionLists, NSError *error) {
+            if (error) {
+                if (aggregateErrorDescription.length > 0) {
+                    [aggregateErrorDescription appendString:@", "];
+                }
+                [aggregateErrorDescription appendFormat:@"Request for agency: %@ failed with info: %@", agency, error.localizedDescription];
+            } else {
+                RLMRealm *shuttlesRealm = [RealmManager shuttlesRealm];
+                [shuttlesRealm beginWriteTransaction];
+                [shuttlesRealm addOrUpdateObjectsFromArray:predictionLists];
+                [shuttlesRealm commitWriteTransaction];
+                [shuttlesRealm beginWriteTransaction];
+                for (MITShuttlePredictionList *list in predictionLists) {
+                    list.route.updatedTime = list.updatedTime;
+                }
+                [shuttlesRealm commitWriteTransaction];
+            }
+            [aggregatePredictions addObjectsFromArray:predictionLists];
+            dispatch_group_leave(agencyRequestGroup);
+        }];
         
 //        [[MITMobile defaultManager] getObjectsForResourceNamed:MITShuttlesPredictionsResourceName
 //                                                    parameters:@{@"agency": agency,

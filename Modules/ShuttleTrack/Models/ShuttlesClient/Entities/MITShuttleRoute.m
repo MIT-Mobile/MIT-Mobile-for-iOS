@@ -77,6 +77,36 @@
     return [NSArray arrayWithArray:mutableNearestStops];
 }
 
+- (BOOL)isNextStop:(MITShuttleStop *)stop
+{
+    if (self.status == MITShuttleRouteStatusInService) {
+        for (MITShuttleVehicle *vehicle in self.vehicles) {
+            if ([stop isEqual:[self nextStopForVehicle:vehicle]]) {
+                return YES;
+            }
+        }
+    }
+    return NO;
+}
+
+- (MITShuttleStop *)nextStopForVehicle:(MITShuttleVehicle *)vehicle
+{
+    NSMutableOrderedSet *stops = [[NSMutableOrderedSet alloc] init];
+    for (MITShuttleStop *stop in self.stops) {
+        [stops addObject:stop];
+    }
+    NSOrderedSet *stopsForVehicle = [stops filteredOrderedSetUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id evaluatedObject, NSDictionary *bindings) {
+        MITShuttleStop *stop = (MITShuttleStop *)evaluatedObject;
+        return ([stop nextPredictionForVehicle:vehicle] != nil);
+    }]];
+    NSArray *sortedStopsForVehicle = [stopsForVehicle sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        MITShuttlePrediction *prediction1 = [(MITShuttleStop *)obj1 nextPredictionForVehicle:vehicle];
+        MITShuttlePrediction *prediction2 = [(MITShuttleStop *)obj2 nextPredictionForVehicle:vehicle];
+        return [@(prediction1.timestamp) compare:@(prediction2.timestamp)];
+    }];
+    return [sortedStopsForVehicle firstObject];
+}
+
 @end
 
 //@interface MITBoundingBoxTransformer : JSONMappableTransformer

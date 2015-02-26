@@ -43,14 +43,22 @@
     return [[self linkingObjectsOfClass:[MITShuttleRoute className] forProperty:@"stops"] firstObject];
 }
 
-- (MITShuttlePredictionList *)predictionList {
-    RLMRealm *shuttlesRealm = [RealmManager shuttlesRealm];
-    RLMResults *results  = [MITShuttlePredictionList objectsInRealm:shuttlesRealm where:@"routeAndStopIdTuple == %@", self.stopAndRouteIdTuple];
-    return [results firstObject];
-}
-
 - (CLLocationCoordinate2D)coordinate {
     return CLLocationCoordinate2DMake(self.latitude, self.longitude);
+}
+
+- (MITShuttlePrediction *)nextPrediction {
+    return [self.predictionList.predictions firstObject];
+}
+
+- (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
+{
+    for (MITShuttlePrediction *prediction in self.predictionList.predictions) {
+        if ([vehicle.identifier isEqualToString:prediction.vehicleId]) {
+            return prediction;
+        }
+    }
+    return nil;
 }
 
 @end

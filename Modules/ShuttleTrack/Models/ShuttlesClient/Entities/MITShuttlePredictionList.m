@@ -22,9 +22,7 @@
 
 // TODO: Reevaluate these, this can definitely be optimized.  You need a stop to get predictions, so we should be able to associate that.
 - (MITShuttleStop *)stop {
-    RLMRealm *shuttlesRealm = [RealmManager shuttlesRealm];
-    RLMResults *results  = [MITShuttleStop objectsInRealm:shuttlesRealm where:@"%@ == routeAndStopIdTuple", self.routeAndStopIdTuple];
-    return [results firstObject];
+    return [[self linkingObjectsOfClass:[MITShuttleStop className] forProperty:@"predictionList"] firstObject];
 }
 
 - (MITShuttleRoute *)route {

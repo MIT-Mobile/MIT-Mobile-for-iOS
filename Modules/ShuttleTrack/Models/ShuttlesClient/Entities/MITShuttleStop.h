@@ -28,13 +28,15 @@
 
 // Needs to be set manually, can not be mapped.
 @property NSString *stopAndRouteIdTuple;
+@property MITShuttlePredictionList *predictionList;
 
 // Computed
 @property (readonly) NSString *routeId;
 @property (readonly) MITShuttleRoute *route;
-@property (readonly) MITShuttlePredictionList *predictionList;
-
+@property (readonly) MITShuttlePrediction *nextPrediction;
 @property (readonly) CLLocationCoordinate2D coordinate;
+
+- (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle;
 @end
 
 RLM_ARRAY_TYPE(MITShuttleStop)

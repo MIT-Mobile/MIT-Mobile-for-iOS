@@ -366,8 +366,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
         self.forceRefreshForNextDependencies = YES;
         self.nearestStops = stopsByRouteIdentifier;
-        [self updateNearestStopsPredictionsDependencies];
     }
+    
+    [self updateNearestStopsPredictionsDependencies];
     
     if (completion) {
         completion();
@@ -438,29 +439,30 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)addNearestStopsPredictionsDependencies
 {
-//    if (![MITLocationManager locationServicesAuthorized] || !self.shouldAddPredictionsDependencies) {
-//        return;
-//    }
-//    
-//    NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
-//    for (NSArray *stopArray in [self.nearestStops allValues]) {
-//        for (MITShuttleStop *stop in stopArray) {
-//            if (stop.route.status == MITShuttleRouteStatusInService) {
-//                [newPredictionsDependentStops addObject:stop];
-//            }
-//        }
-//    }
-//    
-//    if (newPredictionsDependentStops.count > 0) {
-//        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
-//        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
-//        if (self.forceRefreshForNextDependencies) {
-//            self.forceRefreshForNextDependencies = NO;
-//            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
-//        }
-//    } else {
-//        self.predictionsDependentStops = nil;
-//    }
+    if (![MITLocationManager locationServicesAuthorized] || !self.shouldAddPredictionsDependencies) {
+        return;
+    }
+    
+    NSMutableArray *newPredictionsDependentStops = [NSMutableArray array];
+    for (NSArray *stopArray in [self.nearestStops allValues]) {
+        for (MITShuttleStop *stop in stopArray) {
+            NSLog(@"Stop status: %li, id: %@ updated: %@", stop.route.status, stop.routeId, [NSDateFormatter localizedStringFromDate:stop.route.updatedTime dateStyle:NSDateFormatterMediumStyle timeStyle:NSDateFormatterLongStyle]);
+            if (stop.route.status == MITShuttleRouteStatusInService) {
+                [newPredictionsDependentStops addObject:stop];
+            }
+        }
+    }
+    
+    if (newPredictionsDependentStops.count > 0) {
+        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
+        if (self.forceRefreshForNextDependencies) {
+            self.forceRefreshForNextDependencies = NO;
+            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+        }
+    } else {
+        self.predictionsDependentStops = nil;
+    }
 }
 
 - (void)removeNearestStopsPredictionsDependencies
@@ -559,8 +561,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleStop *stop = self.flatRouteArray[row];
     MITShuttlePrediction *prediction = nil;
     if ([stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
-#warning Fix all `nextPrediction` calls
-//        prediction = [stop nextPrediction];
+        prediction = stop.nextPrediction;
     }
     [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];

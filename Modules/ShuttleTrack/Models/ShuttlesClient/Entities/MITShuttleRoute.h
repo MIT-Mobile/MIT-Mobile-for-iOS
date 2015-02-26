@@ -35,6 +35,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
 @property NSDate *updatedTime;
 @property MITShuttleVehicleList *vehicleList;
 @property (readonly) MITShuttleRouteStatus status;
+
+- (BOOL)isNextStop:(MITShuttleStop *)stop;
+- (MITShuttleStop *)nextStopForVehicle:(MITShuttleVehicle *)vehicle;
 @property NSInteger order;
 
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
