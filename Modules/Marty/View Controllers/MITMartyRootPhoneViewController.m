@@ -221,6 +221,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
             [self.navigationController setToolbarHidden:NO animated:animated];
         } else {
             [self.navigationController setToolbarHidden:YES animated:animated];
+            [self.mapViewController showCalloutForResource:nil];
         }
 
         NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
@@ -460,6 +461,8 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
             
             if (self.isMapFullScreen) {
                 [self.navigationController setToolbarHidden:NO animated:animated];
+            } else {
+                [self.mapViewController setResources:nil animated:YES];
             }
         } break;
     }

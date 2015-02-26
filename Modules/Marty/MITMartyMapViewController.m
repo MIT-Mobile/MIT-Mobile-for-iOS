@@ -137,10 +137,14 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)showCalloutForResource:(MITMartyResource *)resource
 {
-    for (MITMartyResource *resource2 in self.resources) {
-        if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
-            [self.mapView selectAnnotation:resource2 animated:YES];
+    if (resource) {
+        for (MITMartyResource *resource2 in self.resources) {
+            if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
+                [self.mapView selectAnnotation:resource2 animated:YES];
+            }
         }
+    } else {
+        [self.mapView selectAnnotation:nil animated:YES];
     }
 }
 
