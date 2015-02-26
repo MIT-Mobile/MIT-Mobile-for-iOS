@@ -4,11 +4,23 @@
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITSlidingViewController.h"
+
 #import "MITMartyMapViewController.h"
+#import "MITMartyRecentSearchController.h"
+
 #import "DDLog.h"
 #import "MITAdditions.h"
 
-@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UITableViewDataSource,UISearchBarDelegate>
+static NSTimeInterval MITMartyRootPhoneDefaultAnimationDuration = 0.33;
+
+typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
+    MITMartyRootViewControllerStateInitial = 0,
+    MITMartyRootViewControllerStateSearch,
+    MITMartyRootViewControllerStateNoResults,
+    MITMartyRootViewControllerStateResults,
+};
+
+@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -25,15 +37,15 @@
 @property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
 
 @property(nonatomic,readonly,weak) MITMartyResource *resource;
-@property(nonatomic,readonly,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property(nonatomic,readonly,weak) MITMartyMapViewController *mapViewController;
+@property(nonatomic,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
+@property(nonatomic,weak) MITMartyMapViewController *mapViewController;
 
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
 @property(nonatomic,getter=isSearching) BOOL searching;
-@property(nonatomic,readonly,weak) UITableViewController *typeAheadViewController;
+@property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
+@property(nonatomic) MITMartyRootViewControllerState currentState;
 
-- (IBAction)didTapSearchItem:(UIBarButtonItem*)sender;
 @end
 
 @implementation MITMartyRootPhoneViewController {
@@ -71,7 +83,6 @@
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    [self resizeAndAlignSearchBar];
 }
 
 - (void)updateViewConstraints
@@ -105,6 +116,8 @@
 {
     [super viewWillAppear:animated];
 
+    [self _transitionToState:self.currentState animated:animated completion:nil];
+    
     [self setupNavigationBar];
 }
 
@@ -119,12 +132,11 @@
         [self.dataSource resourcesWithQuery:queryString completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
             if (error) {
                 DDLogWarn(@"Error: %@",error);
-                self.contentContainerView.hidden = YES;
-                self.helpTextView.hidden = NO;
+                
+                if (block) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+                }
             } else {
-                self.contentContainerView.hidden = NO;
-                self.helpTextView.hidden = YES;
-
                 [self.managedObjectContext performBlockAndWait:^{
                     [self.managedObjectContext reset];
 
@@ -204,18 +216,17 @@
     if (_mapFullScreen != mapFullScreen) {
         _mapFullScreen = mapFullScreen;
 
-        NSTimeInterval duration = (animated ? 0.5 : 0);
+        NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
         if (_mapFullScreen) {
-            _previousMapTransform = self.mapViewContainer.transform;
-
+            [self.navigationController setToolbarHidden:NO animated:YES];
+            
             [UIView animateWithDuration:duration
                                   delay:0
-                                options:0
+                                options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  CGFloat tableContainerTranslation = CGRectGetMaxY(self.contentContainerView.bounds) - CGRectGetMinY(self.tableViewContainer.frame);
                                  self.tableViewContainer.transform = CGAffineTransformMakeTranslation(0, tableContainerTranslation);
-                                 [self.navigationController setToolbarHidden:NO animated:YES];
-
+                                 
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view layoutIfNeeded];
                              } completion:^(BOOL finished) {
@@ -225,15 +236,14 @@
         } else {
             [UIView animateWithDuration:duration
                                   delay:0
-                                options:0
+                                options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
-                                 [self.navigationController setToolbarHidden:YES animated:NO];
+                                 [self.navigationController setToolbarHidden:YES animated:YES];
                                  self.tableViewContainer.transform = CGAffineTransformIdentity;
                                  self.mapViewContainer.transform = _previousMapTransform;
-
+                                 
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view layoutIfNeeded];
-                                 [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = YES;
                                  self.mapViewContainer.userInteractionEnabled = NO;
@@ -243,101 +253,75 @@
     }
 }
 
-- (void)setSearching:(BOOL)searching
+#pragma mark resourcesTableViewController
+- (BOOL)isResourcesTableViewControllerLoaded
 {
-    [self setSearching:searching animated:NO];
+    return (_resourcesTableViewController != nil);
 }
 
-- (void)setSearching:(BOOL)searching animated:(BOOL)animated
+- (void)loadResourcesTableViewController
 {
-    if (_searching != searching) {
-        [self willChangeSearching:searching animated:animated];
-        BOOL oldValue = _searching;
-        _searching = searching;
-        [self didChangeSearching:oldValue animated:animated];
-    }
-}
-
-- (void)willChangeSearching:(BOOL)newValue animated:(BOOL)animated
-{
-
-}
-
-- (void)didChangeSearching:(BOOL)oldValue animated:(BOOL)animated
-{
-    [self.searchDisplayController setActive:self.isSearching animated:animated];
+    MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+    resourcesTableViewController.delegate = self;
+    [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
+    _resourcesTableViewController = resourcesTableViewController;
 }
 
 - (MITMartyResourcesTableViewController*)resourcesTableViewController
 {
     if (!_resourcesTableViewController) {
-        MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
-        resourcesTableViewController.delegate = self;
-        
-        [self addChildViewController:resourcesTableViewController];
-        [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
-        resourcesTableViewController.view.frame = self.tableViewContainer.bounds;
-        resourcesTableViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        resourcesTableViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        [self.tableViewContainer addSubview:resourcesTableViewController.view];
-        [resourcesTableViewController endAppearanceTransition];
-        [resourcesTableViewController didMoveToParentViewController:self];
-        
-        _resourcesTableViewController = resourcesTableViewController;
+        [self loadResourcesTableViewController];
     }
     
     return _resourcesTableViewController;
 }
 
+
+#pragma mark mapViewController
+- (BOOL)isMapViewControllerLoaded
+{
+    return (_mapViewController != nil);
+}
+
 - (MITMartyMapViewController*)mapViewController
 {
     if (!_mapViewController) {
-        MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
-
-        [self addChildViewController:mapViewController];
-        [mapViewController beginAppearanceTransition:YES animated:NO];
-        mapViewController.view.frame = self.mapViewContainer.bounds;
-        mapViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        mapViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        [self.mapViewContainer addSubview:mapViewController.view];
-        [mapViewController endAppearanceTransition];
-        [mapViewController didMoveToParentViewController:self];
-
-        _mapViewController = mapViewController;
+        [self loadMapViewController];
     }
 
     return _mapViewController;
 }
 
+- (void)loadMapViewController
+{
+    MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
+
+    [self _addChildViewController:mapViewController toView:self.mapViewContainer];
+    _mapViewController = mapViewController;
+}
+
+
+#pragma mark typeAheadViewController
+- (BOOL)isTypeAheadViewControllerLoaded
+{
+    return (_typeAheadViewController != nil);
+}
+
 - (UITableViewController*)typeAheadViewController
 {
     if (!_typeAheadViewController) {
-        UITableViewController *typeAheadViewController = [[UITableViewController alloc] init];
-
-        [self addChildViewController:typeAheadViewController];
-        [typeAheadViewController beginAppearanceTransition:YES animated:NO];
-
-        typeAheadViewController.view.frame = self.view.bounds;
-        typeAheadViewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
-        typeAheadViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
-        [self.view addSubview:typeAheadViewController.view];
-        [typeAheadViewController endAppearanceTransition];
-        [typeAheadViewController didMoveToParentViewController:self];
-
-        _typeAheadViewController = typeAheadViewController;
+        [self loadTypeAheadViewController];
     }
 
     return _typeAheadViewController;
 }
 
-- (void)removeTypeAheadViewController
+- (void)loadTypeAheadViewController
 {
-    [self.typeAheadViewController willMoveToParentViewController:nil];
-    [self.typeAheadViewController beginAppearanceTransition:NO animated:NO];
-    [self.typeAheadViewController.view removeFromSuperview];
-    [self.typeAheadViewController endAppearanceTransition];
-    [self.typeAheadViewController removeFromParentViewController];
-    _typeAheadViewController = nil;
+    MITMartyRecentSearchController *typeAheadViewController = [[MITMartyRecentSearchController alloc] init];
+    
+    [self _addChildViewController:typeAheadViewController toView:self.view];
+    _typeAheadViewController = typeAheadViewController;
 }
 
 - (NSArray*)resources
@@ -350,21 +334,216 @@
     return resourceObjects;
 }
 
-#pragma mark Private
+#pragma mark - Private
+#pragma mark State Management
+- (BOOL)_canTransitionToState:(MITMartyRootViewControllerState)newState
+{
+    if (self.currentState == newState) {
+        return YES;
+    }
+    
+    switch (self.currentState) {
+        case MITMartyRootViewControllerStateInitial: {
+            return (newState == MITMartyRootViewControllerStateSearch);
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            return ((newState == MITMartyRootViewControllerStateInitial) ||
+                    (newState == MITMartyRootViewControllerStateNoResults) ||
+                    (newState == MITMartyRootViewControllerStateResults));
+        } break;
+            
+        case MITMartyRootViewControllerStateNoResults: {
+            return (newState == MITMartyRootViewControllerStateSearch);
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            return (newState == MITMartyRootViewControllerStateSearch);
+        } break;
+    }
+}
+
+- (void)_transitionToState:(MITMartyRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
+{
+    NSAssert([self _canTransitionToState:newState], @"illegal state transition");
+    if (self.currentState == newState) {
+        return;
+    }
+    
+    MITMartyRootViewControllerState oldState = self.currentState;
+    
+    [self _willTransitionToState:newState fromState:oldState];
+    self.currentState = newState;
+    
+    [self.view setNeedsUpdateConstraints];
+    [self.view setNeedsLayout];
+    
+    NSTimeInterval animationDuration = (animate ? MITMartyRootPhoneDefaultAnimationDuration : 0);
+    [UIView animateWithDuration:animationDuration
+                          delay:0
+                        options:0
+                     animations:^{
+                         [self _animateTransitionToState:newState fromState:oldState animated:animate];
+                     } completion:^(BOOL finished) {
+                         [self _didTransitionToState:newState fromState:oldState];
+                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                             if (block) {
+                                 block();
+                             }
+                         }];
+                     }];
+}
+
+- (void)_willTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState
+{
+    switch (newState) {
+        case MITMartyRootViewControllerStateNoResults:
+        case MITMartyRootViewControllerStateInitial: {
+            self.helpTextView.hidden = NO;
+            self.helpTextView.alpha = 0.;
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            self.typeAheadViewController.view.hidden = NO;
+            self.typeAheadViewController.view.alpha = 0.;
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            self.contentContainerView.hidden = NO;
+            self.contentContainerView.alpha = 0;
+            [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+        } break;
+    }
+    
+    switch (oldState) {
+        case MITMartyRootViewControllerStateNoResults:
+        case MITMartyRootViewControllerStateInitial: {
+            self.helpTextView.hidden = NO;
+            self.helpTextView.alpha = 1;
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            self.typeAheadViewController.view.hidden = NO;
+            self.typeAheadViewController.view.alpha = 1.;
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            self.contentContainerView.hidden = NO;
+            self.contentContainerView.alpha = 1;
+            [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+        } break;
+    }
+}
+
+- (void)_animateTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState animated:(BOOL)animated
+{
+    switch (newState) {
+        case MITMartyRootViewControllerStateNoResults:
+        case MITMartyRootViewControllerStateInitial: {
+            self.helpTextView.alpha = 1;
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            self.typeAheadViewController.view.alpha = 1;
+            [self.navigationItem setLeftBarButtonItem:nil animated:animated];
+            [self.searchBar setShowsCancelButton:YES animated:animated];
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            [self setMapFullScreen:NO animated:animated];
+            self.contentContainerView.alpha = 1;
+        } break;
+    }
+    
+    switch (oldState) {
+        case MITMartyRootViewControllerStateNoResults:
+        case MITMartyRootViewControllerStateInitial: {
+            self.helpTextView.alpha = 0;
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            self.typeAheadViewController.view.alpha = 0;
+            [self.searchBar setShowsCancelButton:NO animated:animated];
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            self.contentContainerView.alpha = 0;
+        } break;
+    }
+}
+
+- (void)_didTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState
+{
+    switch (oldState) {
+        case MITMartyRootViewControllerStateNoResults:
+        case MITMartyRootViewControllerStateInitial: {
+            self.helpTextView.hidden = YES;
+        } break;
+            
+        case MITMartyRootViewControllerStateSearch: {
+            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
+            self.typeAheadViewController.view.hidden = YES;
+        } break;
+            
+        case MITMartyRootViewControllerStateResults: {
+            self.contentContainerView.hidden = YES;
+        } break;
+    }
+}
+
 - (void)_dismissFullScreenMap:(UIBarButtonItem*)sender
 {
+    if (self.currentState != MITMartyRootViewControllerStateResults) {
+        return;
+    }
+    
     [self setMapFullScreen:NO animated:YES];
 }
 
 - (void)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
-    if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-        CGPoint location = [gestureRecognizer locationInView:self.contentContainerView];
+    if (gestureRecognizer == self.fullScreenMapGesture) {
+        if (self.currentState != MITMartyRootViewControllerStateResults) {
+            return;
+        }
+        
+        if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
+            CGPoint location = [gestureRecognizer locationInView:self.contentContainerView];
 
-        if (CGRectContainsPoint(self.mapViewContainer.frame, location)) {
-            [self setMapFullScreen:YES animated:YES];
+            if (CGRectContainsPoint(self.mapViewContainer.frame, location)) {
+                [self setMapFullScreen:YES animated:YES];
+            }
         }
     }
+}
+
+- (void)_addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
+{
+    NSParameterAssert(viewController);
+    NSParameterAssert(superview);
+    
+    
+    [self addChildViewController:viewController];
+    [viewController beginAppearanceTransition:YES animated:NO];
+    
+    viewController.view.frame = superview.bounds;
+    viewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+    viewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+    [superview addSubview:viewController.view];
+    
+    [viewController endAppearanceTransition];
+    [viewController didMoveToParentViewController:self];
+}
+
+- (void)_removeChildViewController:(UIViewController*)viewController
+{
+    NSParameterAssert(viewController);
+    
+    [viewController willMoveToParentViewController:nil];
+    [viewController beginAppearanceTransition:NO animated:NO];
+    [viewController.view removeFromSuperview];
+    [viewController endAppearanceTransition];
+    [viewController removeFromParentViewController];
 }
 
 #pragma mark Search accessory methods
@@ -385,17 +564,6 @@
     return searchBar;
 }
 
-- (IBAction)didTapSearchItem:(UIBarButtonItem*)sender
-{
-    [self.searchDisplayController setActive:YES animated:YES];
-}
-
-- (void)closeSearchBar
-{
-    [self.navigationItem setLeftBarButtonItem:[[MIT_MobileAppDelegate applicationDelegate] rootViewController].leftBarButtonItem animated:YES];
-    [self.searchBar setShowsCancelButton:NO animated:YES];
-}
-
 #pragma mark Delegation
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
@@ -411,8 +579,9 @@
 
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
 {
-    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -contentOffset.y);
+    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -(contentOffset.y * [UIScreen mainScreen].scale));
     self.mapViewContainer.transform = transform;
+    _previousMapTransform = transform;
 }
 
 - (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController
@@ -423,23 +592,29 @@
 #pragma mark UISearchBarDelegate
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    [self.navigationItem setLeftBarButtonItem:nil animated:YES];
-    [self.searchBar setShowsCancelButton:YES animated:YES];
-    [self resizeAndAlignSearchBar];
-
-    self.typeAheadViewController.view.frame = self.view.bounds;
-    self.typeAheadViewController.view.hidden = NO;
+    self.searching = YES;
+    [self _transitionToState:MITMartyRootViewControllerStateSearch animated:YES completion:nil];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    [self closeSearchBar];
-    self.typeAheadViewController.view.hidden = YES;
-
-    [self reloadDataSourceForSearch:searchBar.text completion:^{
-        self.resourcesTableViewController.resources = self.dataSource.resources;
-        [self.mapViewController setResources:self.dataSource.resources animated:YES];
-    }];
+    self.searching = NO;
+    
+    if ([self.searchBar.text length]) {
+        [self reloadDataSourceForSearch:searchBar.text completion:^{
+            MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateResults;
+            if ([self.dataSource.resources count] == 0) {
+                newState = MITMartyRootViewControllerStateNoResults;
+            }
+            
+            [self _transitionToState:newState animated:YES completion:^{
+                self.resourcesTableViewController.resources = self.dataSource.resources;
+                [self.mapViewController setResources:self.dataSource.resources animated:YES];
+            }];
+        }];
+    } else {
+        [self _transitionToState:MITMartyRootViewControllerStateNoResults animated:YES completion:nil];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -478,9 +653,7 @@
 
 - (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
 {
-    //BOOL shouldBeginEditing = self.searchBarShouldBeginEditing;
-    //self.searchBarShouldBeginEditing = YES;
-    return YES;// shouldBeginEditing;
+    return YES;
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -489,30 +662,6 @@
     if ([searchBar.text length] == 0) {
         //[self clearPlacesAnimated:YES];
     }
-}
-
-- (void)resizeAndAlignSearchBar
-{
-    // Force size to width of view
-    CGRect bounds = self.searchBarContainer.bounds;
-    bounds.size.width = CGRectGetWidth(self.view.bounds);
-    self.searchBarContainer.bounds = bounds;
-}
-
-#pragma mark UITableViewDataSource
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
-{
-    return 0;
-}
-
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
-{
-    return 0;
-}
-
-- (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
-{
-    return nil;
 }
 
 @end
