@@ -622,7 +622,10 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     if ([self.searchBar.text length]) {
         NSString *queryString = [[searchBar.text lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([queryString caseInsensitiveCompare:self.dataSource.queryString] != NSOrderedSame) {
-            [self reloadDataSourceForSearch:searchBar.text completion:^{
+            
+            [self.typeAheadViewController addRecentSearchItem:queryString];
+            
+            [self reloadDataSourceForSearch:queryString completion:^{
                 MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateNoResults;
                 
                 if ([self.dataSource.resources count]) {
