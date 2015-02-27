@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6250" systemVersion="14C94b" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6244"/>
-        <capability name="Alignment constraints with different attributes" minToolsVersion="5.1"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
         <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
@@ -27,7 +26,7 @@
         <!--Home View Controller-->
         <scene sceneID="rYA-bu-8CK">
             <objects>
-                <viewController storyboardIdentifier="MartyHomeViewController" automaticallyAdjustsScrollViewInsets="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMartyRootPhoneViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MartyHomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMartyRootPhoneViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Kfz-sO-XOH"/>
                         <viewControllerLayoutGuide type="bottom" id="IC8-GW-1cV"/>
@@ -36,36 +35,11 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
-                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
-                                <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
-                                        <constraints>
-                                            <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="1.66667" id="SPD-ui-Po2"/>
-                                        </constraints>
-                                        <variation key="heightClass=regular-widthClass=compact"/>
-                                    </view>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
-                                        <rect key="frame" x="0.0" y="360" width="600" height="176"/>
-                                    </view>
-                                </subviews>
-                                <constraints>
-                                    <constraint firstItem="hye-Ag-mVg" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="3yU-d3-Akd"/>
-                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="8tF-8Y-l2j"/>
-                                    <constraint firstAttribute="bottom" secondItem="hye-Ag-mVg" secondAttribute="bottom" id="Gi0-r2-40h"/>
-                                    <constraint firstAttribute="trailing" secondItem="RFz-L3-5Vl" secondAttribute="trailing" id="RG4-B0-FyX"/>
-                                    <constraint firstAttribute="trailing" secondItem="hye-Ag-mVg" secondAttribute="trailing" id="dRp-2e-h5e"/>
-                                    <constraint firstItem="hye-Ag-mVg" firstAttribute="top" secondItem="RFz-L3-5Vl" secondAttribute="bottom" id="fa3-yf-gTp"/>
-                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="z24-B0-iwK"/>
-                                </constraints>
-                                <variation key="heightClass=regular-widthClass=compact"/>
-                            </view>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use this tool to find machines and machine shops at MIT" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Sy-mP-TMp">
-                                        <rect key="frame" x="0.0" y="-21" width="42" height="21"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use this tool to find machines and machine shops at MIT" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Sy-mP-TMp">
+                                        <rect key="frame" x="32" y="40" width="536" height="20"/>
                                         <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
                                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                                         <nil key="highlightedColor"/>
@@ -77,26 +51,30 @@
                                     <constraint firstItem="1Sy-mP-TMp" firstAttribute="leading" secondItem="Gc0-hW-Xee" secondAttribute="leading" constant="32" id="JU0-ee-Lue"/>
                                     <constraint firstItem="1Sy-mP-TMp" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="topMargin" constant="32" id="QsI-WA-Nft"/>
                                 </constraints>
-                                <variation key="default">
-                                    <mask key="subviews">
-                                        <exclude reference="1Sy-mP-TMp"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <exclude reference="0Hg-oR-3II"/>
-                                        <exclude reference="JU0-ee-Lue"/>
-                                        <exclude reference="QsI-WA-Nft"/>
-                                    </mask>
-                                </variation>
-                                <variation key="heightClass=regular-widthClass=compact">
-                                    <mask key="subviews">
-                                        <include reference="1Sy-mP-TMp"/>
-                                    </mask>
-                                    <mask key="constraints">
-                                        <include reference="0Hg-oR-3II"/>
-                                        <include reference="JU0-ee-Lue"/>
-                                        <include reference="QsI-WA-Nft"/>
-                                    </mask>
-                                </variation>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
+                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                                <subviews>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" priority="250" id="6xb-VA-nM2"/>
+                                            <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="5:3" priority="750" id="FQx-zw-qKg"/>
+                                        </constraints>
+                                    </view>
+                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                                    </view>
+                                </subviews>
+                                <constraints>
+                                    <constraint firstItem="hye-Ag-mVg" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="3yU-d3-Akd"/>
+                                    <constraint firstItem="hye-Ag-mVg" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="F1t-EU-zWW"/>
+                                    <constraint firstAttribute="trailing" secondItem="RFz-L3-5Vl" secondAttribute="trailing" id="FCo-3V-JBy"/>
+                                    <constraint firstAttribute="bottom" secondItem="hye-Ag-mVg" secondAttribute="bottom" id="Gi0-r2-40h"/>
+                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="PNW-7b-8YF"/>
+                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="PhU-lg-qld"/>
+                                    <constraint firstAttribute="trailing" secondItem="hye-Ag-mVg" secondAttribute="trailing" id="dRp-2e-h5e"/>
+                                </constraints>
                             </view>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -108,16 +86,17 @@
                             <constraint firstItem="Gc0-hW-Xee" firstAttribute="leading" secondItem="9Jw-qO-vKS" secondAttribute="leading" id="nqE-oC-LwH"/>
                             <constraint firstItem="Gc0-hW-Xee" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="vY8-4Y-MLg"/>
                             <constraint firstItem="IC8-GW-1cV" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="bottom" id="vvR-QZ-P3a"/>
-                            <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="top" id="xFH-fi-60c"/>
+                            <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="xFH-fi-60c"/>
                         </constraints>
-                        <variation key="heightClass=regular-widthClass=compact"/>
                     </view>
                     <navigationItem key="navigationItem" id="cSb-3Z-2e2">
                         <nil key="title"/>
                     </navigationItem>
                     <connections>
                         <outlet property="contentContainerView" destination="Hx1-pQ-i3W" id="EPe-h4-c1G"/>
+                        <outlet property="defaultMapHeightConstraint" destination="FQx-zw-qKg" id="oU9-Kj-VEt"/>
                         <outlet property="helpTextView" destination="Gc0-hW-Xee" id="Shl-ad-Fy2"/>
+                        <outlet property="mapHeightConstraint" destination="6xb-VA-nM2" id="FfP-vB-reD"/>
                         <outlet property="mapViewContainer" destination="RFz-L3-5Vl" id="WrW-JI-8XS"/>
                         <outlet property="tableViewContainer" destination="hye-Ag-mVg" id="k4i-iR-3BE"/>
                         <outlet property="view" destination="9Jw-qO-vKS" id="ztL-Zy-ImC"/>

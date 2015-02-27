@@ -288,32 +288,42 @@
     } else {
         [self openIpadResultsList];
     }
+    
     self.listViewToggleButton.selected = self.isShowingIpadResultsList;
 }
 
 - (void)closeIpadResultsList
 {
     if (self.isShowingIpadResultsList) {
+        self.isShowingIpadResultsList = NO;
+        
         MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
+            
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
-        } completion:nil];
-        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
-        self.isShowingIpadResultsList = NO;
-        self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
+            
+        } completion:^(BOOL finished) {
+            self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
+            self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
+            [self.mapViewController recenterOnVisibleResources:YES];
+        }];
     }
 }
 
 - (void)openIpadResultsList
 {
     if (!self.isShowingIpadResultsList) {
+        self.isShowingIpadResultsList = YES;
+        
         MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
-        } completion:nil];
-        self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
-        self.isShowingIpadResultsList = YES;
-        self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
+            
+        } completion:^(BOOL finished) {
+            self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
+            self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
+            [self.mapViewController recenterOnVisibleResources:YES];
+        }];
     }
 }
 
@@ -348,8 +358,7 @@
 
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    [[self resourcesTableViewController] setResources:resources];
-    
+    self.resourcesTableViewController.resources = resources;
     [[self mapViewController] setResources:resources animated:animated];
 }
 

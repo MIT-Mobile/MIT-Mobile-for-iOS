@@ -7,6 +7,7 @@
 #import "MITLocationManager.h"
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
+#import "MITMartyModel.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -15,7 +16,6 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 @interface MITMartyMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
-@property (nonatomic, readonly) MITCalloutMapView *mapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
 @property (nonatomic, strong) MITMartyResource *currentlySelectResource;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
@@ -63,7 +63,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
-    [self setupMapBoundingBoxAnimated:NO];
+    [self recenterOnVisibleResources:NO];
     
     [self setupCalloutView];
 }
@@ -85,32 +85,35 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     self.tiledMapView.mapView.calloutView = self.calloutView;
 }
 
+- (void)setResources:(NSArray *)resources
+{
+    [self setResources:resources animated:NO];
+}
+
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated
 {
-    self.resources = resources;
-    
-    self.shouldRefreshAnnotationsOnNextMapRegionChange = YES;
-    self.showFirstCalloutOnNextMapRegionChange = YES;
-    [self setupMapBoundingBoxAnimated:animated];
+    if (![_resources isEqualToArray:resources]) {
+        _resources = [[[MITCoreDataController defaultController] mainQueueContext] transferManagedObjects:resources];
+
+        [self _didChangeResources:animated];
+    }
+}
+
+- (void)_didChangeResources:(BOOL)animated
+{
     [self refreshPlaceAnnotations];
+    [self recenterOnVisibleResources:animated];
 }
 
 #pragma mark - Map View
 
-- (void)setupMapBoundingBoxAnimated:(BOOL)animated
+- (void)recenterOnVisibleResources:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-    
-    if ([self.resources count] > 0) {
-        MKMapRect zoomRect = MKMapRectNull;
-        for (id <MKAnnotation> annotation in self.resources)
-        {
-            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
-            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0.1, 0.1);
-            zoomRect = MKMapRectUnion(zoomRect, pointRect);
-        }
-        double inset = -zoomRect.size.width * 0.1;
-        [self.mapView setVisibleMapRect:MKMapRectInset(zoomRect, inset, inset) edgePadding:self.mapEdgeInsets animated:YES];
+
+    if ([self.resources count]) {
+        [self.mapView showAnnotations:self.resources animated:NO];
+        [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
@@ -130,15 +133,20 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
             [annotationsToRemove addObject:annotation];
         }
     }
+    
     [self.mapView removeAnnotations:annotationsToRemove];
 }
 
 - (void)showCalloutForResource:(MITMartyResource *)resource
 {
-    for (MITMartyResource *resource2 in self.resources) {
-        if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
-            [self.mapView selectAnnotation:resource2 animated:YES];
+    if (resource) {
+        for (MITMartyResource *resource2 in self.resources) {
+            if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
+                [self.mapView selectAnnotation:resource2 animated:YES];
+            }
         }
+    } else {
+        [self.mapView selectAnnotation:nil animated:YES];
     }
 }
 

@@ -136,6 +136,7 @@
     if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectQuery:)]) {
         [self.delegate placeSelectionViewController:self didSelectQuery:query.text];
     }
+    
     [self filterResultsUsingString:query.text];
 
 }
