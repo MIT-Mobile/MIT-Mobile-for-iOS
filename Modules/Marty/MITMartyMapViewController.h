@@ -13,5 +13,6 @@
 - (UIBarButtonItem *)userLocationButton;
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated;
 - (void)showCalloutForResource:(MITMartyResource *)resource;
+- (void)recenterOnVisibleResources:(BOOL)animated;
 
 @end

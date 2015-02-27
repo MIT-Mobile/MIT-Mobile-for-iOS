@@ -63,7 +63,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.tiledMapView setMapDelegate:self];
     self.mapView.showsUserLocation = [MITLocationManager locationServicesAuthorized];
     
-    [self setupMapBoundingBoxAnimated:NO];
+    [self recenterOnVisibleResources:NO];
     
     [self setupCalloutView];
 }
@@ -102,16 +102,24 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)_didChangeResources:(BOOL)animated
 {
     [self refreshPlaceAnnotations];
-    [self setupMapBoundingBoxAnimated:animated];
+    [self recenterOnVisibleResources:animated];
 }
 
 #pragma mark - Map View
 
-- (void)setupMapBoundingBoxAnimated:(BOOL)animated
+- (void)recenterOnVisibleResources:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
 
     if ([self.resources count]) {
+        MKMapRect minimalMapRect = MKMapRectNull;
+        for (id<MKAnnotation> annotation in self.resources) {
+            MKMapPoint annotationPoint = MKMapPointForCoordinate(annotation.coordinate);
+            MKMapRect pointRect = MKMapRectMake(annotationPoint.x, annotationPoint.y, 0, 0);
+            minimalMapRect = MKMapRectUnion(minimalMapRect, pointRect);
+        }
+        
+        [self.mapView setVisibleMapRect:minimalMapRect edgePadding:self.mapEdgeInsets animated:animated];
         [self.mapView showAnnotations:self.resources animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
@@ -132,6 +140,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
             [annotationsToRemove addObject:annotation];
         }
     }
+    
     [self.mapView removeAnnotations:annotationsToRemove];
 }
 
