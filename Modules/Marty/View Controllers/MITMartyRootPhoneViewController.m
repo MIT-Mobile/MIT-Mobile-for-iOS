@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 @implementation MITMartyRootPhoneViewController {
     CGFloat _mapVerticalOffset;
+    CGAffineTransform _previousMapTransform;
 }
 
 @synthesize resourcesTableViewController = _resourcesTableViewController;
@@ -66,6 +67,8 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 
     self.contentContainerView.hidden = YES;
+
+    _previousMapTransform = CGAffineTransformIdentity;
     self.mapViewContainer.userInteractionEnabled = NO;
 
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
@@ -106,7 +109,12 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
         }
     } else {
         self.mapHeightConstraint.constant = 0;
-        self.defaultMapHeightConstraint.constant = _mapVerticalOffset * self.defaultMapHeightConstraint.multiplier;
+        
+        if (_mapVerticalOffset < 0) {
+            self.defaultMapHeightConstraint.constant = _mapVerticalOffset * self.defaultMapHeightConstraint.multiplier;
+        } else {
+            self.defaultMapHeightConstraint.constant = 0;
+        }
 
         if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
             self.mapHeightConstraint.active = NO;
@@ -589,8 +597,17 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
 {
-    
-    _mapVerticalOffset = contentOffset.y;
+    if (contentOffset.y > 0) {
+        CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -contentOffset.y);
+        self.mapViewContainer.transform = transform;
+        
+        _previousMapTransform = transform;
+        _mapVerticalOffset = 0;
+    } else {
+        _mapVerticalOffset = contentOffset.y;
+        _previousMapTransform = CGAffineTransformIdentity;
+        self.mapViewContainer.transform = CGAffineTransformIdentity;
+    }
     
     [self.view setNeedsUpdateConstraints];
     [self.view updateConstraintsIfNeeded];
