@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @end
 
 @implementation MITMartyRootPhoneViewController {
-    CGAffineTransform _previousMapTransform;
+    CGFloat _mapVerticalOffset;
 }
 
 @synthesize resourcesTableViewController = _resourcesTableViewController;
@@ -65,8 +65,6 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 
     self.contentContainerView.hidden = YES;
-
-    _previousMapTransform = CGAffineTransformIdentity;
     self.mapViewContainer.userInteractionEnabled = NO;
 
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
@@ -107,6 +105,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
         }
     } else {
         self.mapHeightConstraint.constant = 0;
+        self.defaultMapHeightConstraint.constant = _mapVerticalOffset * self.defaultMapHeightConstraint.multiplier;
 
         if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
             self.mapHeightConstraint.active = NO;
@@ -221,18 +220,9 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 {
     if (_mapFullScreen != mapFullScreen) {
         _mapFullScreen = mapFullScreen;
-        
-        if (_mapFullScreen) {
-            [self.navigationController setToolbarHidden:NO animated:animated];
-        } else {
-            [self.navigationController setToolbarHidden:YES animated:animated];
-            [self.mapViewController showCalloutForResource:nil];
-        }
 
         NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
         if (_mapFullScreen) {
-            [self.mapViewController.mapView showAnnotations:self.mapViewController.resources animated:YES];
-            
             [UIView animateWithDuration:duration
                                   delay:0
                                 options:UIViewAnimationOptionCurveEaseOut
@@ -245,6 +235,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = NO;
                                  self.mapViewContainer.userInteractionEnabled = YES;
+                                 [self.navigationController setToolbarHidden:NO animated:animated];
                              }];
         } else {
             [UIView animateWithDuration:duration
@@ -252,14 +243,16 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  self.tableViewContainer.transform = CGAffineTransformIdentity;
-                                 self.mapViewContainer.transform = _previousMapTransform;
                                  
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view layoutIfNeeded];
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = YES;
                                  self.mapViewContainer.userInteractionEnabled = NO;
-                                 _previousMapTransform = CGAffineTransformIdentity;
+                                 
+                                 [self.mapViewController recenterOnVisibleResources:animated];
+                                 [self.navigationController setToolbarHidden:YES animated:animated];
+                                 [self.mapViewController showCalloutForResource:nil];
                              }];
         }
     }
@@ -452,7 +445,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
             if (self.isMapFullScreen) {
                 [self.navigationController setToolbarHidden:NO animated:animated];
             } else {
-                [self.mapViewController setResources:nil animated:YES];
+                [self.mapViewController.mapView selectAnnotation:nil animated:animated];
             }
         } break;
     }
@@ -587,9 +580,11 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
 {
-    CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -(contentOffset.y * [UIScreen mainScreen].scale));
-    self.mapViewContainer.transform = transform;
-    _previousMapTransform = transform;
+    
+    _mapVerticalOffset = contentOffset.y;
+    
+    [self.view setNeedsUpdateConstraints];
+    [self.view updateConstraintsIfNeeded];
 }
 
 - (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController
