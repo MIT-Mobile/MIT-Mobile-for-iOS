@@ -238,6 +238,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                              animations:^{
                                  CGFloat tableContainerTranslation = CGRectGetMaxY(self.contentContainerView.bounds) - CGRectGetMinY(self.tableViewContainer.frame);
                                  self.tableViewContainer.transform = CGAffineTransformMakeTranslation(0, tableContainerTranslation);
+                                 self.mapViewContainer.transform = CGAffineTransformIdentity;
                                  
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view layoutIfNeeded];
@@ -252,6 +253,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                                 options:UIViewAnimationOptionCurveEaseOut
                              animations:^{
                                  self.tableViewContainer.transform = CGAffineTransformIdentity;
+                                 self.mapViewContainer.transform = _previousMapTransform;
                                  
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view layoutIfNeeded];
