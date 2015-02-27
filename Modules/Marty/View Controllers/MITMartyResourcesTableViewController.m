@@ -145,15 +145,6 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         }
         
         NSString *sectionKey = self.buildingSections[section];
-
-        NSInteger rowOffset = indexPath.row;
-        if ([self shouldDisplayPlaceholderCell]) {
-            // Decrement the row index by 1 because the first cell displayed
-            // will be the transparent placeholder cell and the incremented index
-            // will break things.
-            rowOffset--;
-        }
-
         return self.resourcesByBuilding[sectionKey][indexPath.row];
     }
 }
@@ -233,7 +224,9 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     if ([self shouldDisplayPlaceholderCell] && section == 0) {
         return 1;
     } else {
-        --section;
+        if ([self shouldDisplayPlaceholderCell]) {
+            --section;
+        }
         
         __block NSInteger numberOfRows = 0;
         NSString *sectionKey = self.buildingSections[section];
@@ -248,7 +241,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
 {
     if ([self shouldDisplayPlaceholderCell] && (section == 0)) {
         return nil;
-    } else {
+    } else if ([self shouldDisplayPlaceholderCell]) {
         --section;
     }
 
