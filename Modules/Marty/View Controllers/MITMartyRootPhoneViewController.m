@@ -8,6 +8,7 @@
 
 #import "MITMartyMapViewController.h"
 #import "MITMartyRecentSearchController.h"
+#import "MITMapPlaceSelector.h"
 
 #import "DDLog.h"
 #import "MITAdditions.h"
@@ -21,7 +22,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     MITMartyRootViewControllerStateResults,
 };
 
-@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -309,7 +310,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (void)loadTypeAheadViewController
 {
     MITMartyRecentSearchController *typeAheadViewController = [[MITMartyRecentSearchController alloc] init];
-    
+    typeAheadViewController.delegate = self;
     [self _addChildViewController:typeAheadViewController toView:self.view];
     _typeAheadViewController = typeAheadViewController;
 }
@@ -565,7 +566,15 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     return searchBar;
 }
 
-#pragma mark Delegation
+#pragma mark - Delegation
+#pragma mark MITMartyRecentSearchControllerDelegate
+- (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector>*)viewController didSelectQuery:(NSString*)query
+{
+    self.searchBar.text = query;
+    [self.searchBar resignFirstResponder];
+}
+
+#pragma mark MITMartyResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
     MITMartyDetailTableViewController *detailViewController = [[MITMartyDetailTableViewController alloc] init];
