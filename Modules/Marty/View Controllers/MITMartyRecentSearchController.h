@@ -5,7 +5,7 @@
 @class MITMapCategory;
 
 @interface MITMartyRecentSearchController : UITableViewController <MITMapPlaceSelector>
-
+@property(nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
 @property (nonatomic, readonly) UIActionSheet *confirmSheet;
 
 - (void)addRecentSearchItem:(NSString *)searchTerm;
