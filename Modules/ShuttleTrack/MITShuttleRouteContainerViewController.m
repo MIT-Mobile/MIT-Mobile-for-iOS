@@ -94,7 +94,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewDidLoad];
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    [self setupNavBar];
     [self displayAllChildViewControllers];
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
@@ -105,6 +104,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewWillAppear:animated];
     [self.navigationController setToolbarHidden:YES animated:animated];
+    [self setupNavBar];
     
     if (self.state == MITShuttleRouteContainerStateStop) {
         [self configureLayoutForState:self.state animated:NO];
@@ -115,6 +115,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     [super viewWillDisappear:animated];
     [self setNavigationBarExtended:NO];
+    [self.navigationController.navigationBar restoreShadow];
 }
 
 - (void)didReceiveMemoryWarning
@@ -150,8 +151,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 
 - (void)setupNavBar
 {
-    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor whiteColor]];
-    
+    [self.navigationController.navigationBar prepareForExtensionWithBackgroundColor:[UIColor mit_navBarColor]];
+    self.navigationBarExtensionView.backgroundColor = [UIColor mit_navBarColor];
     self.navigationBarExtensionViewHeightConstraint.constant = kNavigationBarStopStateExtensionHeight;
 }
 
@@ -331,7 +332,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
         self.stopSubtitleLabel.text = stop.title;
     } else {
         CGPoint stopSubtitleLabelCenter = self.stopSubtitleLabel.center;
-        CGPoint initialTempLabelCenter;
+        CGPoint initialTempLabelCenter = CGPointZero;
         switch (animationType) {
             case MITShuttleStopSubtitleLabelAnimationTypeForward:
                 initialTempLabelCenter = CGPointApplyAffineTransform(stopSubtitleLabelCenter,
@@ -498,6 +499,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
     void (^completionBlock)(BOOL) = ^(BOOL finished) {
         [self setStopViewHidden:YES];
         [self.mapViewController setState:MITShuttleMapStateContracted];
+        self.routeViewController.shouldSuppressPredictionRefreshReloads = NO;
         [self.routeViewController.tableView reloadData];
     };
     
@@ -515,6 +517,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
         animationBlock();
         completionBlock(YES);
     }
+    
+    self.stop = nil;
+    [self.mapViewController setRoute:self.route stop:nil];
 }
 
 - (void)configureLayoutForStopStateAnimated:(BOOL)animated
@@ -569,6 +574,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
 {
     [self.view bringSubviewToFront:self.mapContainerView];
+    
+    self.routeViewController.shouldSuppressPredictionRefreshReloads = YES;
     
     if (UIInterfaceOrientationIsPortrait(self.nibInterfaceOrientation)) {
         self.routeContainerViewTopSpaceConstraint.priority = UILayoutPriorityDefaultHigh;
@@ -759,6 +766,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopInfiniteScrollingLayoutPosition) {
 {
     self.stop = stop;
     [self setState:MITShuttleRouteContainerStateStop animated:YES];
+}
+
+#pragma mark - UINavigationBarDelegate
+
+-(BOOL)navigationShouldPopOnBackButton
+{
+    if (self.state == MITShuttleRouteContainerStateRoute) {
+        return YES;
+    } else {
+        [self configureLayoutForState:MITShuttleRouteContainerStateRoute animated:YES];
+        self.state = MITShuttleRouteContainerStateRoute;
+        return NO;
+    }
 }
 
 @end

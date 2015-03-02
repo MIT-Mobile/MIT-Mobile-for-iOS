@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttleStop, MITShuttleVehicle;
+@class MITShuttleStop, MITShuttleVehicle, MITShuttleVehicleList;
 
 typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
     MITShuttleRouteStatusNotInService = 0,
@@ -27,14 +27,17 @@ typedef NS_ENUM(NSUInteger, MITShuttleRouteStatus) {
 @property (nonatomic, retain) NSString * vehiclesURL;
 @property (nonatomic, retain) NSOrderedSet *stops;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
+@property (nonatomic, retain) MITShuttleVehicleList *vehicleList;
+@property (nonatomic, retain) NSDate *updatedTime;
 
 + (RKMapping *)objectMappingFromAllRoutes;
 + (RKMapping *)objectMappingFromDetail;
++ (RKMapping *)objectMappingFromPredictionList;
++ (RKMapping *)objectMappingFromVehicleList;
 
 - (NSArray *)nearestStopsWithCount:(NSInteger)count;
 - (MITShuttleRouteStatus)status;
 - (BOOL)isNextStop:(MITShuttleStop *)stop;
-- (NSArray *)nextStops;
 
 @end
 

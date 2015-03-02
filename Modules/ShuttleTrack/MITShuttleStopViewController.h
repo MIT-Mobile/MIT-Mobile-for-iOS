@@ -11,7 +11,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 
 @protocol MITShuttleStopViewControllerDelegate;
 
-@interface MITShuttleStopViewController : UITableViewController
+@interface MITShuttleStopViewController : UIViewController
+
+@property (strong, nonatomic) UITableView *tableView;
 
 @property (strong, nonatomic) MITShuttleStop *stop;
 @property (strong, nonatomic) MITShuttleRoute *route;
@@ -25,7 +27,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewOption) {
 - (instancetype)initWithStyle:(UITableViewStyle)style stop:(MITShuttleStop *)stop route:(MITShuttleRoute *)route;
 
 - (CGFloat)preferredContentHeight;
-- (void)setFixedContentSize:(CGSize)size;
 
 @end
 

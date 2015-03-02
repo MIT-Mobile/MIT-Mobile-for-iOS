@@ -79,7 +79,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
         userField.returnKeyType = UIReturnKeyNext;
         userField.textAlignment = NSTextAlignmentLeft;
         userField.tag = MITTouchstoneLoginViewUserTag;
-        
+        userField.accessibilityLabel = MITAccessibilityTouchstoneLoginFieldUsernameEmail;
         _usernameField = userField;
     }
     
@@ -102,7 +102,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
         passwordField.returnKeyType = UIReturnKeyDone;
         passwordField.secureTextEntry = YES;
         passwordField.tag = MITTouchstoneLoginViewPasswordTag;
-        
+        passwordField.accessibilityLabel = MITAccessibilityTouchstoneLoginFieldPassword;
         _passwordField = passwordField;
     }
     
@@ -443,6 +443,7 @@ typedef NS_ENUM(NSInteger, MITTouchstoneLoginSectionIndex) {
                 cell.accessoryType = UITableViewCellAccessoryNone;
                 cell.editingAccessoryType = UITableViewCellAccessoryNone;
                 cell.textLabel.text = @"Log In";
+                cell.accessibilityLabel = MITAccessibilityTouchstoneLoginButtonLabel;
                 
                 if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
                     cell.textLabel.textColor = [UIColor colorWithRed:0.639

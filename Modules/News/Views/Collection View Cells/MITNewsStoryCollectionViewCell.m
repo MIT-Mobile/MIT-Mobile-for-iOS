@@ -1,5 +1,5 @@
 #import "MITNewsStoryCollectionViewCell.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "MITNewsStory.h"
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"

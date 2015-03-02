@@ -67,6 +67,8 @@
     // make navigation bar visible
     [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
     [self.navigationController.navigationBar setShadowImage:nil];
+    [self.navigationController.navigationBar setTintColor:[UIColor mit_tintColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
     
     self.navigationItem.title = @"History";
     self.navigationItem.rightBarButtonItem = self.editButtonItem;

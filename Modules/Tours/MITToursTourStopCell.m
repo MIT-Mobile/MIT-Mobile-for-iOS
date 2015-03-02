@@ -1,6 +1,6 @@
 #import "MITToursTourStopCell.h"
 #import "MITToursStopCellModel.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITToursTourStopCell ()
 

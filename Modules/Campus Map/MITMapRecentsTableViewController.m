@@ -120,8 +120,13 @@ NSString * const kMITMapRecentSearchCellIdentifier = @"kMITMapRecentSearchCellId
         [recentsHeaderView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[titleLabel(>=0)]-0-|" options:0 metrics:nil views:@{@"titleLabel": titleLabel}]];
         
         UIButton *clearButton = [[UIButton alloc] init];
-        CGSize buttonTextSize = [@"Clear" sizeWithFont:clearButton.titleLabel.font];
+        
+        CGSize buttonTextSize = [@"Clear" sizeWithAttributes:@{NSFontAttributeName: clearButton.titleLabel.font}];
+        buttonTextSize.width = ceil(buttonTextSize.width);
+        buttonTextSize.height = ceil(buttonTextSize.height);
+        
         clearButton.frame = CGRectMake(20, 0, buttonTextSize.width, 44);
+        
         [clearButton setTitle:@"Clear" forState:UIControlStateNormal];
         [clearButton setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
         [clearButton addTarget:self action:@selector(clearRecentSearchesButtonTapped:) forControlEvents:UIControlEventTouchUpInside];

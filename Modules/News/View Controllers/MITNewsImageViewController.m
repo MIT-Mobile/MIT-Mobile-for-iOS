@@ -1,5 +1,5 @@
 #import "MITNewsImageViewController.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
 #import "MITImageScrollView.h"
@@ -59,7 +59,7 @@
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [self.imageView cancelCurrentImageLoad];
+    [self.imageView sd_cancelCurrentImageLoad];
 }
 
 - (void)viewDidDisappear:(BOOL)animated

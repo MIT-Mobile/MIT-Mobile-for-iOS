@@ -1,7 +1,6 @@
 #import "FacilitiesLeasedViewController.h"
 #import "FacilitiesLocation.h"
 #import "FacilitiesPropertyOwner.h"
-#import "SecondaryGroupedTableViewCell.h"
 #import "UIKit+MITAdditions.h"
 #import "MITTelephoneHandler.h"
 

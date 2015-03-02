@@ -18,7 +18,7 @@
 {
     MITToursStopDirectionAnnotation *stopAnnotation = (MITToursStopDirectionAnnotation *)self.annotation;
     
-    NSString *imageName = stopAnnotation.isDestination ? @"tours-annotation-arrow-end" : @"tours-annotation-arrow-start";
+    NSString *imageName = stopAnnotation.isDestination ? MITImageToursAnnotationArrowEnd : MITImageToursAnnotationArrowStart;
     UIImageView *directionArrowView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:imageName]];
     
     // Create and apply a rotation to the arrow view in order to

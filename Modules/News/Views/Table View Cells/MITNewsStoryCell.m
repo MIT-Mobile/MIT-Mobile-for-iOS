@@ -1,5 +1,5 @@
 #import "MITNewsStoryCell.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "MITNewsStory.h"
 #import "MITNewsImage.h"
 #import "MITNewsImageRepresentation.h"
@@ -10,7 +10,8 @@
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *imageWidthConstraint;
 @end
 
-#warning 'External' story image size should probably not be hardcoded
+// Maximum side of the source logo at the bottom of 'External' stories.
+// This was derived from examining the CSS for the MIT News office's site.
 static CGSize const MITNewsStoryCellExternalMaximumImageSize = {.width = 133., .height = 34.};
 
 @implementation MITNewsStoryCell {

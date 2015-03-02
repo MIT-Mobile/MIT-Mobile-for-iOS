@@ -40,7 +40,7 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
  *  This was added in for version 3.5.2 and should be removed once we are sure
  *  no one is still upgrading from the pre-3.5.2 versions
  */
-- (void)migrateCredentialsFromKeychain DEPRECATED_ATTRIBUTE;
+- (void)_migrateCredentialsFromKeychain;
 - (BOOL)needsToPromptForCredential;
 @end
 
@@ -118,13 +118,13 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
 {
     self = [super init];
     if (self) {
-        [self migrateCredentialsFromKeychain];
+        [self _migrateCredentialsFromKeychain];
     }
     
     return self;
 }
 
-- (void)migrateCredentialsFromKeychain
+- (void)_migrateCredentialsFromKeychain
 {
     id guard = [[NSUserDefaults standardUserDefaults] objectForKey:MITTouchstoneKeychainCredentialMigratedKey];
     if (!guard) {

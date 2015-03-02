@@ -76,8 +76,8 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 {
     [self setupSearchBar];
     
-    self.listLayoutButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"libraries/list-view"] style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
-    self.gridLayoutButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:@"libraries/grid-view"] style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
+    self.listLayoutButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(listViewPressed)];
+    self.gridLayoutButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonGrid] style:UIBarButtonItemStylePlain target:self action:@selector(gridViewPressed)];
     self.layoutMode = MITLibrariesLayoutModeList;
 }
 

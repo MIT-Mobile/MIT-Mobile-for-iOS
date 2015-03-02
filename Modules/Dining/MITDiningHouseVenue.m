@@ -96,7 +96,9 @@
             mealSummary = mealSummaryInDay;
         }
     }
-    [groupedMealSummaries addObject:mealSummary];
+    if (mealSummary) {
+        [groupedMealSummaries addObject:mealSummary];
+    }
     
     return groupedMealSummaries;
 }

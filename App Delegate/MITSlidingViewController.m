@@ -171,6 +171,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 {
     UIImage *image = [UIImage imageNamed:MITImageBarButtonMenu];
     UIBarButtonItem *leftBarButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_showModuleSelector:)];
+    leftBarButtonItem.accessibilityLabel = MITAccessibilityMainNavigationButtonLabel;
     return leftBarButtonItem;
 }
 
@@ -667,6 +668,18 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     if ([self.delegate respondsToSelector:@selector(slidingViewController:didShowTopViewController:)]) {
         [self.delegate slidingViewController:self didShowTopViewController:viewController];
     }
+}
+
+// Below methods are added to give the abilitiy to change the status bar style of the individual modules
+// Mark Novak 2-5-2015 MXN
+- (UIViewController *)childViewControllerForStatusBarHidden
+{
+    return self.visibleViewController;
+}
+
+- (UIViewController *)childViewControllerForStatusBarStyle
+{
+    return self.visibleViewController;
 }
 
 @end

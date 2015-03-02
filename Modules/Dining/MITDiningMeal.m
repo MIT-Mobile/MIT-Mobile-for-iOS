@@ -20,6 +20,7 @@
     [mapping addAttributeMappingsFromArray:@[@"name", @"message"]];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"items" toKeyPath:@"items" withMapping:[MITDiningMenuItem objectMapping]]];
     mapping.assignsNilForMissingRelationships = YES;
+    mapping.assignsDefaultValueForMissingAttributes = YES;
     
     return mapping;
 }
@@ -28,7 +29,11 @@
 {
     NSString *description = nil;
     if (!self.startTimeString || !self.endTimeString) {
-        description = self.message;
+        if (self.message) {
+            description = self.message;
+        } else {
+            description = @"Closed";
+        }
     } else {
         NSString *startString = [self.startTime MITShortTimeOfDayString];
         NSString *endString = [self.endTime MITShortTimeOfDayString];
@@ -76,6 +81,23 @@
 {
     NSString *dateString = [NSString stringWithFormat:@"%@ %@", self.houseDay.dateString, self.endTimeString];
     return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
+}
+
++ (NSInteger)mealOrderForMealName:(NSString *)mealName
+{
+    NSString *lowerMealName = mealName.lowercaseString;
+    if ([lowerMealName isEqualToString:@"breakfast"]) {
+        return 0;
+    } else if ([lowerMealName isEqualToString:@"brunch"]) {
+        return 1;
+    } else if ([lowerMealName isEqualToString:@"lunch"]) {
+        return 2;
+    } else if ([lowerMealName isEqualToString:@"dinner"]) {
+        return 3;
+    } else {
+        NSLog(@"Error: Unknown meal name type %@!", mealName);
+        return NSNotFound;
+    }
 }
 
 @end

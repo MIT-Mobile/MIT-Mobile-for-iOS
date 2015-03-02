@@ -64,7 +64,9 @@
         NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
         NSString *aboutText = infoDictionary[@"MITAboutAppText"];
         UIFont *aboutFont = [UIFont systemFontOfSize:14.0];
-        CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+        NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+        CGSize aboutSize = [aboutText boundingRectWithSize:CGSizeMake(270, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: aboutFont, NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+        
         if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
             return aboutSize.height + 40.;
         } else {
@@ -117,7 +119,7 @@
                                                              orientation:UIImageOrientationUp];
                         CGImageRelease(hashImage);
                     } else {
-                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleVersion"]];
+                        cell.textLabel.text = [NSString stringWithFormat:@"%@ %@", infoDict[@"CFBundleDisplayName"], infoDict[@"CFBundleShortVersionString"]];
                     } 
                 }
                     break;

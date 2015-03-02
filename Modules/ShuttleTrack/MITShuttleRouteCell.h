@@ -9,6 +9,4 @@ extern NSString * const kMITShuttleRouteCellIdentifier;
 
 - (void)setRoute:(MITShuttleRoute *)route;
 
-+ (CGFloat)cellHeightForRoute:(MITShuttleRoute *)route;
-
 @end

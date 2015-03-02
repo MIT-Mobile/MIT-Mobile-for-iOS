@@ -95,7 +95,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
     NSMutableString *alertBody = [NSMutableString string];
     [alertBody appendString:routeTitle];
     [alertBody appendString:@" arriving at "];
-    [alertBody appendString:rootPrediction.stop.title];
+    [alertBody appendString:rootPrediction.list.stop.title];
     [alertBody appendString:@" in "];
     NSTimeInterval fireDateTimestamp = [rootPrediction.timestamp doubleValue] + kMITShuttleStopNotificationInterval; // 5 minutes earlier than predicted time
     for (int i = 0; i < predictionGroup.count; i++) {

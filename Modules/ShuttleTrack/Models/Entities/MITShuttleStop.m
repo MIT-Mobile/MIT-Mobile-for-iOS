@@ -67,6 +67,16 @@
     return mapping;
 }
 
++ (RKMapping *)objectMappingFromPredictionList
+{
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    [mapping addAttributeMappingsFromDictionary:@{@"stop_id": @"identifier"}];
+    [mapping addAttributeMappingsFromDictionary:@{@"route_id": @"routeId"}];
+    [mapping setIdentificationAttributes:@[@"identifier", @"routeId"]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"route" withMapping:[MITShuttleRoute objectMappingFromPredictionList]]];
+    return mapping;
+}
+
 - (MITShuttlePrediction *)nextPrediction
 {
     return [self.predictionList.predictions firstObject];
@@ -75,7 +85,7 @@
 - (MITShuttlePrediction *)nextPredictionForVehicle:(MITShuttleVehicle *)vehicle
 {
     for (MITShuttlePrediction *prediction in self.predictionList.predictions) {
-        if ([vehicle isEqual:prediction.vehicle]) {
+        if ([vehicle.identifier isEqualToString:prediction.vehicleId]) {
             return prediction;
         }
     }

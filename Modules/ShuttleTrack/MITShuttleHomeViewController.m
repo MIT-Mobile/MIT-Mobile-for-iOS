@@ -30,6 +30,7 @@ static const CGFloat kRouteSectionHeaderHeight = CGFLOAT_MIN;
 static const CGFloat kRouteSectionFooterHeight = CGFLOAT_MIN;
 
 static const CGFloat kContactInformationCellHeight = 60.0;
+static const CGFloat kRouteCellHeight = 44.0;
 
 typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleSectionRoutes = 0,
@@ -39,9 +40,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 @interface MITShuttleHomeViewController ()
 
-@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-@property (weak, nonatomic) IBOutlet UILabel *locationStatusLabel;
-
 @property(nonatomic,strong) MITShuttleRoutesDataSource *routesDataSource;
 @property (nonatomic, readonly) NSArray *routes;
 
@@ -49,11 +47,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 @property (copy, nonatomic) NSDictionary *nearestStops;
 @property (nonatomic, strong) NSArray *predictionsDependentStops;
 @property (nonatomic, assign) BOOL shouldAddPredictionsDependencies;
+@property (nonatomic, assign) BOOL forceRefreshForNextDependencies;
 
 @property (nonatomic, getter = isUpdating) BOOL updating;
-@property (strong, nonatomic) NSDate *lastUpdatedDate;
 
-@property (strong, nonatomic) NSTimer *routesAndPredictionsRefreshTimer;
+@property (strong, nonatomic) NSTimer *routesRefreshTimer;
 
 @property (strong, nonatomic) MITShuttleResourceData *resourceData;
 
@@ -104,9 +102,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     [super viewWillAppear:animated];
     
-    [self startRefreshingRoutesAndPredictions];
-    
-    [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+    self.shouldAddPredictionsDependencies = YES;
+    self.forceRefreshForNextDependencies = YES;
+    [self startRefreshingRoutes];
     
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
@@ -120,8 +118,6 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-
-    self.shouldAddPredictionsDependencies = YES;
     
     if (![MITLocationManager locationServicesAuthorized]) {
         [self performSelector:@selector(requestLocationServicesAuthorization) withObject:nil afterDelay:0.75];
@@ -180,47 +176,49 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self fetchRoutes];
+    [self updateRoutesData:NO completion:nil];
 }
 
 #pragma mark - Data Refresh Timers
 
 - (void)stopRefreshingData
 {
-    [self.routesAndPredictionsRefreshTimer invalidate];
-    self.routesAndPredictionsRefreshTimer = nil;
+    [self.routesRefreshTimer invalidate];
 }
 
 #pragma mark - Data Refresh
 
-- (void)startRefreshingRoutesAndPredictions
+- (void)startRefreshingRoutes
 {
-    if (!self.routesAndPredictionsRefreshTimer) {
-        [self fetchRoutes];
-        
-        NSTimer *routesAndPredictionsTimer = [NSTimer timerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
-                                                                     target:self
-                                                                   selector:@selector(fetchRoutes)
-                                                                   userInfo:nil
-                                                                    repeats:YES];
-        [[NSRunLoop mainRunLoop] addTimer:routesAndPredictionsTimer forMode:NSRunLoopCommonModes];
-        self.routesAndPredictionsRefreshTimer = routesAndPredictionsTimer;
+    if (![self.routesRefreshTimer isValid]) {
+        if (!self.routesRefreshTimer) {
+            [self updateRoutesData:YES completion:nil];
+        } else {
+            [self updateRoutesData:NO completion:nil];
+        }
+
+        self.routesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kShuttleHomeAllRoutesRefreshInterval
+                                                                   target:self
+                                                                 selector:@selector(timedFetchRoutes:)
+                                                                 userInfo:nil
+                                                                  repeats:YES];
     }
 }
 
-- (void)fetchRoutes
+- (void)timedFetchRoutes:(NSTimer*)timer
 {
-    [self beginRefreshing];
-    [self updateRoutesData:^{
-        [self endRefreshing];
-    }];
+    [self updateRoutesData:NO completion:nil];
 }
 
-- (void)updateRoutesData:(void(^)(void))completion
+- (void)updateRoutesData:(BOOL)showsRefreshControl completion:(void(^)(void))completion
 {
+    [self beginRefreshing:showsRefreshControl];
+
     [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
         [self refreshFlatRouteArray:^{
             [self.tableView reloadDataAndMaintainSelection];
+            [self endRefreshing];
+
             if (completion) {
                 completion();
             }
@@ -230,23 +228,19 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 
 - (void)updatePredictionsData
 {
-    [self.routesDataSource updateRoutes:^(MITShuttleRoutesDataSource *dataSource, NSError *error) {
-        [self.tableView reloadDataAndMaintainSelection];
-    }];
+    [self.tableView reloadDataAndMaintainSelection];
 }
 
-- (void)beginRefreshing
+- (void)beginRefreshing:(BOOL)showRefreshControl
 {
     if (!self.isUpdating) {
         self.updating = YES;
         
-        if (!self.refreshControl.isRefreshing) {
+        if (showRefreshControl && !self.refreshControl.isRefreshing) {
             [self.refreshControl beginRefreshing];
             // Necessary because tableview doesn't automatically scroll to show refreshControl
             [self.tableView setContentOffset:CGPointMake(0, -self.refreshControl.frame.size.height) animated:YES];
         }
-        
-        [self refreshLastUpdatedLabel];
     }
 }
 
@@ -254,36 +248,26 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     if (self.isUpdating) {
         [self.refreshControl endRefreshing];
-        self.lastUpdatedDate = [NSDate date];
         self.updating = NO;
-        [self refreshLastUpdatedLabel];
     }
-}
-
-#pragma mark - Toolbar Labels
-
-- (void)refreshLastUpdatedLabel
-{
-    NSString *lastUpdatedText;
-    if (self.isUpdating) {
-        lastUpdatedText = @"Updating...";
-    } else {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
-                                                                            toDate:[NSDate date]];
-        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    }
-    self.lastUpdatedLabel.text = lastUpdatedText;
-}
-
-- (void)refreshLocationStatusLabel
-{
-    self.locationStatusLabel.text = [MITLocationManager locationServicesAuthorized] ? @"Showing nearest stops" : @"Location couldn't be determined";
 }
 
 #pragma mark - Location Notifications
 
 - (void)locationManagerDidUpdateLocation:(NSNotification *)notification
 {
+    CLLocation *currentLocation = [MITLocationManager sharedManager].currentLocation;
+    if (!currentLocation) {
+        return;
+    }
+
+    // If the location is too old, we want to a) Not update the UI, and b) Refresh the location
+    if ([currentLocation.timestamp timeIntervalSinceNow] < -60) {
+        [[MITLocationManager sharedManager] stopUpdatingLocation];
+        [[MITLocationManager sharedManager] startUpdatingLocation];
+        return;
+    }
+    
     [self refreshFlatRouteArray:^{
         [self.tableView reloadData];
     }];
@@ -293,12 +277,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
 {
     if ([MITLocationManager locationServicesAuthorized]) {
         [[MITLocationManager sharedManager] startUpdatingLocation];
-        [self refreshFlatRouteArray:^{
-            [self refreshLocationStatusLabel];
-            [self.tableView reloadData];
-        }];
     } else {
-        [self refreshLocationStatusLabel];
         [self.tableView reloadData];
     }
 }
@@ -331,6 +310,8 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     [self refreshNearestStops:^{
         NSMutableArray *mutableFlatRouteArray = [NSMutableArray array];
         
+        // Sort first by In Service / Unknown / Not In Service, then by server order
+        
         NSArray *sortedRoutes = [self.routes sortedArrayUsingComparator:^NSComparisonResult(MITShuttleRoute *left, MITShuttleRoute *right) {
             MITShuttleRouteStatus leftStatus = [left status];
             MITShuttleRouteStatus rightStatus = [right status];
@@ -340,9 +321,9 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                 return NSOrderedAscending;
             } else if (rightStatus == MITShuttleRouteStatusInService) {
                 return NSOrderedDescending;
-            } else if (leftStatus == MITShuttleRouteStatusNotInService) {
+            } else if (leftStatus == MITShuttleRouteStatusUnknown) {
                 return NSOrderedAscending;
-            } else if (rightStatus == MITShuttleRouteStatusNotInService) {
+            } else if (rightStatus == MITShuttleRouteStatusUnknown) {
                 return NSOrderedDescending;
             }
             return [left.order compare:right.order];
@@ -382,8 +363,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         }
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            self.nearestStops = stopsByRouteIdentifier;
-            [self updateNearestStopsPredictionsDependencies];
+            if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
+                self.forceRefreshForNextDependencies = YES;
+                self.nearestStops = stopsByRouteIdentifier;
+                [self updateNearestStopsPredictionsDependencies];
+            }
             
             if (completion) {
                 completion();
@@ -440,19 +424,28 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         for (MITShuttleStop *stop in stopArray) {
             if (stop.route.status == MITShuttleRouteStatusInService) {
                 [newPredictionsDependentStops addObject:stop];
-                [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStop:stop];
             }
         }
     }
-    self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+    
+    if (newPredictionsDependentStops.count > 0) {
+        self.predictionsDependentStops = [NSArray arrayWithArray:newPredictionsDependentStops];
+        [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForStops:self.predictionsDependentStops];
+        if (self.forceRefreshForNextDependencies) {
+            self.forceRefreshForNextDependencies = NO;
+            [[MITShuttlePredictionLoader sharedLoader] forceRefresh];
+        }
+    } else {
+        self.predictionsDependentStops = nil;
+    }
 }
 
 - (void)removeNearestStopsPredictionsDependencies
 {
-    for (MITShuttleStop *stop in self.predictionsDependentStops) {
-        [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStop:stop];
+    if (self.predictionsDependentStops != nil) {
+        [[MITShuttlePredictionLoader sharedLoader] removePredictionDependencyForStops:self.predictionsDependentStops];
+        self.predictionsDependentStops = nil;
     }
-    self.predictionsDependentStops = nil;
 }
 
 #pragma mark - UITableViewDataSource
@@ -541,7 +534,10 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
     MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
     NSInteger row = indexPath.row;
     MITShuttleStop *stop = self.flatRouteArray[row];
-    MITShuttlePrediction *prediction = [stop nextPrediction];
+    MITShuttlePrediction *prediction = nil;
+    if ([stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
+        prediction = [stop nextPrediction];
+    }
     [cell setStop:stop prediction:prediction];
     [cell setCellType:MITShuttleStopCellTypeRouteList];
     cell.separatorInset = [self stopCellSeparatorEdgeInsetsForStop:stop];
@@ -626,7 +622,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         case MITShuttleSectionRoutes: {
             id object = self.flatRouteArray[indexPath.row];
             if ([object isKindOfClass:[MITShuttleRoute class]]) {
-                return [MITShuttleRouteCell cellHeightForRoute:object];
+                return kRouteCellHeight;
             } else {
                 return tableView.rowHeight;
             }

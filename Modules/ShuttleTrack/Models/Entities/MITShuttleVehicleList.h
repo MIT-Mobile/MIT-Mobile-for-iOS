@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITShuttleVehicle;
+@class MITShuttleVehicle, MITShuttleRoute;
 
 @interface MITShuttleVehicleList : MITManagedObject <MITMappedObject>
 
@@ -11,8 +11,11 @@
 @property (nonatomic, retain) NSString * routeId;
 @property (nonatomic, retain) NSString * routeURL;
 @property (nonatomic, retain) NSOrderedSet *vehicles;
-@property (nonatomic) BOOL scheduled;
-@property (nonatomic) BOOL predictable;
+@property (nonatomic, retain) MITShuttleRoute *route;
+
++ (RKMapping *)objectMappingFromDetail;
++ (RKMapping *)objectMappingFromRoute;
+
 @end
 
 @interface MITShuttleVehicleList (CoreDataGeneratedAccessors)

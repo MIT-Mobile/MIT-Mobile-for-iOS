@@ -1,7 +1,7 @@
 #import "MITLibrariesWorldcatItemCell.h"
 #import "MITLibrariesWorldcatItem.h"
 #import "UIKit+MITLibraries.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITLibrariesWorldcatItemCell ()
 

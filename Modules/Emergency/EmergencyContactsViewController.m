@@ -100,9 +100,12 @@ static CGFloat subtitleFontSize = 14;
     NSString *detail = [self detailText:contactInfo];
     
     CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
-    CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:titleFontSize] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
     
-    CGSize detailSize = [detail sizeWithFont:[UIFont systemFontOfSize:subtitleFontSize] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+    NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    
+    CGSize titleSize = [title boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:titleFontSize], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+    
+    CGSize detailSize = [detail boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:subtitleFontSize], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
     
     return MAX(titleSize.height + detailSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
 }

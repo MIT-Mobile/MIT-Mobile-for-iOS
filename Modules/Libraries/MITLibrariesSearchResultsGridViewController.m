@@ -1,7 +1,7 @@
 #import "MITLibrariesSearchResultsGridViewController.h"
 #import "MITLibrariesSearchController.h"
 #import "MITLibrariesWorldcatItemCollectionCell.h"
-#import "SVPullToRefresh.h"
+#import <SVPullToRefresh/SVPullToRefresh.h>
 #import "TopAlignedStickyHeaderCollectionViewFlowLayout.h"
 
 static NSString * const kWorldcatItemCollectionCellIdentifier = @"kWorldcatItemCollectionCellIdentifier";

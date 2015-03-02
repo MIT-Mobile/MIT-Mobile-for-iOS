@@ -1,4 +1,4 @@
-#import "ECSlidingViewController.h"
+#import <ECSlidingViewController/ECSlidingViewController.h>
 
 @class MITNotification;
 @class MITModuleViewController;
