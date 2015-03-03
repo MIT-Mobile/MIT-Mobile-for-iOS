@@ -8,6 +8,7 @@
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
+#import "MITMartyResourceView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -219,10 +220,13 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
-    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForResource:resource];
+    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
+    contentView.resourceView.machineName = resource.name;
+    contentView.resourceView.location = resource.room;
+    [contentView.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
     
     self.calloutView.contentView = contentView;
+    self.calloutView.contentViewPreferredSize = [contentView.resourceView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
