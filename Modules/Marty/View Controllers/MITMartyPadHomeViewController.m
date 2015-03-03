@@ -303,7 +303,7 @@
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
             
         } completion:^(BOOL finished) {
-            self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsZero;
+            self.mapViewController.calloutView.internalInsets = UIEdgeInsetsZero;
             self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
             [self.mapViewController recenterOnVisibleResources:YES];
         }];
@@ -320,7 +320,7 @@
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
             
         } completion:^(BOOL finished) {
-            self.mapViewController.calloutView.constrainedInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
+            self.mapViewController.calloutView.externalInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
             self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
             [self.mapViewController recenterOnVisibleResources:YES];
         }];
