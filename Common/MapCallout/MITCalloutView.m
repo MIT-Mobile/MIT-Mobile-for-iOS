@@ -49,6 +49,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         _externalInsets = kMITCalloutViewDefaultExternalInsets;
         _shouldHighlightOnTouch = YES;
         _permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
+        _contentViewPreferredSize = CGSizeZero;
         self.backgroundColor = [UIColor whiteColor];
     }
     return self;
