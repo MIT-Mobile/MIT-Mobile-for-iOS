@@ -217,8 +217,11 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
     if ([annotation isEqual:self.library]) {
-        MITMapPlaceAnnotationView *annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITLibraryDetailAnnotationViewIdentifier];
-        [annotationView setRedColor];
+        MKAnnotationView *annotationView = [mapView dequeueReusableAnnotationViewWithIdentifier:kMITLibraryDetailAnnotationViewIdentifier];
+        if (annotationView == nil) {
+            annotationView = [[MKAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITLibraryDetailAnnotationViewIdentifier];
+        }
+        annotationView.image = [UIImage imageNamed:MITImageMapAnnotationPlacePin];
         return annotationView;
     }
     

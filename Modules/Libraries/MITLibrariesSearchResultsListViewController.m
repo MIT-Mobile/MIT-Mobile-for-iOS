@@ -1,8 +1,9 @@
 #import "MITLibrariesSearchResultsListViewController.h"
 #import "MITLibrariesSearchController.h"
 #import "MITLibrariesWorldcatItemCell.h"
-#import "SVPullToRefresh.h"
 #import "MITLibrariesWorldcatItem.h"
+
+#import <SVPullToRefresh/SVPullToRefresh.h>
 
 static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifier = @"kMITLibrariesSearchResultsViewControllerItemCellIdentifier";
 
@@ -32,6 +33,7 @@ static NSString * const kMITLibrariesSearchResultsViewControllerItemCellIdentifi
     
     UINib *librariesItemCellNib = [UINib nibWithNibName:NSStringFromClass([MITLibrariesWorldcatItemCell class]) bundle:nil];
     [self.resultsTableView registerNib:librariesItemCellNib forCellReuseIdentifier:kMITLibrariesSearchResultsViewControllerItemCellIdentifier];
+    self.resultsTableView.accessibilityIdentifier = MITAccessibilityLibrariesSearchResultsTableViewIdentifier;
     
     self.resultsTableView.showsInfiniteScrolling = NO;
     [self.resultsTableView addInfiniteScrollingWithActionHandler:^{

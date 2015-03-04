@@ -89,6 +89,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 - (void)setupSearchBar
 {
     self.searchBar = [[UISearchBar alloc] initWithFrame:self.searchContainerView.bounds];
+    self.searchBar.accessibilityLabel = MITAccessibilityLibrariesHomeSearchBarLabel;
     self.searchBar.showsCancelButton = NO;
     self.searchBar.delegate = self;
     self.searchBar.placeholder = @"Search MIT's WorldCat";

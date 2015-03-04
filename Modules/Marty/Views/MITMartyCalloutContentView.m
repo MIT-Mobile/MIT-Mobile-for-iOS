@@ -1,19 +1,11 @@
 #import "MITMartyCalloutContentView.h"
 #import "UIFont+MITTours.h"
 #import "UIKit+MITAdditions.h"
+#import "MITMartyResourceView.h"
 
 @interface MITMartyCalloutContentView ()
-
-@property (strong, nonatomic) UIView *containerView;
-
-@property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
-@property(nonatomic,weak) IBOutlet UILabel *locationLabel;
-@property(nonatomic,weak) IBOutlet UILabel *statusLabel;
-
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *distanceSpacingConstraint;
-
 @property (strong, nonatomic) UIGestureRecognizer *tapRecognizer;
-
 @end
 
 @implementation MITMartyCalloutContentView
@@ -24,6 +16,7 @@
     if (self) {
         [self setup];
     }
+    
     return self;
 }
 
@@ -33,75 +26,36 @@
     if (self) {
         [self setup];
     }
+    
     return self;
 }
 
 - (void)setup
 {
-    UIView *view = nil;
-    NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MITMartyCalloutContentView" owner:self options:nil];
-    for (id object in objects) {
-        if ([object isKindOfClass:[UIView class]]) {
-            view = object;
-            break;
-        }
-    }
-    if (view) {
-        self.containerView = view;
-        [self addSubview:view];
-        
-        self.userInteractionEnabled = NO;
-        self.exclusiveTouch = NO;
-    }
-}
-
-- (void)configureForResource:(MITMartyResource *)resource
-{
+    NSString *nibName = NSStringFromClass([self class]);
+    UINib *nib = [UINib nibWithNibName:nibName bundle:nil];
+    NSAssert(nib, @"failed to load nib %@",nibName);
+    [nib instantiateWithOwner:self options:nil];
     
-    [self setStatus:MITMartyResourceStatusOnline withText:resource.status];
-    self.machineNameLabel.text = resource.name;
-    self.locationLabel.text = resource.room;
-        
-    [self.containerView setNeedsUpdateConstraints];
-    [self.containerView setNeedsLayout];
-    [self sizeToFit];
-}
+    NSAssert([self.resourceView isKindOfClass:[MITMartyResourceView class]], @"root view in nib %@ is kind of %@, expected %@",nibName,NSStringFromClass([self.resourceView class]),NSStringFromClass([MITMartyResourceView class]));
 
-- (void)setStatus:(MITMartyResourceStatus)status withText:(NSString *)statusText
-{
-    self.statusLabel.text = [statusText copy];
+    self.resourceView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+    self.resourceView.translatesAutoresizingMaskIntoConstraints = YES;
     
-    switch (status) {
-        case MITMartyResourceStatusOffline: {
-            self.statusLabel.textColor = [UIColor mit_closedRedColor];
-        } break;
-            
-        case MITMartyResourceStatusOnline: {
-            self.statusLabel.textColor = [UIColor mit_openGreenColor];
-        } break;
-            
-        case MITMartyResourceStatusUnknown: {
-            self.statusLabel.textColor = [UIColor orangeColor];
-        } break;
-    }
+    // Do a bit of messing with the frame here to ensure that when
+    // the resourceView is loaded and then added as a subview, its constraints
+    // are not violated. Assumes that the constraints (as set in IB) have no
+    // warnings or errors.
+    // (bskinner - 2015.03.03)
+    CGRect updatedFrame = self.frame;
+    updatedFrame.size = self.resourceView.frame.size;
+    self.frame = updatedFrame;
+    self.resourceView.frame = self.bounds;
     
-    [self.statusLabel sizeToFit];
-}
-
-- (CGSize)sizeThatFits:(CGSize)size
-{
-    return self.intrinsicContentSize;
-}
-
-- (CGSize)intrinsicContentSize
-{
-    return [self.containerView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
-}
-
-- (void)layoutSubviews
-{
-    [super layoutSubviews];
-    self.containerView.frame = self.bounds;
+    [self addSubview:self.resourceView];
+    
+    self.userInteractionEnabled = NO;
+    self.exclusiveTouch = NO;
 }
 
 @end

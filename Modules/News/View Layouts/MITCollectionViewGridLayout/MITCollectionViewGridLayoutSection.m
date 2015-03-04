@@ -564,20 +564,21 @@ MITCollectionViewGridSpan MITCollectionViewGridSpanMake(NSUInteger horizontal, N
 {
     NSMutableArray *allLayoutAttributes = [[NSMutableArray alloc] init];
     
-    if (_headerLayoutAttributes) {
-        [allLayoutAttributes addObject:self.headerLayoutAttributes];
+    UICollectionViewLayoutAttributes *headerLayoutAttributes = self.headerLayoutAttributes;
+    if (headerLayoutAttributes) {
+        [allLayoutAttributes addObject:headerLayoutAttributes];
     }
-    
-    if (_featuredItemLayoutAttributes) {
-        [allLayoutAttributes addObject:self.featuredItemLayoutAttributes];
+    UICollectionViewLayoutAttributes *featuredItemLayoutAttributes = self.featuredItemLayoutAttributes;
+    if (featuredItemLayoutAttributes) {
+        [allLayoutAttributes addObject:featuredItemLayoutAttributes];
     }
-    
-    if (_itemLayoutAttributes) {
-        [allLayoutAttributes addObjectsFromArray:self.itemLayoutAttributes];
+    NSArray *itemLayoutAttributes = self.itemLayoutAttributes;
+    if (itemLayoutAttributes) {
+        [allLayoutAttributes addObjectsFromArray:itemLayoutAttributes];
     }
-    
-    if (_decorationLayoutAttributes) {
-        [allLayoutAttributes addObjectsFromArray:self.decorationLayoutAttributes];
+    NSArray *decorationLayoutAttributes = self.decorationLayoutAttributes;
+    if (decorationLayoutAttributes) {
+        [allLayoutAttributes addObjectsFromArray:decorationLayoutAttributes];
     }
     
     return allLayoutAttributes;

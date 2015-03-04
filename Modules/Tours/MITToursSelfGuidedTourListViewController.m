@@ -213,7 +213,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 - (UIView *)mainLoopSectionHeaderView
 {
     if (!_mainLoopSectionHeaderView) {
-        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/circle_red"]];
+        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursCircleRed]];
         circleView.frame = CGRectMake(8, 9, 12, 12);
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 0, self.tableView.frame.size.width - 40, 30)];
         label.font = [UIFont toursMapCalloutTitle];
@@ -229,7 +229,7 @@ static NSString *const kMITToursTourDetailCell = @"MITToursTourDetailCell";
 - (UIView *)sideTripsSectionHeaderView
 {
     if (!_sideTripsSectionHeaderView) {
-        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"tours/circle_blue"]];
+        UIImageView *circleView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageToursCircleBlue]];
         UILabel *label = [[UILabel alloc] initWithFrame:CGRectMake(30, 0, self.tableView.frame.size.width - 40, 30)];
         circleView.frame = CGRectMake(8, 9, 12, 12);
         label.font = [UIFont toursMapCalloutTitle];

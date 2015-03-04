@@ -1,4 +1,4 @@
-#import <RestKit/RKHTTPRequestOperation.h>
+#import <RestKit/RestKit.h>
 
 @interface MITTouchstoneRequestOperation : RKHTTPRequestOperation
 + (void)setUserAgent:(NSString*)userAgent;

@@ -42,7 +42,6 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
     [self.collectionView registerNib:[UINib nibWithNibName:NSStringFromClass([MITLibrariesYourAccountCollectionViewHeader class]) bundle:nil] forSupplementaryViewOfKind:UICollectionElementKindSectionHeader withReuseIdentifier:kCollectionHeaderIdentifier];
     self.collectionView.backgroundColor = [UIColor clearColor];
     TopAlignedStickyHeaderCollectionViewFlowLayout *customCollectionViewLayout = [[TopAlignedStickyHeaderCollectionViewFlowLayout alloc] init];
-    customCollectionViewLayout.delegate = self;
     self.collectionView.collectionViewLayout = customCollectionViewLayout;
 }
 

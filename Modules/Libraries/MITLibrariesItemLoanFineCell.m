@@ -1,7 +1,7 @@
 #import "MITLibrariesItemLoanFineCell.h"
 #import "MITLibrariesMITFineItem.h"
 #import "MITLibrariesMITLoanItem.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 
@@ -76,7 +76,7 @@
 {
     static NSMutableAttributedString *warningSignString;
     if (!warningSignString) {
-        UIImage *warningSign = [UIImage imageNamed:@"libraries/status-alert"];
+        UIImage *warningSign = [UIImage imageNamed:MITImageLibrariesStatusAlert];
         NSTextAttachment *warningSignAttachment = [[NSTextAttachment alloc] init];
         warningSignAttachment.image = warningSign;
         warningSignAttachment.bounds = CGRectMake(0, -2, warningSign.size.width, warningSign.size.height);

@@ -44,7 +44,11 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 {
     [super viewDidLoad];
 
-    self.indexOfCurrentAggregateMeal = [self.dataManager indexOfAggregatedMealForDate:self.visibleMeal.houseDay.date mealName:self.visibleMeal.name];
+    NSDate *visibleDate = self.visibleMeal.houseDay.date;
+    if (!visibleDate) {
+        visibleDate = self.visibleDay.date;
+    }
+    self.indexOfCurrentAggregateMeal = [self.dataManager indexOfAggregatedMealForDate:visibleDate mealName:self.visibleMeal.name];
     
     self.aggregatedMeal =
     self.visibleAggregatedMeal = [self.dataManager aggregatedMeals][self.indexOfCurrentAggregateMeal];

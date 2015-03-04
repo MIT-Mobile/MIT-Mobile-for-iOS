@@ -23,6 +23,7 @@
 + (RKMapping *)objectMappingFromDetail;
 + (RKMapping *)objectMappingFromRoutes;
 + (RKMapping *)objectMappingFromRouteDetail;
++ (RKMapping *)objectMappingFromPredictionList;
 
 // Computed
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;

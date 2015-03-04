@@ -11,7 +11,7 @@
 #import "MITNewsStoryCell.h"
 #import "MITNewsLoadMoreTableViewCell.h"
 #import "MITDisclosureHeaderView.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 #import "MITNewsConstants.h"
 #import "MITAdditions.h"
@@ -78,7 +78,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     tableView.dataSource = self;
     tableView.delegate = self;
 
-    [tableView registerNib:[UINib nibWithNibName:@"NewsCategoryHeaderView" bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
+    [tableView registerNib:[UINib nibWithNibName:MITNewsCategoryHeaderViewNibName bundle:nil] forHeaderFooterViewReuseIdentifier:MITNewsCategoryHeaderIdentifier];
 
     [tableView registerNib:[UINib nibWithNibName:MITNewsStoryCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryCellIdentifier];
     [tableView registerNib:[UINib nibWithNibName:MITNewsStoryNoDekCellNibName bundle:nil] forDynamicCellReuseIdentifier:MITNewsStoryNoDekCellIdentifier];

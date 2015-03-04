@@ -3,7 +3,6 @@
 #import "EmergencyContactsViewController.h"
 #import "MITUIConstants.h"
 #import "EmergencyData.h"
-#import "MITJSON.h"
 #import "MIT_MobileAppDelegate.h"
 #import "CoreDataManager.h"
 #import "MITTelephoneHandler.h"
@@ -17,7 +16,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 };
 
 @interface EmergencyViewController ()
-@property (weak) UIWebView *infoWebView;
+@property (nonatomic, strong) UIWebView *infoWebView;
 
 @property (nonatomic,copy) NSString *htmlString;
 @property BOOL refreshButtonPressed;
@@ -30,11 +29,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     self = [super initWithStyle:style];
     if (self) {
         self.title = @"Emergency Info";
-        if (NSFoundationVersionNumber > NSFoundationVersionNumber_iOS_6_1) {
-            _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
-        } else {
-            _webViewInsets = UIEdgeInsetsMake(10., 10., 0., 10.);
-        }
+        _webViewInsets = UIEdgeInsetsMake(15., 15., 5., 15.);
     }
     return self;
 }
@@ -52,13 +47,17 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     [self.refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
 }
 
-- (void)viewWillAppear:(BOOL)animated {
+- (void)viewWillAppear:(BOOL)animated
+{
     [super viewWillAppear:animated];
     
     // register for emergencydata notifications
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidLoad:) name:EmergencyInfoDidLoadNotification object:nil];
 	[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(infoDidFailToLoad:) name:EmergencyInfoDidFailToLoadNotification object:nil];
-
+    
+    if (!_infoWebView) {
+        [self infoDidLoad:nil];
+    }
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -70,15 +69,31 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)viewDidAppear:(BOOL)animated {
     [super viewDidAppear:animated];
-    [self infoDidLoad:nil];
-    
-	EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
-	[emergencyModule syncUnreadNotifications];
+}
+
+- (UIWebView *)infoWebView
+{
+    if (!_infoWebView) {
+        UIWebView *webView = [[UIWebView alloc] initWithFrame:UIEdgeInsetsInsetRect(self.tableView.bounds, self.webViewInsets)];
+        webView.delegate = self;
+        webView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
+                                    UIViewAutoresizingFlexibleWidth);
+        webView.backgroundColor = [UIColor clearColor];
+        webView.dataDetectorTypes = UIDataDetectorTypeAll;
+        webView.opaque = NO;
+        webView.scrollView.scrollEnabled = NO;
+        webView.scrollView.showsHorizontalScrollIndicator = NO;
+        webView.scrollView.showsVerticalScrollIndicator = NO;
+        webView.userInteractionEnabled = NO;
+        _infoWebView = webView;
+    }
+    return _infoWebView;
 }
 
 - (void)setHtmlString:(NSString *)htmlString
 {
     _htmlString = [htmlString copy];
+    self.webViewCellHeight = 0;
     [self.infoWebView loadHTMLString:self.htmlString
                              baseURL:nil];
 }
@@ -170,9 +185,14 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         NSString *phone = contacts[indexPath.row][@"phone"];
         
         CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
-        CGSize titleSize = [title sizeWithFont:[UIFont systemFontOfSize:[UIFont buttonFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByWordWrapping];
         
-        CGSize phoneSize = [phone sizeWithFont:[UIFont systemFontOfSize:[UIFont smallSystemFontSize]] constrainedToSize:CGSizeMake(availableWidth, 2000) lineBreakMode:NSLineBreakByTruncatingTail];
+        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
+        
+        CGSize titleSize = [title boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont buttonFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+        
+        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
+        
+        CGSize phoneSize = [phone boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
         
         return MAX(titleSize.height + phoneSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
     } else {
@@ -186,38 +206,18 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     static NSString *contactCellId = @"ContactCell";
     
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:alertCellId];
-        if (!cell) {
-            cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:alertCellId];
-            cell.selectionStyle = UITableViewCellSelectionStyleNone;
-            cell.contentView.autoresizesSubviews = YES;
-            cell.contentView.clipsToBounds = YES;
-            
-            UIWebView *webView = [[UIWebView alloc] initWithFrame:UIEdgeInsetsInsetRect(cell.contentView.bounds, self.webViewInsets)];
-            webView.autoresizingMask = (UIViewAutoresizingFlexibleHeight |
-                                        UIViewAutoresizingFlexibleWidth);
-            webView.backgroundColor = [UIColor clearColor];
-            webView.dataDetectorTypes = UIDataDetectorTypeAll;
-            webView.delegate = self;
-            if (!self.webViewCellHeight) {
-                webView.delegate = self;
-            } else {
-                webView.delegate = nil;
-            }
-            webView.opaque = NO;
-            
-            webView.scrollView.scrollEnabled = NO;
-            webView.scrollView.showsHorizontalScrollIndicator = NO;
-            webView.scrollView.showsVerticalScrollIndicator = NO;
-            webView.userInteractionEnabled = NO;
-            [cell.contentView addSubview:webView];
-            self.infoWebView = webView;
-            
-            if ([self.htmlString length]) {
-                NSString *htmlString = self.htmlString;
-                [webView loadHTMLString:htmlString
-                                baseURL:nil];
-            }
+        
+        UITableViewCell *cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:alertCellId];
+        cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        cell.contentView.autoresizesSubviews = YES;
+        cell.contentView.clipsToBounds = YES;
+        
+        UIWebView *webView = self.infoWebView;
+        webView.frame = UIEdgeInsetsInsetRect(cell.contentView.bounds, self.webViewInsets);
+        [cell.contentView addSubview:webView];
+        if (!self.webViewCellHeight) {
+            [self.infoWebView loadHTMLString:self.htmlString
+                                     baseURL:nil];
         }
         
         return cell;
@@ -240,6 +240,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         } else {
             cell.textLabel.text = @"More Emergency Contacts";
             cell.detailTextLabel.text = nil;
+            cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         }
         
@@ -281,10 +282,6 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
     
     self.htmlString = [[EmergencyData sharedData] htmlString];
     [self.tableView reloadData];
-    if (self.navigationController.visibleViewController == self) {
-        EmergencyModule *emergencyModule = (EmergencyModule *)[[MIT_MobileAppDelegate applicationDelegate] moduleWithTag:EmergencyTag];
-        [emergencyModule syncUnreadNotifications];
-    }
     
     [self.refreshControl endRefreshing];
 }

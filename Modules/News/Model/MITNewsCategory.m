@@ -1,6 +1,6 @@
 #import <CoreData/CoreData.h>
 #import <RestKit/RestKit.h>
-#import <RestKit/RKMapperOperation.h>
+//#import <RestKit/RKMapperOperation.h>
 
 #import "MITNewsCategory.h"
 #import "MITNewsStory.h"

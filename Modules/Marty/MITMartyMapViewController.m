@@ -8,12 +8,13 @@
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
+#import "MITMartyResourceView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 
 
-@interface MITMartyMapViewController () <MKMapViewDelegate, SMCalloutViewDelegate>
+@interface MITMartyMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
@@ -70,19 +71,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)setupCalloutView
 {
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
+    MITCalloutView *calloutView = [[MITCalloutView alloc] init];
     calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-    }
+    calloutView.permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
     
     self.calloutView = calloutView;
-    
-    self.tiledMapView.mapView.calloutView = self.calloutView;
+    self.tiledMapView.mapView.mitCalloutView = self.calloutView;
 }
 
 - (void)setResources:(NSArray *)resources
@@ -191,7 +185,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     [self dismissCurrentCallout];
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
-        [self.calloutView dismissCalloutAnimated:YES];
+        [self.calloutView dismissCallout];
         self.currentlySelectResource = nil;
     }
 }
@@ -226,21 +220,19 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
-    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] initWithFrame:CGRectZero];
-    [contentView configureForResource:resource];
+    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
+    contentView.resourceView.machineName = resource.name;
+    contentView.resourceView.location = resource.room;
+    [contentView.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
     
-    SMCalloutView *calloutView = self.calloutView;
-    calloutView.contentView = contentView;
-    calloutView.calloutOffset = annotationView.calloutOffset;
-    calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-    
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    self.calloutView = calloutView;
+    self.calloutView.contentView = contentView;
+    self.calloutView.contentViewPreferredSize = [contentView.resourceView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)dismissCurrentCallout
 {
-    [self.calloutView dismissCalloutAnimated:YES];
+    [self.calloutView dismissCallout];
 }
 
 #pragma mark - Callout View
@@ -255,15 +247,11 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     
     detailVC.view.frame = CGRectMake(0, 0, 320, 500);
     
-    SMCalloutView *calloutView = self.calloutView;
-    calloutView.contentView = detailVC.view;
-    calloutView.contentView.clipsToBounds = YES;
-    calloutView.calloutOffset = annotationView.calloutOffset;
-    calloutView.rightAccessoryView = nil;
-    self.calloutView = calloutView;
+    self.calloutView.contentView = detailVC.view;
+    self.calloutView.contentView.clipsToBounds = YES;
     self.calloutViewController = detailVC;
     
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
     
     // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
     detailVC.view.frame = CGRectMake(0, 0, 320, 500);
@@ -274,26 +262,23 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
-    self.calloutView.title = resource.title;
-    self.calloutView.subtitle = resource.subtitle;
-    self.calloutView.calloutOffset = annotationView.calloutOffset;
+    self.calloutView.titleText = resource.title;
+    self.calloutView.subtitleText = resource.subtitle;
     
-    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 #pragma mark - SMCalloutViewDelegate Methods
-
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offset
 {
     MKMapView *mapView = self.mapView;
-    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
-                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CGPoint adjustedCenter = CGPointMake(-offset.x + mapView.bounds.size.width * 0.5,
+                                         -offset.y + mapView.bounds.size.height * 0.5);
     CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
     [mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self pushDetailViewControllerForResource:self.currentlySelectResource];
@@ -303,12 +288,9 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     }
 }
 
-- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        return YES;
-    }
-    return NO;
+    /* Do Nothing */
 }
 
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource

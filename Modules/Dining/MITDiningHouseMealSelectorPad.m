@@ -5,6 +5,11 @@
 #import "Foundation+MITAdditions.h"
 #import "MITAdditions.h"
 
+static CGFloat const MITDiningHouseMealSelectorActiveSwipeSelectionScale = 1.25;
+static CGFloat const MITDiningHouseMealSelectorHitPointPadding = 30.0;
+static CGFloat const MITDiningHouseMealSelectorHighlightOffset = -30.0;
+static NSTimeInterval const MITDiningHouseMealSelectorLongPressTimerDuration = 0.4;
+
 @interface MITDiningHouseMealSelectorPad ()
 
 @property (nonatomic, strong) NSArray *venues;
@@ -16,6 +21,10 @@
 @property (nonatomic, strong) UIView *selectedMealBackground;
 @property (nonatomic, weak) UILabel *currentlySelectedLetterView;
 
+@property (nonatomic, strong) NSArray *mealLetterViews;
+@property (nonatomic, weak) UILabel *currentlyHighlightedLetterView;
+@property (nonatomic, strong) NSTimer *longPressTimer;
+@property (nonatomic) CGFloat letterViewsCenterY;
 @end
 
 @implementation MITDiningHouseMealSelectorPad
@@ -77,9 +86,21 @@
     [self refreshViews];
 }
 
-- (void)selectMeal:(NSString *)meal onDate:(NSDate *)date
+- (void)selectMeal:(NSString *)mealName onDate:(NSDate *)date
 {
-    [self mealSelected:meal onDate:date];
+    for (NSDate *dateKey in [self.letterViewsByDate allKeys]) {
+        if ([[dateKey dateWithoutTime] isEqualToDate:[date dateWithoutTime]]) {
+            NSOrderedSet *letterViews = [self.letterViewsByDate objectForKey:dateKey];
+            for (UILabel *letterView in letterViews) {
+                MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
+                if ([meal.name isEqualToString:mealName]) {
+                    [self selectLetterView:letterView];
+                    break;
+                }
+            }
+        }
+    }
+    [self mealSelected:mealName onDate:date];
 }
 
 #pragma mark - Private Methods
@@ -91,6 +112,9 @@
     self.selectedMealBackground.hidden = NO;
     [self bringSubviewToFront:letterView];
     
+    
+    MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
+    self.selectedMealNameLabel.text = [meal titleCaseName];
     CGPoint selectedMealNameLabelCenter = self.selectedMealNameLabel.center;
     selectedMealNameLabelCenter.x = letterView.center.x;
     self.selectedMealNameLabel.center = selectedMealNameLabelCenter;
@@ -110,22 +134,6 @@
 
 - (void)mealSelected:(NSString *)mealName onDate:(NSDate *)date
 {
-    [self deselectLetterView:self.currentlySelectedLetterView];
-    
-    for (NSDate *dateKey in [self.letterViewsByDate allKeys]) {
-        if ([[dateKey dateWithoutTime] isEqualToDate:[date dateWithoutTime]]) {
-            NSOrderedSet *letterViews = [self.letterViewsByDate objectForKey:dateKey];
-            for (UILabel *letterView in letterViews) {
-                MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", letterView]];
-                if ([meal.name isEqualToString:mealName]) {
-                    self.selectedMealNameLabel.text = [meal titleCaseName];
-                    [self selectLetterView:letterView];
-                    break;
-                }
-            }
-        }
-    }
-    
     if ([self.delegate respondsToSelector:@selector(diningHouseMealSelector:didSelectMeal:onDate:)]) {
         [self.delegate diningHouseMealSelector:self didSelectMeal:mealName onDate:date];
     }
@@ -160,10 +168,10 @@
     NSArray *allKeys = [newDateKeyedMeals allKeys];
     for (id key in allKeys) {
         NSOrderedSet *dateSortedMeals = [newDateKeyedMeals objectForKey:key];
-        dateSortedMeals = [NSOrderedSet orderedSetWithArray:[dateSortedMeals sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            MITDiningMeal *meal1 = obj1;
-            MITDiningMeal *meal2 = obj2;
-            return [meal1.startTime compare:meal2.startTime];
+        dateSortedMeals = [NSOrderedSet orderedSetWithArray:[dateSortedMeals sortedArrayUsingComparator:^NSComparisonResult(MITDiningMeal *left, MITDiningMeal *right) {
+            NSInteger leftOrder = [MITDiningMeal mealOrderForMealName:left.name];
+            NSInteger rightOrder = [MITDiningMeal mealOrderForMealName:right.name];
+            return [@(leftOrder) compare:@(rightOrder)];
         }]];
         [newDateKeyedMeals setObject:dateSortedMeals forKey:key];
     }
@@ -189,7 +197,7 @@
     NSMutableDictionary *newMealsByLetterView = [NSMutableDictionary dictionary];
     NSMutableDictionary *newLetterViewsByDate = [NSMutableDictionary dictionary];
     NSMutableDictionary *newDateLabelsByDate = [NSMutableDictionary dictionary];
-    
+    NSMutableArray *mealLetterViews = [NSMutableArray array];
     for (NSInteger i = 0; i < dateOrderedKeys.count; i++) {
         NSDate *date = dateOrderedKeys[i];
         NSOrderedSet *meals = [self.dateKeyedMeals objectForKey:date];
@@ -204,11 +212,11 @@
             mealLetterLabel.userInteractionEnabled = YES;
             mealLetterLabel.textAlignment = NSTextAlignmentCenter;
             mealLetterLabel.backgroundColor = [UIColor clearColor];
-            [mealLetterLabel addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(letterViewTapped:)]];
             [self addSubview:mealLetterLabel];
             
             [newMealsByLetterView setObject:meal forKey:[NSString stringWithFormat:@"%p", mealLetterLabel]];
             [letterViewsForCurrentDate addObject:mealLetterLabel];
+            [mealLetterViews addObject:mealLetterLabel];
         }
         
         [newLetterViewsByDate setObject:letterViewsForCurrentDate forKey:date];
@@ -226,7 +234,7 @@
     self.mealsByLetterView = [NSDictionary dictionaryWithDictionary:newMealsByLetterView];
     self.letterViewsByDate = [NSDictionary dictionaryWithDictionary:newLetterViewsByDate];
     self.dateLabelsByDate = [NSDictionary dictionaryWithDictionary:newDateLabelsByDate];
-    
+    self.mealLetterViews = [NSArray arrayWithArray:mealLetterViews];
     [self repositionViews];
 }
 
@@ -276,6 +284,11 @@
         for (NSInteger j = 0; j < letterViews.count; j++) {
             UILabel *letterView = letterViews[j];
             letterView.frame = CGRectMake(currentXOffset, self.bounds.size.height - selectedMealNameLabelHeight - mealLetterLabelSize - verticalPadding, mealLetterLabelSize, mealLetterLabelSize);
+            if (letterView == self.currentlyHighlightedLetterView) {
+                CGPoint center = letterView.center;
+                center.y += MITDiningHouseMealSelectorHighlightOffset;
+                letterView.center = center;
+            }
             
             currentXOffset += mealLetterLabelSize;
             if (j != letterViews.count - 1) {
@@ -301,6 +314,7 @@
     
     if (self.currentlySelectedLetterView) {
         self.selectedMealBackground.center = self.currentlySelectedLetterView.center;
+        self.letterViewsCenterY = self.currentlySelectedLetterView.center.y;
         [self bringSubviewToFront:self.currentlySelectedLetterView];
         
         self.selectedMealNameLabel.frame = CGRectMake(0, self.bounds.size.height - selectedMealNameLabelHeight - verticalPadding, self.selectedMealNameLabel.frame.size.width, self.selectedMealNameLabel.frame.size.height);
@@ -308,13 +322,6 @@
         selectedMealNameLabelCenter.x = self.currentlySelectedLetterView.center.x;
         self.selectedMealNameLabel.center = selectedMealNameLabelCenter;
     }
-}
-
-- (void)letterViewTapped:(id)sender
-{
-    UITapGestureRecognizer *recognizer = sender;
-    MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", recognizer.view]];
-    [self mealSelected:meal.name onDate:[self dateForMeal:meal]];
 }
 
 - (NSDate *)dateForMeal:(MITDiningMeal *)meal
@@ -351,6 +358,108 @@
     } else {
         return [mealDateFormatter stringFromDate:date];
     }
+}
+
+#pragma mark - Touches
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self handleTouch:touches.anyObject isDragging:NO];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self endLongPressTimer];
+    [self handleTouch:touches.anyObject isDragging:YES];
+}
+
+- (void)touchesEnded:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self touchesFinished];
+}
+
+- (void)touchesCancelled:(NSSet *)touches withEvent:(UIEvent *)event
+{
+    [self touchesFinished];
+}
+
+- (void)handleTouch:(UITouch *)touch isDragging:(BOOL)isDragging
+{
+    CGPoint location = [touch locationInView:self];
+    for (UILabel *v in self.mealLetterViews) {
+        CGRect frame = v.frame;
+        frame.origin.y -= MITDiningHouseMealSelectorHitPointPadding;
+        frame.size.height += MITDiningHouseMealSelectorHitPointPadding * 2.0;
+        if (CGRectContainsPoint(frame, location)) {
+            if (v != self.currentlySelectedLetterView) {
+                [self deselectLetterView:self.currentlySelectedLetterView];
+                [self selectLetterView:v];
+                if (isDragging) {
+                    [self highlightLetterView:v];
+                } else {
+                    [self startLongPressTimer];
+                }
+            }
+            break;
+        }
+    }
+}
+
+- (void)highlightLetterView:(UILabel *)letterView {
+    self.currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+    CGPoint currentCenter = self.currentlySelectedLetterView.center;
+    currentCenter.y = self.letterViewsCenterY;
+    self.currentlyHighlightedLetterView.center = currentCenter;
+    
+    self.currentlyHighlightedLetterView = letterView;
+    CGFloat scale = MITDiningHouseMealSelectorActiveSwipeSelectionScale;
+    letterView.transform = CGAffineTransformMakeScale(scale, scale);
+    CGPoint center = letterView.center;
+    center.y += MITDiningHouseMealSelectorHighlightOffset;
+    letterView.center = center;
+    self.selectedMealBackground.transform = CGAffineTransformMakeScale(scale, scale);
+}
+
+- (void)touchesFinished
+{
+    [self endLongPressTimer];
+    [self updateForCurrentlySelectedLetterView];
+    UILabel *currentlyHighlightedLetterView = self.currentlyHighlightedLetterView;
+    self.currentlyHighlightedLetterView = nil;
+    [UIView animateWithDuration:0.25 animations:^{
+        self.selectedMealBackground.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        currentlyHighlightedLetterView.transform = CGAffineTransformMakeScale(1.0, 1.0);
+        CGPoint center = currentlyHighlightedLetterView.center;
+        center.y = self.letterViewsCenterY;
+        currentlyHighlightedLetterView.center = center;
+    }];
+}
+
+- (void)startLongPressTimer
+{
+    [self endLongPressTimer];
+    self.longPressTimer = [NSTimer scheduledTimerWithTimeInterval:MITDiningHouseMealSelectorLongPressTimerDuration
+                                                           target:self
+                                                         selector:@selector(longPressTimerFired)
+                                                         userInfo:nil
+                                                          repeats:NO];
+}
+
+- (void)endLongPressTimer
+{
+    [self.longPressTimer invalidate];
+    self.longPressTimer = nil;
+}
+
+- (void)longPressTimerFired
+{
+    [self highlightLetterView:self.currentlySelectedLetterView];
+}
+
+- (void)updateForCurrentlySelectedLetterView
+{
+    MITDiningMeal *meal = [self.mealsByLetterView objectForKey:[NSString stringWithFormat:@"%p", self.currentlySelectedLetterView]];
+    [self mealSelected:meal.name onDate:[self dateForMeal:meal]];
 }
 
 @end

@@ -24,7 +24,8 @@
     NSDictionary *infoDictionary = [[NSBundle mainBundle] infoDictionary];
     NSString *aboutText = infoDictionary[@"MITAboutMITText"];
     UIFont *aboutFont = [UIFont systemFontOfSize:15.0];
-    CGSize aboutSize = [aboutText sizeWithFont:aboutFont constrainedToSize:CGSizeMake(270, 2000) lineBreakMode:NSLineBreakByWordWrapping];
+    NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    CGSize aboutSize = [aboutText boundingRectWithSize:CGSizeMake(270, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: aboutFont, NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
     return aboutSize.height;
 }
 

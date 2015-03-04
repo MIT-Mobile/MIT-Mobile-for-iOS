@@ -22,6 +22,7 @@ extern NSString* const MITNewsStoryExternalNoImageCellIdentifier;
 extern NSString* const MITNewsStoryExternalNoImageCellNibName;
 
 extern NSString* const MITNewsCategoryHeaderIdentifier;
+extern NSString* const MITNewsCategoryHeaderViewNibName;
 extern NSUInteger const MITNewsDefaultNumberOfStoriesPerPage;
 extern CGFloat const MITNewsRefreshControlHangTime;
 

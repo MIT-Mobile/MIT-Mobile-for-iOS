@@ -14,8 +14,8 @@
 {
     self.backgroundColor = [UIColor colorWithRed:244.0/255.0 green:245.0/255.0 blue:248.0/255.0 alpha:1.0];
     self.mealTimeLabel.textColor = [UIColor mit_greyTextColor];
-    [self.previousMealButton setImage:[UIImage imageNamed:@"global/action-arrow-left.png"] forState:UIControlStateNormal];
-    [self.nextMealButton setImage:[UIImage imageNamed:@"global/action-arrow-right.png"] forState:UIControlStateNormal];
+    [self.previousMealButton setImage:[UIImage imageNamed:MITImageActionArrowLeft] forState:UIControlStateNormal];
+    [self.nextMealButton setImage:[UIImage imageNamed:MITImageActionArrowRight] forState:UIControlStateNormal];
 }
 
 - (void)setMeal:(MITDiningMeal *)meal forDay:(MITDiningHouseDay *)day

@@ -5,6 +5,4 @@
 @property(nonatomic,strong) EmergencyViewController *rootViewController;
 
 - (instancetype)init;
-
-- (void)syncUnreadNotifications DEPRECATED_ATTRIBUTE;
 @end

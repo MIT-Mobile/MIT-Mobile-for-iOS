@@ -3,7 +3,6 @@
 
 #import "MITTouchstoneRequestOperation+MITMobileV2.h"
 #import "MITMobileServerConfiguration.h"
-#import "MobileKeychainServices.h"
 #import "MITAdditions.h"
 
 static NSString* const MITMobileOperationCommandAssociatedObjectKey = @"MITMobileOperationCommandAssociatedObject";
@@ -28,24 +27,6 @@ static NSString* const MITMobileOperationParametersAssociatedObjectKey = @"MITMo
 {
     return [self.request.URL queryDictionary];
 }
-
-- (void)setCompleteBlock:(void (^)(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error))block
-{
-    [self setCompletionBlockWithSuccess:^(MITTouchstoneRequestOperation *operation, id responseObject) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (block) {
-                block(operation,responseObject,operation.response.MIMEType,nil);
-            }
-        }];
-    } failure:^(MITTouchstoneRequestOperation *operation, NSError *error) {
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (block) {
-                block(operation,nil,nil,error);
-            }
-        }];
-    }];
-}
-
 @end
 
 

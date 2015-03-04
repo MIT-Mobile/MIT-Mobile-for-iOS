@@ -30,9 +30,6 @@
 
 #pragma mark Subclass methods
 - (NSString*)identifierForCellAtIndexPath:(NSIndexPath*)indexPath;
-- (void)registerNib:(UINib*)nib forDynamicCellWithReuseIdentifier:(NSString*)reuseIdentifier;
-- (CGFloat)heightForItemAtIndexPath:(NSIndexPath*)indexPath withWidth:(CGFloat)width;
-
 @property (nonatomic) BOOL showSingleCategory;
 @property (nonatomic, strong) NSString *errorMessage;
 @property (nonatomic) BOOL storyUpdateInProgress;

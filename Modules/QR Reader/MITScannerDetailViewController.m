@@ -55,6 +55,10 @@ NSString * const kActionURL = @"kActionUrl";
     self.navigationItem.rightBarButtonItem = rightItem;
     
     [self tableViewHeaderDidLoad];
+    [self.navigationController.navigationBar setTintColor:[UIColor mit_tintColor]];
+    self.navigationController.navigationBar.barStyle = UIBarStyleDefault;
+    [self.navigationController.navigationBar setBackgroundImage:nil forBarMetrics:UIBarMetricsDefault];
+    self.navigationController.navigationBar.shadowImage = nil;
 }
 
 - (void)viewWillAppear:(BOOL)animated

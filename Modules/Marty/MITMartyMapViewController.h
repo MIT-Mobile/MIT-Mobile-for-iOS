@@ -1,12 +1,12 @@
 #import <UIKit/UIKit.h>
-#import "SMCalloutView.h"
+#import "MITCalloutView.h"
 
 @class MITMartyResource;
 @class MITCalloutMapView;
 
 @interface MITMartyMapViewController : UIViewController
 @property (nonatomic, strong) NSArray *resources;
-@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic) UIEdgeInsets mapEdgeInsets;
 @property (nonatomic, readonly, weak) MITCalloutMapView *mapView;
 

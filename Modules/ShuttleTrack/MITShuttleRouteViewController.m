@@ -14,14 +14,12 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
 
-static const NSTimeInterval kRouteRefreshInterval = 10.0;
 
 static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
 
 static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
-static const NSTimeInterval kRouteVehiclesRefreshInterval = 10.0;
 
 static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteStatusCell";
 
@@ -31,11 +29,8 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
-@property (weak, nonatomic) IBOutlet UILabel *lastUpdatedLabel;
-@property (strong, nonatomic) NSDate *lastUpdatedDate;
 @property (nonatomic) BOOL isUpdating;
 
-@property (nonatomic, strong) NSTimer *vehiclesRefreshTimer;
 
 @end
 
@@ -68,19 +63,11 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [super viewDidLoad];
     [self configureViewForCurrentRoute];
     [self setupTableView];
-    [self setupToolbar];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    }
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self startRefreshingVehicles];
-    }
     
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
@@ -90,8 +77,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    [self stopRefreshingVehicles];
     
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] removeObserver:self name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
@@ -125,59 +110,19 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     self.refreshControl = refreshControl;
 }
 
-- (void)setupToolbar
-{
-    UIBarButtonItem *toolbarLabelItem = [[UIBarButtonItem alloc] initWithCustomView:self.toolbarLabelView];
-    [self setToolbarItems:@[[UIBarButtonItem flexibleSpace], toolbarLabelItem, [UIBarButtonItem flexibleSpace]]];
-}
-
-#pragma mark - Vehicles Refresh Timer
-
-- (void)startRefreshingVehicles
-{
-    [self loadVehicles];
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        NSTimer *vehiclesRefreshTimer = [NSTimer scheduledTimerWithTimeInterval:kRouteVehiclesRefreshInterval
-                                                                         target:self
-                                                                       selector:@selector(loadVehicles)
-                                                                       userInfo:nil
-                                                                        repeats:YES];
-        self.vehiclesRefreshTimer = vehiclesRefreshTimer;
-    });
-}
-
-- (void)stopRefreshingVehicles
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.vehiclesRefreshTimer invalidate];
-        self.vehiclesRefreshTimer = nil;
-    });
-}
-
-- (void)loadVehicles
-{
-    [[MITShuttleController sharedController] getVehiclesForRoute:self.route completion:^(NSArray *vehicleLists, NSError *error) {
-        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidRefresh:)]) {
-            [self.delegate routeViewControllerDidRefresh:self];
-        }
-    }];
-}
-
 #pragma mark - Update Data
 
 - (void)predictionsWillUpdate
 {
     self.isUpdating = YES;
-    [self refreshLastUpdatedLabel];
 }
 
 - (void)predictionsDidUpdate
 {
     self.isUpdating = NO;
-    self.lastUpdatedDate = [NSDate date];
-    [self refreshLastUpdatedLabel];
-    [self.tableView reloadDataAndMaintainSelection];
+    if (!self.shouldSuppressPredictionRefreshReloads) {
+        [self.tableView reloadDataAndMaintainSelection];
+    }
 }
 
 #pragma mark - Refresh Control
@@ -200,21 +145,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     } else {
         [self.tableView deselectRowAtIndexPath:[self.tableView indexPathForSelectedRow] animated:YES];
     }
-}
-
-#pragma mark - Last Updated
-
-- (void)refreshLastUpdatedLabel
-{
-    NSString *lastUpdatedText;
-    if (self.isUpdating) {
-        lastUpdatedText = @"Updating...";
-    } else {
-        NSString *relativeDateString = [NSDateFormatter relativeDateStringFromDate:self.lastUpdatedDate
-                                                                            toDate:[NSDate date]];
-        lastUpdatedText = [NSString stringWithFormat:@"Updated %@",relativeDateString];
-    }
-    self.lastUpdatedLabel.text = lastUpdatedText;
 }
 
 #pragma mark - Embedded Map Placeholder Cell
@@ -289,7 +219,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
         MITShuttleRouteStatus routeStatus = self.route.status;
-        if (routeStatus != MITShuttleRouteStatusUnknown) {
+        if (routeStatus != MITShuttleRouteStatusUnknown && [stop.predictionList.updatedTime timeIntervalSinceNow] >= -60) { // Make sure predictions are 60 seconds old or newer
             MITShuttlePrediction *prediction = [stop nextPrediction];
             [cell setStop:stop prediction:prediction];
             [cell setIsNextStop:(routeStatus == MITShuttleRouteStatusInService && [self.route isNextStop:stop])];

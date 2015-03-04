@@ -88,8 +88,9 @@
 - (NSInteger)indexOfAggregatedMealForDate:(NSDate *)date mealName:(NSString *)mealName
 {
     date = [date dateWithoutTime];
+    NSString *lowercaseMealName = mealName.lowercaseString;
     for (MITDiningAggregatedMeal *aggregatedMeal in self.aggregatedMeals) {
-        if ([aggregatedMeal.date compare:[date dateWithoutTime]] == NSOrderedSame && [aggregatedMeal.mealName isEqualToString:mealName]) {
+        if ([aggregatedMeal.date isEqualToDateIgnoringTime:date] && (!mealName || [aggregatedMeal.mealName.lowercaseString isEqualToString:lowercaseMealName])) {
             return [self.aggregatedMeals indexOfObject:aggregatedMeal];
         }
     }

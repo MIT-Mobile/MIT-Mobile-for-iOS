@@ -11,6 +11,4 @@
 @property (nonatomic,readonly) NSString *module;
 @property (nonatomic,readonly) NSString *command;
 @property (nonatomic,readonly) NSDictionary *parameters;
-
-- (void)setCompleteBlock:(void (^)(MITTouchstoneRequestOperation *operation, id content, NSString *contentType, NSError *error))block DEPRECATED_ATTRIBUTE;
 @end

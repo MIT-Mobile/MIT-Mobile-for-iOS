@@ -20,7 +20,7 @@
 {
     [super awakeFromNib];
     self.separatorInset = UIEdgeInsetsMake(0, self.frame.size.width, 0, 0);
-    self.toursImageView.image = [UIImage imageNamed:@"tours/tours_cover_image.jpg"];
+    self.toursImageView.image = [UIImage imageNamed:MITImageToursSelfGuidedBackground];
     self.tourView.hidden = YES;
     self.highlightView.hidden = YES;
     

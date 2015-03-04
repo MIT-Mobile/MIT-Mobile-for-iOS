@@ -6,7 +6,7 @@
 
 #import "MITAdditions.h"
 #import "MITCoreDataController.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 
 @interface MITNewsStoryViewController () <UIWebViewDelegate,UIScrollViewDelegate,UIActivityItemSource>
 @property (nonatomic,strong) MITNewsStory *story;
@@ -166,7 +166,10 @@
     if (self.story) {
         NSMutableArray *items = [NSMutableArray arrayWithObject:self];
         [self.managedObjectContext performBlockAndWait:^{
-                [items addObject:self.story.sourceURL];
+            NSURL *sourceURL = self.story.sourceURL;
+            if (sourceURL) {
+                [items addObject:sourceURL];
+            }
         }];
 
         UIActivityViewController *sharingViewController = [[UIActivityViewController alloc] initWithActivityItems:items

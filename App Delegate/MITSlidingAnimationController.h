@@ -1,6 +1,6 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
-#import "ECSlidingViewController.h"
+#import <ECSlidingViewController/ECSlidingViewController.h>
 
 @interface MITSlidingAnimationController : NSObject <UIViewControllerAnimatedTransitioning,ECSlidingViewControllerLayout>
 @property(nonatomic,weak,readonly) ECSlidingViewController *slidingViewController;

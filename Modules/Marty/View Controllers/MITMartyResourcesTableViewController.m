@@ -2,6 +2,7 @@
 #import "MITMartyModel.h"
 #import "MITMartyResourceTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
+#import "MITMartyResourceView.h"
 
 NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 
@@ -287,10 +288,10 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         MITMartyResource *resource = [self _representedObjectForIndexPath:indexPath];
 
         NSInteger baseIndexForSection = [self _baseIndexForSection:indexPath.section];
-        resourceCell.index = baseIndexForSection + indexPath.row;
-        resourceCell.machineName = resource.name;
-        resourceCell.location = resource.room;
-        [resourceCell setStatus:MITMartyResourceStatusOnline withText:resource.status];
+        resourceCell.resourceView.index = baseIndexForSection + indexPath.row;
+        resourceCell.resourceView.machineName = resource.name;
+        resourceCell.resourceView.location = resource.room;
+        [resourceCell.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
     }
 }
 

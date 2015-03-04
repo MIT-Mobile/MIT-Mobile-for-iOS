@@ -1,5 +1,5 @@
 #import "MITToursStopCollectionViewCell.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "UIFont+MITTours.h"
 #import "UIKit+MITAdditions.h"
 

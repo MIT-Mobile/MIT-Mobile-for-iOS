@@ -17,7 +17,6 @@
 @property (nonatomic, retain) NSNumber * speedKph;
 @property (nonatomic, retain) MITShuttleRoute *route;
 @property (nonatomic, retain) MITShuttleVehicleList *vehicleList;
-@property (nonatomic, retain) NSSet *predictions;
 
 + (RKMapping *)objectMappingFromVehicleList;
 

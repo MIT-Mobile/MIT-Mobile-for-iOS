@@ -103,7 +103,9 @@
 
 - (CGRect) frameForLabel:(UILabel *)label constrainedToSize:(CGSize) constraint
 {
-    CGSize necessaryLabelSize = [[label text] sizeWithFont:label.font constrainedToSize:constraint lineBreakMode:label.lineBreakMode];
+    NSStringDrawingContext *context = [NSStringDrawingContext new];
+    context.minimumScaleFactor = label.minimumScaleFactor;
+    CGSize necessaryLabelSize = [label.text boundingRectWithSize:constraint options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: label.font} context:context].size;
     
     CGRect newFrame = label.frame;
     newFrame.size   = CGSizeMake(constraint.width, necessaryLabelSize.height);
@@ -162,8 +164,11 @@
     CGFloat maxWidth = (numDietaryTypes) ? cellWidth - dietaryWidth : cellWidth;
     CGSize constrainingSize = CGSizeMake(maxWidth - (2 * STANDARD_PADDING), CGFLOAT_MAX);
     
-    CGSize primarySize = [primary sizeWithFont:[self fontForPrimaryLabel] constrainedToSize:constrainingSize lineBreakMode:NSLineBreakByWordWrapping];
-    CGSize secondarySize = [secondary sizeWithFont:[self fontForSecondaryLabel] constrainedToSize:constrainingSize lineBreakMode:NSLineBreakByWordWrapping];
+    NSParagraphStyle *paragraphStyle = [NSParagraphStyle defaultParagraphStyle];
+    
+    CGSize primarySize = [primary boundingRectWithSize:constrainingSize options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [self fontForPrimaryLabel], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
+    
+    CGSize secondarySize = [secondary boundingRectWithSize:constrainingSize options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [self fontForSecondaryLabel], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
     
     CGFloat height = MAX(primarySize.height + secondarySize.height, iconHeight);
     

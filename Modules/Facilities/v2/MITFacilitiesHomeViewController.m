@@ -402,7 +402,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
 {
     static NSInteger defaultHeight = 72;
     
-    CGFloat height = defaultHeight;
+    CGFloat height = 0;
     
     if( [self.reportForm.location.isLeased boolValue] )
     {

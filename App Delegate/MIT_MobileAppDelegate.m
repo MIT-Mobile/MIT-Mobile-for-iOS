@@ -6,7 +6,6 @@
 #import "AudioToolbox/AudioToolbox.h"
 #import "ModuleVersions.h"
 #import "MITLogging.h"
-#import "Secret.h"
 #import "SDImageCache.h"
 #import "MITNavigationController.h"
 
@@ -77,16 +76,9 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     }
 }
 
-#pragma mark -
-#pragma mark Application lifecycle
+#pragma mark - Application lifecycle
+
 - (BOOL)application:(UIApplication *)application willFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-#if defined(TESTFLIGHT)
-    if ([MITApplicationTestFlightToken length]) {
-        [TestFlight setOptions:@{@"logToConsole" : @NO,
-                                 @"logToSTDERR"  : @NO}];
-        [TestFlight takeOff:MITApplicationTestFlightToken];
-    }
-#endif
 
     [[UIApplication sharedApplication] setStatusBarHidden:NO withAnimation:UIStatusBarAnimationNone];
 
@@ -780,10 +772,14 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 {
     MITNotification *notification = [self.pendingNotifications lastObject];
     [self.pendingNotifications removeLastObject];
-    [MITUnreadNotifications removeNotifications:@[notification]];
 
     MITModule *module = [self moduleWithTag:notification.moduleName];
     [module didReceiveNotification:notification.userInfo];
+
+    NSString *activeModuleName = self.rootViewController.visibleViewController.moduleItem.name;
+    if ([activeModuleName isEqualToString:notification.moduleName]) {
+        [MITUnreadNotifications removeNotificationsForModuleTag:notification.moduleName];
+    }
 
     NSString *buttonTitle = [alertView buttonTitleAtIndex:buttonIndex];
     if ([buttonTitle isEqualToString:MITMobileButtonTitleView]) {
@@ -798,6 +794,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     if (moduleItem.type == MITModulePresentationFullScreen) {
         self.lastActiveModuleName = moduleItem.name;
     }
+
+    [MITUnreadNotifications removeNotificationsForModuleTag:moduleItem.name];
 }
 
 #pragma mark - Global App Styling

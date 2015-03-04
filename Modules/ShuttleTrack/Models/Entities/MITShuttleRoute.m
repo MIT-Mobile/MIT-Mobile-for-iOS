@@ -3,6 +3,7 @@
 #import "MITShuttleVehicle.h"
 #import "MITLocationManager.h"
 #import "MITShuttlePrediction.h"
+#import "MITShuttleVehicleList.h"
 #import <CoreLocation/CoreLocation.h>
 
 @implementation MITShuttleRoute
@@ -21,6 +22,8 @@
 @dynamic vehiclesURL;
 @dynamic stops;
 @dynamic vehicles;
+@dynamic vehicleList;
+@dynamic updatedTime;
 
 + (RKMapping *)objectMapping
 {
@@ -54,6 +57,25 @@
 {
     RKEntityMapping *mapping = (RKEntityMapping *)[self objectMapping];
     [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:@"stops" toKeyPath:@"stops" withMapping:[MITShuttleStop objectMappingFromRouteDetail]]];
+    [mapping addPropertyMapping:[RKRelationshipMapping relationshipMappingFromKeyPath:nil toKeyPath:@"vehicleList" withMapping:[MITShuttleVehicleList objectMappingFromRoute]]];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromPredictionList
+{
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    [mapping addAttributeMappingsFromDictionary:@{@"route_id": @"identifier",
+                                                  @"scheduled": @"scheduled",
+                                                  @"predictable": @"predictable"}];
+    return mapping;
+}
+
++ (RKMapping *)objectMappingFromVehicleList
+{
+    RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    [mapping addAttributeMappingsFromDictionary:@{@"route_id": @"identifier",
+                                                  @"scheduled": @"scheduled",
+                                                  @"predictable": @"predictable"}];
     return mapping;
 }
 
@@ -86,7 +108,12 @@
 
 - (MITShuttleRouteStatus)status
 {
-    // `predictable == true` trumps all. If the route has predictable vehicles, consider it in service regardless of the `scheduled` flag.
+    // if our data is stale, we don't know the state of the route
+    if ([self.updatedTime timeIntervalSinceNow] < -80) {
+        return MITShuttleRouteStatusUnknown;
+    }
+    
+    // `predictable == true` trumps all else. If the route has predictable vehicles, consider it in service regardless of the `scheduled` flag.
     if ([self.predictable boolValue]) {
         return MITShuttleRouteStatusInService;
     }
@@ -108,20 +135,6 @@
         }
     }
     return NO;
-}
-
-- (NSArray *)nextStops
-{
-    NSMutableArray *nextStops = [NSMutableArray array];
-    if (self.status == MITShuttleRouteStatusInService) {
-        for (MITShuttleVehicle *vehicle in self.vehicles) {
-            MITShuttleStop *nextStop = [self nextStopForVehicle:vehicle];
-            if (nextStop) {
-                [nextStops addObject:nextStop];
-            }
-        }
-    }
-    return [NSArray arrayWithArray:nextStops];
 }
 
 - (MITShuttleStop *)nextStopForVehicle:(MITShuttleVehicle *)vehicle

@@ -77,15 +77,16 @@
     
     directionsVC.nextStop = self.currentStop;
     
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:directionsVC];
+    navigationController.navigationBar.translucent = NO;
+    
     if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:directionsVC];
         navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-
-        directionsVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(directionsDoneButtonPressed:)];
-        [self presentViewController:navigationController animated:YES completion:nil];
-    } else {
-        [self.navigationController pushViewController:directionsVC animated:YES];
     }
+    
+    directionsVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(directionsDoneButtonPressed:)];
+    [self presentViewController:navigationController animated:YES completion:nil];
+    
 }
 
 - (void)directionsDoneButtonPressed:(UIBarButtonItem *)sender
@@ -120,8 +121,8 @@
 
 - (void)setupMainLoopCycleButtons
 {
-    UIImage *upButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_up"];
-    UIImage *downButtonImage = [UIImage imageNamed:@"calendar/iPad_events_datePicker_chevron_down"];
+    UIImage *upButtonImage = [UIImage imageNamed:MITImageToursPadChevronUp];
+    UIImage *downButtonImage = [UIImage imageNamed:MITImageToursPadChevronDown];
 
     CGFloat spacing = 10;
     CGFloat width = upButtonImage.size.width + downButtonImage.size.width + spacing;

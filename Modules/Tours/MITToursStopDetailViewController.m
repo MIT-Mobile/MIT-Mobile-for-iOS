@@ -1,7 +1,7 @@
 #import "MITToursStopDetailViewController.h"
 #import "MITToursImage.h"
 #import "MITToursImageRepresentation.h"
-#import "UIImageView+WebCache.h"
+#import <SDWebImage/UIImageView+WebCache.h>
 #import "MITToursStopCollectionViewManager.h"
 #import "MITToursStopCollectionViewPagedLayout.h"
 #import "MITToursStopInfiniteScrollCollectionViewManager.h"

@@ -1,8 +1,6 @@
 #import "FacilitiesRootViewController.h"
-
 #import "FacilitiesCategoryViewController.h"
 #import "UIKit+MITAdditions.h"
-#import "SecondaryGroupedTableViewCell.h"
 #import "MITTelephoneHandler.h"
 
 static NSString* const kFacilitiesEmailAddress = @"txtdof@mit.edu";

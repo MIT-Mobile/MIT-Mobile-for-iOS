@@ -1,5 +1,5 @@
 #import <objc/runtime.h>
-#import <RestKit/RKHTTPUtilities.h>
+#import <RestKit/RestKit.h>
 
 #import "MITTouchstoneRequestOperation.h"
 #import "MITTouchstoneOperation.h"

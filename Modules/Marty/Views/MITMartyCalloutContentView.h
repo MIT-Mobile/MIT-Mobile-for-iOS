@@ -1,18 +1,8 @@
 #import <UIKit/UIKit.h>
-#import "MITMartyResource.h"
+
+@class MITMartyResourceView;
 
 @interface MITMartyCalloutContentView : UIControl
-
-@property (strong, nonatomic) MITMartyResource *resource;
-
-- (void)configureForResource:(MITMartyResource *)resource;
-
-typedef NS_ENUM(NSInteger, MITMartyResourceStatus) {
-    MITMartyResourceStatusOnline,
-    MITMartyResourceStatusOffline,
-    MITMartyResourceStatusUnknown
-};
-
-- (void)setStatus:(MITMartyResourceStatus)status withText:(NSString*)statusText;
+@property(nonatomic,weak) IBOutlet MITMartyResourceView *resourceView;
 
 @end
