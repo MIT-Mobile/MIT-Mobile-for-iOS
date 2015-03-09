@@ -55,6 +55,7 @@
 		221C45051A12B8DD00FC5A92 /* MITToursStopDetailViewController~ipad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 221C45041A12B8DD00FC5A92 /* MITToursStopDetailViewController~ipad.xib */; };
 		22312DC819C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22312DC719C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m */; };
 		22312DCB19C0E784000EDDFE /* MITDiningInfoScheduleCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 22312DCA19C0E784000EDDFE /* MITDiningInfoScheduleCell.m */; };
+		2236B1361AAA26D600E2FEC6 /* NSDate+MITDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 2236B1351AAA26D600E2FEC6 /* NSDate+MITDatePicker.m */; };
 		223EDB6A1988095C00832ACD /* MITCalendarDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB681988095C00832ACD /* MITCalendarDataModel.xcdatamodeld */; };
 		223EDB8A1988428A00832ACD /* MITCalendarWebservices.m in Sources */ = {isa = PBXBuildFile; fileRef = 223EDB891988428A00832ACD /* MITCalendarWebservices.m */; };
 		2240182B19E71C7C0005BB6D /* MITLibrariesQuickLinksViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2240182A19E71C7C0005BB6D /* MITLibrariesQuickLinksViewController.m */; };
@@ -189,6 +190,7 @@
 		22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */ = {isa = PBXBuildFile; fileRef = 22E6BCBF19E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib */; };
 		22E6BCC519E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m in Sources */ = {isa = PBXBuildFile; fileRef = 22E6BCC419E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m */; };
 		22F2D5AF19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */; };
+		22F3696A1AAE2C9B009A03DF /* UIColor+MITDatePicker.m in Sources */ = {isa = PBXBuildFile; fileRef = 22F369691AAE2C9B009A03DF /* UIColor+MITDatePicker.m */; };
 		239A60305D330C6563DF0026 /* libPods-MIT Mobile Tests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = F2F278458DFCD03F2641CEAB /* libPods-MIT Mobile Tests.a */; };
 		2737F34C1A333EC200E728C3 /* MITBatchScanningAlertView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */; };
 		2737F3511A333EF400E728C3 /* MITBatchScanningAlertView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */; };
@@ -761,6 +763,8 @@
 		22312DC719C0E732000EDDFE /* MITDiningRetailInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningRetailInfoScheduleCell.m; path = Dining/MITDiningRetailInfoScheduleCell.m; sourceTree = "<group>"; };
 		22312DC919C0E784000EDDFE /* MITDiningInfoScheduleCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITDiningInfoScheduleCell.h; path = Dining/MITDiningInfoScheduleCell.h; sourceTree = "<group>"; };
 		22312DCA19C0E784000EDDFE /* MITDiningInfoScheduleCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITDiningInfoScheduleCell.m; path = Dining/MITDiningInfoScheduleCell.m; sourceTree = "<group>"; };
+		2236B1341AAA26D600E2FEC6 /* NSDate+MITDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "NSDate+MITDatePicker.h"; path = "DayPicker/NSDate+MITDatePicker.h"; sourceTree = "<group>"; };
+		2236B1351AAA26D600E2FEC6 /* NSDate+MITDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "NSDate+MITDatePicker.m"; path = "DayPicker/NSDate+MITDatePicker.m"; sourceTree = "<group>"; };
 		223EDB691988095C00832ACD /* MITCalendarDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MITCalendarDataModel.xcdatamodel; sourceTree = "<group>"; };
 		223EDB881988428A00832ACD /* MITCalendarWebservices.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCalendarWebservices.h; sourceTree = "<group>"; };
 		223EDB891988428A00832ACD /* MITCalendarWebservices.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCalendarWebservices.m; sourceTree = "<group>"; };
@@ -1001,6 +1005,8 @@
 		22E6BCC419E49BD3003E278C /* MITLibrariesYourAccountListViewControllerPad.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesYourAccountListViewControllerPad.m; sourceTree = "<group>"; };
 		22F2D5AD19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesRecentSearchesViewController.h; sourceTree = "<group>"; };
 		22F2D5AE19EDC3E700CD3B66 /* MITLibrariesRecentSearchesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesRecentSearchesViewController.m; sourceTree = "<group>"; };
+		22F369681AAE2C9B009A03DF /* UIColor+MITDatePicker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = "UIColor+MITDatePicker.h"; path = "DayPicker/UIColor+MITDatePicker.h"; sourceTree = "<group>"; };
+		22F369691AAE2C9B009A03DF /* UIColor+MITDatePicker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = "UIColor+MITDatePicker.m"; path = "DayPicker/UIColor+MITDatePicker.m"; sourceTree = "<group>"; };
 		2737F34A1A333EC200E728C3 /* MITBatchScanningAlertView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITBatchScanningAlertView.h; sourceTree = "<group>"; };
 		2737F34B1A333EC200E728C3 /* MITBatchScanningAlertView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITBatchScanningAlertView.m; sourceTree = "<group>"; };
 		2737F3501A333EF400E728C3 /* MITBatchScanningAlertView.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITBatchScanningAlertView.xib; sourceTree = "<group>"; };
@@ -2281,10 +2287,6 @@
 		225F2192197D9A5E00F34DE9 /* Cells */ = {
 			isa = PBXGroup;
 			children = (
-				225F2193197D9A8A00F34DE9 /* MITDayOfTheWeekCell.h */,
-				225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */,
-				225F2196197D9AE000F34DE9 /* MITPhoneDayOfTheWeekCell.xib */,
-				80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */,
 				22BDD0C919804E3D005BE8E9 /* MITCalendarEventCell.h */,
 				22BDD0CA19804E3D005BE8E9 /* MITCalendarEventCell.m */,
 				22BDD0CB19804E3D005BE8E9 /* MITCalendarEventCell.xib */,
@@ -4320,8 +4322,16 @@
 		80EC3C1B1A03CCA60051F417 /* DayPicker */ = {
 			isa = PBXGroup;
 			children = (
+				225F2193197D9A8A00F34DE9 /* MITDayOfTheWeekCell.h */,
+				225F2194197D9A8A00F34DE9 /* MITDayOfTheWeekCell.m */,
+				225F2196197D9AE000F34DE9 /* MITPhoneDayOfTheWeekCell.xib */,
+				80EC3C281A03DCE80051F417 /* MITPadDayOfTheWeekCell.xib */,
 				80EC3C251A03D1960051F417 /* MITDayPickerViewController.h */,
 				80EC3C261A03D1960051F417 /* MITDayPickerViewController.m */,
+				2236B1341AAA26D600E2FEC6 /* NSDate+MITDatePicker.h */,
+				2236B1351AAA26D600E2FEC6 /* NSDate+MITDatePicker.m */,
+				22F369681AAE2C9B009A03DF /* UIColor+MITDatePicker.h */,
+				22F369691AAE2C9B009A03DF /* UIColor+MITDatePicker.m */,
 			);
 			name = DayPicker;
 			sourceTree = "<group>";
@@ -5229,6 +5239,7 @@
 				22E180A819DDE6770017AC9A /* MITLibrariesYourAccountViewController.m in Sources */,
 				2C18090718F33B95008F9775 /* MITTouchstoneMessage.m in Sources */,
 				A580266C193E04B600BD0DDE /* MITShuttleStopNotificationManager.m in Sources */,
+				22F3696A1AAE2C9B009A03DF /* UIColor+MITDatePicker.m in Sources */,
 				2258CBEA19CB7E7D0067E35C /* MITLibrariesTerm.m in Sources */,
 				2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */,
 				2CF89EAD18A41A6A00ABFE03 /* MITNewsImageViewController.m in Sources */,
@@ -5303,6 +5314,7 @@
 				2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */,
 				806205521A7AAF1A004BD08A /* MITPopoverBackgroundView.m in Sources */,
 				225AC09619B8F5AC008854BC /* MITDiningAggregatedMeal.m in Sources */,
+				2236B1361AAA26D600E2FEC6 /* NSDate+MITDatePicker.m in Sources */,
 				2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */,
 				2CF61DD11889C9DE00D43381 /* MITNewsCategory.m in Sources */,
 				228D661E19B6612500C7B78B /* MITDiningFiltersCell.m in Sources */,

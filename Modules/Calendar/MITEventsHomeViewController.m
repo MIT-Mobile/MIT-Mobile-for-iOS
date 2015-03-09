@@ -104,7 +104,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
     [super viewDidAppear:animated];
     CGFloat containerWidth = CGRectGetWidth(self.dayPickerContainerView.bounds);
     self.dayPickerController.view.frame = CGRectMake(0, 0, containerWidth, MITDayPickerControllerHeight);
-    [self.dayPickerController reloadCollectionView];
+    [self.dayPickerController reloadDayPicker];
 }
 
 // If more than one scrollView in the view hierarchy has scrollsToTop set to YES, then none of them will work.  Because there are secret scrollviews in UIPageViewController as well as multiple collectionViews on screen,  this is the best way to ensure that all of the scrollsToTop values are set to NO.  scrollsToTop is set individually within MITEventsTableViewController

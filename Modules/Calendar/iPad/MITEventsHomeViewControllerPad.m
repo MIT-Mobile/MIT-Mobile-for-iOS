@@ -106,7 +106,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [super viewWillAppear:animated];
     self.navigationController.toolbarHidden = NO;
     [self alignExtendedNavBarAndDayPickerCollectionView];
-    [self.dayPickerController reloadCollectionView];
+    [self.dayPickerController reloadDayPicker];
 }
 
 - (void)willAnimateRotationToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
@@ -170,7 +170,7 @@ static NSString * const kMITEventHomeDayPickerCollectionViewCellIdentifier = @"k
     [self setupExtendedNavBar];
     [self setupDayPickerController];
     [self alignExtendedNavBarAndDayPickerCollectionView];
-    [self.dayPickerController reloadCollectionView];
+    [self.dayPickerController reloadDayPicker];
     [self constrainSplitViewToExtendedNavBar];
 }
 

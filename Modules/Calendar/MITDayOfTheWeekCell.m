@@ -1,5 +1,5 @@
 #import "MITDayOfTheWeekCell.h"
-#import "UIKit+MITAdditions.h"
+#import "UIColor+MITDatePicker.h"
 
 NSString * const MITPhoneDayOfTheWeekCellNibName = @"MITPhoneDayOfTheWeekCell";
 NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
@@ -29,8 +29,8 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
 {
     _dayOfTheWeek = dayOfTheWeek;
     if (dayOfTheWeek == MITDayOfTheWeekSaturday || dayOfTheWeek == MITDayOfTheWeekSunday) {
-        self.dayOfTheWeekLabel.textColor = [self lighterGrayColor];
-        self.dayOfTheMonthLabel.textColor = [self lighterGrayColor];
+        self.dayOfTheWeekLabel.textColor = [UIColor dp_lighterGrayTextColor];
+        self.dayOfTheMonthLabel.textColor = [UIColor dp_lighterGrayTextColor];
     } else {
         self.dayOfTheWeekLabel.textColor = [UIColor darkTextColor];
         self.dayOfTheMonthLabel.textColor = [UIColor darkTextColor];
@@ -75,11 +75,11 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
     if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Selected && Is Today
         self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
-        self.dayOfTheMonthLabel.backgroundColor = [UIColor mit_tintColor];
+        self.dayOfTheMonthLabel.backgroundColor = self.selectionColor ? : [UIColor dp_selectionColor];
         self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
     } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Today && Not Selected
-        self.dayOfTheMonthLabel.textColor = [UIColor mit_tintColor];
+        self.dayOfTheMonthLabel.textColor = self.selectionColor ? : [UIColor dp_selectionColor];
         self.dayOfTheMonthLabel.backgroundColor = [UIColor clearColor];
         self.dayOfTheMonthLabel.font = [UIFont systemFontOfSize:17.0];
     } else if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected) {
@@ -90,7 +90,7 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
     } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected) {
         // Is UnSelected && Not Today
         if (self.dayOfTheWeek == MITDayOfTheWeekSaturday || self.dayOfTheWeek == MITDayOfTheWeekSunday) {
-            self.dayOfTheMonthLabel.textColor = [self lighterGrayColor];
+            self.dayOfTheMonthLabel.textColor = [UIColor dp_lighterGrayTextColor];
         } else {
             self.dayOfTheMonthLabel.textColor = [UIColor darkTextColor];
         }
@@ -105,10 +105,4 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
     self.dayOfTheMonthLabel.text = [NSString stringWithFormat:@"%ld", (long)dayOfTheMonth];
 }
 
-#pragma mark - Lighter Text Color
-
-- (UIColor *)lighterGrayColor
-{
-    return [UIColor colorWithWhite:0.4 alpha:1.0];
-}
 @end

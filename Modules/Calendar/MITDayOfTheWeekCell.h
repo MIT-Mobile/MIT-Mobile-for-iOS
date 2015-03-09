@@ -1,5 +1,4 @@
 #import <UIKit/UIKit.h>
-#import "Foundation+MITAdditions.h"
 
 typedef NS_ENUM(NSInteger, MITDayOfTheWeekState) {
     MITDayOfTheWeekStateUnselected = 1,
@@ -25,4 +24,6 @@ extern NSString * const MITPadDayOfTheWeekCellNibName;
 @property (nonatomic) MITDayOfTheWeek dayOfTheWeek;
 @property (nonatomic) MITDayOfTheWeekState state;
 @property (nonatomic) NSInteger dayOfTheMonth;
+@property (strong, nonatomic) UIColor *selectionColor;
+
 @end
