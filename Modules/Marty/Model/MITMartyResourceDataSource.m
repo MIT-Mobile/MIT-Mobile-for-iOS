@@ -177,24 +177,25 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         
         MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         NSArray *recentSearchItems = [recentSearchList.recentQueries array];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchTerm ];
-        NSArray *searchTermAlreadyExists = [recentSearchItems filteredArrayUsingPredicate:predicate];
         
-        if ([searchTermAlreadyExists count]) {
-            MITMartyRecentSearchQuery *searchItem = [searchTermAlreadyExists firstObject];
-            searchItem.date = [NSDate date];
-            return YES;
-        } else {
-            MITMartyRecentSearchQuery *searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
-            if (searchItem) {
-                searchItem.text = searchTerm;
-                searchItem.date = [NSDate date];
-                [recentSearchList addRecentQueriesObject:searchItem];
-                return YES;
-            } else {
-                return NO;
+        __block MITMartyRecentSearchQuery *searchItem = nil;
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text =[c] %@", searchTerm];
+        [recentSearchItems enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            BOOL objectMatches = [predicate evaluateWithObject:obj];
+            if (objectMatches) {
+                (*stop) = YES;
+                searchItem = (MITMartyRecentSearchQuery*)obj;
             }
+        }];
+        
+        if (!searchItem) {
+            searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+            searchItem.text = searchTerm;
+            [recentSearchList addRecentQueriesObject:searchItem];
         }
+        
+        searchItem.date = [NSDate date];
+        return YES;
     } error:error];
 }
 
