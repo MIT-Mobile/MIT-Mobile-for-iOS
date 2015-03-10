@@ -158,7 +158,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     return [[recentSearchList.recentQueries array] sortedArrayUsingDescriptors:@[sortDescriptor]];
 }
 
-- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *)error
+- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError**)error
 {
     [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
         
@@ -182,7 +182,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
                 return NO;
             }
         }
-    } error:&error];
+    } error:error];
 }
 
 - (void)clearRecentSearchesWithError:(NSError *)error
