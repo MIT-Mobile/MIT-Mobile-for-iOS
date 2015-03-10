@@ -14,26 +14,29 @@
 
 @interface MITMartyPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
-@property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
-@property (nonatomic) BOOL searchBarShouldBeginEditing;
+
+@property (nonatomic,getter=isSearching) BOOL searching;
+
 @property (nonatomic, strong) MITMartyRecentSearchController *searchViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
-@property (nonatomic) BOOL isShowingIpadResultsList;
+
+@property (nonatomic, strong) UISearchBar *searchBar;
+@property (nonatomic) BOOL searchBarShouldBeginEditing;
+@property (nonatomic) BOOL searchBarShouldEndEditing;
+
+@property (nonatomic,getter=isResultsListHidden) BOOL resultsListHidden;
 
 @property (nonatomic, strong) UIPopoverController *bookmarksPopoverController;
 
 @property (nonatomic, copy) NSString *searchQuery;
-@property (nonatomic, strong) MITMapCategory *category;
 @property (nonatomic, strong) UIView *searchBarView;
 @property (nonatomic) BOOL isKeyboardVisible;
 
 @property (nonatomic, strong) MITMartyResourceDataSource *dataSource;
-@property (nonatomic, strong) NSArray *resources;
-@property (nonatomic, strong) NSManagedObjectContext *managedObjectContext;
+
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property (strong, nonatomic) MITMartyResourceDataSource *modelController;
 @property (nonatomic, strong) MITMartyMapViewController *mapViewController;
 
 @end
@@ -41,15 +44,6 @@
 @implementation MITMartyPadHomeViewController
 
 #pragma mark - properties
-- (MITMartyResourceDataSource *)modelController
-{
-    if(!_modelController) {
-        MITMartyResourceDataSource *modelController = [[MITMartyResourceDataSource alloc] init];
-        _modelController = modelController;
-    }
-    return _modelController;
-}
-
 - (MITMartyMapViewController *)mapViewController
 {
     if(!_mapViewController) {
@@ -60,25 +54,26 @@
 }
 
 #pragma mark - Init
-
-- (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
         _searchBarShouldBeginEditing = YES;
+        _searchBarShouldEndEditing = YES;
     }
+    
     return self;
 }
 
-#pragma mark Public Properties
-- (NSArray*)resources
+- (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
-    __block NSArray *resourceObjects = nil;
-    [self.managedObjectContext performBlockAndWait:^{
-        resourceObjects = [self.managedObjectContext transferManagedObjects:self.dataSource.resources];
-    }];
+    self = [super initWithCoder:aDecoder];
+    if (self) {
+        _searchBarShouldBeginEditing = YES;
+        _searchBarShouldEndEditing = YES;
+    }
     
-    return resourceObjects;
+    return self;
 }
 
 #pragma mark - View Lifecycle
@@ -87,58 +82,46 @@
 {
     [super viewDidLoad];
     
+    MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
+    self.dataSource = dataSource;
+    
     [self setupNavigationBar];
     [self setupRecentSearchTableView];
     [self setupMapViewController];
     
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {        
-        // We use actual UIButtons so that we can easily change the selected state
-        UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
-        listToggleImageNormal = [listToggleImageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        UIImage *listToggleImageSelected = [UIImage imageNamed:MITImageBarButtonListSelected];
-        listToggleImageSelected = [listToggleImageSelected imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        
-        // Use size of selected image because it is the largest.
-        CGSize listToggleImageSize = listToggleImageSelected.size;
-        self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
-        [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
-        [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
-        [self.listViewToggleButton addTarget:self action:@selector(ipadListButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-        self.listViewToggleButton.selected = self.isShowingIpadResultsList;
-
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
-        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
-        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-        self.toolbarItems = @[listBarButton, flexibleSpace, currentLocationBarButton];
- 
-    } else {
-        
-        UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithImage:[UIImage imageNamed:MITImageBarButtonList] style:UIBarButtonItemStylePlain target:self action:@selector(iphoneListButtonPressed)];
-        UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
-        UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-        self.toolbarItems = @[currentLocationBarButton, flexibleSpace, listBarButton];
-        
-    }
+    // We use actual UIButtons so that we can easily change the selected state
+    UIImage *listToggleImageNormal = [UIImage imageNamed:MITImageBarButtonList];
+    listToggleImageNormal = [listToggleImageNormal imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    UIImage *listToggleImageSelected = [UIImage imageNamed:MITImageBarButtonListSelected];
+    listToggleImageSelected = [listToggleImageSelected imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     
-    if (!self.managedObjectContext) {
-        self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
-    }
+    // Use size of selected image because it is the largest.
+    CGSize listToggleImageSize = listToggleImageSelected.size;
+    self.listViewToggleButton = [[UIButton alloc] initWithFrame:CGRectMake(0, 0, listToggleImageSize.width, listToggleImageSize.height)];
+    [self.listViewToggleButton setImage:listToggleImageNormal forState:UIControlStateNormal];
+    [self.listViewToggleButton setImage:listToggleImageSelected forState:UIControlStateSelected];
+    [self.listViewToggleButton addTarget:self action:@selector(ipadListButtonPressed) forControlEvents:UIControlEventTouchUpInside];
+
+    UIBarButtonItem *listBarButton = [[UIBarButtonItem alloc] initWithCustomView:self.listViewToggleButton];
+    UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
+    self.toolbarItems = @[listBarButton, [UIBarButtonItem flexibleSpace], currentLocationBarButton];
+    
+    [self setResultsListHidden:YES animated:NO];
+    self.listViewToggleButton.enabled = NO;
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
     self.navigationController.toolbarHidden = NO;
     [self.navigationItem setHidesBackButton:YES animated:NO];
-    [self registerForKeyboardNotifications];
     self.searchBar.text = self.searchQuery;
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
-    [self unregisterForKeyboardNotifications];
 }
 
 - (void)viewDidDisappear:(BOOL)animated
@@ -158,8 +141,6 @@
 - (void)setupNavigationBar
 {
     self.edgesForExtendedLayout = UIRectEdgeNone;
-    // Insert the correct clear button image and uncomment the next line when ready
-//    [searchBar setImage:[UIImage imageNamed:@""] forSearchBarIcon:UISearchBarIconClear state:UIControlStateNormal];
     
     self.searchBarView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
     self.searchBarView.autoresizingMask = UIViewAutoresizingNone;
@@ -209,11 +190,7 @@
         self.searchViewController = [[MITMartyRecentSearchController alloc] initWithStyle:UITableViewStylePlain];
         self.searchViewController.delegate = self;
         
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.searchViewController];
-
-            self.typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
-        } else {
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
             [self addChildViewController:self.searchViewController];
             self.searchViewController.view.hidden = YES;
             self.searchViewController.view.frame = CGRectZero;
@@ -233,98 +210,74 @@
     [self.mapViewController didMoveToParentViewController:self];
 }
 
-- (void)registerForKeyboardNotifications
+#pragma mark - Properties
+- (BOOL)searchBarShouldEndEditing
 {
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardWillHide:) name:UIKeyboardWillHideNotification object:nil];
-}
-
-- (void)unregisterForKeyboardNotifications
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] removeObserver:self name:UIKeyboardWillHideNotification object:nil];
+    return (_searchBarShouldEndEditing && [self typeAheadPopoverControllerIsVisible]);
 }
 
 #pragma mark - Private Methods
+- (BOOL)typeAheadPopoverControllerIsLoaded
+{
+    return (_typeAheadPopoverController != nil);
+}
+
+- (BOOL)typeAheadPopoverControllerIsVisible
+{
+    return ([self typeAheadPopoverControllerIsLoaded] && self.typeAheadPopoverController.isPopoverVisible);
+}
+
+- (UIPopoverController*)typeAheadPopoverController
+{
+    if (![self typeAheadPopoverControllerIsLoaded]) {
+        UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:self.searchViewController];
+        
+        _typeAheadPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
+        _typeAheadPopoverController.delegate = self;
+        
+        NSMutableArray *passthroughViews = [[NSMutableArray alloc] init];
+        [passthroughViews addObject:navigationController.view];
+        [passthroughViews addObject:navigationController.navigationBar];
+        
+        if (!self.navigationController.isNavigationBarHidden) {
+            [passthroughViews addObject:self.navigationController.navigationBar];
+        }
+        
+        _typeAheadPopoverController.passthroughViews = passthroughViews;
+        
+        UIUserInterfaceIdiom interfaceIdiom = [UIDevice currentDevice].userInterfaceIdiom;
+        switch (interfaceIdiom) {
+            case UIUserInterfaceIdiomPad: {
+                CGFloat contentWidth = CGRectGetWidth([UIScreen mainScreen].applicationFrame) / 3.0;
+                _typeAheadPopoverController.contentViewController.preferredContentSize = CGSizeMake(contentWidth, 0);
+                _typeAheadPopoverController.contentViewController.view.frame = CGRectMake(0, 0, contentWidth, 0);
+            } break;
+                
+            default: {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIUserInterfaceIdiom type" userInfo:nil];
+            }
+        }
+        
+    }
+    
+    return _typeAheadPopoverController;
+}
 
 - (void)closePopoversAnimated:(BOOL)animated
 {
-    if (self.typeAheadPopoverController.isPopoverVisible) {
+    if ([self typeAheadPopoverControllerIsVisible]) {
         [self.typeAheadPopoverController dismissPopoverAnimated:animated];
     }
     
-    if (self.bookmarksPopoverController.isPopoverVisible) {
+    if ([self.bookmarksPopoverController isPopoverVisible]) {
         [self.bookmarksPopoverController dismissPopoverAnimated:animated];
     }
 }
 
 #pragma mark - Button Actions
-
-//  BOOKSMARKS ARE NOT NEEDED IN THIS VERSION
-/*
-- (void)bookmarksButtonPressed
-{
-    MITMapBrowseContainerViewController *browseContainerViewController = [[MITMapBrowseContainerViewController alloc] init];
-    [browseContainerViewController setDelegate:self];
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:browseContainerViewController];
-    navigationController.navigationBarHidden = YES;
-    navigationController.toolbarHidden = NO;
-    
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        self.bookmarksPopoverController = [[UIPopoverController alloc] initWithContentViewController:navigationController];
-        [self.bookmarksPopoverController presentPopoverFromBarButtonItem:self.navigationItem.rightBarButtonItem permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
-    } else {
-        
-        [self presentViewController:navigationController animated:YES completion:nil];
-    }
-}
- */
-
 - (void)ipadListButtonPressed
 {
-    if (self.isShowingIpadResultsList) {
-        [self closeIpadResultsList];
-    } else {
-        [self openIpadResultsList];
-    }
-    
-    self.listViewToggleButton.selected = self.isShowingIpadResultsList;
-}
-
-- (void)closeIpadResultsList
-{
-    if (self.isShowingIpadResultsList) {
-        self.isShowingIpadResultsList = NO;
-        
-        MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
-        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
-            
-            resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
-            
-        } completion:^(BOOL finished) {
-            self.mapViewController.calloutView.internalInsets = UIEdgeInsetsZero;
-            self.mapViewController.mapEdgeInsets = UIEdgeInsetsZero;
-            [self.mapViewController recenterOnVisibleResources:YES];
-        }];
-    }
-}
-
-- (void)openIpadResultsList
-{
-    if (!self.isShowingIpadResultsList) {
-        self.isShowingIpadResultsList = YES;
-        
-        MITMartyResourcesTableViewController *resultsVC = [self resourcesTableViewController];
-        [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
-            resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
-            
-        } completion:^(BOOL finished) {
-            self.mapViewController.calloutView.externalInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
-            self.mapViewController.mapEdgeInsets = UIEdgeInsetsMake(0, CGRectGetWidth(resultsVC.view.frame), 0, 0);
-            [self.mapViewController recenterOnVisibleResources:YES];
-        }];
-    }
+    [self setResultsListHidden:!self.isResultsListHidden animated:YES];
 }
 
 - (void)iphoneListButtonPressed
@@ -337,9 +290,10 @@
 
 - (void)closeSearchBar
 {
+    [self.searchBar resignFirstResponder];
     [self.navigationItem setLeftBarButtonItem:self.menuBarButton animated:YES];
     [self.searchBar setShowsCancelButton:NO animated:YES];
-    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
+    [self closePopoversAnimated:YES];
 }
 
 - (void)setSearchBarTextColor:(UIColor *)color
@@ -350,127 +304,177 @@
 }
 
 #pragma mark - Places
-
-- (void)setResources:(NSArray *)resources
-{
-    [self setResources:resources animated:NO];
-}
-
-- (void)setResources:(NSArray *)resources animated:(BOOL)animated
-{
-    self.resourcesTableViewController.resources = resources;
-    [[self mapViewController] setResources:resources animated:animated];
-}
-
 - (void)clearPlacesAnimated:(BOOL)animated
 {
-    self.category = nil;
     self.searchQuery = nil;
-    [self setResources:nil animated:animated];
+    
+    [self.mapViewController setResources:nil animated:animated];
+    self.resourcesTableViewController.resources = nil;
 }
 
 
 #pragma mark - Search Results
-
-- (void)keyboardWillShow:(NSNotification *)notification
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        self.isKeyboardVisible = YES;
-
-        [UIView performWithoutAnimation:^{
-            self.searchViewController.view.frame = self.view.bounds;
-        }];
-
-        self.searchViewController.view.hidden = NO;
-    }
-}
-
-- (void)keyboardWillHide:(NSNotification *)notification
-{
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        self.isKeyboardVisible = NO;
-        self.searchViewController.view.hidden = YES;
-    }
-}
-
 - (void)updateSearchResultsForSearchString:(NSString *)searchString
 {
-    [self.searchViewController filterResultsUsingString:searchString];
+    if (self.isSearching) {
+        if ([searchString length]) {
+            [self.searchViewController filterResultsUsingString:searchString];
+        } else {
+            self.searchQuery = nil;
+        }
+    }
 }
 
-- (void)performSearchWithQuery:(NSString *)query
+- (void)performSearchWithQuery:(NSString *)query completion:(void(^)(BOOL success))completion
 {
-    self.searchQuery = query;
-
-    NSError *error = nil;
-    [self.modelController addRecentSearchItem:query error:error];
-    
-    MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
-    self.dataSource = dataSource;
-    [dataSource resourcesWithQuery:query completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
-        if (error) {
-            DDLogWarn(@"Error: %@",error);
-        } else {
-            [self.managedObjectContext performBlockAndWait:^{
-                [self.managedObjectContext reset];
-                
-                [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                    DDLogVerbose(@"Got resource with name: %@ [%@]",resource.name, resource.identifier);
+    if ([query length]) {
+        self.searchQuery = query;
+        
+        [self.dataSource resourcesWithQuery:query completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+            [dataSource addRecentSearchItem:query error:nil];
+            
+            if (error) {
+                DDLogWarn(@"Error: %@",error);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (completion) {
+                        completion(NO);
+                    }
                 }];
-                [self setResources:self.resources animated:YES];
-
-                
-            }];
-        }
-    }];
+            } else {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (completion) {
+                        completion(YES);
+                    }
+                }];
+            }
+        }];
+    } else {
+        self.searchQuery = nil;
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (completion) {
+                completion(YES);
+            }
+        }];
+    }
 }
 
 - (void)setResourcesWithQuery:(NSString *)query
 {
-    [self performSearchWithQuery:query];
-    self.category = nil;
     self.searchBar.text = query;
+    
+    [self performSearchWithQuery:query completion:^(BOOL success) {
+        NSArray *resources = nil;
+        if (success) {
+            resources = self.dataSource.resources;
+        }
+        
+        [self setResources:resources animated:YES];
+    }];
 }
 
 - (void)setResourcesWithResource:(MITMartyResource *)resource
 {
-    self.searchQuery = nil;
-    self.category = nil;
-    
-    [self setResources:@[resource] animated:YES];
     self.searchBar.text = resource.name;
+    [self setResources:@[resource] animated:YES];
 }
 
-- (void)showTypeAheadPopover
+- (void)setResources:(NSArray*)resources animated:(BOOL)animated
 {
-    self.typeAheadPopoverController.delegate = self;
-    [self.typeAheadPopoverController presentPopoverFromRect:CGRectMake(self.searchBar.bounds.size.width / 2, self.searchBar.bounds.size.height, 1, 1) inView:self.searchBar permittedArrowDirections:UIPopoverArrowDirectionUp animated:YES];
+    self.resourcesTableViewController.resources = resources;
+    [self.mapViewController setResources:resources animated:animated];
+    
+    // TODO: Change to show a message in the table view that there
+    // are no results to show (and don't prevent the user from showing/hiding
+    // the view)
+    if ([resources count] == 0) {
+        [self setResultsListHidden:YES animated:animated];
+        self.listViewToggleButton.enabled = NO;
+    } else {
+        self.listViewToggleButton.enabled = YES;
+    }
+}
+
+- (void)_showTypeAheadPopover:(BOOL)animated
+{
+    [self.searchViewController filterResultsUsingString:self.searchQuery];
+    CGSize popoverFrameSize = [self.typeAheadPopoverController.contentViewController.view systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    
+    // Make sure we are presenting a valid size. All popovers must have:
+    // {(height,width) | height > 0, width >= 320, width <= 600} on iOS 8,
+    // but there should be something visible, so start the height out at 1/3 the superview's height
+    // (picked arbitrarily)
+    // (bskinner - 2015.03.04)
+    popoverFrameSize.height = CGRectGetHeight(self.view.bounds) / 3.0;
+    popoverFrameSize.width = MIN(600., MAX(popoverFrameSize.width, 320.));
+    self.typeAheadPopoverController.contentViewController.preferredContentSize = popoverFrameSize;
+    
+    CGRect popoverFrame = CGRectZero;
+    popoverFrame.origin.y = CGRectGetMinY(self.view.bounds);
+    popoverFrame.origin.x = CGRectGetMidX(self.view.bounds);
+    popoverFrame = CGRectOffset(popoverFrame, -(CGRectGetWidth(popoverFrame) / 2.0), 0);
+    [self.typeAheadPopoverController presentPopoverFromRect:popoverFrame
+                                       inView:self.view
+                     permittedArrowDirections:UIPopoverArrowDirectionUp
+                                     animated:YES];
 }
 
 - (MITMartyResourcesTableViewController *)resourcesTableViewController
 {
     if (!_resourcesTableViewController) {
-        
         MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
-        resourcesTableViewController.resources = self.resources;
         resourcesTableViewController.delegate = self;
         
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            resourcesTableViewController.view.frame = CGRectMake(-320, 0, 320, self.view.bounds.size.height);
-            resourcesTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
-            self.isShowingIpadResultsList = NO;
-            
-            [self addChildViewController:resourcesTableViewController];
-            [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
-            [self.view addSubview:resourcesTableViewController.view];
-            
-            [resourcesTableViewController endAppearanceTransition];
-            [resourcesTableViewController didMoveToParentViewController:self];
-            _resourcesTableViewController = resourcesTableViewController;
-        }
+        resourcesTableViewController.view.frame = CGRectMake(0., 0, 320., self.view.bounds.size.height);
+        resourcesTableViewController.view.autoresizingMask = UIViewAutoresizingFlexibleHeight;
+        resourcesTableViewController.view.translatesAutoresizingMaskIntoConstraints = YES;
+        
+        [self addChildViewController:resourcesTableViewController];
+        [resourcesTableViewController beginAppearanceTransition:YES animated:NO];
+        [self.view addSubview:resourcesTableViewController.view];
+        
+        [resourcesTableViewController endAppearanceTransition];
+        [resourcesTableViewController didMoveToParentViewController:self];
+        _resourcesTableViewController = resourcesTableViewController;
     }
     
     return _resourcesTableViewController;
+}
+
+- (void)setResultsListHidden:(BOOL)resultsListHidden
+{
+    [self setResultsListHidden:resultsListHidden animated:NO];
+}
+
+- (void)setResultsListHidden:(BOOL)resultsListHidden animated:(BOOL)animated
+{
+    _resultsListHidden = resultsListHidden;
+    
+    if (_resultsListHidden) {
+        self.listViewToggleButton.selected = NO;
+    } else {
+        self.listViewToggleButton.selected = YES;
+    }
+    
+    NSTimeInterval duration = (animated ? 0.33 : 0.);
+    [UIView animateWithDuration:duration
+                          delay:0.
+                        options:UIViewAnimationOptionCurveEaseOut
+                     animations:^{
+                         UIEdgeInsets mapInsets = UIEdgeInsetsZero;
+                         CGAffineTransform transform = CGAffineTransformIdentity;
+                         if (_resultsListHidden) {
+                             CGFloat offset = CGRectGetMaxX(self.resourcesTableViewController.view.frame);
+                             transform = CGAffineTransformMakeTranslation(-offset, 0);
+                         } else {
+                             mapInsets = UIEdgeInsetsMake(0, CGRectGetWidth(self.resourcesTableViewController.view.frame), 0, 0);
+                         }
+                         
+                         self.resourcesTableViewController.view.transform = transform;
+                         
+                         self.mapViewController.calloutView.externalInsets = mapInsets;
+                         self.mapViewController.mapEdgeInsets = mapInsets;
+                         [self.mapViewController recenterOnVisibleResources:YES];
+                     } completion:nil];
 }
 
 #pragma mark - Rotation
@@ -490,9 +494,9 @@
 
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        [self showTypeAheadPopover];
-    } else {
+    [self setSearching:YES animated:YES];
+    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self.navigationItem setLeftBarButtonItem:nil animated:YES];
         [self.navigationItem setRightBarButtonItem:nil animated:YES];
         [self.searchBar setShowsCancelButton:YES animated:YES];
@@ -503,41 +507,22 @@
         self.searchViewController.view.hidden = NO;
     }
     
-    [self updateSearchResultsForSearchString:self.searchQuery];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    [self closeSearchBar];
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        self.searchViewController.view.hidden = YES;
-    }
+    [self setSearching:NO animated:YES];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-    [self.typeAheadPopoverController dismissPopoverAnimated:YES];
-    [self performSearchWithQuery:searchBar.text];
+    [self setResourcesWithQuery:searchBar.text];
 }
 
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
 {
-    if (searchBar.isFirstResponder) {
-        if (!self.typeAheadPopoverController.popoverVisible) {
-            [self showTypeAheadPopover];
-        }
-    } else {
-        self.searchBarShouldBeginEditing = NO;
-        [self clearPlacesAnimated:YES];
-    }
-}
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    BOOL shouldBeginEditing = self.searchBarShouldBeginEditing;
-    self.searchBarShouldBeginEditing = YES;
-    return shouldBeginEditing;
+    [self updateSearchResultsForSearchString:searchBar.text];
 }
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
@@ -606,12 +591,50 @@
 - (void)popoverControllerDidDismissPopover:(UIPopoverController *)popoverController
 {
     if (popoverController == self.typeAheadPopoverController) {
-        [self.searchBar resignFirstResponder];
+        self.typeAheadPopoverController = nil;
+        [self setSearching:NO animated:YES];
     }
 }
 
 
 #pragma mark - Getters | Setters
+- (void)setSearching:(BOOL)searching
+{
+    [self setSearching:searching animated:NO];
+}
+
+- (void)setSearching:(BOOL)searching animated:(BOOL)animated
+{
+    if (_searching != searching) {
+        _searching = searching;
+        
+        UIUserInterfaceIdiom interfaceIdiom = [[UIDevice currentDevice] userInterfaceIdiom];
+        switch (interfaceIdiom) {
+            case UIUserInterfaceIdiomPad: {
+                [self _updateSearchingForPadIdiom:animated];
+            } break;
+    
+            default: {
+                @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unsupported UIUserInterfaceIdiom type" userInfo:nil];
+            }
+        }
+    }
+}
+
+- (void)_updateSearchingForPadIdiom:(BOOL)animated
+{
+    if (self.isSearching) {
+        self.navigationItem.leftBarButtonItem.enabled = NO;
+        [self.searchBar becomeFirstResponder];
+        [self.searchBar setShowsCancelButton:YES animated:animated];
+        [self _showTypeAheadPopover:animated];
+    } else {
+        [self.searchBar resignFirstResponder];
+        [self.searchBar setShowsCancelButton:NO animated:animated];
+        [self.typeAheadPopoverController dismissPopoverAnimated:animated];
+        self.navigationItem.leftBarButtonItem.enabled = YES;
+    }
+}
 
 - (UISearchBar *)searchBar
 {
