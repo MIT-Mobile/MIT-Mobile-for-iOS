@@ -3,20 +3,16 @@
 #import "MITNewsRecentSearchQuery.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITMartyRecentSearchController () <UITableViewDataSource, UITableViewDelegate, UIActionSheetDelegate>
-
-@property (strong, nonatomic) MITMartyResourceDataSource *modelController;
-@property (strong, nonatomic) IBOutlet UITableView *tableView;
-@property (nonatomic, readwrite) UIActionSheet *confirmSheet;
-@property (nonatomic, weak) IBOutlet UIBarButtonItem *clearButtonItem;
-@property (nonatomic, strong) NSString *filterString;
-@property (nonatomic, strong) NSArray *recentResults;
+@interface MITMartyRecentSearchController () <UIActionSheetDelegate>
+@property (nonatomic,strong) MITMartyResourceDataSource *modelController;
+@property (nonatomic,weak) UIActionSheet *confirmSheet;
+@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
+@property (nonatomic,copy) NSString *filterString;
+@property (nonatomic,copy) NSArray *recentResults;
 
 @end
 
 @implementation MITMartyRecentSearchController
-
-@synthesize delegate = _delegate;
 
 #pragma mark - properties
 - (MITMartyResourceDataSource *)modelController
@@ -33,6 +29,7 @@
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (self) {
+        
     }
     return self;
 }
@@ -41,19 +38,33 @@
 {
     [super viewDidLoad];
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
+    
+    UIBarButtonItem *clearButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:self action:@selector(clearRecentsButtonClicked:)];
+    
     if ([self.recentResults count] == 0) {
-        self.clearButtonItem.enabled = NO;
+        clearButtonItem.enabled = NO;
     }
     
-    self.clearButtonItem.tintColor = [UIColor mit_tintColor];
-    self.navigationItem.leftBarButtonItem = self.clearButtonItem;
     self.navigationItem.title = @"Recents";
+    self.navigationItem.leftBarButtonItem = clearButtonItem;
+    self.clearButtonItem = clearButtonItem;
+    
+    self.navigationController.navigationBar.tintColor = [UIColor mit_tintColor];
+    self.view.tintColor = [UIColor mit_tintColor];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.tableView reloadData];
+}
+
+- (void)viewWillDisappear:(BOOL)animated
+{
+    [super viewWillDisappear:animated];
+    
+    if (self.confirmSheet) {
+        [self.confirmSheet dismissWithClickedButtonIndex:self.confirmSheet.cancelButtonIndex animated:animated];
+    }
 }
 
 - (void)didReceiveMemoryWarning
@@ -64,32 +75,36 @@
 #pragma mark - Recent Add/Remove methods
 - (IBAction)clearRecentsButtonClicked:(id)sender
 {
-    self.confirmSheet = [[UIActionSheet alloc] initWithTitle:@"" delegate:self cancelButtonTitle:@"Cancel" destructiveButtonTitle:@"Clear All Recents" otherButtonTitles:nil];
-    [self.confirmSheet showInView:self.view];
+    UIActionSheet *actionSheet =  [[UIActionSheet alloc] initWithTitle:nil
+                                                              delegate:self
+                                                     cancelButtonTitle:@"Cancel"
+                                                destructiveButtonTitle:@"Clear All Recents"
+                                                     otherButtonTitles:nil];
+    [actionSheet showInView:self.view];
+    self.confirmSheet = actionSheet;
 }
 
 - (void)addRecentSearchItem:(NSString *)searchTerm
 {
-    NSError *error = nil;
-    [self.modelController addRecentSearchItem:searchTerm error:error];
+    [self.modelController addRecentSearchItem:searchTerm error:nil];
     self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
     self.clearButtonItem.enabled = YES;
+    [self.tableView reloadData];
 }
 
 - (void)filterResultsUsingString:(NSString *)filterString
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
     self.filterString = filterString;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
+    [self.tableView reloadData];
 }
 
-- (void)actionSheet:(UIActionSheet *)actionSheet clickedButtonAtIndex:(NSInteger)buttonIndex {
-    
-    if (buttonIndex == 0) {
+- (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex == actionSheet.destructiveButtonIndex) {
         [self clearRecents];
     }
+    
     self.confirmSheet = nil;
 }
 
@@ -129,15 +144,15 @@
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    
     MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
-    NSError *error = nil;
-    [self.modelController addRecentSearchItem:query.text error:error];
+    [self.modelController addRecentSearchItem:query.text error:nil];
     
     if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectQuery:)]) {
         [self.delegate placeSelectionViewController:self didSelectQuery:query.text];
     }
     
     [self filterResultsUsingString:query.text];
-
 }
+
 @end
