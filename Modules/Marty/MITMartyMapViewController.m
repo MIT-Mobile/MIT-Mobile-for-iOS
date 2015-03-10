@@ -221,6 +221,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
+    contentView.resourceView.backgroundColor = [UIColor clearColor];
     contentView.resourceView.machineName = resource.name;
     contentView.resourceView.location = resource.room;
     [contentView.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
