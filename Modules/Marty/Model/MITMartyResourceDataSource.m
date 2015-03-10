@@ -150,7 +150,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
     
-    if (filterString && ![filterString isEqualToString:@""]) {
+    if ([filterString length] > 0) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
         return [[recentSearchItems filteredArrayUsingPredicate:predicate] sortedArrayUsingDescriptors:@[sortDescriptor]];
     }
