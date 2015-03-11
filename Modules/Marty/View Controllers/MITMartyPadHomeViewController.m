@@ -506,6 +506,7 @@
         self.searchViewController.view.hidden = NO;
     }
     
+    [self updateSearchResultsForSearchString:searchBar.text];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
