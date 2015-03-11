@@ -84,14 +84,6 @@
     self.confirmSheet = actionSheet;
 }
 
-- (void)addRecentSearchItem:(NSString *)searchTerm
-{
-    [self.modelController addRecentSearchItem:searchTerm error:nil];
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-    self.clearButtonItem.enabled = YES;
-    [self.tableView reloadData];
-}
-
 - (void)filterResultsUsingString:(NSString *)filterString
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
