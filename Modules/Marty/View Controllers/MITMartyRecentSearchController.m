@@ -6,7 +6,6 @@
 @interface MITMartyRecentSearchController () <UIActionSheetDelegate>
 @property (nonatomic,strong) MITMartyResourceDataSource *modelController;
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
-@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 @property (nonatomic,copy) NSString *filterString;
 @property (nonatomic,copy) NSArray *recentResults;
 
