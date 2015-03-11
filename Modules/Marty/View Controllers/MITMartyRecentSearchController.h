@@ -9,7 +9,6 @@
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
 @property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 
-- (void)addRecentSearchItem:(NSString *)searchTerm;
 - (void)filterResultsUsingString:(NSString *)filterString;
 
 @end
