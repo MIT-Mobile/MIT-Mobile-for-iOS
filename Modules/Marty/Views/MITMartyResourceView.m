@@ -84,7 +84,6 @@
     
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
-    [self layoutIfNeeded];
 }
 
 - (void)layoutSubviews

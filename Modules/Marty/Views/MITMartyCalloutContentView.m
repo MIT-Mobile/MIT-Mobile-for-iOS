@@ -48,7 +48,8 @@
     // warnings or errors.
     // (bskinner - 2015.03.03)
     CGRect updatedFrame = self.frame;
-    updatedFrame.size = self.resourceView.frame.size;
+    updatedFrame.size.width = MAX(CGRectGetWidth(self.frame), CGRectGetWidth(self.resourceView.frame));
+    updatedFrame.size.height = MAX(CGRectGetHeight(self.frame), CGRectGetHeight(self.resourceView.frame));
     self.frame = updatedFrame;
     self.resourceView.frame = self.bounds;
     

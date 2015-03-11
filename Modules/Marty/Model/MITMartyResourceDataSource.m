@@ -64,63 +64,76 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMartyResourceDataSource* dataSource, NSError *error))block
 {
-    NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMartyDefaultServer];
-    NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMartyResourcePathPattern];
-
-    if (queryString) {
-        NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
-        [urlPath appendFormat:@"?%@&q=%@",@"format=json",encodedString];
-    }
-
-    NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
-    request.HTTPShouldHandleCookies = NO;
-    request.HTTPMethod = @"GET";
-    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-
-    RKMapping *mapping = [MITMartyResource objectMapping];
-    RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"collection.items" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
-
-    RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
-    requestOperation.managedObjectContext = self.managedObjectContext;
-
-    RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
-    requestOperation.managedObjectCache = cache;
-
-    __weak MITMartyResourceDataSource *weakSelf = self;
-    [requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-        MITMartyResourceDataSource *blockSelf = weakSelf;
-        if (!blockSelf) {
-            return;
-        }
-
-        NSManagedObjectContext *context = blockSelf.managedObjectContext;
-        [context performBlock:^{
-            blockSelf.queryString = queryString;
-            blockSelf.lastFetched = [NSDate date];
-            blockSelf.resourceObjectIdentifiers = [NSManagedObjectContext objectIDsForManagedObjects:[mappingResult array]];
-
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(blockSelf,nil);
-                }
-            }];
+    if (![queryString length]) {
+        self.queryString = nil;
+        self.lastFetched = [NSDate date];
+        self.resourceObjectIdentifiers = nil;
+        [self.managedObjectContext reset];
+        
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(self,nil);
+            }
         }];
-    } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-        MITMartyResourceDataSource *blockSelf = weakSelf;
-        if (!blockSelf) {
-            return;
-        } else {
-            DDLogError(@"failed to request Marty resources: %@",error);
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(blockSelf,error);
-                }
-            }];
-        }
-    }];
+    } else {
+        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMartyDefaultServer];
+        NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMartyResourcePathPattern];
 
-    [self.mappingOperationQueue addOperation:requestOperation];
+        if (queryString) {
+            NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
+            [urlPath appendFormat:@"?%@&q=%@",@"format=json",encodedString];
+        }
+
+        NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
+        request.HTTPShouldHandleCookies = NO;
+        request.HTTPMethod = @"GET";
+        [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+
+        RKMapping *mapping = [MITMartyResource objectMapping];
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"collection.items" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+
+        RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+        requestOperation.managedObjectContext = self.managedObjectContext;
+
+        RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
+        requestOperation.managedObjectCache = cache;
+
+        __weak MITMartyResourceDataSource *weakSelf = self;
+        [requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            MITMartyResourceDataSource *blockSelf = weakSelf;
+            if (!blockSelf) {
+                return;
+            }
+
+            NSManagedObjectContext *context = blockSelf.managedObjectContext;
+            [context performBlock:^{
+                blockSelf.queryString = queryString;
+                blockSelf.lastFetched = [NSDate date];
+                blockSelf.resourceObjectIdentifiers = [NSManagedObjectContext objectIDsForManagedObjects:[mappingResult array]];
+
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(blockSelf,nil);
+                    }
+                }];
+            }];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            MITMartyResourceDataSource *blockSelf = weakSelf;
+            if (!blockSelf) {
+                return;
+            } else {
+                DDLogError(@"failed to request Marty resources: %@",error);
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block(blockSelf,error);
+                    }
+                }];
+            }
+        }];
+
+        [self.mappingOperationQueue addOperation:requestOperation];
+    }
 }
 
 #pragma mark - Recent Search List
@@ -150,7 +163,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
     
-    if (filterString && ![filterString isEqualToString:@""]) {
+    if ([filterString length] > 0) {
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
         return [[recentSearchItems filteredArrayUsingPredicate:predicate] sortedArrayUsingDescriptors:@[sortDescriptor]];
     }
@@ -158,31 +171,32 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     return [[recentSearchList.recentQueries array] sortedArrayUsingDescriptors:@[sortDescriptor]];
 }
 
-- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError *)error
+- (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError**)error
 {
     [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
         
         MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         NSArray *recentSearchItems = [recentSearchList.recentQueries array];
-        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text = %@", searchTerm ];
-        NSArray *searchTermAlreadyExists = [recentSearchItems filteredArrayUsingPredicate:predicate];
         
-        if ([searchTermAlreadyExists count]) {
-            MITMartyRecentSearchQuery *searchItem = [searchTermAlreadyExists firstObject];
-            searchItem.date = [NSDate date];
-            return YES;
-        } else {
-            MITMartyRecentSearchQuery *searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
-            if (searchItem) {
-                searchItem.text = searchTerm;
-                searchItem.date = [NSDate date];
-                [recentSearchList addRecentQueriesObject:searchItem];
-                return YES;
-            } else {
-                return NO;
+        __block MITMartyRecentSearchQuery *searchItem = nil;
+        NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text =[c] %@", searchTerm];
+        [recentSearchItems enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            BOOL objectMatches = [predicate evaluateWithObject:obj];
+            if (objectMatches) {
+                (*stop) = YES;
+                searchItem = (MITMartyRecentSearchQuery*)obj;
             }
+        }];
+        
+        if (!searchItem) {
+            searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+            searchItem.text = searchTerm;
+            [recentSearchList addRecentQueriesObject:searchItem];
         }
-    } error:&error];
+        
+        searchItem.date = [NSDate date];
+        return YES;
+    } error:error];
 }
 
 - (void)clearRecentSearchesWithError:(NSError *)error

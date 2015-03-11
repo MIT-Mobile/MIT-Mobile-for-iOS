@@ -221,12 +221,13 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
+    contentView.resourceView.backgroundColor = [UIColor clearColor];
     contentView.resourceView.machineName = resource.name;
     contentView.resourceView.location = resource.room;
     [contentView.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
     
     self.calloutView.contentView = contentView;
-    self.calloutView.contentViewPreferredSize = [contentView.resourceView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    self.calloutView.contentViewPreferredSize = [contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
     [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
