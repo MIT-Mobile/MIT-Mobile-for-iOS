@@ -8,6 +8,7 @@
 - (instancetype)init;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMartyResourceDataSource* dataSource, NSError *error))block;
 
+- (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString;
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString;
 - (void)addRecentSearchItem:(NSString *)searchTerm error:(NSError**)addError;
 - (void)clearRecentSearchesWithError:(NSError *)addError;

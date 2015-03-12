@@ -154,6 +154,19 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 }
 
 #pragma mark - Recent Search Items
+- (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMartyRecentSearchQuery entityName]];
+    fetchRequest.resultType = NSCountResultType;
+    
+    if ([filterString length]) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
+    }
+    
+    NSInteger numberOfRecentSearchItems = [[MITCoreDataController defaultController].mainQueueContext countForFetchRequest:fetchRequest error:nil];
+    
+    return numberOfRecentSearchItems;
+}
 
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
 {
