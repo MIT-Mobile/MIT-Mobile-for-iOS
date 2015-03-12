@@ -1,6 +1,5 @@
 #import "MITToursStopDetailContainerViewController.h"
 #import "MITToursStopDetailViewController.h"
-#import "MITToursStopDirectionsViewController.h"
 
 @interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
@@ -62,36 +61,6 @@
     UIBarButtonItem *directionsButton = [[UIBarButtonItem alloc] initWithTitle:@"Directions" style:UIBarButtonItemStylePlain target:self action:@selector(directionsButtonPressed:)];
     UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
     self.toolbarItems = @[flexibleSpace, directionsButton];
-}
-
-- (void)directionsButtonPressed:(id)sender
-{
-    MITToursStopDirectionsViewController *directionsVC = [[MITToursStopDirectionsViewController alloc] init];
-    
-    if ([self.currentStop isMainLoopStop]) {
-        directionsVC.currentStop = [self mainLoopStopBeforeStop:self.currentStop];
-    }
-    else {
-        directionsVC.currentStop = self.mostRecentMainLoopStop;
-    }
-    
-    directionsVC.nextStop = self.currentStop;
-    
-    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:directionsVC];
-    navigationController.navigationBar.translucent = NO;
-    
-    if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
-        navigationController.modalPresentationStyle = UIModalPresentationFormSheet;
-    }
-    
-    directionsVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStyleDone target:self action:@selector(directionsDoneButtonPressed:)];
-    [self presentViewController:navigationController animated:YES completion:nil];
-    
-}
-
-- (void)directionsDoneButtonPressed:(UIBarButtonItem *)sender
-{
-    [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)createPageViewController
