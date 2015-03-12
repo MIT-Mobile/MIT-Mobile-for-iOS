@@ -2,7 +2,7 @@
 #import "MITMartyResourceDataSource.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourcesTableViewController.h"
-#import "MITMartyDetailTableViewController.h"
+#import "MITMartyDetailContainerViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
 
@@ -587,9 +587,8 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 #pragma mark MITMartyResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
-    MITMartyDetailTableViewController *detailViewController = [[MITMartyDetailTableViewController alloc] init];
-    detailViewController.resource = resource;
-    [self.navigationController pushViewController:detailViewController animated:YES];
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+    [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 
 - (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController

@@ -5,7 +5,7 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "MITMapPlaceSelector.h"
 #import "MITLocationManager.h"
-#import "MITMartyDetailTableViewController.h"
+#import "MITMartyDetailContainerViewController.h"
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourceView.h"
@@ -243,19 +243,19 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
-    detailVC.resource = resource;
     
-    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+
+    detailContainerViewController.view.frame = CGRectMake(0, 0, 320, 500);
     
-    self.calloutView.contentView = detailVC.view;
+    self.calloutView.contentView = detailContainerViewController.view;
     self.calloutView.contentView.clipsToBounds = YES;
-    self.calloutViewController = detailVC;
+    self.calloutViewController = detailContainerViewController;
     
     [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
     
     // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
-    detailVC.view.frame = CGRectMake(0, 0, 320, 500);
+    detailContainerViewController.view.frame = CGRectMake(0, 0, 320, 500);
 }
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
@@ -296,9 +296,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
-    detailVC.resource = resource;
-    [self.navigationController pushViewController:detailVC animated:YES];
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+    [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 
 #pragma mark - Location Notifications

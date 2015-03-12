@@ -87,7 +87,7 @@
     
     UIButton *upButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [upButton setImage:upButtonImage forState:UIControlStateNormal];
-    [upButton addTarget:self action:@selector(displayPreviousStop) forControlEvents:UIControlEventTouchUpInside];
+    [upButton addTarget:self action:@selector(displayPreviousResource) forControlEvents:UIControlEventTouchUpInside];
 
     UIButton *downButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [downButton setImage:downButtonImage forState:UIControlStateNormal];
@@ -141,12 +141,12 @@
 
 - (void)configureNavigationForResource:(MITMartyResource *)resource shouldPutNameInTitle:(BOOL)shouldPutNameInTitle
 {
-    NSInteger mainLoopIndex = [self.resources indexOfObject:resource];
-    if (mainLoopIndex != NSNotFound) {
+    NSInteger resourceIndex = [self indexOfResource:resource inResources:self.resources];
+    if (resourceIndex != NSNotFound) {
         if (shouldPutNameInTitle) {
             self.title = resource.title;
         } else {
-            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)mainLoopIndex + 1, (unsigned long)self.resources.count];
+            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)resourceIndex + 1, (unsigned long)self.resources.count];
         }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
     } else {
@@ -164,7 +164,8 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
     MITMartyResource *currentResource = [self resourceForViewController:viewController];
-    NSInteger index = [self.resources indexOfObject:currentResource];
+    NSInteger index = [self indexOfResource:currentResource inResources:self.resources];
+    
     if (index != NSNotFound) {
         NSInteger prevIndex = [self indexBeforeIndex:index];
         MITMartyResource *prevResource = [self.resources objectAtIndex:prevIndex];
@@ -175,8 +176,9 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    MITMartyResource *currentStop = [self resourceForViewController:viewController];
-    NSInteger index = [self.resources indexOfObject:currentStop];
+    MITMartyResource *currentResource = [self resourceForViewController:viewController];
+    NSInteger index = [self indexOfResource:currentResource inResources:self.resources];
+
     if (index != NSNotFound) {
         NSInteger nextIndex = [self indexAfterIndex:index];
         MITMartyResource *nextResource = [self.resources objectAtIndex:nextIndex];
@@ -219,11 +221,12 @@
     return detailViewController;
 }
 
-#pragma mark - Cycling Between Stops
+#pragma mark - Cycling Between Resources
 
 - (void)displayNextResource
 {
-    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
+    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
+    
     if (currentIndex != NSNotFound) {
         NSInteger nextIndex = [self indexAfterIndex:currentIndex];
         MITMartyResource *nextResource = [self.resources objectAtIndex:nextIndex];
@@ -233,7 +236,8 @@
 
 - (void)displayPreviousResource
 {
-    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
+    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
+
     if (currentIndex != NSNotFound) {
         NSInteger prevIndex = [self indexBeforeIndex:currentIndex];
         MITMartyResource *prevResource = [self.resources objectAtIndex:prevIndex];
@@ -248,10 +252,11 @@
     }
     self.isTransitioning = YES;
     
-    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
-    NSInteger newIndex = [self.resources indexOfObject:resource];
+    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
+    NSInteger newIndex = [self indexOfResource:resource inResources:self.resources];
+
     
-    // If the new stop is immediately before or after the current one in main loop order, then
+    // If the new resource is immediately before or after the current one in main loop order, then
     // we want the transition to be animated as if the user had swiped.
     BOOL animated = NO;
     UIPageViewControllerNavigationDirection direction = UIPageViewControllerNavigationDirectionForward;
@@ -269,7 +274,7 @@
     MITMartyDetailTableViewController *detailViewController = [self detailViewControllerForResource:resource];
     __weak MITMartyDetailContainerViewController *weakSelf = self;
     [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
-        // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new stop after we are done.
+        // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new resource after we are done.
         [weakSelf configureForResource:resource];
         weakSelf.isTransitioning = NO;
     }];
@@ -287,19 +292,19 @@
     return (index + self.resources.count - 1 ) % self.resources.count;
 }
 
-- (MITMartyResource *)mainLoopStopAfterStop:(MITMartyResource *)stop
+- (NSInteger)indexOfResource:(MITMartyResource *)resource inResources:(NSArray *)resources
 {
-    NSInteger index = [self.resources indexOfObject:stop];
-    index = [self indexAfterIndex:index];
-    return self.resources[index];
+    __block NSInteger index = NSNotFound;
+    
+    [resources enumerateObjectsUsingBlock:^(MITMartyResource *obj, NSUInteger idx, BOOL *stop) {
+        if([obj.identifier isEqualToString:resource.identifier]) {
+            index = idx;
+            (*stop) = YES;
+        }
+    }];
+    return index;
 }
 
-- (MITMartyResource *)mainLoopStopBeforeStop:(MITMartyResource *)stop
-{
-    NSInteger index = [self.resources indexOfObject:stop];
-    index = [self indexBeforeIndex:index];
-    return self.resources[index];
-}
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
