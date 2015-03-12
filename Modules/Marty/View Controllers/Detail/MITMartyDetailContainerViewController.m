@@ -1,14 +1,14 @@
 #import "MITMartyDetailContainerViewController.h"
-#import "MITToursStopDetailViewController.h"
+#import "MITMartyDetailTableViewController.h"
 
-@interface MITMartyDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
+@interface MITMartyDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
-@property (strong, nonatomic) NSArray *mainLoopStops;
+@property (strong, nonatomic) NSArray *resources;
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
 
-@property (strong, nonatomic) MITToursStop *mostRecentMainLoopStop;
+@property (strong, nonatomic) MITMartyResource *currentResource;
 
 @property (nonatomic) BOOL isTransitioning;
 @property (nonatomic, strong) NSMutableArray *inputViews;
@@ -17,26 +17,14 @@
 
 @implementation MITMartyDetailContainerViewController
 
-- (instancetype)initWithTour:(MITToursTour *)tour stop:(MITToursStop *)stop nibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithResource:(MITMartyResource *)resource resources:(NSArray *)resources nibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nil bundle:nil];
     if (self) {
-        self.tour = tour;
-        self.currentStop = stop;
-        if ([stop isMainLoopStop]) {
-            self.mostRecentMainLoopStop = stop;
-        }
-        else {
-            self.mostRecentMainLoopStop = self.mainLoopStops[0];
-        }
+        self.currentResource = resource;
+        self.resources = resources;
     }
     return self;
-}
-
-- (void)setTour:(MITToursTour *)tour
-{
-    _tour = tour;
-    self.mainLoopStops = [tour.mainLoopStops copy];
 }
 
 - (void)viewDidLoad
@@ -45,7 +33,7 @@
     [self setupToolbar];
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
-    [self configureForStop:self.currentStop];
+    [self configureForResource:self.currentResource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -75,7 +63,7 @@
     [self.view addSubview:pageView];
     [self.pageViewController didMoveToParentViewController:self];
     
-    UIViewController *currentPage = [self detailViewControllerForStop:self.currentStop];
+    UIViewController *currentPage = [self detailViewControllerForResource:self.currentResource];
     [self.pageViewController setViewControllers:@[currentPage] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
     NSDictionary *pageViewDict = NSDictionaryOfVariableBindings(pageView);
@@ -103,7 +91,7 @@
 
     UIButton *downButton = [UIButton buttonWithType:UIButtonTypeSystem];
     [downButton setImage:downButtonImage forState:UIControlStateNormal];
-    [downButton addTarget:self action:@selector(displayNextStop) forControlEvents:UIControlEventTouchUpInside];
+    [downButton addTarget:self action:@selector(displayNextResource) forControlEvents:UIControlEventTouchUpInside];
     
     [parentView addSubview:upButton];
     [parentView addSubview:downButton];
@@ -143,32 +131,27 @@
     }
 }
 
-#pragma mark - Configuration for Stop
+#pragma mark - Configuration for Resource
 
-- (BOOL)isMainLoopStop:(MITToursStop *)stop
+- (void)configureForResource:(MITMartyResource *)resource
 {
-    return [self.mainLoopStops containsObject:self.currentStop];
+    self.currentResource = resource;
+    [self configureNavigationForResource:resource shouldPutNameInTitle:NO];
 }
 
-- (void)configureForStop:(MITToursStop *)stop
+- (void)configureNavigationForResource:(MITMartyResource *)resource shouldPutNameInTitle:(BOOL)shouldPutNameInTitle
 {
-    self.currentStop = stop;
-    [self configureNavigationForStop:stop shouldPutNameInTitle:NO];
-}
-
-- (void)configureNavigationForStop:(MITToursStop *)stop shouldPutNameInTitle:(BOOL)shouldPutNameInTitle
-{
-    NSInteger mainLoopIndex = [self.mainLoopStops indexOfObject:stop];
+    NSInteger mainLoopIndex = [self.resources indexOfObject:resource];
     if (mainLoopIndex != NSNotFound) {
         if (shouldPutNameInTitle) {
-            self.title = stop.title;
+            self.title = resource.title;
         } else {
-            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)mainLoopIndex + 1, (unsigned long)self.mainLoopStops.count];
+            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)mainLoopIndex + 1, (unsigned long)self.resources.count];
         }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
     } else {
         if (shouldPutNameInTitle) {
-            self.title = [NSString stringWithFormat:@"Side Trip - %@", stop.title];
+            self.title = [NSString stringWithFormat:@"Side Trip - %@", resource.title];
         } else {
             self.title = @"Side Trip";
         }
@@ -180,24 +163,24 @@
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
-    MITToursStop *currentStop = [self stopForViewController:viewController];
-    NSInteger index = [self.mainLoopStops indexOfObject:currentStop];
+    MITMartyResource *currentResource = [self resourceForViewController:viewController];
+    NSInteger index = [self.resources indexOfObject:currentResource];
     if (index != NSNotFound) {
         NSInteger prevIndex = [self indexBeforeIndex:index];
-        MITToursStop *prevStop = [self.mainLoopStops objectAtIndex:prevIndex];
-        return [self detailViewControllerForStop:prevStop];
+        MITMartyResource *prevResource = [self.resources objectAtIndex:prevIndex];
+        return [self detailViewControllerForResource:prevResource];
     }
     return nil;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
-    MITToursStop *currentStop = [self stopForViewController:viewController];
-    NSInteger index = [self.mainLoopStops indexOfObject:currentStop];
+    MITMartyResource *currentStop = [self resourceForViewController:viewController];
+    NSInteger index = [self.resources indexOfObject:currentStop];
     if (index != NSNotFound) {
         NSInteger nextIndex = [self indexAfterIndex:index];
-        MITToursStop *nextStop = [self.mainLoopStops objectAtIndex:nextIndex];
-        return [self detailViewControllerForStop:nextStop];
+        MITMartyResource *nextResource = [self.resources objectAtIndex:nextIndex];
+        return [self detailViewControllerForResource:nextResource];
     }
     return nil;
 }
@@ -212,64 +195,61 @@
 {
     if (completed) {
         UIViewController *currentViewController = self.pageViewController.viewControllers[0];
-        MITToursStop *newStop = [self stopForViewController:currentViewController];
-        [self configureForStop:newStop];
+        MITMartyResource *newResource = [self resourceForViewController:currentViewController];
+        [self configureForResource:newResource];
     }
     self.isTransitioning = NO;
 }
 
 #pragma mark - Detail View Controllers
 
-- (MITToursStop *)stopForViewController:(UIViewController *)viewController
+- (MITMartyResource *)resourceForViewController:(UIViewController *)viewController
 {
-    if ([viewController isKindOfClass:[MITToursStopDetailViewController class]]) {
-        return ((MITToursStopDetailViewController *)viewController).stop;
+    if ([viewController isKindOfClass:[MITMartyDetailTableViewController class]]) {
+        return ((MITMartyDetailTableViewController *)viewController).resource;
     }
     return nil;
 }
 
-- (MITToursStopDetailViewController *)detailViewControllerForStop:(MITToursStop *)stop
+- (MITMartyDetailTableViewController *)detailViewControllerForResource:(MITMartyResource *)resource
 {
-    MITToursStopDetailViewController *detailViewController = [[MITToursStopDetailViewController alloc] initWithTour:self.tour stop:stop nibName:nil bundle:nil];
-    detailViewController.delegate = self;
+//TODO change to initWithResource
+    MITMartyDetailTableViewController *detailViewController = [[MITMartyDetailTableViewController alloc] init];
+    detailViewController.resource = resource;
     return detailViewController;
 }
 
 #pragma mark - Cycling Between Stops
 
-- (void)displayNextStop
+- (void)displayNextResource
 {
-    NSInteger currentIndex = [self.mainLoopStops indexOfObject:self.currentStop];
+    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
     if (currentIndex != NSNotFound) {
         NSInteger nextIndex = [self indexAfterIndex:currentIndex];
-        MITToursStop *nextStop = [self.mainLoopStops objectAtIndex:nextIndex];
-        [self transitionToStop:nextStop];
+        MITMartyResource *nextResource = [self.resources objectAtIndex:nextIndex];
+        [self transitionToResource:nextResource];
     }
 }
 
-- (void)displayPreviousStop
+- (void)displayPreviousResource
 {
-    NSInteger currentIndex = [self.mainLoopStops indexOfObject:self.currentStop];
+    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
     if (currentIndex != NSNotFound) {
         NSInteger prevIndex = [self indexBeforeIndex:currentIndex];
-        MITToursStop *prevStop = [self.mainLoopStops objectAtIndex:prevIndex];
-        [self transitionToStop:prevStop];
+        MITMartyResource *prevResource = [self.resources objectAtIndex:prevIndex];
+        [self transitionToResource:prevResource];
     }
 }
 
-- (void)transitionToStop:(MITToursStop *)stop
+- (void)transitionToResource:(MITMartyResource *)resource
 {
     if (self.isTransitioning) {
         return;
     }
     self.isTransitioning = YES;
     
-    if ([stop isMainLoopStop]) {
-        self.mostRecentMainLoopStop = stop;
-    }
-    
-    NSInteger currentIndex = [self.mainLoopStops indexOfObject:self.currentStop];
-    NSInteger newIndex = [self.mainLoopStops indexOfObject:stop];
+    NSInteger currentIndex = [self.resources indexOfObject:self.currentResource];
+    NSInteger newIndex = [self.resources indexOfObject:resource];
     
     // If the new stop is immediately before or after the current one in main loop order, then
     // we want the transition to be animated as if the user had swiped.
@@ -286,11 +266,11 @@
         }
     }
     
-    MITToursStopDetailViewController *detailViewController = [self detailViewControllerForStop:stop];
+    MITMartyDetailTableViewController *detailViewController = [self detailViewControllerForResource:resource];
     __weak MITMartyDetailContainerViewController *weakSelf = self;
     [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
         // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new stop after we are done.
-        [weakSelf configureForStop:stop];
+        [weakSelf configureForResource:resource];
         weakSelf.isTransitioning = NO;
     }];
 }
@@ -299,52 +279,26 @@
 
 - (NSInteger)indexAfterIndex:(NSInteger)index
 {
-    return (index + 1) % self.mainLoopStops.count;
+    return (index + 1) % self.resources.count;
 }
 
 - (NSInteger)indexBeforeIndex:(NSInteger)index
 {
-    return (index + self.mainLoopStops.count - 1 ) % self.mainLoopStops.count;
+    return (index + self.resources.count - 1 ) % self.resources.count;
 }
 
-- (MITToursStop *)mainLoopStopAfterStop:(MITToursStop *)stop
+- (MITMartyResource *)mainLoopStopAfterStop:(MITMartyResource *)stop
 {
-    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    NSInteger index = [self.resources indexOfObject:stop];
     index = [self indexAfterIndex:index];
-    return self.mainLoopStops[index];
+    return self.resources[index];
 }
 
-- (MITToursStop *)mainLoopStopBeforeStop:(MITToursStop *)stop
+- (MITMartyResource *)mainLoopStopBeforeStop:(MITMartyResource *)stop
 {
-    NSInteger index = [self.mainLoopStops indexOfObject:stop];
+    NSInteger index = [self.resources indexOfObject:stop];
     index = [self indexBeforeIndex:index];
-    return self.mainLoopStops[index];
-}
-
-#pragma mark - MITToursStopDetailViewControllerDelegate Methods
-
-- (void)stopDetailViewControllerTitleDidScrollBelowTitle:(MITToursStopDetailViewController *)detailViewController
-{
-    UIViewController *currentViewController = self.pageViewController.viewControllers[0];
-    if (detailViewController == currentViewController) {
-        MITToursStop *stop = [self stopForViewController:detailViewController];
-        [self configureNavigationForStop:stop shouldPutNameInTitle:YES];
-    }
-}
-
-- (void)stopDetailViewControllerTitleDidScrollAboveTitle:(MITToursStopDetailViewController *)detailViewController
-{    UIViewController *currentViewController = self.pageViewController.viewControllers[0];
-    if (detailViewController == currentViewController) {
-        MITToursStop *stop = [self stopForViewController:detailViewController];
-        [self configureNavigationForStop:stop shouldPutNameInTitle:NO];
-    }
-}
-
-- (void)stopDetailViewController:(MITToursStopDetailViewController *)detailViewController didSelectStop:(MITToursStop *)stop
-{
-    if (stop != self.currentStop) {
-        [self transitionToStop:stop];
-    }
+    return self.resources[index];
 }
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
