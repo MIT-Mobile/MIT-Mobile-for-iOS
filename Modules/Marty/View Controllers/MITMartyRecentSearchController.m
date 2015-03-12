@@ -8,6 +8,7 @@
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
 @property (nonatomic,copy) NSString *filterString;
 @property (nonatomic,copy) NSArray *recentResults;
+@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 
 @end
 
@@ -86,6 +87,9 @@
 - (void)filterResultsUsingString:(NSString *)filterString
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
+    if ([self.recentResults count]) {
+        self.clearButtonItem.enabled = YES;
+    }
     self.filterString = filterString;
     [self.tableView reloadData];
 }

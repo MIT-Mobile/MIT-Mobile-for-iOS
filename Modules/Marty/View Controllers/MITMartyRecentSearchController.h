@@ -7,7 +7,6 @@
 @interface MITMartyRecentSearchController : UITableViewController <MITMapPlaceSelector>
 @property(nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
-@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 
 - (void)filterResultsUsingString:(NSString *)filterString;
 

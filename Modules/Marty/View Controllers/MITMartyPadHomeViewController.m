@@ -332,7 +332,6 @@
         
         [self.dataSource resourcesWithQuery:query completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
             [dataSource addRecentSearchItem:query error:nil];
-            self.searchViewController.clearButtonItem.enabled = YES;
             
             if (error) {
                 DDLogWarn(@"Error: %@",error);
