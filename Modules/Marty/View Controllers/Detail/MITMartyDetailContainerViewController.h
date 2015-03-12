@@ -2,7 +2,7 @@
 #import "MITToursTour.h"
 #import "MITToursStop.h"
 
-@interface MITToursStopDetailContainerViewController : UIViewController
+@interface MITMartyDetailContainerViewController : UIViewController
 
 @property (nonatomic, strong) MITToursTour *tour;
 @property (nonatomic, strong) MITToursStop *currentStop;

@@ -1,7 +1,7 @@
-#import "MITToursStopDetailContainerViewController.h"
+#import "MITMartyDetailContainerViewController.h"
 #import "MITToursStopDetailViewController.h"
 
-@interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
+@interface MITMartyDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
 
@@ -15,7 +15,7 @@
 
 @end
 
-@implementation MITToursStopDetailContainerViewController
+@implementation MITMartyDetailContainerViewController
 
 - (instancetype)initWithTour:(MITToursTour *)tour stop:(MITToursStop *)stop nibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -287,7 +287,7 @@
     }
     
     MITToursStopDetailViewController *detailViewController = [self detailViewControllerForStop:stop];
-    __weak MITToursStopDetailContainerViewController *weakSelf = self;
+    __weak MITMartyDetailContainerViewController *weakSelf = self;
     [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
         // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new stop after we are done.
         [weakSelf configureForStop:stop];
