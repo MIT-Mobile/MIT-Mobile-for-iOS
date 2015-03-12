@@ -317,9 +317,8 @@
 - (void)updateSearchResultsForSearchString:(NSString *)searchString
 {
     if (self.isSearching) {
-        if ([searchString length]) {
-            [self.searchViewController filterResultsUsingString:searchString];
-        } else {
+        [self.searchViewController filterResultsUsingString:searchString];
+        if ([searchString length] == 0) {
             self.searchQuery = nil;
         }
     }
@@ -507,6 +506,7 @@
         self.searchViewController.view.hidden = NO;
     }
     
+    [self updateSearchResultsForSearchString:searchBar.text];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
