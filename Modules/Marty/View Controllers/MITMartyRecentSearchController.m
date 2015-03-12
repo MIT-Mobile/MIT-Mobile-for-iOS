@@ -105,8 +105,7 @@
 
 - (void)clearRecents
 {
-    NSError *error = nil;
-    [self.modelController clearRecentSearchesWithError:error];
+    [self.modelController clearRecentSearches];
     self.recentResults = nil;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];

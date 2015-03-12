@@ -212,9 +212,9 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     } error:error];
 }
 
-- (void)clearRecentSearchesWithError:(NSError *)error
+- (void)clearRecentSearches
 {
-    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **updateError) {
         MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         [context deleteObject:recentSearchList];
         recentSearchList = [self recentSearchListWithManagedObjectContext:context];
@@ -224,7 +224,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         } else {
             return NO;
         }
-    } error:&error];
+    } error:nil];
 }
 
 @end
