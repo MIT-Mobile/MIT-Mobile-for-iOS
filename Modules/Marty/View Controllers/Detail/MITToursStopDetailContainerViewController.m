@@ -4,7 +4,6 @@
 @interface MITToursStopDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate, MITToursStopDetailViewControllerDelegate>
 
 @property (strong, nonatomic) NSArray *mainLoopStops;
-@property (strong, nonatomic) NSArray *sideTripStops;
 
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
@@ -38,7 +37,6 @@
 {
     _tour = tour;
     self.mainLoopStops = [tour.mainLoopStops copy];
-    self.sideTripStops = [tour.sideTripsStops copy];
 }
 
 - (void)viewDidLoad
