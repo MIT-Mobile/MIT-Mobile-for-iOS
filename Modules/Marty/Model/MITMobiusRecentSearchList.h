@@ -4,13 +4,13 @@
 
 @class MITMartyRecentSearchQuery;
 
-@interface MITMartyRecentSearchList : MITManagedObject
+@interface MITMobiusRecentSearchList : MITManagedObject
 
 @property (nonatomic, retain) NSOrderedSet *recentQueries;
 
 @end
 
-@interface MITMartyRecentSearchList (CoreDataGeneratedAccessors)
+@interface MITMobiusRecentSearchList (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(MITMartyRecentSearchQuery *)value inRecentQueriesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromRecentQueriesAtIndex:(NSUInteger)idx;

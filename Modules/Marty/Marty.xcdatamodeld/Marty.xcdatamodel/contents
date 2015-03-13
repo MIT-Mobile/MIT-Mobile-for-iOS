@@ -14,7 +14,7 @@
         <attribute name="modifiedBy" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="MartyRecentSearchList" representedClassName="MITMartyRecentSearchList" syncable="YES">
+    <entity name="MartyRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
         <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMartyRecentSearchQuery" syncable="YES"/>
     </entity>
     <entity name="MITMartyRecentSearchQuery" representedClassName="MITMartyRecentSearchQuery" syncable="YES">

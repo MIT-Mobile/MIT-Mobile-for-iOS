@@ -7,7 +7,7 @@
 #import "MITAdditions.h"
 #import "MITMobiusResource.h"
 
-#import "MITMartyRecentSearchList.h"
+#import "MITMobiusRecentSearchList.h"
 #import "MITMartyRecentSearchQuery.h"
 
 static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
@@ -138,16 +138,16 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 
 #pragma mark - Recent Search List
 
-- (MITMartyRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
+- (MITMobiusRecentSearchList *)recentSearchListWithManagedObjectContext:(NSManagedObjectContext *)context
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMartyRecentSearchList entityName]];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchList entityName]];
     NSError *error = nil;
     
     NSArray *fetchedObjects = [context executeFetchRequest:fetchRequest error:&error];
     if (error) {
         return nil;
     } else if ([fetchedObjects count] == 0) {
-        return [[MITMartyRecentSearchList alloc] initWithEntity:[MITMartyRecentSearchList entityDescription] insertIntoManagedObjectContext:context];
+        return [[MITMobiusRecentSearchList alloc] initWithEntity:[MITMobiusRecentSearchList entityDescription] insertIntoManagedObjectContext:context];
     } else {
         return [fetchedObjects firstObject];
     }
@@ -158,7 +158,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
 {
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
-    MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
+    MITMobiusRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:managedObjectContext];
     NSArray *recentSearchItems = [[recentSearchList.recentQueries reversedOrderedSet] array];
     
     NSSortDescriptor *sortDescriptor = [NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO];
@@ -175,7 +175,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 {
     [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
         
-        MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        MITMobiusRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         NSArray *recentSearchItems = [recentSearchList.recentQueries array];
         
         __block MITMartyRecentSearchQuery *searchItem = nil;
@@ -202,7 +202,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 - (void)clearRecentSearchesWithError:(NSError *)error
 {
     [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
-        MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
+        MITMobiusRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         [context deleteObject:recentSearchList];
         recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         
