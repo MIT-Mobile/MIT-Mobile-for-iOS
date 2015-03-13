@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITMartyDetailCell : UITableViewCell
+@interface MITMobiusDetailCell : UITableViewCell
 
 + (UINib *)detailCellNib;
 + (NSString *)detailCellNibName;

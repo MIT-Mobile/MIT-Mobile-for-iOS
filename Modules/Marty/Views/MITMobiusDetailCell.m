@@ -1,14 +1,14 @@
-#import "MITMartyDetailCell.h"
+#import "MITMobiusDetailCell.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITMartyDetailCell()
+@interface MITMobiusDetailCell()
 
 @property (nonatomic,weak) IBOutlet UILabel *titleLabel;
 @property (nonatomic,weak) IBOutlet UILabel *statusLabel;
 
 @end
 
-@implementation MITMartyDetailCell
+@implementation MITMobiusDetailCell
 
 - (void)awakeFromNib {
     // Initialization code
@@ -43,7 +43,7 @@
 
 + (NSString *)detailCellNibName
 {
-    return @"MITMartyDetailCell";
+    return @"MITMobiusDetailCell";
 }
 
 - (void)updateConstraints

@@ -1,6 +1,6 @@
 #import "MITMartyDetailTableViewController.h"
 #import "MITActionCell.h"
-#import "MITMartyDetailCell.h"
+#import "MITMobiusDetailCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITTitleDescriptionCell.h"
 #import "MITMartySpecificationsHeader.h"
@@ -88,7 +88,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     
     [tableView registerNib:[MITTitleDescriptionCell titleDescriptionCellNib] forDynamicCellReuseIdentifier:MITTitleDescriptionCellIdentifier];
     
-    [tableView registerNib:[MITMartyDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
+    [tableView registerNib:[MITMobiusDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
     
     [tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
 
@@ -164,8 +164,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if ([cell isKindOfClass:[MITMartyDetailCell class]]) {
-        MITMartyDetailCell *detailCell = (MITMartyDetailCell*)cell;
+    if ([cell isKindOfClass:[MITMobiusDetailCell class]]) {
+        MITMobiusDetailCell *detailCell = (MITMobiusDetailCell*)cell;
         [detailCell setTitle: self.resource.name];
         [detailCell setStatus:self.resource.status];
 
