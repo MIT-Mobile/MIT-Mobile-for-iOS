@@ -1,9 +1,9 @@
 #import <UIKit/UIKit.h>
 
-typedef NS_ENUM(NSInteger, MITMartyResourceStatus) {
-    MITMartyResourceStatusOnline,
-    MITMartyResourceStatusOffline,
-    MITMartyResourceStatusUnknown
+typedef NS_ENUM(NSInteger, MITMobiusResourceStatus) {
+    MITMobiusResourceStatusOnline,
+    MITMobiusResourceStatusOffline,
+    MITMobiusResourceStatusUnknown
 };
 
 @interface MITMobiusResourceView : UIView
@@ -15,5 +15,5 @@ typedef NS_ENUM(NSInteger, MITMartyResourceStatus) {
 @property(nonatomic,copy) NSString *machineName;
 @property(nonatomic,copy) NSString *location;
 
-- (void)setStatus:(MITMartyResourceStatus)status withText:(NSString*)statusText;
+- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString*)statusText;
 @end

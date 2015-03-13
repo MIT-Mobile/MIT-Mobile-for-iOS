@@ -291,7 +291,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         resourceCell.resourceView.index = baseIndexForSection + indexPath.row;
         resourceCell.resourceView.machineName = resource.name;
         resourceCell.resourceView.location = resource.room;
-        [resourceCell.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];
+        [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline withText:resource.status];
     }
 }
 

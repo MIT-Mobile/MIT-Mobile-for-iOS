@@ -49,20 +49,20 @@
     }
 }
 
-- (void)setStatus:(MITMartyResourceStatus)status withText:(NSString *)statusText
+- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString *)statusText
 {
     self.statusLabel.text = [statusText copy];
     
     switch (status) {
-        case MITMartyResourceStatusOffline: {
+        case MITMobiusResourceStatusOffline: {
             self.statusLabel.textColor = [UIColor mit_closedRedColor];
         } break;
             
-        case MITMartyResourceStatusOnline: {
+        case MITMobiusResourceStatusOnline: {
             self.statusLabel.textColor = [UIColor mit_openGreenColor];
         } break;
             
-        case MITMartyResourceStatusUnknown: {
+        case MITMobiusResourceStatusUnknown: {
             self.statusLabel.textColor = [UIColor orangeColor];
         } break;
     }
