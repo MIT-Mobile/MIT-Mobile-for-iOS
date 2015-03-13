@@ -2,7 +2,7 @@
 #import <CoreData/CoreData.h>
 #import "MITMobiusObject.h"
 
-@class MITMobiusResource, MITMobiusTemplate, MITMartyType;
+@class MITMobiusResource, MITMobiusTemplate, MITMobiusType;
 
 @interface MITMobiusCategory : MITMobiusObject
 
@@ -19,8 +19,8 @@
 - (void)addResources:(NSSet *)values;
 - (void)removeResources:(NSSet *)values;
 
-- (void)addTypesObject:(MITMartyType *)value;
-- (void)removeTypesObject:(MITMartyType *)value;
+- (void)addTypesObject:(MITMobiusType *)value;
+- (void)removeTypesObject:(MITMobiusType *)value;
 - (void)addTypes:(NSSet *)values;
 - (void)removeTypes:(NSSet *)values;
 

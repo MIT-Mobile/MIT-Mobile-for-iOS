@@ -4,14 +4,14 @@
 
 @class MITMobiusCategory, MITMobiusResource, MITMobiusTemplate;
 
-@interface MITMartyType : MITMobiusObject
+@interface MITMobiusType : MITMobiusObject
 
 @property (nonatomic, retain) MITMobiusCategory *category;
 @property (nonatomic, retain) NSSet *resources;
 @property (nonatomic, retain) MITMobiusTemplate *template;
 @end
 
-@interface MITMartyType (CoreDataGeneratedAccessors)
+@interface MITMobiusType (CoreDataGeneratedAccessors)
 
 - (void)addResourcesObject:(MITMobiusResource *)value;
 - (void)removeResourcesObject:(MITMobiusResource *)value;

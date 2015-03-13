@@ -3,7 +3,7 @@
 #import "MITMobiusObject.h"
 #import <MapKit/MapKit.h>
 
-@class MITMobiusCategory, MITMobiusResourceAttribute, MITMobiusResourceOwner, MITMobiusResourceSearch, MITMobiusTemplate, MITMartyType;
+@class MITMobiusCategory, MITMobiusResourceAttribute, MITMobiusResourceOwner, MITMobiusResourceSearch, MITMobiusTemplate, MITMobiusType;
 
 @interface MITMobiusResource : MITMobiusObject <MKAnnotation>
 
@@ -18,7 +18,7 @@
 @property (nonatomic, retain) NSOrderedSet *owners;
 @property (nonatomic, retain) NSSet *searches;
 @property (nonatomic, retain) MITMobiusTemplate *template;
-@property (nonatomic, retain) MITMartyType *type;
+@property (nonatomic, retain) MITMobiusType *type;
 
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 

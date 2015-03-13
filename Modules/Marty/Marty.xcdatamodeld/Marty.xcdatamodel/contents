@@ -70,7 +70,7 @@
         <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="ResourceAttribute" inverseName="attribute" inverseEntity="ResourceAttribute" syncable="YES"/>
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="attributes" inverseEntity="Template" syncable="YES"/>
     </entity>
-    <entity name="Type" representedClassName="MITMartyType" parentEntity="MartyObject" syncable="YES">
+    <entity name="Type" representedClassName="MITMobiusType" parentEntity="MartyObject" syncable="YES">
         <attribute name="categoryIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Category" inverseName="types" inverseEntity="Category" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="type" inverseEntity="Resource" syncable="YES"/>

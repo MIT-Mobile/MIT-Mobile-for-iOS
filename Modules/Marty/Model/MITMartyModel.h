@@ -9,7 +9,7 @@
 
 #import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
-#import "MITMartyType.h"
+#import "MITMobiusType.h"
 #import "MITMobiusTemplate.h"
 #import "MITMobiusResourceAttribute.h"
 #import "MITMobiusResourceAttributeValue.h"

@@ -1,7 +1,7 @@
 #import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
 #import "MITMobiusTemplate.h"
-#import "MITMartyType.h"
+#import "MITMobiusType.h"
 
 
 @implementation MITMobiusCategory
