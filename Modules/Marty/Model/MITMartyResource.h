@@ -1,11 +1,11 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "MITMartyObject.h"
+#import "MITMobiusObject.h"
 #import <MapKit/MapKit.h>
 
 @class MITMartyCategory, MITMartyResourceAttribute, MITMartyResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
 
-@interface MITMartyResource : MITMartyObject <MKAnnotation>
+@interface MITMartyResource : MITMobiusObject <MKAnnotation>
 
 @property (nonatomic, retain) NSString * dlc;
 @property (nonatomic, retain) NSNumber * latitude;

@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@interface MITMartyObject : MITManagedObject <MITMappedObject>
+@interface MITMobiusObject : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSDate * created;
 @property (nonatomic, retain) NSString * createdBy;

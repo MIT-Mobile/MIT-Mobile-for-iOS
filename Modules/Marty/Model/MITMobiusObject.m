@@ -1,7 +1,7 @@
-#import "MITMartyObject.h"
+#import "MITMobiusObject.h"
 
 
-@implementation MITMartyObject
+@implementation MITMobiusObject
 
 @dynamic created;
 @dynamic createdBy;
