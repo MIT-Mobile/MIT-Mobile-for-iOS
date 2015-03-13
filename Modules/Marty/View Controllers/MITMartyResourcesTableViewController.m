@@ -1,6 +1,6 @@
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyModel.h"
-#import "MITMartyResourceTableViewCell.h"
+#import "MITMobiusResourceTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusResourceView.h"
 
@@ -23,7 +23,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     _managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     
     UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMartyResourceTableViewCell" bundle:nil];
-    [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:NSStringFromClass([MITMartyResourceTableViewCell class])];
+    [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:NSStringFromClass([MITMobiusResourceTableViewCell class])];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMartyResourcesTableViewPlaceholderCellIdentifier];
     
@@ -256,7 +256,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     if ([self _isPlaceholderCellAtIndexPath:indexPath]) {
         cellIdentifier = MITMartyResourcesTableViewPlaceholderCellIdentifier;
     } else {
-        cellIdentifier = NSStringFromClass([MITMartyResourceTableViewCell class]);
+        cellIdentifier = NSStringFromClass([MITMobiusResourceTableViewCell class]);
     }
 
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
@@ -271,7 +271,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     if ([self _isPlaceholderCellAtIndexPath:indexPath]) {
         return [self heightOfPlaceholderCell];
     } else {
-        return [tableView minimumHeightForCellWithReuseIdentifier:NSStringFromClass([MITMartyResourceTableViewCell class]) atIndexPath:indexPath];
+        return [tableView minimumHeightForCellWithReuseIdentifier:NSStringFromClass([MITMobiusResourceTableViewCell class]) atIndexPath:indexPath];
     }
 }
 
@@ -282,9 +282,9 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         cell.textLabel.text = nil;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
     } else {
-        NSAssert([cell isKindOfClass:[MITMartyResourceTableViewCell class]], @"cell for [%@,%@] is kind of %@, expected %@",cell.reuseIdentifier,indexPath,NSStringFromClass([cell class]),NSStringFromClass([MITMartyResourceTableViewCell class]));
+        NSAssert([cell isKindOfClass:[MITMobiusResourceTableViewCell class]], @"cell for [%@,%@] is kind of %@, expected %@",cell.reuseIdentifier,indexPath,NSStringFromClass([cell class]),NSStringFromClass([MITMobiusResourceTableViewCell class]));
         
-        MITMartyResourceTableViewCell *resourceCell = (MITMartyResourceTableViewCell*)cell;
+        MITMobiusResourceTableViewCell *resourceCell = (MITMobiusResourceTableViewCell*)cell;
         MITMartyResource *resource = [self _representedObjectForIndexPath:indexPath];
 
         NSInteger baseIndexForSection = [self _baseIndexForSection:indexPath.section];

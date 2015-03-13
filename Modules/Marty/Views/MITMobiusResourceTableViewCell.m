@@ -1,13 +1,13 @@
-#import "MITMartyResourceTableViewCell.h"
+#import "MITMobiusResourceTableViewCell.h"
 #import "MITMartyModel.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMobiusResourceView.h"
 
-@interface MITMartyResourceTableViewCell ()
+@interface MITMobiusResourceTableViewCell ()
 
 @end
 
-@implementation MITMartyResourceTableViewCell
+@implementation MITMobiusResourceTableViewCell
 
 - (void)awakeFromNib {
     self.resourceView.index = NSNotFound;

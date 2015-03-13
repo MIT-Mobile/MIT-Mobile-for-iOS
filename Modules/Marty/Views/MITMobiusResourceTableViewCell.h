@@ -2,7 +2,7 @@
 
 @class MITMobiusResourceView;
 
-@interface MITMartyResourceTableViewCell : UITableViewCell
+@interface MITMobiusResourceTableViewCell : UITableViewCell
 @property(nonatomic,weak) IBOutlet MITMobiusResourceView *resourceView;
 
 @end

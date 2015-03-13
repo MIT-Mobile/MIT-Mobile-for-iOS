@@ -293,8 +293,8 @@
 		2C603012139EA21700D34F1B /* FacilitiesRepairType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C603011139EA21700D34F1B /* FacilitiesRepairType.m */; };
 		2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */; };
 		2C64A1E71A7FC1ED00020AFB /* MITMartyResourcesTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C64A1E61A7FC1ED00020AFB /* MITMartyResourcesTableViewController.m */; };
-		2C64A1EC1A7FEED300020AFB /* MITMartyResourceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C64A1EA1A7FEED300020AFB /* MITMartyResourceTableViewCell.m */; };
-		2C64A1ED1A7FEED300020AFB /* MITMartyResourceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C64A1EB1A7FEED300020AFB /* MITMartyResourceTableViewCell.xib */; };
+		2C64A1EC1A7FEED300020AFB /* MITMobiusResourceTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C64A1EA1A7FEED300020AFB /* MITMobiusResourceTableViewCell.m */; };
+		2C64A1ED1A7FEED300020AFB /* MITMobiusResourceTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C64A1EB1A7FEED300020AFB /* MITMobiusResourceTableViewCell.xib */; };
 		2C698F4118650A860010B0C0 /* MITNewsImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C698F4018650A860010B0C0 /* MITNewsImage.m */; };
 		2C698F4718650A870010B0C0 /* MITNewsImageRepresentation.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C698F4618650A870010B0C0 /* MITNewsImageRepresentation.m */; };
 		2C6FE84913B2717700AFD8B8 /* FacilitiesContent.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C6FE84813B2717700AFD8B8 /* FacilitiesContent.m */; };
@@ -1226,9 +1226,9 @@
 		2C63A1E4143205000068333F /* SettingsTouchstoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SettingsTouchstoneViewController.m; sourceTree = "<group>"; };
 		2C64A1E51A7FC1EC00020AFB /* MITMartyResourcesTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyResourcesTableViewController.h; path = "View Controllers/MITMartyResourcesTableViewController.h"; sourceTree = "<group>"; };
 		2C64A1E61A7FC1ED00020AFB /* MITMartyResourcesTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyResourcesTableViewController.m; path = "View Controllers/MITMartyResourcesTableViewController.m"; sourceTree = "<group>"; };
-		2C64A1E91A7FEED300020AFB /* MITMartyResourceTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyResourceTableViewCell.h; path = Views/MITMartyResourceTableViewCell.h; sourceTree = "<group>"; };
-		2C64A1EA1A7FEED300020AFB /* MITMartyResourceTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyResourceTableViewCell.m; path = Views/MITMartyResourceTableViewCell.m; sourceTree = "<group>"; };
-		2C64A1EB1A7FEED300020AFB /* MITMartyResourceTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITMartyResourceTableViewCell.xib; path = Views/MITMartyResourceTableViewCell.xib; sourceTree = "<group>"; };
+		2C64A1E91A7FEED300020AFB /* MITMobiusResourceTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusResourceTableViewCell.h; path = Views/MITMobiusResourceTableViewCell.h; sourceTree = "<group>"; };
+		2C64A1EA1A7FEED300020AFB /* MITMobiusResourceTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusResourceTableViewCell.m; path = Views/MITMobiusResourceTableViewCell.m; sourceTree = "<group>"; };
+		2C64A1EB1A7FEED300020AFB /* MITMobiusResourceTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITMobiusResourceTableViewCell.xib; path = Views/MITMobiusResourceTableViewCell.xib; sourceTree = "<group>"; };
 		2C698F391864D0A20010B0C0 /* News v3.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "News v3.xcdatamodel"; sourceTree = "<group>"; };
 		2C698F3F18650A860010B0C0 /* MITNewsImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsImage.h; path = Model/MITNewsImage.h; sourceTree = "<group>"; };
 		2C698F4018650A860010B0C0 /* MITNewsImage.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsImage.m; path = Model/MITNewsImage.m; sourceTree = "<group>"; };
@@ -3130,9 +3130,9 @@
 			children = (
 				2CEFFDED1AA4EF8E003C4232 /* MITMobiusResourceView.h */,
 				2CEFFDEE1AA4EF8E003C4232 /* MITMobiusResourceView.m */,
-				2C64A1E91A7FEED300020AFB /* MITMartyResourceTableViewCell.h */,
-				2C64A1EA1A7FEED300020AFB /* MITMartyResourceTableViewCell.m */,
-				2C64A1EB1A7FEED300020AFB /* MITMartyResourceTableViewCell.xib */,
+				2C64A1E91A7FEED300020AFB /* MITMobiusResourceTableViewCell.h */,
+				2C64A1EA1A7FEED300020AFB /* MITMobiusResourceTableViewCell.m */,
+				2C64A1EB1A7FEED300020AFB /* MITMobiusResourceTableViewCell.xib */,
 				0BB58EEE1A8128C900AA1CB7 /* MITMartyDetailCell.h */,
 				0BB58EEF1A8128C900AA1CB7 /* MITMartyDetailCell.m */,
 				0BB58EF01A8128C900AA1CB7 /* MITMartyDetailCell.xib */,
@@ -5145,7 +5145,7 @@
 				2CEC6A611A01461800867A66 /* dining-meal-halal.pdf in Resources */,
 				2C5E54FC1A02DA970047C699 /* Main.storyboard in Resources */,
 				2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */,
-				2C64A1ED1A7FEED300020AFB /* MITMartyResourceTableViewCell.xib in Resources */,
+				2C64A1ED1A7FEED300020AFB /* MITMobiusResourceTableViewCell.xib in Resources */,
 				DE5BE3EC188BA796008A135E /* Images.xcassets in Resources */,
 				A51EBA681937B7F9000F41EE /* MITShuttleRouteNoDataCell.xib in Resources */,
 				2C8E045F1A1E602C00D762E8 /* NewsStoryTableCell.xib in Resources */,
@@ -5578,7 +5578,7 @@
 				2C63A1E5143205000068333F /* SettingsTouchstoneViewController.m in Sources */,
 				0BE653DF1A68225800F9FA51 /* MITEmergencyInfoWebservices.m in Sources */,
 				22AEC228196C2EF3006AA3BA /* MITMapBookmarksViewController.m in Sources */,
-				2C64A1EC1A7FEED300020AFB /* MITMartyResourceTableViewCell.m in Sources */,
+				2C64A1EC1A7FEED300020AFB /* MITMobiusResourceTableViewCell.m in Sources */,
 				80598DDE1A0AC2510095CEAA /* MITLibrariesFormSheetElementStatus.m in Sources */,
 				80C5D9D71A1117F300E63FDD /* MITLibrariesFormSheetGroupAskUsTopGroup.m in Sources */,
 				2CEFFD5F1AA4B7F1003C4232 /* MITActionCell.m in Sources */,
