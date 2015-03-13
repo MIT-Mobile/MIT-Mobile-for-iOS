@@ -18,10 +18,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
-@property (nonatomic, strong) MITMartyResource *currentlySelectResource;
+@property (nonatomic, strong) MITMobiusResource *currentlySelectResource;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
-@property (nonatomic, strong) MITMartyResource *resource;
+@property (nonatomic, strong) MITMobiusResource *resource;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 @end
@@ -123,7 +123,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITMartyResource class]]) {
+        if ([annotation isKindOfClass:[MITMobiusResource class]]) {
             [annotationsToRemove addObject:annotation];
         }
     }
@@ -131,10 +131,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.mapView removeAnnotations:annotationsToRemove];
 }
 
-- (void)showCalloutForResource:(MITMartyResource *)resource
+- (void)showCalloutForResource:(MITMobiusResource *)resource
 {
     if (resource) {
-        for (MITMartyResource *resource2 in self.resources) {
+        for (MITMobiusResource *resource2 in self.resources) {
             if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
                 [self.mapView selectAnnotation:resource2 animated:YES];
             }
@@ -148,7 +148,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-    if ([annotation isKindOfClass:[MITMartyResource class]]) {
+    if ([annotation isKindOfClass:[MITMobiusResource class]]) {
         MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
@@ -193,7 +193,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMartyResource *resource = (MITMartyResource *)view.annotation;
+        MITMobiusResource *resource = (MITMobiusResource *)view.annotation;
         [self pushDetailViewControllerForResource:resource];
     }
 }
@@ -218,7 +218,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    MITMobiusResource *resource = (MITMobiusResource *)annotationView.annotation;
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
     contentView.resourceView.backgroundColor = [UIColor clearColor];
@@ -240,7 +240,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    MITMobiusResource *resource = (MITMobiusResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
     MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
@@ -260,7 +260,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    MITMobiusResource *resource = (MITMobiusResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
     self.calloutView.titleText = resource.title;
@@ -294,7 +294,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     /* Do Nothing */
 }
 
-- (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
+- (void)pushDetailViewControllerForResource:(MITMobiusResource *)resource
 {
     MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
     detailVC.resource = resource;

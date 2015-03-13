@@ -1,5 +1,5 @@
 #import "MITMartyTemplateAttribute.h"
-#import "MITMartyResourceAttribute.h"
+#import "MITMobiusResourceAttribute.h"
 #import "MITMartyTemplate.h"
 
 @implementation MITMartyTemplateAttribute

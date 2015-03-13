@@ -8,10 +8,10 @@
 #import "MITMartyResourceDataSource.h"
 
 #import "MITMobiusCategory.h"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 #import "MITMartyType.h"
 #import "MITMartyTemplate.h"
-#import "MITMartyResourceAttribute.h"
+#import "MITMobiusResourceAttribute.h"
 #import "MITMartyResourceAttributeValue.h"
 #import "MITMartyResourceSearch.h"
 #import "MITMartyTemplateAttribute.h"

@@ -1,5 +1,5 @@
 #import "MITMartyResourceSearch.h"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 
 
 @implementation MITMartyResourceSearch

@@ -5,7 +5,7 @@
 
 @class MITMartyResourceAttributeValue, MITMartyTemplateAttribute;
 
-@interface MITMartyResourceAttribute : MITManagedObject <MITMappedObject>
+@interface MITMobiusResourceAttribute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * templateAttributeIdentifier;
 @property (nonatomic, retain) NSString * identifier;
@@ -13,7 +13,7 @@
 @property (nonatomic, retain) NSOrderedSet *values;
 @end
 
-@interface MITMartyResourceAttribute (CoreDataGeneratedAccessors)
+@interface MITMobiusResourceAttribute (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(MITMartyResourceAttributeValue *)value inValuesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromValuesAtIndex:(NSUInteger)idx;

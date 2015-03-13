@@ -9,7 +9,7 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
-@class MITMartyResource;
+@class MITMobiusResource;
 
 @interface MITMartyResourceSearch : NSManagedObject
 
@@ -19,8 +19,8 @@
 
 @interface MITMartyResourceSearch (CoreDataGeneratedAccessors)
 
-- (void)addResourcesObject:(MITMartyResource *)value;
-- (void)removeResourcesObject:(MITMartyResource *)value;
+- (void)addResourcesObject:(MITMobiusResource *)value;
+- (void)removeResourcesObject:(MITMobiusResource *)value;
 - (void)addResources:(NSSet *)values;
 - (void)removeResources:(NSSet *)values;
 

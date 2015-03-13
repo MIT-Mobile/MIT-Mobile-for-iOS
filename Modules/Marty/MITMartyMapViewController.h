@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITCalloutView.h"
 
-@class MITMartyResource;
+@class MITMobiusResource;
 @class MITCalloutMapView;
 
 @interface MITMartyMapViewController : UIViewController
@@ -12,7 +12,7 @@
 
 - (UIBarButtonItem *)userLocationButton;
 - (void)setResources:(NSArray *)resources animated:(BOOL)animated;
-- (void)showCalloutForResource:(MITMartyResource *)resource;
+- (void)showCalloutForResource:(MITMobiusResource *)resource;
 - (void)recenterOnVisibleResources:(BOOL)animated;
 
 @end

@@ -1,6 +1,6 @@
 #import "MITMartyType.h"
 #import "MITMobiusCategory.h"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 #import "MITMartyTemplate.h"
 
 

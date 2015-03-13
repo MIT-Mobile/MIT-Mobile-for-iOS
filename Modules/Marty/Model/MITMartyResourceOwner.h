@@ -3,11 +3,11 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMartyResource;
+@class MITMobiusResource;
 
 @interface MITMartyResourceOwner : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * name;
-@property (nonatomic, retain) MITMartyResource *resource;
+@property (nonatomic, retain) MITMobiusResource *resource;
 
 @end

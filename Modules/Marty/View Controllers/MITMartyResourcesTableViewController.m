@@ -57,7 +57,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     }];
 }
 
-- (MITMartyResource*)selectedResource
+- (MITMobiusResource*)selectedResource
 {
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
     NSInteger section = indexPath.section;
@@ -71,7 +71,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     NSString *sectionKey = self.buildingSections[section];
     NSManagedObjectID *resourceObjectID = [self.resourcesByBuilding[sectionKey][indexPath.row] objectID];
     
-    MITMartyResource *resource = (MITMartyResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
+    MITMobiusResource *resource = (MITMobiusResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
     return resource;
 }
 
@@ -80,7 +80,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     if (!_buildingSections) {
         [self.managedObjectContext performBlockAndWait:^{
             NSMutableOrderedSet *buildings = [[NSMutableOrderedSet alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
+            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
                 NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
                 [buildings addObject:building];
             }];
@@ -116,7 +116,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     if (!_resourcesByBuilding) {
         [self.managedObjectContext performBlockAndWait:^{
             NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
+            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
                 NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
                 
                 NSMutableArray *resources = resourcesByBuilding[building];
@@ -135,7 +135,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     return _resourcesByBuilding;
 }
 
-- (MITMartyResource*)_representedObjectForIndexPath:(NSIndexPath*)indexPath
+- (MITMobiusResource*)_representedObjectForIndexPath:(NSIndexPath*)indexPath
 {
     if ([self _isPlaceholderCellAtIndexPath:indexPath]) {
         return nil;
@@ -285,7 +285,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         NSAssert([cell isKindOfClass:[MITMobiusResourceTableViewCell class]], @"cell for [%@,%@] is kind of %@, expected %@",cell.reuseIdentifier,indexPath,NSStringFromClass([cell class]),NSStringFromClass([MITMobiusResourceTableViewCell class]));
         
         MITMobiusResourceTableViewCell *resourceCell = (MITMobiusResourceTableViewCell*)cell;
-        MITMartyResource *resource = [self _representedObjectForIndexPath:indexPath];
+        MITMobiusResource *resource = [self _representedObjectForIndexPath:indexPath];
 
         NSInteger baseIndexForSection = [self _baseIndexForSection:indexPath.section];
         resourceCell.resourceView.index = baseIndexForSection + indexPath.row;
@@ -309,7 +309,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
             [self.delegate resourcesTableViewControllerDidSelectPlaceholderCell:self];
         }
     } else if ([self.delegate respondsToSelector:@selector(resourcesTableViewController:didSelectResource:)]) {
-        MITMartyResource *resource = [self _representedObjectForIndexPath:indexPath];
+        MITMobiusResource *resource = [self _representedObjectForIndexPath:indexPath];
         [self.delegate resourcesTableViewController:self didSelectResource:resource];
     }
 }

@@ -585,7 +585,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 }
 
 #pragma mark MITMartyResourcesTableViewControllerDelegate
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     MITMartyDetailTableViewController *detailViewController = [[MITMartyDetailTableViewController alloc] init];
     detailViewController.resource = resource;

@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     self.titles = [[NSMutableArray alloc] init];
     self.descriptions = [[NSMutableArray alloc] init];
     
-    for(MITMartyResourceAttribute *rAttribute in self.resource.attributes) {
+    for(MITMobiusResourceAttribute *rAttribute in self.resource.attributes) {
         NSString *valueString = nil;
         for (MITMartyResourceAttributeValue *value in rAttribute.values) {
             NSString *trimmedValue = [value.value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
@@ -109,11 +109,11 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     return _managedObjectContext;
 }
 
-- (void)setResource:(MITMartyResource *)resource
+- (void)setResource:(MITMobiusResource *)resource
 {
     if (![_resource.objectID isEqual:resource.objectID]) {
         if (resource) {
-            _resource = (MITMartyResource*)[self.managedObjectContext objectWithID:resource.objectID];
+            _resource = (MITMobiusResource*)[self.managedObjectContext objectWithID:resource.objectID];
             [self removeBlankDescriptionsFromTitleDescriptionPairs];
         } else {
             _resource = nil;

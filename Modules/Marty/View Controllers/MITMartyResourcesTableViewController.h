@@ -1,18 +1,18 @@
 #import <UIKit/UIKit.h>
 
-@class MITMartyResource;
+@class MITMobiusResource;
 @protocol MITMartyResourcesTableViewControllerDelegate;
 
 @interface MITMartyResourcesTableViewController : UITableViewController
 @property(nonatomic,weak) id<MITMartyResourcesTableViewControllerDelegate> delegate;
 @property(nonatomic,copy) NSArray *resources;
-@property(nonatomic,readonly,weak) MITMartyResource *selectedResource;
+@property(nonatomic,readonly,weak) MITMobiusResource *selectedResource;
 
 @end
 
 @protocol MITMartyResourcesTableViewControllerDelegate <NSObject>
 @required
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController didSelectResource:(MITMartyResource*)resource;
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController didSelectResource:(MITMobiusResource*)resource;
 
 @optional
 - (void)resourcesTableViewControllerDidSelectPlaceholderCell:(MITMartyResourcesTableViewController*)tableViewController;

@@ -5,7 +5,7 @@
 #import "MITSlidingViewController.h"
 
 #import "MITMartyResourceDataSource.H"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 #import "MITMartyResourcesTableViewController.h"
 #import "MITCoreDataController.h"
 #import "MITMartyRecentSearchController.h"
@@ -371,7 +371,7 @@
     }];
 }
 
-- (void)setResourcesWithResource:(MITMartyResource *)resource
+- (void)setResourcesWithResource:(MITMobiusResource *)resource
 {
     self.searchBar.text = resource.name;
     [self setResources:@[resource] animated:YES];
@@ -544,14 +544,14 @@
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
 
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
+- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     [self.mapViewController showCalloutForResource:resource];
 }
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
 
-- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMartyResource *)resource
+- (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMobiusResource *)resource
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         if (self.presentedViewController) {

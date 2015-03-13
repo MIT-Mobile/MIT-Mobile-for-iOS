@@ -1,5 +1,5 @@
 #import "MITMartyResourceOwner.h"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 
 
 @implementation MITMartyResourceOwner

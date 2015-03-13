@@ -3,9 +3,9 @@
 #import "MITMobiusObject.h"
 #import <MapKit/MapKit.h>
 
-@class MITMobiusCategory, MITMartyResourceAttribute, MITMartyResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
+@class MITMobiusCategory, MITMobiusResourceAttribute, MITMartyResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
 
-@interface MITMartyResource : MITMobiusObject <MKAnnotation>
+@interface MITMobiusResource : MITMobiusObject <MKAnnotation>
 
 @property (nonatomic, retain) NSString * dlc;
 @property (nonatomic, retain) NSNumber * latitude;
@@ -24,16 +24,16 @@
 
 @end
 
-@interface MITMartyResource (CoreDataGeneratedAccessors)
+@interface MITMobiusResource (CoreDataGeneratedAccessors)
 
-- (void)insertObject:(MITMartyResourceAttribute *)value inAttributesAtIndex:(NSUInteger)idx;
+- (void)insertObject:(MITMobiusResourceAttribute *)value inAttributesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromAttributesAtIndex:(NSUInteger)idx;
 - (void)insertAttributes:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
 - (void)removeAttributesAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInAttributesAtIndex:(NSUInteger)idx withObject:(MITMartyResourceAttribute *)value;
+- (void)replaceObjectInAttributesAtIndex:(NSUInteger)idx withObject:(MITMobiusResourceAttribute *)value;
 - (void)replaceAttributesAtIndexes:(NSIndexSet *)indexes withAttributes:(NSArray *)values;
-- (void)addAttributesObject:(MITMartyResourceAttribute *)value;
-- (void)removeAttributesObject:(MITMartyResourceAttribute *)value;
+- (void)addAttributesObject:(MITMobiusResourceAttribute *)value;
+- (void)removeAttributesObject:(MITMobiusResourceAttribute *)value;
 - (void)addAttributes:(NSOrderedSet *)values;
 - (void)removeAttributes:(NSOrderedSet *)values;
 - (void)insertObject:(MITMartyResourceOwner *)value inOwnersAtIndex:(NSUInteger)idx;

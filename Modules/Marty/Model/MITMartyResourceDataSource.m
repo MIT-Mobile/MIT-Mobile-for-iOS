@@ -5,7 +5,7 @@
 #import "MITCoreData.h"
 #import "CoreData+MITAdditions.h"
 #import "MITAdditions.h"
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 
 #import "MITMartyRecentSearchList.h"
 #import "MITMartyRecentSearchQuery.h"
@@ -90,7 +90,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         request.HTTPMethod = @"GET";
         [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
 
-        RKMapping *mapping = [MITMartyResource objectMapping];
+        RKMapping *mapping = [MITMobiusResource objectMapping];
         RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"collection.items" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 
         RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];

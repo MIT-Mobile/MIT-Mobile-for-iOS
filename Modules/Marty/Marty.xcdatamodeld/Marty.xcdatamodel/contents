@@ -21,7 +21,7 @@
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="Resource" representedClassName="MITMartyResource" parentEntity="MartyObject" syncable="YES">
+    <entity name="Resource" representedClassName="MITMobiusResource" parentEntity="MartyObject" syncable="YES">
         <attribute name="dlc" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
         <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
@@ -35,7 +35,7 @@
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" syncable="YES"/>
         <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Type" inverseName="resources" inverseEntity="Type" syncable="YES"/>
     </entity>
-    <entity name="ResourceAttribute" representedClassName="MITMartyResourceAttribute" syncable="YES">
+    <entity name="ResourceAttribute" representedClassName="MITMobiusResourceAttribute" syncable="YES">
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="templateAttributeIdentifier" attributeType="String" syncable="YES"/>
         <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="TemplateAttribute" inverseName="attributes" inverseEntity="TemplateAttribute" syncable="YES"/>

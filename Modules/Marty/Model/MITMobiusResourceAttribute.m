@@ -6,11 +6,11 @@
 //
 //
 
-#import "MITMartyResourceAttribute.h"
+#import "MITMobiusResourceAttribute.h"
 #import "MITMartyResourceAttributeValue.h"
 #import "MITMartyTemplateAttribute.h"
 
-@implementation MITMartyResourceAttribute
+@implementation MITMobiusResourceAttribute
 
 @dynamic templateAttributeIdentifier;
 @dynamic identifier;

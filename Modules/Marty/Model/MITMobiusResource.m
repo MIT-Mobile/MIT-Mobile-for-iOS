@@ -1,11 +1,11 @@
-#import "MITMartyResource.h"
+#import "MITMobiusResource.h"
 #import "MITMobiusCategory.h"
-#import "MITMartyResourceAttribute.h"
+#import "MITMobiusResourceAttribute.h"
 #import "MITMartyResourceOwner.h"
 #import "MITMartyTemplate.h"
 #import "MITMartyType.h"
 
-@implementation MITMartyResource
+@implementation MITMobiusResource
 
 @dynamic dlc;
 @dynamic latitude;
@@ -61,7 +61,7 @@
     RKRelationshipMapping *ownersMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"owner" toKeyPath:@"owners" withMapping:[MITMartyResourceOwner objectMapping]];
     [mapping addPropertyMapping:ownersMapping];
 
-    RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values" toKeyPath:@"attributes" withMapping:[MITMartyResourceAttribute objectMapping]];
+    RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values" toKeyPath:@"attributes" withMapping:[MITMobiusResourceAttribute objectMapping]];
     [mapping addPropertyMapping:attributesMapping];
 
     mapping.assignsNilForMissingRelationships = YES;
