@@ -185,7 +185,7 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 #pragma mark - MITDayPickerViewControllerDelegate
 
-- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate
+- (void)dayPickerViewController:(MITDayPickerViewController *)dayPickerViewController dateDidUpdateToDate:(NSDate *)newDate fromOldDate:(NSDate *)oldDate
 {
     if (![self.eventsController.date isEqualToDateIgnoringTime:newDate]) {
         [self.eventsController moveToCalendar:self.currentlySelectedCalendar category:self.currentlySelectedCategory date:newDate animated:YES];

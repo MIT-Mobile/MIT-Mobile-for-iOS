@@ -84,27 +84,32 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 - (UICollectionViewCell *)collectionView:(UICollectionView *)collectionView cellForItemAtIndexPath:(NSIndexPath *)indexPath
 {
     MITDayOfTheWeekCell *cell = [collectionView dequeueReusableCellWithReuseIdentifier:MITDayPickerControllerCellIdentifier forIndexPath:indexPath];
-    [self configureCell:cell forIndexPath:indexPath];
+    
+    NSDate *date = self.datesArray[indexPath.row];
+    MITDayOfTheWeekState state = [self stateForDate:date];
+    
+    cell.todayColor = self.todayColor;
+    cell.selectedDayColor = self.selectedDayColor;
+    cell.date = date;
+    cell.state = state;
+    
     return cell;
 }
 
-- (void)configureCell:(MITDayOfTheWeekCell *)cell  forIndexPath:(NSIndexPath *)indexPath
+- (MITDayOfTheWeekState)stateForDate:(NSDate *)date
 {
-    cell.dayOfTheWeek = indexPath.row % 7;
-    
-    NSDate *cellDate = self.datesArray[indexPath.row];
-    if ([cellDate dp_isEqualToDateIgnoringTime:self.currentlyDisplayedDate]) {
-        cell.state = MITDayOfTheWeekStateSelected;
+    MITDayOfTheWeekState state;
+    if ([date dp_isEqualToDateIgnoringTime:self.currentlyDisplayedDate]) {
+        state = MITDayOfTheWeekStateSelected;
     }
     else {
-        cell.state = MITDayOfTheWeekStateUnselected;
-    }
-    if ([cellDate dp_isEqualToDateIgnoringTime:[NSDate date]]){
-        cell.state |= MITDayOfTheWeekStateToday;
+        state = MITDayOfTheWeekStateUnselected;
     }
     
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay fromDate:cellDate];
-    cell.dayOfTheMonth = components.day;
+    if ([date dp_isEqualToDateIgnoringTime:[NSDate date]]){
+        state |= MITDayOfTheWeekStateToday;
+    }
+    return state;
 }
 
 #pragma mark - UICollectionViewDelegate
@@ -234,8 +239,8 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
         _currentlyDisplayedDate = currentlyDisplayedDate;
         [self updateDatesArray];
         [self reloadDayPicker];
-        if ([self.delegate respondsToSelector:@selector(dayPickerViewController:dateDidUpdate:fromOldDate:)]) {
-            [self.delegate dayPickerViewController:self dateDidUpdate:newDate fromOldDate:oldDate];
+        if ([self.delegate respondsToSelector:@selector(dayPickerViewController:dateDidUpdateToDate:fromOldDate:)]) {
+            [self.delegate dayPickerViewController:self dateDidUpdateToDate:newDate fromOldDate:oldDate];
         }
     }
 }

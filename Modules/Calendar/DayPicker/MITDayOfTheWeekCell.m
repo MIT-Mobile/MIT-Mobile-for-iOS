@@ -1,4 +1,5 @@
 #import "MITDayOfTheWeekCell.h"
+#import "NSDate+MITDatePicker.h"
 #import "UIColor+MITDatePicker.h"
 
 NSString * const MITPhoneDayOfTheWeekCellNibName = @"MITPhoneDayOfTheWeekCell";
@@ -23,7 +24,15 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
     self.dayOfTheMonthLabel.layer.rasterizationScale = [[UIScreen mainScreen] scale];
 }
 
-#pragma mark - Drawing
+#pragma mark - Configuring
+
+- (void)setDate:(NSDate *)date
+{
+    _date = date;
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitDay | NSCalendarUnitWeekday fromDate:date];
+    self.dayOfTheMonth = components.day;
+    self.dayOfTheWeek = components.weekday;
+}
 
 - (void)setDayOfTheWeek:(MITDayOfTheWeek)dayOfTheWeek
 {
@@ -75,17 +84,17 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
     if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Selected && Is Today
         self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
-        self.dayOfTheMonthLabel.backgroundColor = self.selectionColor ? : [UIColor dp_selectionColor];
+        self.dayOfTheMonthLabel.backgroundColor = self.todayColor ? : [UIColor dp_todayColor];
         self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
     } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected && (state & MITDayOfTheWeekStateToday) == MITDayOfTheWeekStateToday) {
         // Is Today && Not Selected
-        self.dayOfTheMonthLabel.textColor = self.selectionColor ? : [UIColor dp_selectionColor];
+        self.dayOfTheMonthLabel.textColor = self.todayColor ? : [UIColor dp_todayColor];
         self.dayOfTheMonthLabel.backgroundColor = [UIColor clearColor];
         self.dayOfTheMonthLabel.font = [UIFont systemFontOfSize:17.0];
     } else if ((state & MITDayOfTheWeekStateSelected) == MITDayOfTheWeekStateSelected) {
         // Is Selected && Not Today
         self.dayOfTheMonthLabel.textColor = [UIColor whiteColor];
-        self.dayOfTheMonthLabel.backgroundColor = [UIColor darkTextColor];
+        self.dayOfTheMonthLabel.backgroundColor = self.selectedDayColor ? : [UIColor darkTextColor];
         self.dayOfTheMonthLabel.font = [UIFont boldSystemFontOfSize:17.0];
     } else if ((state & MITDayOfTheWeekStateUnselected) == MITDayOfTheWeekStateUnselected) {
         // Is UnSelected && Not Today

@@ -7,7 +7,7 @@ typedef NS_ENUM(NSInteger, MITDayOfTheWeekState) {
 };
 
 typedef NS_ENUM(NSInteger, MITDayOfTheWeek) {
-    MITDayOfTheWeekSunday,
+    MITDayOfTheWeekSunday = 1,
     MITDayOfTheWeekMonday,
     MITDayOfTheWeekTuesday,
     MITDayOfTheWeekWednesday,
@@ -21,9 +21,11 @@ extern NSString * const MITPadDayOfTheWeekCellNibName;
 
 @interface MITDayOfTheWeekCell : UICollectionViewCell
 
+@property (strong, nonatomic) NSDate *date;
 @property (nonatomic) MITDayOfTheWeek dayOfTheWeek;
 @property (nonatomic) MITDayOfTheWeekState state;
 @property (nonatomic) NSInteger dayOfTheMonth;
-@property (strong, nonatomic) UIColor *selectionColor;
+@property (strong, nonatomic) UIColor *todayColor;
+@property (strong, nonatomic) UIColor *selectedDayColor;
 
 @end

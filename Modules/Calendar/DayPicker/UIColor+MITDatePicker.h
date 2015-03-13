@@ -2,7 +2,7 @@
 
 @interface UIColor (MITDatePicker)
 
-+ (UIColor *)dp_selectionColor;
++ (UIColor *)dp_todayColor;
 + (UIColor *)dp_lighterGrayTextColor;
 
 @end
