@@ -4,7 +4,7 @@
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
     </dependencies>
     <objects>
-        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITMartyCalloutContentView">
+        <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="MITMobiusCalloutContentView">
             <connections>
                 <outlet property="resourceView" destination="cpa-II-6C3" id="TUy-ZD-z7y"/>
             </connections>

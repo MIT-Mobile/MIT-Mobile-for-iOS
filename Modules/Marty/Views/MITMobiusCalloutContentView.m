@@ -1,14 +1,14 @@
-#import "MITMartyCalloutContentView.h"
+#import "MITMobiusCalloutContentView.h"
 #import "UIFont+MITTours.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMobiusResourceView.h"
 
-@interface MITMartyCalloutContentView ()
+@interface MITMobiusCalloutContentView ()
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *distanceSpacingConstraint;
 @property (strong, nonatomic) UIGestureRecognizer *tapRecognizer;
 @end
 
-@implementation MITMartyCalloutContentView
+@implementation MITMobiusCalloutContentView
 
 - (instancetype)initWithFrame:(CGRect)frame
 {

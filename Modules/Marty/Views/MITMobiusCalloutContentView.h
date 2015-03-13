@@ -2,7 +2,7 @@
 
 @class MITMobiusResourceView;
 
-@interface MITMartyCalloutContentView : UIControl
+@interface MITMobiusCalloutContentView : UIControl
 @property(nonatomic,weak) IBOutlet MITMobiusResourceView *resourceView;
 
 @end

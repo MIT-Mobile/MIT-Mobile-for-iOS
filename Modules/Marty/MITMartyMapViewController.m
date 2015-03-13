@@ -6,7 +6,7 @@
 #import "MITMapPlaceSelector.h"
 #import "MITLocationManager.h"
 #import "MITMartyDetailTableViewController.h"
-#import "MITMartyCalloutContentView.h"
+#import "MITMobiusCalloutContentView.h"
 #import "MITMartyModel.h"
 #import "MITMobiusResourceView.h"
 
@@ -220,7 +220,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
-    MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
+    MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
     contentView.resourceView.backgroundColor = [UIColor clearColor];
     contentView.resourceView.machineName = resource.name;
     contentView.resourceView.location = resource.room;
