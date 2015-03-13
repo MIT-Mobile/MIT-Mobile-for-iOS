@@ -1,8 +1,8 @@
 #import <UIKit/UIKit.h>
 
-@class MITMartyResourceView;
+@class MITMobiusResourceView;
 
 @interface MITMartyCalloutContentView : UIControl
-@property(nonatomic,weak) IBOutlet MITMartyResourceView *resourceView;
+@property(nonatomic,weak) IBOutlet MITMobiusResourceView *resourceView;
 
 @end

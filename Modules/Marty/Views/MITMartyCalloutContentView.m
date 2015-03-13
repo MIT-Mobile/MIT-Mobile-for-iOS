@@ -1,7 +1,7 @@
 #import "MITMartyCalloutContentView.h"
 #import "UIFont+MITTours.h"
 #import "UIKit+MITAdditions.h"
-#import "MITMartyResourceView.h"
+#import "MITMobiusResourceView.h"
 
 @interface MITMartyCalloutContentView ()
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *distanceSpacingConstraint;
@@ -37,7 +37,7 @@
     NSAssert(nib, @"failed to load nib %@",nibName);
     [nib instantiateWithOwner:self options:nil];
     
-    NSAssert([self.resourceView isKindOfClass:[MITMartyResourceView class]], @"root view in nib %@ is kind of %@, expected %@",nibName,NSStringFromClass([self.resourceView class]),NSStringFromClass([MITMartyResourceView class]));
+    NSAssert([self.resourceView isKindOfClass:[MITMobiusResourceView class]], @"root view in nib %@ is kind of %@, expected %@",nibName,NSStringFromClass([self.resourceView class]),NSStringFromClass([MITMobiusResourceView class]));
 
     self.resourceView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
     self.resourceView.translatesAutoresizingMaskIntoConstraints = YES;

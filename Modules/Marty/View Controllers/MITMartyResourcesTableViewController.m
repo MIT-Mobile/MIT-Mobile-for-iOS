@@ -2,7 +2,7 @@
 #import "MITMartyModel.h"
 #import "MITMartyResourceTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
-#import "MITMartyResourceView.h"
+#import "MITMobiusResourceView.h"
 
 NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 

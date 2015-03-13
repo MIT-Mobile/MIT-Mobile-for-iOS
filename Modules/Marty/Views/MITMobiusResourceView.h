@@ -6,7 +6,7 @@ typedef NS_ENUM(NSInteger, MITMartyResourceStatus) {
     MITMartyResourceStatusUnknown
 };
 
-@interface MITMartyResourceView : UIView
+@interface MITMobiusResourceView : UIView
 @property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
 @property(nonatomic,weak) IBOutlet UILabel *locationLabel;
 @property(nonatomic,weak) IBOutlet UILabel *statusLabel;

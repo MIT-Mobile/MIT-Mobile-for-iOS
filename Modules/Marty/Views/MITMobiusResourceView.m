@@ -1,7 +1,7 @@
-#import "MITMartyResourceView.h"
+#import "MITMobiusResourceView.h"
 #import "MITAdditions.h"
 
-@implementation MITMartyResourceView
+@implementation MITMobiusResourceView
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];

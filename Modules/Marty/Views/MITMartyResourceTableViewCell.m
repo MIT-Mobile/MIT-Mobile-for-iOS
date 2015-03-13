@@ -1,7 +1,7 @@
 #import "MITMartyResourceTableViewCell.h"
 #import "MITMartyModel.h"
 #import "UIKit+MITAdditions.h"
-#import "MITMartyResourceView.h"
+#import "MITMobiusResourceView.h"
 
 @interface MITMartyResourceTableViewCell ()
 

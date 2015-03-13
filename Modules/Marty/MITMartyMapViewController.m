@@ -8,7 +8,7 @@
 #import "MITMartyDetailTableViewController.h"
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
-#import "MITMartyResourceView.h"
+#import "MITMobiusResourceView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
