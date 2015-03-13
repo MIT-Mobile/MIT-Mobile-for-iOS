@@ -1,10 +1,10 @@
-#import "MITMartySpecificationsHeader.h"
+#import "MITMobiusSpecificationsHeader.h"
 
-@interface MITMartySpecificationsHeader ()
+@interface MITMobiusSpecificationsHeader ()
 
 @end
 
-@implementation MITMartySpecificationsHeader
+@implementation MITMobiusSpecificationsHeader
 - (id)initWithFrame:(CGRect)frame
 {
     self = [super initWithFrame:frame];
@@ -25,7 +25,7 @@
 
 + (NSString *)titleHeaderNibName
 {
-    return @"MITMartySpecificationsHeader";
+    return @"MITMobiusSpecificationsHeader";
 }
 
 @end

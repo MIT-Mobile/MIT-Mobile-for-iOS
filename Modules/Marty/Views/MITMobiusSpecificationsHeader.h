@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITMartySpecificationsHeader : UITableViewHeaderFooterView
+@interface MITMobiusSpecificationsHeader : UITableViewHeaderFooterView
 
 + (UINib *)titleHeaderNib;
 + (NSString *)titleHeaderNibName;

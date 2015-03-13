@@ -3,7 +3,7 @@
 #import "MITMobiusDetailCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITTitleDescriptionCell.h"
-#import "MITMartySpecificationsHeader.h"
+#import "MITMobiusSpecificationsHeader.h"
 
 #import "MITMartyModel.h"
 
@@ -90,7 +90,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     
     [tableView registerNib:[MITMobiusDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
     
-    [tableView registerNib:[MITMartySpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
+    [tableView registerNib:[MITMobiusSpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
 
     tableView.tableFooterView = [UIView new];
     
@@ -213,8 +213,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     if (section == MITMartyTableViewSectionSpecificatons) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
         
-        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
-            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+        if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
+            MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
             specificationsHeaderView.titleLabel.text = @"Specifications";
         }
         return headerView;
@@ -222,8 +222,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     } else if (section == MITMartyTableViewSectionFakeHours) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
         
-        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
-            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+        if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
+            MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
             specificationsHeaderView.titleLabel.text = @"Hours";
         }
         
@@ -237,8 +237,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     if (section == MITMartyTableViewSectionSpecificatons || section == MITMartyTableViewSectionFakeHours) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
         
-        if ([headerView isKindOfClass:[MITMartySpecificationsHeader class]]) {
-            MITMartySpecificationsHeader *specificationsHeaderView = (MITMartySpecificationsHeader*)headerView;
+        if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
+            MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
             if (section == MITMartyTableViewSectionFakeHours) {
                 specificationsHeaderView.titleLabel.text = @"Specifications";
             } else {
