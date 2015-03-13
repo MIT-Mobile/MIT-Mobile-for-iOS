@@ -7,7 +7,7 @@
 
 #import "MITMartyResourceDataSource.h"
 
-#import "MITMartyCategory.h"
+#import "MITMobiusCategory.h"
 #import "MITMartyResource.h"
 #import "MITMartyType.h"
 #import "MITMartyTemplate.h"

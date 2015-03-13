@@ -1,5 +1,5 @@
 #import "MITMartyTemplate.h"
-#import "MITMartyCategory.h"
+#import "MITMobiusCategory.h"
 #import "MITMartyTemplateAttribute.h"
 #import "MITMartyType.h"
 

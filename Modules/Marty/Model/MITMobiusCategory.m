@@ -1,10 +1,10 @@
-#import "MITMartyCategory.h"
+#import "MITMobiusCategory.h"
 #import "MITMartyResource.h"
 #import "MITMartyTemplate.h"
 #import "MITMartyType.h"
 
 
-@implementation MITMartyCategory
+@implementation MITMobiusCategory
 
 @dynamic resources;
 @dynamic template;

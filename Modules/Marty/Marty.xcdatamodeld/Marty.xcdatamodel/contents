@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6751" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
-    <entity name="Category" representedClassName="MITMartyCategory" parentEntity="MartyObject" syncable="YES">
+    <entity name="Category" representedClassName="MITMobiusCategory" parentEntity="MartyObject" syncable="YES">
         <attribute name="templateIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="category" inverseEntity="Resource" syncable="YES"/>
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="categories" inverseEntity="Template" syncable="YES"/>

@@ -1,5 +1,5 @@
 #import "MITMartyResource.h"
-#import "MITMartyCategory.h"
+#import "MITMobiusCategory.h"
 #import "MITMartyResourceAttribute.h"
 #import "MITMartyResourceOwner.h"
 #import "MITMartyTemplate.h"
@@ -49,7 +49,7 @@
     [mapping addAttributeMappingsFromDictionary:mappings];
 
 
-    RKRelationshipMapping *categoryMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_category" toKeyPath:@"category" withMapping:[MITMartyCategory objectMapping]];
+    RKRelationshipMapping *categoryMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_category" toKeyPath:@"category" withMapping:[MITMobiusCategory objectMapping]];
     [mapping addPropertyMapping:categoryMapping];
 
     RKRelationshipMapping *typeMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_type" toKeyPath:@"type" withMapping:[MITMartyType objectMapping]];

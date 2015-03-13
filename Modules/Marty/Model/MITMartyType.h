@@ -2,11 +2,11 @@
 #import <CoreData/CoreData.h>
 #import "MITMobiusObject.h"
 
-@class MITMartyCategory, MITMartyResource, MITMartyTemplate;
+@class MITMobiusCategory, MITMartyResource, MITMartyTemplate;
 
 @interface MITMartyType : MITMobiusObject
 
-@property (nonatomic, retain) MITMartyCategory *category;
+@property (nonatomic, retain) MITMobiusCategory *category;
 @property (nonatomic, retain) NSSet *resources;
 @property (nonatomic, retain) MITMartyTemplate *template;
 @end

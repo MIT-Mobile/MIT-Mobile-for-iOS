@@ -4,7 +4,7 @@
 
 @class MITMartyResource, MITMartyTemplate, MITMartyType;
 
-@interface MITMartyCategory : MITMobiusObject
+@interface MITMobiusCategory : MITMobiusObject
 
 @property (nonatomic, retain) NSSet *resources;
 @property (nonatomic, retain) MITMartyTemplate *template;
@@ -12,7 +12,7 @@
 @property (nonatomic, retain) NSString *templateIdentifier;
 @end
 
-@interface MITMartyCategory (CoreDataGeneratedAccessors)
+@interface MITMobiusCategory (CoreDataGeneratedAccessors)
 
 - (void)addResourcesObject:(MITMartyResource *)value;
 - (void)removeResourcesObject:(MITMartyResource *)value;
