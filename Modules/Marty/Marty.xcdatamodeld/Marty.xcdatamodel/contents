@@ -50,7 +50,7 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resource" inverseName="owners" inverseEntity="Resource" syncable="YES"/>
     </entity>
-    <entity name="ResourceSearch" representedClassName="MITMartyResourceSearch" syncable="YES">
+    <entity name="ResourceSearch" representedClassName="MITMobiusResourceSearch" syncable="YES">
         <attribute name="query" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="searches" inverseEntity="Resource" syncable="YES"/>
     </entity>

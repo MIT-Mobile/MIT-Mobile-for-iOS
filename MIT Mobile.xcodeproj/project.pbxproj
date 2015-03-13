@@ -351,7 +351,7 @@
 		2CEC6A671A01461800867A66 /* dining-meal-vegan.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */; };
 		2CEC6A681A01461800867A66 /* dining-meal-vegetarian.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */; };
 		2CEC6A691A01461800867A66 /* dining-meal-well_being.pdf in Resources */ = {isa = PBXBuildFile; fileRef = 2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */; };
-		2CED33D61A76B20D001ED7AC /* MITMartyResourceSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED33D51A76B20D001ED7AC /* MITMartyResourceSearch.m */; };
+		2CED33D61A76B20D001ED7AC /* MITMobiusResourceSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED33D51A76B20D001ED7AC /* MITMobiusResourceSearch.m */; };
 		2CED900018BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */; };
 		2CED98FB13537DEC0034F6F1 /* MITScannerOverlayView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CED98FA13537DEC0034F6F1 /* MITScannerOverlayView.m */; };
 		2CEFFD5F1AA4B7F1003C4232 /* MITActionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CEFFD591AA4B7F1003C4232 /* MITActionCell.m */; };
@@ -1320,8 +1320,8 @@
 		2CEC6A5C1A01461800867A66 /* dining-meal-vegan.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegan.pdf"; sourceTree = "<group>"; };
 		2CEC6A5D1A01461800867A66 /* dining-meal-vegetarian.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-vegetarian.pdf"; sourceTree = "<group>"; };
 		2CEC6A5E1A01461800867A66 /* dining-meal-well_being.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "dining-meal-well_being.pdf"; sourceTree = "<group>"; };
-		2CED33D41A76B20D001ED7AC /* MITMartyResourceSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyResourceSearch.h; sourceTree = "<group>"; };
-		2CED33D51A76B20D001ED7AC /* MITMartyResourceSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyResourceSearch.m; sourceTree = "<group>"; };
+		2CED33D41A76B20D001ED7AC /* MITMobiusResourceSearch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResourceSearch.h; sourceTree = "<group>"; };
+		2CED33D51A76B20D001ED7AC /* MITMobiusResourceSearch.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusResourceSearch.m; sourceTree = "<group>"; };
 		2CED8FFE18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsLoadMoreTableViewCell.h; sourceTree = "<group>"; };
 		2CED8FFF18BAAD7B0012C596 /* MITNewsLoadMoreTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsLoadMoreTableViewCell.m; sourceTree = "<group>"; };
 		2CED98F913537DEC0034F6F1 /* MITScannerOverlayView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerOverlayView.h; sourceTree = "<group>"; };
@@ -3376,8 +3376,8 @@
 				2CD1F83E1A7ACAFC00743332 /* MITMobiusResourceAttributeValue.m */,
 				2C2CC2601A72E466008E3CA5 /* MITMobiusResourceOwner.h */,
 				2C2CC2611A72E466008E3CA5 /* MITMobiusResourceOwner.m */,
-				2CED33D41A76B20D001ED7AC /* MITMartyResourceSearch.h */,
-				2CED33D51A76B20D001ED7AC /* MITMartyResourceSearch.m */,
+				2CED33D41A76B20D001ED7AC /* MITMobiusResourceSearch.h */,
+				2CED33D51A76B20D001ED7AC /* MITMobiusResourceSearch.m */,
 				2C2CC26C1A72E466008E3CA5 /* MITMartyTemplate.h */,
 				2C2CC26D1A72E466008E3CA5 /* MITMartyTemplate.m */,
 				2C2CC2691A72E466008E3CA5 /* MITMartyTemplateAttribute.h */,
@@ -5475,7 +5475,7 @@
 				2C5D6ABE1861374300182C19 /* MITMapPlaceContent.m in Sources */,
 				A535E1C71A5DF5F4009271DF /* MITShuttleDataSource.m in Sources */,
 				22C238471978744A00A8BA87 /* MITMapPlace+Comparison.m in Sources */,
-				2CED33D61A76B20D001ED7AC /* MITMartyResourceSearch.m in Sources */,
+				2CED33D61A76B20D001ED7AC /* MITMobiusResourceSearch.m in Sources */,
 				2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */,
 				80C5D9FF1A11218300E63FDD /* MITLibrariesFormSheetGroupTellUsTopGroup.m in Sources */,
 				AFECC2C21A0A856600B59442 /* MITToursStopCollectionViewCell.m in Sources */,

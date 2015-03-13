@@ -3,7 +3,7 @@
 #import "MITMobiusObject.h"
 #import <MapKit/MapKit.h>
 
-@class MITMobiusCategory, MITMobiusResourceAttribute, MITMobiusResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
+@class MITMobiusCategory, MITMobiusResourceAttribute, MITMobiusResourceOwner, MITMobiusResourceSearch, MITMartyTemplate, MITMartyType;
 
 @interface MITMobiusResource : MITMobiusObject <MKAnnotation>
 
@@ -46,8 +46,8 @@
 - (void)removeOwnersObject:(MITMobiusResourceOwner *)value;
 - (void)addOwners:(NSOrderedSet *)values;
 - (void)removeOwners:(NSOrderedSet *)values;
-- (void)addSearchesObject:(MITMartyResourceSearch *)value;
-- (void)removeSearchesObject:(MITMartyResourceSearch *)value;
+- (void)addSearchesObject:(MITMobiusResourceSearch *)value;
+- (void)removeSearchesObject:(MITMobiusResourceSearch *)value;
 - (void)addSearches:(NSSet *)values;
 - (void)removeSearches:(NSSet *)values;
 
