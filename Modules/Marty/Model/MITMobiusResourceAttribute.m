@@ -8,7 +8,7 @@
 
 #import "MITMobiusResourceAttribute.h"
 #import "MITMobiusResourceAttributeValue.h"
-#import "MITMartyTemplateAttribute.h"
+#import "MITMobiusTemplateAttribute.h"
 
 @implementation MITMobiusResourceAttribute
 

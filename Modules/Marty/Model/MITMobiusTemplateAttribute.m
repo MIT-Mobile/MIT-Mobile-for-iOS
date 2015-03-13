@@ -1,8 +1,8 @@
-#import "MITMartyTemplateAttribute.h"
+#import "MITMobiusTemplateAttribute.h"
 #import "MITMobiusResourceAttribute.h"
 #import "MITMobiusTemplate.h"
 
-@implementation MITMartyTemplateAttribute
+@implementation MITMobiusTemplateAttribute
 
 @dynamic fieldType;
 @dynamic identifier;

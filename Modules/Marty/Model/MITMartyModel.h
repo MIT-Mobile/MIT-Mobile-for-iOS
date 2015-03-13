@@ -14,6 +14,6 @@
 #import "MITMobiusResourceAttribute.h"
 #import "MITMobiusResourceAttributeValue.h"
 #import "MITMobiusResourceSearch.h"
-#import "MITMartyTemplateAttribute.h"
+#import "MITMobiusTemplateAttribute.h"
 
 #endif

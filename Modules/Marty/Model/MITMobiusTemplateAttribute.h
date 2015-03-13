@@ -5,7 +5,7 @@
 
 @class MITMobiusResourceAttribute, MITMobiusTemplate;
 
-@interface MITMartyTemplateAttribute : MITManagedObject <MITMappedObject>
+@interface MITMobiusTemplateAttribute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * fieldType;
 @property (nonatomic, retain) NSString * identifier;

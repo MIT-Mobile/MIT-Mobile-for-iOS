@@ -60,7 +60,7 @@
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="template" inverseEntity="Category" syncable="YES"/>
         <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Type" inverseName="template" inverseEntity="Type" syncable="YES"/>
     </entity>
-    <entity name="TemplateAttribute" representedClassName="MITMartyTemplateAttribute" syncable="YES">
+    <entity name="TemplateAttribute" representedClassName="MITMobiusTemplateAttribute" syncable="YES">
         <attribute name="fieldType" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="label" optional="YES" attributeType="String" syncable="YES"/>

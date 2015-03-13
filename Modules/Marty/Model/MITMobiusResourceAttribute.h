@@ -3,13 +3,13 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusResourceAttributeValue, MITMartyTemplateAttribute;
+@class MITMobiusResourceAttributeValue, MITMobiusTemplateAttribute;
 
 @interface MITMobiusResourceAttribute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * templateAttributeIdentifier;
 @property (nonatomic, retain) NSString * identifier;
-@property (nonatomic, retain) MITMartyTemplateAttribute *attribute;
+@property (nonatomic, retain) MITMobiusTemplateAttribute *attribute;
 @property (nonatomic, retain) NSOrderedSet *values;
 @end
 

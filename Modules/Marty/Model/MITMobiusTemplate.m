@@ -1,6 +1,6 @@
 #import "MITMobiusTemplate.h"
 #import "MITMobiusCategory.h"
-#import "MITMartyTemplateAttribute.h"
+#import "MITMobiusTemplateAttribute.h"
 #import "MITMartyType.h"
 
 
@@ -24,7 +24,7 @@
                                @"date_modified" : @"modified"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attributes" toKeyPath:@"attributes" withMapping:[MITMartyTemplateAttribute objectMapping]];
+    RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attributes" toKeyPath:@"attributes" withMapping:[MITMobiusTemplateAttribute objectMapping]];
     [mapping addPropertyMapping:attributesMapping];
 
     mapping.assignsNilForMissingRelationships = YES;
