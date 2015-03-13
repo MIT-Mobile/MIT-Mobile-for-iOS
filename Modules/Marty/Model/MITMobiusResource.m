@@ -1,7 +1,7 @@
 #import "MITMobiusResource.h"
 #import "MITMobiusCategory.h"
 #import "MITMobiusResourceAttribute.h"
-#import "MITMartyResourceOwner.h"
+#import "MITMobiusResourceOwner.h"
 #import "MITMartyTemplate.h"
 #import "MITMartyType.h"
 
@@ -58,7 +58,7 @@
     RKRelationshipMapping *templateMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_template" toKeyPath:@"template" withMapping:[MITMartyTemplate objectMapping]];
     [mapping addPropertyMapping:templateMapping];
 
-    RKRelationshipMapping *ownersMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"owner" toKeyPath:@"owners" withMapping:[MITMartyResourceOwner objectMapping]];
+    RKRelationshipMapping *ownersMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"owner" toKeyPath:@"owners" withMapping:[MITMobiusResourceOwner objectMapping]];
     [mapping addPropertyMapping:ownersMapping];
 
     RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values" toKeyPath:@"attributes" withMapping:[MITMobiusResourceAttribute objectMapping]];

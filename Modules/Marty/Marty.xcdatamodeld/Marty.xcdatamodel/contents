@@ -46,7 +46,7 @@
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ResourceAttribute" inverseName="values" inverseEntity="ResourceAttribute" syncable="YES"/>
     </entity>
-    <entity name="ResourceOwner" representedClassName="MITMartyResourceOwner" syncable="YES">
+    <entity name="ResourceOwner" representedClassName="MITMobiusResourceOwner" syncable="YES">
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Resource" inverseName="owners" inverseEntity="Resource" syncable="YES"/>
     </entity>

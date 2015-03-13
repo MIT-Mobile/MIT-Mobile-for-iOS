@@ -1,8 +1,8 @@
-#import "MITMartyResourceOwner.h"
+#import "MITMobiusResourceOwner.h"
 #import "MITMobiusResource.h"
 
 
-@implementation MITMartyResourceOwner
+@implementation MITMobiusResourceOwner
 
 @dynamic name;
 @dynamic resource;

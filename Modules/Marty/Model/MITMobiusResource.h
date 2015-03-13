@@ -3,7 +3,7 @@
 #import "MITMobiusObject.h"
 #import <MapKit/MapKit.h>
 
-@class MITMobiusCategory, MITMobiusResourceAttribute, MITMartyResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
+@class MITMobiusCategory, MITMobiusResourceAttribute, MITMobiusResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
 
 @interface MITMobiusResource : MITMobiusObject <MKAnnotation>
 
@@ -36,14 +36,14 @@
 - (void)removeAttributesObject:(MITMobiusResourceAttribute *)value;
 - (void)addAttributes:(NSOrderedSet *)values;
 - (void)removeAttributes:(NSOrderedSet *)values;
-- (void)insertObject:(MITMartyResourceOwner *)value inOwnersAtIndex:(NSUInteger)idx;
+- (void)insertObject:(MITMobiusResourceOwner *)value inOwnersAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromOwnersAtIndex:(NSUInteger)idx;
 - (void)insertOwners:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
 - (void)removeOwnersAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInOwnersAtIndex:(NSUInteger)idx withObject:(MITMartyResourceOwner *)value;
+- (void)replaceObjectInOwnersAtIndex:(NSUInteger)idx withObject:(MITMobiusResourceOwner *)value;
 - (void)replaceOwnersAtIndexes:(NSIndexSet *)indexes withOwners:(NSArray *)values;
-- (void)addOwnersObject:(MITMartyResourceOwner *)value;
-- (void)removeOwnersObject:(MITMartyResourceOwner *)value;
+- (void)addOwnersObject:(MITMobiusResourceOwner *)value;
+- (void)removeOwnersObject:(MITMobiusResourceOwner *)value;
 - (void)addOwners:(NSOrderedSet *)values;
 - (void)removeOwners:(NSOrderedSet *)values;
 - (void)addSearchesObject:(MITMartyResourceSearch *)value;
