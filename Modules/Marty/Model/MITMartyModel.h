@@ -12,7 +12,7 @@
 #import "MITMartyType.h"
 #import "MITMartyTemplate.h"
 #import "MITMobiusResourceAttribute.h"
-#import "MITMartyResourceAttributeValue.h"
+#import "MITMobiusResourceAttributeValue.h"
 #import "MITMartyResourceSearch.h"
 #import "MITMartyTemplateAttribute.h"
 

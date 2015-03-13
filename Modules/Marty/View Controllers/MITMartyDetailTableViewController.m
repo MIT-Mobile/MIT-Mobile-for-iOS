@@ -62,7 +62,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     
     for(MITMobiusResourceAttribute *rAttribute in self.resource.attributes) {
         NSString *valueString = nil;
-        for (MITMartyResourceAttributeValue *value in rAttribute.values) {
+        for (MITMobiusResourceAttributeValue *value in rAttribute.values) {
             NSString *trimmedValue = [value.value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
             if ([trimmedValue length] != 0) {
                 if ([valueString length] == 0) {

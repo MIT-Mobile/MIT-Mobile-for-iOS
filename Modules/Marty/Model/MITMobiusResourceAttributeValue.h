@@ -5,7 +5,7 @@
 
 @class MITMobiusResourceAttribute;
 
-@interface MITMartyResourceAttributeValue : MITManagedObject <MITMappedObject>
+@interface MITMobiusResourceAttributeValue : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * value;
 @property (nonatomic, retain) MITMobiusResourceAttribute *attribute;

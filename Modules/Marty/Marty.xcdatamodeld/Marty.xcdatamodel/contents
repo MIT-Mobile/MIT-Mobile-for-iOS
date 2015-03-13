@@ -42,7 +42,7 @@
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="attributes" inverseEntity="Resource" syncable="YES"/>
         <relationship name="values" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="ResourceAttributeValue" inverseName="attribute" inverseEntity="ResourceAttributeValue" syncable="YES"/>
     </entity>
-    <entity name="ResourceAttributeValue" representedClassName="MITMartyResourceAttributeValue" syncable="YES">
+    <entity name="ResourceAttributeValue" representedClassName="MITMobiusResourceAttributeValue" syncable="YES">
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="ResourceAttribute" inverseName="values" inverseEntity="ResourceAttribute" syncable="YES"/>
     </entity>

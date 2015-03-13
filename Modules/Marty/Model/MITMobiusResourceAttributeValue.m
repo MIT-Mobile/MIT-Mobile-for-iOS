@@ -1,8 +1,8 @@
-#import "MITMartyResourceAttributeValue.h"
+#import "MITMobiusResourceAttributeValue.h"
 #import "MITMobiusResourceAttribute.h"
 
 
-@implementation MITMartyResourceAttributeValue
+@implementation MITMobiusResourceAttributeValue
 
 @dynamic value;
 @dynamic attribute;
