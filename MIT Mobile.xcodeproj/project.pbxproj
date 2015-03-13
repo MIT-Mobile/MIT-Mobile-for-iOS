@@ -268,7 +268,7 @@
 		2C2CC2621A72E466008E3CA5 /* MITMobiusResourceOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC2611A72E466008E3CA5 /* MITMobiusResourceOwner.m */; };
 		2C2CC2681A72E466008E3CA5 /* MITMobiusObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC2671A72E466008E3CA5 /* MITMobiusObject.m */; };
 		2C2CC26B1A72E466008E3CA5 /* MITMartyTemplateAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC26A1A72E466008E3CA5 /* MITMartyTemplateAttribute.m */; };
-		2C2CC26E1A72E467008E3CA5 /* MITMartyTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC26D1A72E466008E3CA5 /* MITMartyTemplate.m */; };
+		2C2CC26E1A72E467008E3CA5 /* MITMobiusTemplate.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC26D1A72E466008E3CA5 /* MITMobiusTemplate.m */; };
 		2C2CC2741A72E467008E3CA5 /* MITMartyType.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC2731A72E467008E3CA5 /* MITMartyType.m */; };
 		2C2E95421382F00200FA5557 /* FacilitiesConstants.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2E95401382F00200FA5557 /* FacilitiesConstants.m */; };
 		2C32BD25136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2C32BD23136F27D40015ACF6 /* FacilitiesLocations.xcdatamodeld */; };
@@ -1179,8 +1179,8 @@
 		2C2CC2671A72E466008E3CA5 /* MITMobiusObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusObject.m; sourceTree = "<group>"; };
 		2C2CC2691A72E466008E3CA5 /* MITMartyTemplateAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyTemplateAttribute.h; sourceTree = "<group>"; };
 		2C2CC26A1A72E466008E3CA5 /* MITMartyTemplateAttribute.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyTemplateAttribute.m; sourceTree = "<group>"; };
-		2C2CC26C1A72E466008E3CA5 /* MITMartyTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyTemplate.h; sourceTree = "<group>"; };
-		2C2CC26D1A72E466008E3CA5 /* MITMartyTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyTemplate.m; sourceTree = "<group>"; };
+		2C2CC26C1A72E466008E3CA5 /* MITMobiusTemplate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusTemplate.h; sourceTree = "<group>"; };
+		2C2CC26D1A72E466008E3CA5 /* MITMobiusTemplate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusTemplate.m; sourceTree = "<group>"; };
 		2C2CC26F1A72E467008E3CA5 /* MITMobiusResource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResource.h; sourceTree = "<group>"; };
 		2C2CC2701A72E467008E3CA5 /* MITMobiusResource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusResource.m; sourceTree = "<group>"; };
 		2C2CC2721A72E467008E3CA5 /* MITMartyType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyType.h; sourceTree = "<group>"; };
@@ -3378,8 +3378,8 @@
 				2C2CC2611A72E466008E3CA5 /* MITMobiusResourceOwner.m */,
 				2CED33D41A76B20D001ED7AC /* MITMobiusResourceSearch.h */,
 				2CED33D51A76B20D001ED7AC /* MITMobiusResourceSearch.m */,
-				2C2CC26C1A72E466008E3CA5 /* MITMartyTemplate.h */,
-				2C2CC26D1A72E466008E3CA5 /* MITMartyTemplate.m */,
+				2C2CC26C1A72E466008E3CA5 /* MITMobiusTemplate.h */,
+				2C2CC26D1A72E466008E3CA5 /* MITMobiusTemplate.m */,
 				2C2CC2691A72E466008E3CA5 /* MITMartyTemplateAttribute.h */,
 				2C2CC26A1A72E466008E3CA5 /* MITMartyTemplateAttribute.m */,
 				2C2CC2721A72E467008E3CA5 /* MITMartyType.h */,
@@ -5500,7 +5500,7 @@
 				22C012BB19B7BA6000879EF6 /* MITDiningScheduleCell.m in Sources */,
 				2C8A074818BE690900284F8A /* MITImageScrollView.m in Sources */,
 				80F6E2B9199A932A0060C971 /* MITDiningCustomSeparatorCell.m in Sources */,
-				2C2CC26E1A72E467008E3CA5 /* MITMartyTemplate.m in Sources */,
+				2C2CC26E1A72E467008E3CA5 /* MITMobiusTemplate.m in Sources */,
 				A535E1C11A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m in Sources */,
 				2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,

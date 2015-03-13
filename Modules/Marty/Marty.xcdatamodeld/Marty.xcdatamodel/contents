@@ -54,7 +54,7 @@
         <attribute name="query" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="searches" inverseEntity="Resource" syncable="YES"/>
     </entity>
-    <entity name="Template" representedClassName="MITMartyTemplate" parentEntity="MartyObject" syncable="YES">
+    <entity name="Template" representedClassName="MITMobiusTemplate" parentEntity="MartyObject" syncable="YES">
         <attribute name="descriptionText" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="TemplateAttribute" inverseName="template" inverseEntity="TemplateAttribute" syncable="YES"/>
         <relationship name="categories" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Category" inverseName="template" inverseEntity="Category" syncable="YES"/>

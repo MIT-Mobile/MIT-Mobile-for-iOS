@@ -3,7 +3,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusResourceAttribute, MITMartyTemplate;
+@class MITMobiusResourceAttribute, MITMobiusTemplate;
 
 @interface MITMartyTemplateAttribute : MITManagedObject <MITMappedObject>
 
@@ -14,6 +14,6 @@
 @property (nonatomic, retain) NSNumber * sort;
 @property (nonatomic, retain) NSString * widgetType;
 @property (nonatomic, retain) MITMobiusResourceAttribute *attributeValues;
-@property (nonatomic, retain) MITMartyTemplate *template;
+@property (nonatomic, retain) MITMobiusTemplate *template;
 
 @end

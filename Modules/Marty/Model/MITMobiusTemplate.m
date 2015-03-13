@@ -1,10 +1,10 @@
-#import "MITMartyTemplate.h"
+#import "MITMobiusTemplate.h"
 #import "MITMobiusCategory.h"
 #import "MITMartyTemplateAttribute.h"
 #import "MITMartyType.h"
 
 
-@implementation MITMartyTemplate
+@implementation MITMobiusTemplate
 
 @dynamic descriptionText;
 @dynamic attributes;

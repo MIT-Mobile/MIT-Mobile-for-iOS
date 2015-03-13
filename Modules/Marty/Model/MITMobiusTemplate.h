@@ -4,7 +4,7 @@
 
 @class MITMobiusCategory, MITMartyTemplateAttribute, MITMartyType;
 
-@interface MITMartyTemplate : MITMobiusObject
+@interface MITMobiusTemplate : MITMobiusObject
 
 @property (nonatomic, retain) NSString * descriptionText;
 @property (nonatomic, retain) NSSet *attributes;
@@ -12,7 +12,7 @@
 @property (nonatomic, retain) NSSet *types;
 @end
 
-@interface MITMartyTemplate (CoreDataGeneratedAccessors)
+@interface MITMobiusTemplate (CoreDataGeneratedAccessors)
 
 - (void)addAttributesObject:(MITMartyTemplateAttribute *)value;
 - (void)removeAttributesObject:(MITMartyTemplateAttribute *)value;
