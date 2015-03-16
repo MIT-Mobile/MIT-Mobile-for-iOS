@@ -6,7 +6,7 @@
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
 
-#import "MITMartyMapViewController.h"
+#import "MITMobiusMapViewController.h"
 #import "MITMartyRecentSearchController.h"
 #import "MITMapPlaceSelector.h"
 
@@ -40,7 +40,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
 @property(nonatomic,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property(nonatomic,weak) MITMartyMapViewController *mapViewController;
+@property(nonatomic,weak) MITMobiusMapViewController *mapViewController;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
 @property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
@@ -289,7 +289,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 
 #pragma mark mapViewController
-- (MITMartyMapViewController*)mapViewController
+- (MITMobiusMapViewController*)mapViewController
 {
     if (!_mapViewController) {
         [self loadMapViewController];
@@ -300,7 +300,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (void)loadMapViewController
 {
-    MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
+    MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
 
     [self _addChildViewController:mapViewController toView:self.mapViewContainer];
     _mapViewController = mapViewController;

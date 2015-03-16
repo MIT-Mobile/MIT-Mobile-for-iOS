@@ -10,7 +10,7 @@
 #import "MITCoreDataController.h"
 #import "MITMartyRecentSearchController.h"
 
-#import "MITMartyMapViewController.h"
+#import "MITMobiusMapViewController.h"
 
 @interface MITMartyPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
@@ -37,17 +37,17 @@
 @property (nonatomic, strong) MITMobiusResourceDataSource *dataSource;
 
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
-@property (nonatomic, strong) MITMartyMapViewController *mapViewController;
+@property (nonatomic, strong) MITMobiusMapViewController *mapViewController;
 
 @end
 
 @implementation MITMartyPadHomeViewController
 
 #pragma mark - properties
-- (MITMartyMapViewController *)mapViewController
+- (MITMobiusMapViewController *)mapViewController
 {
     if(!_mapViewController) {
-        MITMartyMapViewController *mapViewController = [[MITMartyMapViewController alloc] init];
+        MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
         _mapViewController = mapViewController;
     }
     return _mapViewController;

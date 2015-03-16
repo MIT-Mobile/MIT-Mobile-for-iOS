@@ -1,4 +1,4 @@
-#import "MITMartyMapViewController.h"
+#import "MITMobiusMapViewController.h"
 
 #import "MITTiledMapView.h"
 #import "MITMapPlaceAnnotationView.h"
@@ -14,7 +14,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 
 
-@interface MITMartyMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate>
+@interface MITMobiusMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
@@ -26,7 +26,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 @end
 
-@implementation MITMartyMapViewController
+@implementation MITMobiusMapViewController
 
 - (void)viewDidLoad
 {

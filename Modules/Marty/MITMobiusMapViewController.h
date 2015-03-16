@@ -4,7 +4,7 @@
 @class MITMobiusResource;
 @class MITCalloutMapView;
 
-@interface MITMartyMapViewController : UIViewController
+@interface MITMobiusMapViewController : UIViewController
 @property (nonatomic, strong) NSArray *resources;
 @property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic) UIEdgeInsets mapEdgeInsets;
