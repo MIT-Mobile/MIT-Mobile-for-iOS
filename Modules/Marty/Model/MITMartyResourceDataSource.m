@@ -154,6 +154,25 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
 }
 
 #pragma mark - Recent Search Items
+- (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMartyRecentSearchQuery entityName]];
+    fetchRequest.resultType = NSCountResultType;
+    
+    if ([filterString length]) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[cd] %@", filterString];
+    }
+    
+    NSInteger numberOfRecentSearchItems = [[MITCoreDataController defaultController].mainQueueContext countForFetchRequest:fetchRequest error:nil];
+
+    // Don't propogate the error up if things go south.
+    // Just catch the bad count and return a 0.
+    if (numberOfRecentSearchItems == NSNotFound) {
+        return 0;
+    } else {
+        return numberOfRecentSearchItems;
+    }
+}
 
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
 {
@@ -199,9 +218,9 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     } error:error];
 }
 
-- (void)clearRecentSearchesWithError:(NSError *)error
+- (void)clearRecentSearches
 {
-    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError *__autoreleasing *updateError) {
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^(NSManagedObjectContext *context, NSError **updateError) {
         MITMartyRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         [context deleteObject:recentSearchList];
         recentSearchList = [self recentSearchListWithManagedObjectContext:context];
@@ -211,7 +230,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         } else {
             return NO;
         }
-    } error:&error];
+    } error:nil];
 }
 
 @end
