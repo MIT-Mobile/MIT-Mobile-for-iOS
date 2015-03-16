@@ -1,6 +1,6 @@
 #import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusResourceDataSource.h"
-#import "MITMartyModel.h"
+#import "MITMobiusModel.h"
 #import "MITMobiusResourcesTableViewController.h"
 #import "MITMobiusDetailTableViewController.h"
 #import "MITSlidingViewController.h"

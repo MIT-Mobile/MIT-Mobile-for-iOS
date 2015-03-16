@@ -1,5 +1,5 @@
 #import "MITNavigationModule.h"
 
-@interface MITMartyModule : MITModule
+@interface MITMobiusModule : MITModule
 - (instancetype)init;
 @end

@@ -30,7 +30,7 @@
 #import "SettingsModule.h"
 #import "ShuttleModule.h"
 #import "ToursModule.h"
-#import "MITMartyModule.h"
+#import "MITMobiusModule.h"
 
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
@@ -509,7 +509,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
     [modules addObject:scannerModule];
     
-    MITMartyModule *martyModule = [[MITMartyModule alloc] init];
+    MITMobiusModule *martyModule = [[MITMobiusModule alloc] init];
     [modules addObject:martyModule];
 
     LinksModule *linksModule = [[LinksModule alloc] init];

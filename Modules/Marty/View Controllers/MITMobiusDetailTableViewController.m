@@ -5,7 +5,7 @@
 #import "MITTitleDescriptionCell.h"
 #import "MITMobiusSpecificationsHeader.h"
 
-#import "MITMartyModel.h"
+#import "MITMobiusModel.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";

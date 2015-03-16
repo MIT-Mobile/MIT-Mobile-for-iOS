@@ -1,5 +1,5 @@
 #import "MITMobiusResourceTableViewCell.h"
-#import "MITMartyModel.h"
+#import "MITMobiusModel.h"
 #import "UIKit+MITAdditions.h"
 #import "MITMobiusResourceView.h"
 

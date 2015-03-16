@@ -7,7 +7,7 @@
 #import "MITLocationManager.h"
 #import "MITMobiusDetailTableViewController.h"
 #import "MITMobiusCalloutContentView.h"
-#import "MITMartyModel.h"
+#import "MITMobiusModel.h"
 #import "MITMobiusResourceView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
