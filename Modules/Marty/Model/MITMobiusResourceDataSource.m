@@ -1,7 +1,7 @@
 #import <CoreData/CoreData.h>
 #import <RestKit/RestKit.h>
 
-#import "MITMartyResourceDataSource.h"
+#import "MITMobiusResourceDataSource.h"
 #import "MITCoreData.h"
 #import "CoreData+MITAdditions.h"
 #import "MITAdditions.h"
@@ -13,14 +13,14 @@
 static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
 static NSString* const MITMartyResourcePathPattern = @"resource";
 
-@interface MITMartyResourceDataSource ()
+@interface MITMobiusResourceDataSource ()
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
 @property (nonatomic,copy) NSString *queryString;
 @end
 
-@implementation MITMartyResourceDataSource
+@implementation MITMobiusResourceDataSource
 @dynamic resources;
 
 - (instancetype)init
@@ -62,7 +62,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     return resources;
 }
 
-- (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMartyResourceDataSource* dataSource, NSError *error))block
+- (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
     if (![queryString length]) {
         self.queryString = nil;
@@ -99,9 +99,9 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
         requestOperation.managedObjectCache = cache;
 
-        __weak MITMartyResourceDataSource *weakSelf = self;
+        __weak MITMobiusResourceDataSource *weakSelf = self;
         [requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
-            MITMartyResourceDataSource *blockSelf = weakSelf;
+            MITMobiusResourceDataSource *blockSelf = weakSelf;
             if (!blockSelf) {
                 return;
             }
@@ -119,7 +119,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
                 }];
             }];
         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
-            MITMartyResourceDataSource *blockSelf = weakSelf;
+            MITMobiusResourceDataSource *blockSelf = weakSelf;
             if (!blockSelf) {
                 return;
             } else {

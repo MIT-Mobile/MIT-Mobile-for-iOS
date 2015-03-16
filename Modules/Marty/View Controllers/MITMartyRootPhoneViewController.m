@@ -1,5 +1,5 @@
 #import "MITMartyRootPhoneViewController.h"
-#import "MITMartyResourceDataSource.h"
+#import "MITMobiusResourceDataSource.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourcesTableViewController.h"
 #import "MITMartyDetailTableViewController.h"
@@ -37,7 +37,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
 
 
-@property(nonatomic,strong) MITMartyResourceDataSource *dataSource;
+@property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
 @property(nonatomic,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
 @property(nonatomic,weak) MITMartyMapViewController *mapViewController;
@@ -143,7 +143,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
 {
     if ([queryString length]) {
-        [self.dataSource resourcesWithQuery:queryString completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+        [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
             if (error) {
                 DDLogWarn(@"Error: %@",error);
                 
@@ -166,10 +166,10 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 }
 
-- (MITMartyResourceDataSource*)dataSource
+- (MITMobiusResourceDataSource*)dataSource
 {
     if (!_dataSource) {
-        MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
+        MITMobiusResourceDataSource *dataSource = [[MITMobiusResourceDataSource alloc] init];
         _dataSource = dataSource;
     }
 

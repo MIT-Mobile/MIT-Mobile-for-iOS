@@ -1,10 +1,10 @@
 #import "MITMartyPadHomeViewController.h"
-#import "MITMartyResourceDataSource.h"
+#import "MITMobiusResourceDataSource.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
 #import "MITSlidingViewController.h"
 
-#import "MITMartyResourceDataSource.H"
+#import "MITMobiusResourceDataSource.H"
 #import "MITMobiusResource.h"
 #import "MITMartyResourcesTableViewController.h"
 #import "MITCoreDataController.h"
@@ -34,7 +34,7 @@
 @property (nonatomic, strong) UIView *searchBarView;
 @property (nonatomic) BOOL isKeyboardVisible;
 
-@property (nonatomic, strong) MITMartyResourceDataSource *dataSource;
+@property (nonatomic, strong) MITMobiusResourceDataSource *dataSource;
 
 @property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
 @property (nonatomic, strong) MITMartyMapViewController *mapViewController;
@@ -82,7 +82,7 @@
 {
     [super viewDidLoad];
     
-    MITMartyResourceDataSource *dataSource = [[MITMartyResourceDataSource alloc] init];
+    MITMobiusResourceDataSource *dataSource = [[MITMobiusResourceDataSource alloc] init];
     self.dataSource = dataSource;
     
     [self setupNavigationBar];
@@ -329,7 +329,7 @@
     if ([query length]) {
         self.searchQuery = query;
         
-        [self.dataSource resourcesWithQuery:query completion:^(MITMartyResourceDataSource *dataSource, NSError *error) {
+        [self.dataSource resourcesWithQuery:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
             [dataSource addRecentSearchItem:query error:nil];
             
             if (error) {

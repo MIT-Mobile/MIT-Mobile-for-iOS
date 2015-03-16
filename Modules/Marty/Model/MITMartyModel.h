@@ -5,7 +5,7 @@
 #import "MITCoreData.h"
 #import "CoreData+MITAdditions.h"
 
-#import "MITMartyResourceDataSource.h"
+#import "MITMobiusResourceDataSource.h"
 
 #import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"

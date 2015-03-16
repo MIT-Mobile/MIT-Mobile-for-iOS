@@ -1,10 +1,10 @@
 #import "MITMartyRecentSearchController.h"
-#import "MITMartyResourceDataSource.h"
+#import "MITMobiusResourceDataSource.h"
 #import "MITNewsRecentSearchQuery.h"
 #import "UIKit+MITAdditions.h"
 
 @interface MITMartyRecentSearchController () <UIActionSheetDelegate>
-@property (nonatomic,strong) MITMartyResourceDataSource *modelController;
+@property (nonatomic,strong) MITMobiusResourceDataSource *modelController;
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
 @property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 @property (nonatomic,copy) NSString *filterString;
@@ -15,10 +15,10 @@
 @implementation MITMartyRecentSearchController
 
 #pragma mark - properties
-- (MITMartyResourceDataSource *)modelController
+- (MITMobiusResourceDataSource *)modelController
 {
     if(!_modelController) {
-        MITMartyResourceDataSource *modelController = [[MITMartyResourceDataSource alloc] init];
+        MITMobiusResourceDataSource *modelController = [[MITMobiusResourceDataSource alloc] init];
         _modelController = modelController;
     }
     return _modelController;
