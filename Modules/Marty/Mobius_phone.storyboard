@@ -25,7 +25,7 @@
         <!--Home View Controller-->
         <scene sceneID="rYA-bu-8CK">
             <objects>
-                <viewController storyboardIdentifier="MartyHomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMobiusRootPhoneViewController" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="MobiusHomeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="3Ed-Jg-Y7M" userLabel="Home View Controller" customClass="MITMobiusRootPhoneViewController" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="Kfz-sO-XOH"/>
                         <viewControllerLayoutGuide type="bottom" id="IC8-GW-1cV"/>

@@ -315,8 +315,8 @@
 		2CA73ECF18171AFD00A42D03 /* MITMapBookmark.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA73ECE18171AFD00A42D03 /* MITMapBookmark.m */; };
 		2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */; };
 		2CA91F9A15CB03BB00C03732 /* MITScannerHelpViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */; };
-		2CB5E8581A700E240012F034 /* Marty_phone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E8571A700E240012F034 /* Marty_phone.storyboard */; };
-		2CB5E88F1A7029E60012F034 /* Marty_pad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */; };
+		2CB5E8581A700E240012F034 /* Mobius_phone.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E8571A700E240012F034 /* Mobius_phone.storyboard */; };
+		2CB5E88F1A7029E60012F034 /* Mobius_pad.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 2CB5E88E1A7029E60012F034 /* Mobius_pad.storyboard */; };
 		2CB5E8931A704E4A0012F034 /* MITMobiusRootPhoneViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CB5E8921A704E4A0012F034 /* MITMobiusRootPhoneViewController.m */; };
 		2CC487CF13B3854700E58350 /* FacilitiesLocationSearch.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CC487CE13B3854600E58350 /* FacilitiesLocationSearch.m */; };
 		2CC710DD1986EA2C006C339C /* GridDividerView.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CC710DC1986EA2C006C339C /* GridDividerView.xib */; };
@@ -325,7 +325,7 @@
 		2CD1AE8219520E40003D7601 /* MITCollectionViewGridLayoutRow.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7D19520E40003D7601 /* MITCollectionViewGridLayoutRow.m */; };
 		2CD1AE8319520E40003D7601 /* MITCollectionViewGridLayoutSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */; };
 		2CD1AE8419520E40003D7601 /* MITCollectionViewGridLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */; };
-		2CD1F83C1A7A9B5200743332 /* Marty.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1F83A1A7A9B5200743332 /* Marty.xcdatamodeld */; };
+		2CD1F83C1A7A9B5200743332 /* Mobius.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1F83A1A7A9B5200743332 /* Mobius.xcdatamodeld */; };
 		2CD1F83F1A7ACAFC00743332 /* MITMobiusResourceAttributeValue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1F83E1A7ACAFC00743332 /* MITMobiusResourceAttributeValue.m */; };
 		2CD1F8421A7ACBE200743332 /* MITMobiusResourceAttribute.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CD1F8411A7ACBE200743332 /* MITMobiusResourceAttribute.m */; };
 		2CD8FEEE13565E8B00B00B28 /* QRReaderResult.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 2CD8FEEC13565E8B00B00B28 /* QRReaderResult.xcdatamodeld */; };
@@ -1263,8 +1263,8 @@
 		2CA91F9615CB03BB00C03732 /* MITScannerHelpViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerHelpViewController.h; sourceTree = "<group>"; };
 		2CA91F9715CB03BB00C03732 /* MITScannerHelpViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITScannerHelpViewController.m; sourceTree = "<group>"; };
 		2CA91F9815CB03BB00C03732 /* MITScannerHelpViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITScannerHelpViewController.xib; sourceTree = "<group>"; };
-		2CB5E8571A700E240012F034 /* Marty_phone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_phone.storyboard; sourceTree = "<group>"; };
-		2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Marty_pad.storyboard; sourceTree = "<group>"; };
+		2CB5E8571A700E240012F034 /* Mobius_phone.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Mobius_phone.storyboard; sourceTree = "<group>"; };
+		2CB5E88E1A7029E60012F034 /* Mobius_pad.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; path = Mobius_pad.storyboard; sourceTree = "<group>"; };
 		2CB5E8911A704E4A0012F034 /* MITMobiusRootPhoneViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusRootPhoneViewController.h; path = "View Controllers/MITMobiusRootPhoneViewController.h"; sourceTree = "<group>"; };
 		2CB5E8921A704E4A0012F034 /* MITMobiusRootPhoneViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusRootPhoneViewController.m; path = "View Controllers/MITMobiusRootPhoneViewController.m"; sourceTree = "<group>"; };
 		2CB6459D134CAF1A00E85E64 /* MITScannerModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITScannerModule.h; sourceTree = "<group>"; };
@@ -1283,7 +1283,7 @@
 		2CD1AE7F19520E40003D7601 /* MITCollectionViewGridLayoutSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayoutSection.m; sourceTree = "<group>"; };
 		2CD1AE8019520E40003D7601 /* MITCollectionViewGridLayout.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITCollectionViewGridLayout.h; sourceTree = "<group>"; };
 		2CD1AE8119520E40003D7601 /* MITCollectionViewGridLayout.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITCollectionViewGridLayout.m; sourceTree = "<group>"; };
-		2CD1F83B1A7A9B5200743332 /* Marty.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Marty.xcdatamodel; sourceTree = "<group>"; };
+		2CD1F83B1A7A9B5200743332 /* Mobius.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = Mobius.xcdatamodel; sourceTree = "<group>"; };
 		2CD1F83D1A7ACAFC00743332 /* MITMobiusResourceAttributeValue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResourceAttributeValue.h; sourceTree = "<group>"; };
 		2CD1F83E1A7ACAFC00743332 /* MITMobiusResourceAttributeValue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusResourceAttributeValue.m; sourceTree = "<group>"; };
 		2CD1F8401A7ACBE200743332 /* MITMobiusResourceAttribute.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResourceAttribute.h; sourceTree = "<group>"; };
@@ -2032,8 +2032,8 @@
 				2C64A1E81A7FED6F00020AFB /* Views */,
 				2C2CC1F61A72D098008E3CA5 /* Model */,
 				2CB5E8901A7045F50012F034 /* View Controllers */,
-				2CB5E8571A700E240012F034 /* Marty_phone.storyboard */,
-				2CB5E88E1A7029E60012F034 /* Marty_pad.storyboard */,
+				2CB5E8571A700E240012F034 /* Mobius_phone.storyboard */,
+				2CB5E88E1A7029E60012F034 /* Mobius_pad.storyboard */,
 				0B5D299D1A6ED96F001A55D3 /* MITMobiusModule.h */,
 				0B5D299E1A6ED96F001A55D3 /* MITMobiusModule.m */,
 			);
@@ -3014,7 +3014,7 @@
 				2CED33D71A76B255001ED7AC /* Entities */,
 				2C2CC2121A72E0E4008E3CA5 /* MITMobiusResourceDataSource.h */,
 				2C2CC2131A72E0E4008E3CA5 /* MITMobiusResourceDataSource.m */,
-				2CD1F83A1A7A9B5200743332 /* Marty.xcdatamodeld */,
+				2CD1F83A1A7A9B5200743332 /* Mobius.xcdatamodeld */,
 				2CD1F8431A7ACE3700743332 /* MITMobiusModel.h */,
 			);
 			path = Model;
@@ -5053,14 +5053,14 @@
 				0B7311941A31074A00C1CA01 /* AboutCreditsViewOlderTableViewCell.xib in Resources */,
 				2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */,
 				22589D8619AFC04B0007966A /* MITDiningHouseMealSelectionView.xib in Resources */,
-				2CB5E88F1A7029E60012F034 /* Marty_pad.storyboard in Resources */,
+				2CB5E88F1A7029E60012F034 /* Mobius_pad.storyboard in Resources */,
 				A5A24B691994307A00AA1CFC /* MITEventSearchTypeAheadViewController.xib in Resources */,
 				277A583019FD70BA00BE134E /* MITFacilities_iphone.storyboard in Resources */,
 				0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */,
 				22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
 				A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */,
-				2CB5E8581A700E240012F034 /* Marty_phone.storyboard in Resources */,
+				2CB5E8581A700E240012F034 /* Mobius_phone.storyboard in Resources */,
 				8062054A1A7AAF1A004BD08A /* MITViewWithCenterText.xib in Resources */,
 				0B73118B1A30FF3C00C1CA01 /* credits_current.html in Resources */,
 				A50884EA19D1E7150047A21B /* MITLibrariesItemHoldCell.xib in Resources */,
@@ -5689,7 +5689,7 @@
 				228F26BA19D4B6D20049F1B7 /* MITLibrariesMITFineItem.m in Sources */,
 				48327CE016F74F19003A2F23 /* DiningModule.m in Sources */,
 				A59D4C8E19F68BA50074E392 /* MITLibrariesSearchResultsGridViewController.m in Sources */,
-				2CD1F83C1A7A9B5200743332 /* Marty.xcdatamodeld in Sources */,
+				2CD1F83C1A7A9B5200743332 /* Mobius.xcdatamodeld in Sources */,
 				2287A7CC19BE2CA9008B0DF6 /* MITCalendarsLocation.m in Sources */,
 				A541EB871A314D3B00FA7349 /* MITNewsStoriesDataSource.m in Sources */,
 				2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */,
@@ -6089,14 +6089,14 @@
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};
-		2CD1F83A1A7A9B5200743332 /* Marty.xcdatamodeld */ = {
+		2CD1F83A1A7A9B5200743332 /* Mobius.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
-				2CD1F83B1A7A9B5200743332 /* Marty.xcdatamodel */,
+				2CD1F83B1A7A9B5200743332 /* Mobius.xcdatamodel */,
 			);
-			currentVersion = 2CD1F83B1A7A9B5200743332 /* Marty.xcdatamodel */;
-			name = Marty.xcdatamodeld;
-			path = ../Marty.xcdatamodeld;
+			currentVersion = 2CD1F83B1A7A9B5200743332 /* Mobius.xcdatamodel */;
+			name = Mobius.xcdatamodeld;
+			path = ../Mobius.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

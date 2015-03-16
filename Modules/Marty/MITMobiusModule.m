@@ -2,9 +2,8 @@
 
 @implementation MITMobiusModule
 - (instancetype)init {
-    self = [super initWithName:MITModuleTagMarty title:@"Marty"];
+    self = [super initWithName:MITModuleTagMarty title:@"Mobius"];
     if (self) {
-        self.longTitle = @"Marty";
         self.imageName = MITImageMartyModuleIcon;
     }
     return self;
@@ -21,9 +20,9 @@
 
     UIStoryboard *storyboard = nil;
     if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        storyboard = [UIStoryboard storyboardWithName:@"Marty_pad" bundle:nil];
+        storyboard = [UIStoryboard storyboardWithName:@"Mobius_pad" bundle:nil];
     } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        storyboard = [UIStoryboard storyboardWithName:@"Marty_phone" bundle:nil];
+        storyboard = [UIStoryboard storyboardWithName:@"Mobius_phone" bundle:nil];
     } else {
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"unknown user interface idiom" userInfo:nil];
     }
