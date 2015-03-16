@@ -87,7 +87,10 @@
 - (void)filterResultsUsingString:(NSString *)filterString
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
-    if ([self.recentResults count]) {
+    
+    NSInteger numberOfRecentResults = [self.modelController numberOfRecentSearchItemsWithFilterString:filterString];
+    
+    if (numberOfRecentResults > 0) {
         self.clearButtonItem.enabled = YES;
     }
     self.filterString = filterString;
