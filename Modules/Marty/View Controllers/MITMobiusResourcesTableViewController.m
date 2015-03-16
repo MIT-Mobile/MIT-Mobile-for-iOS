@@ -4,7 +4,7 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusResourceView.h"
 
-NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
+NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 
 @interface MITMobiusResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
@@ -22,10 +22,10 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     
     _managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     
-    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMartyResourceTableViewCell" bundle:nil];
+    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
     [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:NSStringFromClass([MITMobiusResourceTableViewCell class])];
 
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMartyResourcesTableViewPlaceholderCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourcesTableViewPlaceholderCellIdentifier];
     
     self.tableView.dataSource = self;
     self.tableView.delegate = self;
@@ -254,7 +254,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     NSString *cellIdentifier = nil;
 
     if ([self _isPlaceholderCellAtIndexPath:indexPath]) {
-        cellIdentifier = MITMartyResourcesTableViewPlaceholderCellIdentifier;
+        cellIdentifier = MITMobiusResourcesTableViewPlaceholderCellIdentifier;
     } else {
         cellIdentifier = NSStringFromClass([MITMobiusResourceTableViewCell class]);
     }

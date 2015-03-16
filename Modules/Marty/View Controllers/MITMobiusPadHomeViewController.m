@@ -542,14 +542,14 @@
 }
 
 
-#pragma mark - MITMartyResourcesTableViewControllerDelegate
+#pragma mark - MITMobiusResourcesTableViewControllerDelegate
 
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     [self.mapViewController showCalloutForResource:resource];
 }
 
-#pragma mark - MITMartyResourcesTableViewControllerDelegate
+#pragma mark - MITMobiusResourcesTableViewControllerDelegate
 
 - (void)placeSelectionViewController:(UIViewController <MITMapPlaceSelector >*)viewController didSelectResource:(MITMobiusResource *)resource
 {
@@ -642,7 +642,7 @@
         _searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         _searchBar.searchBarStyle = UISearchBarStyleMinimal;
         _searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        _searchBar.placeholder = @"Search Marty";
+        _searchBar.placeholder = @"Search Mobius";
     }
     return _searchBar;
 }

@@ -10,8 +10,8 @@
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
 
-static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
-static NSString* const MITMartyResourcePathPattern = @"resource";
+static NSString* const MITMobiusDefaultServer = @"https://kairos-dev.mit.edu";
+static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
@@ -76,8 +76,8 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
             }
         }];
     } else {
-        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMartyDefaultServer];
-        NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMartyResourcePathPattern];
+        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMobiusDefaultServer];
+        NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
 
         if (queryString) {
             NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
@@ -123,7 +123,7 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
             if (!blockSelf) {
                 return;
             } else {
-                DDLogError(@"failed to request Marty resources: %@",error);
+                DDLogError(@"failed to request Mobius resources: %@",error);
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     if (block) {
                         block(blockSelf,error);

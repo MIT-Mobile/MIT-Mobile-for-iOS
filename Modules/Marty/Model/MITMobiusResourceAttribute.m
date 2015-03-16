@@ -1,5 +1,5 @@
 //
-//  MITMartyResourceAttribute.m
+//  MITMobiusResourceAttribute.m
 //  MIT Mobile
 //
 //  Created by Blake Skinner on 1/29/15.

@@ -1,5 +1,5 @@
-#ifndef MIT_Mobile_MITMartyModel_h
-#define MIT_Mobile_MITMartyModel_h
+#ifndef MIT_Mobile_MITMobiusModel_h
+#define MIT_Mobile_MITMobiusModel_h
 
 #import <CoreData/CoreData.h>
 #import "MITCoreData.h"

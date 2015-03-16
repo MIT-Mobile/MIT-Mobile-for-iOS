@@ -2026,7 +2026,7 @@
 			path = ../..;
 			sourceTree = "<group>";
 		};
-		0B5D29991A6ED8DF001A55D3 /* Marty */ = {
+		0B5D29991A6ED8DF001A55D3 /* Mobius */ = {
 			isa = PBXGroup;
 			children = (
 				2C64A1E81A7FED6F00020AFB /* Views */,
@@ -2037,6 +2037,7 @@
 				0B5D299D1A6ED96F001A55D3 /* MITMobiusModule.h */,
 				0B5D299E1A6ED96F001A55D3 /* MITMobiusModule.m */,
 			);
+			name = Mobius;
 			path = Marty;
 			sourceTree = "<group>";
 		};
@@ -4697,7 +4698,7 @@
 				DE715447102FE468005E6111 /* Emergency */,
 				4B66705F1403304300714C6A /* Libraries */,
 				48B8129315E428DA00E791F9 /* Links */,
-				0B5D29991A6ED8DF001A55D3 /* Marty */,
+				0B5D29991A6ED8DF001A55D3 /* Mobius */,
 				DE81CF5F10C6BC390085573D /* News */,
 				EB7F326610CD6C5B00188BCD /* People Directory */,
 				2CB6459C134CAF1A00E85E64 /* Scanner */,

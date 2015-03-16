@@ -13,13 +13,13 @@
 #import "DDLog.h"
 #import "MITAdditions.h"
 
-static NSTimeInterval MITMartyRootPhoneDefaultAnimationDuration = 0.33;
+static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
-typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
-    MITMartyRootViewControllerStateInitial = 0,
-    MITMartyRootViewControllerStateSearch,
-    MITMartyRootViewControllerStateNoResults,
-    MITMartyRootViewControllerStateResults,
+typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
+    MITMobiusRootViewControllerStateInitial = 0,
+    MITMobiusRootViewControllerStateSearch,
+    MITMobiusRootViewControllerStateNoResults,
+    MITMobiusRootViewControllerStateResults,
 };
 
 @interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
 
-@property(nonatomic) MITMartyRootViewControllerState currentState;
+@property(nonatomic) MITMobiusRootViewControllerState currentState;
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
 
 
@@ -87,7 +87,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 {
     [super viewDidLayoutSubviews];
     
-    if (self.currentState == MITMartyRootViewControllerStateSearch) {
+    if (self.currentState == MITMobiusRootViewControllerStateSearch) {
         UIEdgeInsets contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame), 0, 0, 0);
         self.typeAheadViewController.tableView.contentInset = contentInset;
     }
@@ -230,7 +230,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     if (_mapFullScreen != mapFullScreen) {
         _mapFullScreen = mapFullScreen;
 
-        NSTimeInterval duration = (animated ? MITMartyRootPhoneDefaultAnimationDuration : 0);
+        NSTimeInterval duration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0);
         if (_mapFullScreen) {
             [UIView animateWithDuration:duration
                                   delay:0
@@ -337,41 +337,41 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 #pragma mark - Private
 #pragma mark State Management
-- (BOOL)_canTransitionToState:(MITMartyRootViewControllerState)newState
+- (BOOL)_canTransitionToState:(MITMobiusRootViewControllerState)newState
 {
     if (self.currentState == newState) {
         return YES;
     }
     
     switch (self.currentState) {
-        case MITMartyRootViewControllerStateInitial: {
-            return (newState == MITMartyRootViewControllerStateSearch);
+        case MITMobiusRootViewControllerStateInitial: {
+            return (newState == MITMobiusRootViewControllerStateSearch);
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
-            return ((newState == MITMartyRootViewControllerStateInitial) ||
-                    (newState == MITMartyRootViewControllerStateNoResults) ||
-                    (newState == MITMartyRootViewControllerStateResults));
+        case MITMobiusRootViewControllerStateSearch: {
+            return ((newState == MITMobiusRootViewControllerStateInitial) ||
+                    (newState == MITMobiusRootViewControllerStateNoResults) ||
+                    (newState == MITMobiusRootViewControllerStateResults));
         } break;
             
-        case MITMartyRootViewControllerStateNoResults: {
-            return (newState == MITMartyRootViewControllerStateSearch);
+        case MITMobiusRootViewControllerStateNoResults: {
+            return (newState == MITMobiusRootViewControllerStateSearch);
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
-            return (newState == MITMartyRootViewControllerStateSearch);
+        case MITMobiusRootViewControllerStateResults: {
+            return (newState == MITMobiusRootViewControllerStateSearch);
         } break;
     }
 }
 
-- (void)_transitionToState:(MITMartyRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
+- (void)_transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
 {
     NSAssert([self _canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
         return;
     }
     
-    MITMartyRootViewControllerState oldState = self.currentState;
+    MITMobiusRootViewControllerState oldState = self.currentState;
     
     [self _willTransitionToState:newState fromState:oldState];
     self.currentState = newState;
@@ -379,7 +379,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     [self.view setNeedsUpdateConstraints];
     [self.view setNeedsLayout];
     
-    NSTimeInterval animationDuration = (animate ? MITMartyRootPhoneDefaultAnimationDuration : 0);
+    NSTimeInterval animationDuration = (animate ? MITMobiusRootPhoneDefaultAnimationDuration : 0);
     [UIView animateWithDuration:animationDuration
                           delay:0
                         options:0
@@ -395,21 +395,21 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                      }];
 }
 
-- (void)_willTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState
+- (void)_willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (newState) {
-        case MITMartyRootViewControllerStateNoResults:
-        case MITMartyRootViewControllerStateInitial: {
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateInitial: {
             self.helpTextView.hidden = NO;
             self.helpTextView.alpha = 0.;
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
+        case MITMobiusRootViewControllerStateSearch: {
             self.typeAheadViewController.view.hidden = NO;
             self.typeAheadViewController.view.alpha = 0.;
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
+        case MITMobiusRootViewControllerStateResults: {
             self.contentContainerView.hidden = NO;
             self.contentContainerView.alpha = 0;
             [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
@@ -417,18 +417,18 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
     
     switch (oldState) {
-        case MITMartyRootViewControllerStateNoResults:
-        case MITMartyRootViewControllerStateInitial: {
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateInitial: {
             self.helpTextView.hidden = NO;
             self.helpTextView.alpha = 1;
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
+        case MITMobiusRootViewControllerStateSearch: {
             self.typeAheadViewController.view.hidden = NO;
             self.typeAheadViewController.view.alpha = 1.;
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
+        case MITMobiusRootViewControllerStateResults: {
             self.contentContainerView.hidden = NO;
             self.contentContainerView.alpha = 1;
             [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
@@ -436,21 +436,21 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 }
 
-- (void)_animateTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState animated:(BOOL)animated
+- (void)_animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
 {
     switch (newState) {
-        case MITMartyRootViewControllerStateNoResults:
-        case MITMartyRootViewControllerStateInitial: {
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateInitial: {
             self.helpTextView.alpha = 1;
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
+        case MITMobiusRootViewControllerStateSearch: {
             self.typeAheadViewController.view.alpha = 1;
             [self.navigationItem setLeftBarButtonItem:nil animated:animated];
             [self.searchBar setShowsCancelButton:YES animated:animated];
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
+        case MITMobiusRootViewControllerStateResults: {
             self.contentContainerView.alpha = 1;
             
             if (self.isMapFullScreen) {
@@ -462,37 +462,37 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
     
     switch (oldState) {
-        case MITMartyRootViewControllerStateNoResults:
-        case MITMartyRootViewControllerStateInitial: {
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateInitial: {
             self.helpTextView.alpha = 0;
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
+        case MITMobiusRootViewControllerStateSearch: {
             self.typeAheadViewController.view.alpha = 0;
             [self.searchBar setShowsCancelButton:NO animated:animated];
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
+        case MITMobiusRootViewControllerStateResults: {
             self.contentContainerView.alpha = 0;
             [self.navigationController setToolbarHidden:YES animated:animated];
         } break;
     }
 }
 
-- (void)_didTransitionToState:(MITMartyRootViewControllerState)newState fromState:(MITMartyRootViewControllerState)oldState
+- (void)_didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (oldState) {
-        case MITMartyRootViewControllerStateNoResults:
-        case MITMartyRootViewControllerStateInitial: {
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateInitial: {
             self.helpTextView.hidden = YES;
         } break;
             
-        case MITMartyRootViewControllerStateSearch: {
+        case MITMobiusRootViewControllerStateSearch: {
             [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
             self.typeAheadViewController.view.hidden = YES;
         } break;
             
-        case MITMartyRootViewControllerStateResults: {
+        case MITMobiusRootViewControllerStateResults: {
             self.contentContainerView.hidden = YES;
         } break;
     }
@@ -505,7 +505,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
 {
-    if (self.currentState != MITMartyRootViewControllerStateResults) {
+    if (self.currentState != MITMobiusRootViewControllerStateResults) {
         return;
     }
     
@@ -515,7 +515,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (IBAction)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer == self.fullScreenMapGesture) {
-        if (self.currentState != MITMartyRootViewControllerStateResults) {
+        if (self.currentState != MITMobiusRootViewControllerStateResults) {
             return;
         }
         
@@ -567,7 +567,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
         searchBar = [[UISearchBar alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.view.bounds), 44)];
         searchBar.searchBarStyle = UISearchBarStyleMinimal;
         searchBar.autoresizingMask = UIViewAutoresizingFlexibleWidth;
-        searchBar.placeholder = @"Search Marty";
+        searchBar.placeholder = @"Search Mobius";
         searchBar.delegate = self;
 
         _searchBar = searchBar;
@@ -577,14 +577,14 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 }
 
 #pragma mark - Delegation
-#pragma mark MITMartyRecentSearchControllerDelegate
+#pragma mark MITMobiusRecentSearchControllerDelegate
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector>*)viewController didSelectQuery:(NSString*)query
 {
     self.searchBar.text = query;
     [self.searchBar resignFirstResponder];
 }
 
-#pragma mark MITMartyResourcesTableViewControllerDelegate
+#pragma mark MITMobiusResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] init];
@@ -624,7 +624,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.searching = YES;
-    [self _transitionToState:MITMartyRootViewControllerStateSearch animated:YES completion:nil];
+    [self _transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -638,10 +638,10 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
             [self.typeAheadViewController addRecentSearchItem:queryString];
             
             [self reloadDataSourceForSearch:queryString completion:^{
-                MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateNoResults;
+                MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
                 
                 if ([self.dataSource.resources count]) {
-                    newState = MITMartyRootViewControllerStateResults;
+                    newState = MITMobiusRootViewControllerStateResults;
                     self.mapFullScreen = NO;
                 }
                 
@@ -651,15 +651,15 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                 }];
             }];
         } else {
-            MITMartyRootViewControllerState newState = MITMartyRootViewControllerStateNoResults;
+            MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
             if ([self.dataSource.resources count]) {
-                newState = MITMartyRootViewControllerStateResults;
+                newState = MITMobiusRootViewControllerStateResults;
             }
             
             [self _transitionToState:newState animated:YES completion:nil];
         }
     } else {
-        [self _transitionToState:MITMartyRootViewControllerStateNoResults animated:YES completion:nil];
+        [self _transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
     }
 }
 

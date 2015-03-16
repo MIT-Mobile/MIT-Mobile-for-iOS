@@ -2,9 +2,9 @@
 
 @implementation MITMobiusModule
 - (instancetype)init {
-    self = [super initWithName:MITModuleTagMarty title:@"Mobius"];
+    self = [super initWithName:MITModuleTagMobius title:@"Mobius"];
     if (self) {
-        self.imageName = MITImageMartyModuleIcon;
+        self.imageName = MITImageMobiusModuleIcon;
     }
     return self;
 }

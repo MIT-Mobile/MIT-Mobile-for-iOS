@@ -9,14 +9,14 @@
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
-static NSString * const MITMartyDetailCellIdentifier = @"MITMartyDetailCellIdentifier";
-static NSString * const MITMartySpecificationsHeaderIdentifier = @"MITMartySpecificationsHeaderIdentifier";
+static NSString * const MITMobiusDetailCellIdentifier = @"MITMobiusDetailCellIdentifier";
+static NSString * const MITMobiusSpecificationsHeaderIdentifier = @"MITMobiusSpecificationsHeaderIdentifier";
 
-typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
-    MITMartyTableViewSectionDetail,
-    MITMartyTableViewSectionLocation,
-    MITMartyTableViewSectionFakeHours,
-    MITMartyTableViewSectionSpecificatons
+typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
+    MITMobiusTableViewSectionDetail,
+    MITMobiusTableViewSectionLocation,
+    MITMobiusTableViewSectionFakeHours,
+    MITMobiusTableViewSectionSpecificatons
     
 };
 
@@ -88,9 +88,9 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     
     [tableView registerNib:[MITTitleDescriptionCell titleDescriptionCellNib] forDynamicCellReuseIdentifier:MITTitleDescriptionCellIdentifier];
     
-    [tableView registerNib:[MITMobiusDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMartyDetailCellIdentifier];
+    [tableView registerNib:[MITMobiusDetailCell detailCellNib] forDynamicCellReuseIdentifier:MITMobiusDetailCellIdentifier];
     
-    [tableView registerNib:[MITMobiusSpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMartySpecificationsHeaderIdentifier];
+    [tableView registerNib:[MITMobiusSpecificationsHeader titleHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusSpecificationsHeaderIdentifier];
 
     tableView.tableFooterView = [UIView new];
     
@@ -132,12 +132,12 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    if (section == MITMartyTableViewSectionDetail ||
-        section == MITMartyTableViewSectionLocation) {
+    if (section == MITMobiusTableViewSectionDetail ||
+        section == MITMobiusTableViewSectionLocation) {
         return 1;
-    } else if (section == MITMartyTableViewSectionSpecificatons) {
+    } else if (section == MITMobiusTableViewSectionSpecificatons) {
         return [self.titles count];
-    } else if (section == MITMartyTableViewSectionFakeHours) {
+    } else if (section == MITMobiusTableViewSectionFakeHours) {
         return 2;
     }
     return 0;
@@ -173,13 +173,13 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
         MITActionCell *actionCell = (MITActionCell*)cell;
         [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:self.resource.room];
 
-    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMartyTableViewSectionSpecificatons) {
+    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMobiusTableViewSectionSpecificatons) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
 
         NSString *title = self.titles[indexPath.row];
         NSString *description = self.descriptions[indexPath.row];
         [titleDescriptionCell setTitle:title withDescription:description];
-    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMartyTableViewSectionFakeHours) {
+    } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMobiusTableViewSectionFakeHours) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
         
         
@@ -195,13 +195,13 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 #pragma mark UITableView Data Source/Delegate Helper Methods
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (indexPath.section == MITMartyTableViewSectionDetail) {
-        return MITMartyDetailCellIdentifier;
-    } else if (indexPath.section == MITMartyTableViewSectionLocation) {
+    if (indexPath.section == MITMobiusTableViewSectionDetail) {
+        return MITMobiusDetailCellIdentifier;
+    } else if (indexPath.section == MITMobiusTableViewSectionLocation) {
         return MITActionCellIdentifier;
-    } else if (indexPath.section == MITMartyTableViewSectionFakeHours) {
+    } else if (indexPath.section == MITMobiusTableViewSectionFakeHours) {
         return MITTitleDescriptionCellIdentifier;;
-    } else if (indexPath.section == MITMartyTableViewSectionSpecificatons) {
+    } else if (indexPath.section == MITMobiusTableViewSectionSpecificatons) {
         return MITTitleDescriptionCellIdentifier;
     }
     
@@ -210,8 +210,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 
 - (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
 {
-    if (section == MITMartyTableViewSectionSpecificatons) {
-        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+    if (section == MITMobiusTableViewSectionSpecificatons) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSpecificationsHeaderIdentifier];
         
         if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
             MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
@@ -219,8 +219,8 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
         }
         return headerView;
         
-    } else if (section == MITMartyTableViewSectionFakeHours) {
-        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+    } else if (section == MITMobiusTableViewSectionFakeHours) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSpecificationsHeaderIdentifier];
         
         if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
             MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
@@ -234,12 +234,12 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
 {
-    if (section == MITMartyTableViewSectionSpecificatons || section == MITMartyTableViewSectionFakeHours) {
-        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMartySpecificationsHeaderIdentifier];
+    if (section == MITMobiusTableViewSectionSpecificatons || section == MITMobiusTableViewSectionFakeHours) {
+        UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSpecificationsHeaderIdentifier];
         
         if ([headerView isKindOfClass:[MITMobiusSpecificationsHeader class]]) {
             MITMobiusSpecificationsHeader *specificationsHeaderView = (MITMobiusSpecificationsHeader*)headerView;
-            if (section == MITMartyTableViewSectionFakeHours) {
+            if (section == MITMobiusTableViewSectionFakeHours) {
                 specificationsHeaderView.titleLabel.text = @"Specifications";
             } else {
                 specificationsHeaderView.titleLabel.text = @"Fake";
