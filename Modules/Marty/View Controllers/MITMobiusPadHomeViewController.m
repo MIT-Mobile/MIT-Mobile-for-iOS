@@ -6,13 +6,13 @@
 
 #import "MITMobiusResourceDataSource.H"
 #import "MITMobiusResource.h"
-#import "MITMartyResourcesTableViewController.h"
+#import "MITMobiusResourcesTableViewController.h"
 #import "MITCoreDataController.h"
 #import "MITMartyRecentSearchController.h"
 
 #import "MITMobiusMapViewController.h"
 
-@interface MITMobiusPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMobiusPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMobiusResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
@@ -36,7 +36,7 @@
 
 @property (nonatomic, strong) MITMobiusResourceDataSource *dataSource;
 
-@property (nonatomic, strong) MITMartyResourcesTableViewController *resourcesTableViewController;
+@property (nonatomic, strong) MITMobiusResourcesTableViewController *resourcesTableViewController;
 @property (nonatomic, strong) MITMobiusMapViewController *mapViewController;
 
 @end
@@ -417,10 +417,10 @@
                                      animated:YES];
 }
 
-- (MITMartyResourcesTableViewController *)resourcesTableViewController
+- (MITMobiusResourcesTableViewController *)resourcesTableViewController
 {
     if (!_resourcesTableViewController) {
-        MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+        MITMobiusResourcesTableViewController *resourcesTableViewController = [[MITMobiusResourcesTableViewController alloc] init];
         resourcesTableViewController.delegate = self;
         
         resourcesTableViewController.view.frame = CGRectMake(0., 0, 320., self.view.bounds.size.height);
@@ -544,7 +544,7 @@
 
 #pragma mark - MITMartyResourcesTableViewControllerDelegate
 
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
+- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     [self.mapViewController showCalloutForResource:resource];
 }

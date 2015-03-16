@@ -1,7 +1,7 @@
 #import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusResourceDataSource.h"
 #import "MITMartyModel.h"
-#import "MITMartyResourcesTableViewController.h"
+#import "MITMobiusResourcesTableViewController.h"
 #import "MITMobiusDetailTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     MITMartyRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 @property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
-@property(nonatomic,weak) MITMartyResourcesTableViewController *resourcesTableViewController;
+@property(nonatomic,weak) MITMobiusResourcesTableViewController *resourcesTableViewController;
 @property(nonatomic,weak) MITMobiusMapViewController *mapViewController;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
@@ -272,13 +272,13 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 #pragma mark resourcesTableViewController
 - (void)loadResourcesTableViewController
 {
-    MITMartyResourcesTableViewController *resourcesTableViewController = [[MITMartyResourcesTableViewController alloc] init];
+    MITMobiusResourcesTableViewController *resourcesTableViewController = [[MITMobiusResourcesTableViewController alloc] init];
     resourcesTableViewController.delegate = self;
     [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
     _resourcesTableViewController = resourcesTableViewController;
 }
 
-- (MITMartyResourcesTableViewController*)resourcesTableViewController
+- (MITMobiusResourcesTableViewController*)resourcesTableViewController
 {
     if (!_resourcesTableViewController) {
         [self loadResourcesTableViewController];
@@ -585,19 +585,19 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 }
 
 #pragma mark MITMartyResourcesTableViewControllerDelegate
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
+- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] init];
     detailViewController.resource = resource;
     [self.navigationController pushViewController:detailViewController animated:YES];
 }
 
-- (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController*)tableViewController
+- (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMobiusResourcesTableViewController*)tableViewController
 {
     return YES;
 }
 
-- (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
+- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
 {
     if (contentOffset.y > 0) {
         CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -contentOffset.y);
@@ -615,7 +615,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     [self.view updateConstraintsIfNeeded];
 }
 
-- (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController
+- (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController
 {
     return CGRectGetHeight(self.mapViewContainer.bounds);
 }

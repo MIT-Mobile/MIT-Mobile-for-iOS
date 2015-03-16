@@ -1,4 +1,4 @@
-#import "MITMartyResourcesTableViewController.h"
+#import "MITMobiusResourcesTableViewController.h"
 #import "MITMartyModel.h"
 #import "MITMobiusResourceTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
@@ -6,14 +6,14 @@
 
 NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 
-@interface MITMartyResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
+@interface MITMobiusResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
 
 @property(nonatomic,readonly,strong) NSArray *buildingSections;
 @property(nonatomic,readonly,strong) NSDictionary *resourcesByBuilding;
 @end
 
-@implementation MITMartyResourcesTableViewController
+@implementation MITMobiusResourcesTableViewController
 @synthesize resourcesByBuilding = _resourcesByBuilding;
 @synthesize buildingSections = _buildingSections;
 
