@@ -8,7 +8,6 @@
 @property(nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
 
-- (void)addRecentSearchItem:(NSString *)searchTerm;
 - (void)filterResultsUsingString:(NSString *)filterString;
 
 @end

@@ -6,9 +6,9 @@
 @interface MITMobiusRecentSearchController () <UIActionSheetDelegate>
 @property (nonatomic,strong) MITMobiusResourceDataSource *modelController;
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
-@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 @property (nonatomic,copy) NSString *filterString;
 @property (nonatomic,copy) NSArray *recentResults;
+@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 
 @end
 
@@ -84,17 +84,15 @@
     self.confirmSheet = actionSheet;
 }
 
-- (void)addRecentSearchItem:(NSString *)searchTerm
-{
-    [self.modelController addRecentSearchItem:searchTerm error:nil];
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-    self.clearButtonItem.enabled = YES;
-    [self.tableView reloadData];
-}
-
 - (void)filterResultsUsingString:(NSString *)filterString
 {
     self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
+    
+    NSInteger numberOfRecentResults = [self.modelController numberOfRecentSearchItemsWithFilterString:filterString];
+    
+    if (numberOfRecentResults > 0) {
+        self.clearButtonItem.enabled = YES;
+    }
     self.filterString = filterString;
     [self.tableView reloadData];
 }
@@ -110,8 +108,7 @@
 
 - (void)clearRecents
 {
-    NSError *error = nil;
-    [self.modelController clearRecentSearchesWithError:error];
+    [self.modelController clearRecentSearches];
     self.recentResults = nil;
     [[NSOperationQueue mainQueue] addOperationWithBlock:^{
         [self.tableView reloadData];

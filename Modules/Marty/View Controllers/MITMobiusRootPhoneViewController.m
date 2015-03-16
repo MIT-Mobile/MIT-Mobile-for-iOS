@@ -635,8 +635,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         NSString *queryString = [[searchBar.text lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
         if ([queryString caseInsensitiveCompare:self.dataSource.queryString] != NSOrderedSame) {
             
-            [self.typeAheadViewController addRecentSearchItem:queryString];
-            
             [self reloadDataSourceForSearch:queryString completion:^{
                 MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
                 
