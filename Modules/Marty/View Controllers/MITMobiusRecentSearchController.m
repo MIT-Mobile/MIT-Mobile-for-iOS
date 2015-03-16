@@ -1,9 +1,9 @@
-#import "MITMartyRecentSearchController.h"
+#import "MITMobiusRecentSearchController.h"
 #import "MITMobiusResourceDataSource.h"
 #import "MITNewsRecentSearchQuery.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITMartyRecentSearchController () <UIActionSheetDelegate>
+@interface MITMobiusRecentSearchController () <UIActionSheetDelegate>
 @property (nonatomic,strong) MITMobiusResourceDataSource *modelController;
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
 @property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
@@ -12,7 +12,7 @@
 
 @end
 
-@implementation MITMartyRecentSearchController
+@implementation MITMobiusRecentSearchController
 
 #pragma mark - properties
 - (MITMobiusResourceDataSource *)modelController

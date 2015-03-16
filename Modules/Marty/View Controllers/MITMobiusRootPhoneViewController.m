@@ -7,7 +7,7 @@
 #import "MITCalloutMapView.h"
 
 #import "MITMobiusMapViewController.h"
-#import "MITMartyRecentSearchController.h"
+#import "MITMobiusRecentSearchController.h"
 #import "MITMapPlaceSelector.h"
 
 #import "DDLog.h"
@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 @property(nonatomic,weak) MITMobiusMapViewController *mapViewController;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
-@property(nonatomic,weak) MITMartyRecentSearchController *typeAheadViewController;
+@property(nonatomic,weak) MITMobiusRecentSearchController *typeAheadViewController;
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
 @property(nonatomic,getter=isSearching) BOOL searching;
@@ -319,7 +319,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 - (void)loadTypeAheadViewController
 {
-    MITMartyRecentSearchController *typeAheadViewController = [[MITMartyRecentSearchController alloc] init];
+    MITMobiusRecentSearchController *typeAheadViewController = [[MITMobiusRecentSearchController alloc] init];
     typeAheadViewController.delegate = self;
     [self _addChildViewController:typeAheadViewController toView:self.view];
     _typeAheadViewController = typeAheadViewController;

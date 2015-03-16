@@ -8,7 +8,7 @@
 #import "MITMobiusResource.h"
 #import "MITMobiusResourcesTableViewController.h"
 #import "MITCoreDataController.h"
-#import "MITMartyRecentSearchController.h"
+#import "MITMobiusRecentSearchController.h"
 
 #import "MITMobiusMapViewController.h"
 
@@ -19,7 +19,7 @@
 
 @property (nonatomic,getter=isSearching) BOOL searching;
 
-@property (nonatomic, strong) MITMartyRecentSearchController *searchViewController;
+@property (nonatomic, strong) MITMobiusRecentSearchController *searchViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 
 @property (nonatomic, strong) UISearchBar *searchBar;
@@ -187,7 +187,7 @@
 - (void)setupRecentSearchTableView
 {
     if (!self.searchViewController) {
-        self.searchViewController = [[MITMartyRecentSearchController alloc] initWithStyle:UITableViewStylePlain];
+        self.searchViewController = [[MITMobiusRecentSearchController alloc] initWithStyle:UITableViewStylePlain];
         self.searchViewController.delegate = self;
         
         if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {

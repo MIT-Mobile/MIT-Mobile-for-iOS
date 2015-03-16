@@ -4,7 +4,7 @@
 @class MITMapPlace;
 @class MITMapCategory;
 
-@interface MITMartyRecentSearchController : UITableViewController <MITMapPlaceSelector>
+@interface MITMobiusRecentSearchController : UITableViewController <MITMapPlaceSelector>
 @property(nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
 
