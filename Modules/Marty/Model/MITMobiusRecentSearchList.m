@@ -1,5 +1,5 @@
 #import "MITMobiusRecentSearchList.h"
-#import "MITMartyRecentSearchQuery.h"
+#import "MITMobiusRecentSearchQuery.h"
 
 @implementation MITMobiusRecentSearchList
 

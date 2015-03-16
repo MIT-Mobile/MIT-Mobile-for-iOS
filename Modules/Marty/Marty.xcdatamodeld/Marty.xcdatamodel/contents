@@ -15,9 +15,9 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
     <entity name="MartyRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
-        <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMartyRecentSearchQuery" syncable="YES"/>
+        <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMobiusRecentSearchQuery" syncable="YES"/>
     </entity>
-    <entity name="MITMartyRecentSearchQuery" representedClassName="MITMartyRecentSearchQuery" syncable="YES">
+    <entity name="MITMobiusRecentSearchQuery" representedClassName="MITMobiusRecentSearchQuery" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
@@ -80,7 +80,7 @@
         <element name="Category" positionX="0" positionY="0" width="0" height="0"/>
         <element name="MartyObject" positionX="0" positionY="0" width="0" height="0"/>
         <element name="MartyRecentSearchList" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MITMartyRecentSearchQuery" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="MITMobiusRecentSearchQuery" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Resource" positionX="0" positionY="0" width="0" height="0"/>
         <element name="ResourceAttribute" positionX="0" positionY="0" width="0" height="0"/>
         <element name="ResourceAttributeValue" positionX="0" positionY="0" width="0" height="0"/>

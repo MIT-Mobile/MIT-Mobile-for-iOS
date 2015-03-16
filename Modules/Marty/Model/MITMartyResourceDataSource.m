@@ -8,7 +8,7 @@
 #import "MITMobiusResource.h"
 
 #import "MITMobiusRecentSearchList.h"
-#import "MITMartyRecentSearchQuery.h"
+#import "MITMobiusRecentSearchQuery.h"
 
 static NSString* const MITMartyDefaultServer = @"https://kairos-dev.mit.edu";
 static NSString* const MITMartyResourcePathPattern = @"resource";
@@ -178,18 +178,18 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
         MITMobiusRecentSearchList *recentSearchList = [self recentSearchListWithManagedObjectContext:context];
         NSArray *recentSearchItems = [recentSearchList.recentQueries array];
         
-        __block MITMartyRecentSearchQuery *searchItem = nil;
+        __block MITMobiusRecentSearchQuery *searchItem = nil;
         NSPredicate *predicate = [NSPredicate predicateWithFormat:@"text =[c] %@", searchTerm];
         [recentSearchItems enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             BOOL objectMatches = [predicate evaluateWithObject:obj];
             if (objectMatches) {
                 (*stop) = YES;
-                searchItem = (MITMartyRecentSearchQuery*)obj;
+                searchItem = (MITMobiusRecentSearchQuery*)obj;
             }
         }];
         
         if (!searchItem) {
-            searchItem = [[MITMartyRecentSearchQuery alloc] initWithEntity:[MITMartyRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
+            searchItem = [[MITMobiusRecentSearchQuery alloc] initWithEntity:[MITMobiusRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
             searchItem.text = searchTerm;
             [recentSearchList addRecentQueriesObject:searchItem];
         }

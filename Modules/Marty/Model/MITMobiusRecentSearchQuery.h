@@ -2,7 +2,7 @@
 #import <CoreData/CoreData.h>
 #import "MITManagedObject.h"
 
-@interface MITMartyRecentSearchQuery : MITManagedObject
+@interface MITMobiusRecentSearchQuery : MITManagedObject
 
 @property (nonatomic, retain) NSDate * date;
 @property (nonatomic, retain) NSString * text;
