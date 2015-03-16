@@ -1,4 +1,4 @@
-#import "MITMartyPadHomeViewController.h"
+#import "MITMobiusPadHomeViewController.h"
 #import "MITMobiusResourceDataSource.h"
 #import "CoreData+MITAdditions.h"
 #import "UIKit+MITAdditions.h"
@@ -12,7 +12,7 @@
 
 #import "MITMobiusMapViewController.h"
 
-@interface MITMartyPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
+@interface MITMobiusPadHomeViewController () <UISearchBarDelegate, UIPopoverControllerDelegate, MITMartyResourcesTableViewControllerDelegate, MITMapPlaceSelectionDelegate>
 
 @property (nonatomic, strong) UIBarButtonItem *menuBarButton;
 @property (nonatomic, strong) UIButton *listViewToggleButton;
@@ -41,7 +41,7 @@
 
 @end
 
-@implementation MITMartyPadHomeViewController
+@implementation MITMobiusPadHomeViewController
 
 #pragma mark - properties
 - (MITMobiusMapViewController *)mapViewController
