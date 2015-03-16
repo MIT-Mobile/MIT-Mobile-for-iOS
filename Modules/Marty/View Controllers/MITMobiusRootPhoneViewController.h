@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 
-@interface MITMartyRootPhoneViewController : UIViewController
+@interface MITMobiusRootPhoneViewController : UIViewController
 @property(nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
 @property(nonatomic,weak) IBOutlet UIView *helpTextView;

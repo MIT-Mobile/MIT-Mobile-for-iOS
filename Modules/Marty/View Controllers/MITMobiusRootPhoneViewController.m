@@ -1,4 +1,4 @@
-#import "MITMartyRootPhoneViewController.h"
+#import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusResourceDataSource.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourcesTableViewController.h"
@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     MITMartyRootViewControllerStateResults,
 };
 
-@interface MITMartyRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMartyResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -51,7 +51,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 
 @end
 
-@implementation MITMartyRootPhoneViewController {
+@implementation MITMobiusRootPhoneViewController {
     CGFloat _mapVerticalOffset;
     CGAffineTransform _previousMapTransform;
 }
