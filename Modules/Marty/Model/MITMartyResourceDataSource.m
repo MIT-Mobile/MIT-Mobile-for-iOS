@@ -164,8 +164,14 @@ static NSString* const MITMartyResourcePathPattern = @"resource";
     }
     
     NSInteger numberOfRecentSearchItems = [[MITCoreDataController defaultController].mainQueueContext countForFetchRequest:fetchRequest error:nil];
-    
-    return numberOfRecentSearchItems;
+
+    // Don't propogate the error up if things go south.
+    // Just catch the bad count and return a 0.
+    if (numberOfRecentSearchItems == NSNotFound) {
+        return 0;
+    } else {
+        return numberOfRecentSearchItems;
+    }
 }
 
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString
