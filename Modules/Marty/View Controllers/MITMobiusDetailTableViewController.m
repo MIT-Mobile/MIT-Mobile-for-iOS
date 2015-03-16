@@ -1,4 +1,4 @@
-#import "MITMartyDetailTableViewController.h"
+#import "MITMobiusDetailTableViewController.h"
 #import "MITActionCell.h"
 #import "MITMobiusDetailCell.h"
 #import "UITableView+DynamicSizing.h"
@@ -20,7 +20,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
     
 };
 
-@interface MITMartyDetailTableViewController() <UITableViewDataSourceDynamicSizing>
+@interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing>
 
 //Temporary fix for remove blank description rows
 @property(nonatomic,strong) NSMutableArray *titles;
@@ -29,7 +29,7 @@ typedef NS_ENUM(NSInteger, MITMartyTableViewSection) {
 
 @end
 
-@implementation MITMartyDetailTableViewController
+@implementation MITMobiusDetailTableViewController
 @synthesize managedObjectContext = _managedObjectContext;
 
 - (instancetype)init

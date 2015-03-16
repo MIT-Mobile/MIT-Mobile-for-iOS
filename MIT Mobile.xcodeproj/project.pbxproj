@@ -29,7 +29,7 @@
 		0B7602621A3A236B0061AC3B /* MITNewsGridHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B76025D1A3A236B0061AC3B /* MITNewsGridHeaderView.m */; };
 		0B7602631A3A236B0061AC3B /* MITNewsLoadMoreCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B76025F1A3A236B0061AC3B /* MITNewsLoadMoreCollectionViewCell.m */; };
 		0B7602641A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B7602611A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.m */; };
-		0B882A1E1A7AF17400E80E3A /* MITMartyDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B882A1D1A7AF17400E80E3A /* MITMartyDetailTableViewController.m */; };
+		0B882A1E1A7AF17400E80E3A /* MITMobiusDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B882A1D1A7AF17400E80E3A /* MITMobiusDetailTableViewController.m */; };
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0BB58EC31A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EC01A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m */; };
 		0BB58EF41A8128C900AA1CB7 /* MITMobiusDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EEF1A8128C900AA1CB7 /* MITMobiusDetailCell.m */; };
@@ -755,8 +755,8 @@
 		0B76025F1A3A236B0061AC3B /* MITNewsLoadMoreCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsLoadMoreCollectionViewCell.m; path = "Modules/News/Views/Collection View Cells/MITNewsLoadMoreCollectionViewCell.m"; sourceTree = SOURCE_ROOT; };
 		0B7602601A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITNewsStoryCollectionViewCell.h; path = "Modules/News/Views/Collection View Cells/MITNewsStoryCollectionViewCell.h"; sourceTree = SOURCE_ROOT; };
 		0B7602611A3A236B0061AC3B /* MITNewsStoryCollectionViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITNewsStoryCollectionViewCell.m; path = "Modules/News/Views/Collection View Cells/MITNewsStoryCollectionViewCell.m"; sourceTree = SOURCE_ROOT; };
-		0B882A1C1A7AF17400E80E3A /* MITMartyDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyDetailTableViewController.h; path = "View Controllers/MITMartyDetailTableViewController.h"; sourceTree = "<group>"; };
-		0B882A1D1A7AF17400E80E3A /* MITMartyDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyDetailTableViewController.m; path = "View Controllers/MITMartyDetailTableViewController.m"; sourceTree = "<group>"; };
+		0B882A1C1A7AF17400E80E3A /* MITMobiusDetailTableViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusDetailTableViewController.h; path = "View Controllers/MITMobiusDetailTableViewController.h"; sourceTree = "<group>"; };
+		0B882A1D1A7AF17400E80E3A /* MITMobiusDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusDetailTableViewController.m; path = "View Controllers/MITMobiusDetailTableViewController.m"; sourceTree = "<group>"; };
 		0B91DAA11959B2D000E72D83 /* ThumbnailPickerView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ThumbnailPickerView.h; sourceTree = "<group>"; };
 		0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ThumbnailPickerView.m; sourceTree = "<group>"; };
 		0BB58EBF1A8014E000AA1CB7 /* MITMobiusPadHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusPadHomeViewController.h; path = "View Controllers/MITMobiusPadHomeViewController.h"; sourceTree = "<group>"; };
@@ -3224,8 +3224,8 @@
 				0B22CAC21A952D9500A171A4 /* MITMobiusMapViewController.xib */,
 				0BB58EBF1A8014E000AA1CB7 /* MITMobiusPadHomeViewController.h */,
 				0BB58EC01A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m */,
-				0B882A1C1A7AF17400E80E3A /* MITMartyDetailTableViewController.h */,
-				0B882A1D1A7AF17400E80E3A /* MITMartyDetailTableViewController.m */,
+				0B882A1C1A7AF17400E80E3A /* MITMobiusDetailTableViewController.h */,
+				0B882A1D1A7AF17400E80E3A /* MITMobiusDetailTableViewController.m */,
 				2C64A1E51A7FC1EC00020AFB /* MITMartyResourcesTableViewController.h */,
 				2C64A1E61A7FC1ED00020AFB /* MITMartyResourcesTableViewController.m */,
 				0BB58F381A816AED00AA1CB7 /* MITMartyRecentSearchController.h */,
@@ -5281,7 +5281,7 @@
 				228F26B419D4B6A20049F1B7 /* MITLibrariesMITLoanItem.m in Sources */,
 				AFB09B001A07CF2600C6D337 /* MITToursStopDetailViewController.m in Sources */,
 				A5FA038F19D362FE0063FF2C /* MITLibrariesSearchResultsListViewController.m in Sources */,
-				0B882A1E1A7AF17400E80E3A /* MITMartyDetailTableViewController.m in Sources */,
+				0B882A1E1A7AF17400E80E3A /* MITMobiusDetailTableViewController.m in Sources */,
 				A5455E3A19CB64D7005E762C /* MITShuttleStopAlarmCell.m in Sources */,
 				806205E11A7ACEC1004BD08A /* MITLibrariesResource.m in Sources */,
 				A5455E3819CB64AB005E762C /* MITShuttleRootViewController.m in Sources */,

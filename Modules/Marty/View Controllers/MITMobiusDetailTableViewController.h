@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITMobiusResource.h"
 
-@interface MITMartyDetailTableViewController : UITableViewController
+@interface MITMobiusDetailTableViewController : UITableViewController
 
 @property (nonatomic, weak) MITMobiusResource *resource;
 

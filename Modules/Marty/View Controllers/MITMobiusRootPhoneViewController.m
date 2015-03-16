@@ -2,7 +2,7 @@
 #import "MITMobiusResourceDataSource.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourcesTableViewController.h"
-#import "MITMartyDetailTableViewController.h"
+#import "MITMobiusDetailTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
 
@@ -587,7 +587,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 #pragma mark MITMartyResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
-    MITMartyDetailTableViewController *detailViewController = [[MITMartyDetailTableViewController alloc] init];
+    MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] init];
     detailViewController.resource = resource;
     [self.navigationController pushViewController:detailViewController animated:YES];
 }

@@ -5,7 +5,7 @@
 #import "MITMapBrowseContainerViewController.h"
 #import "MITMapPlaceSelector.h"
 #import "MITLocationManager.h"
-#import "MITMartyDetailTableViewController.h"
+#import "MITMobiusDetailTableViewController.h"
 #import "MITMobiusCalloutContentView.h"
 #import "MITMartyModel.h"
 #import "MITMobiusResourceView.h"
@@ -243,7 +243,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMobiusResource *resource = (MITMobiusResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
+    MITMobiusDetailTableViewController *detailVC = [[MITMobiusDetailTableViewController alloc] init];
     detailVC.resource = resource;
     
     detailVC.view.frame = CGRectMake(0, 0, 320, 500);
@@ -296,7 +296,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)pushDetailViewControllerForResource:(MITMobiusResource *)resource
 {
-    MITMartyDetailTableViewController *detailVC = [[MITMartyDetailTableViewController alloc] init];
+    MITMobiusDetailTableViewController *detailVC = [[MITMobiusDetailTableViewController alloc] init];
     detailVC.resource = resource;
     [self.navigationController pushViewController:detailVC animated:YES];
 }
