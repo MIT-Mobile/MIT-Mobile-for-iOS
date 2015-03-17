@@ -156,7 +156,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 #pragma mark - Recent Search Items
 - (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString
 {
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMartyRecentSearchQuery entityName]];
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
     fetchRequest.resultType = NSCountResultType;
     
     if ([filterString length]) {
