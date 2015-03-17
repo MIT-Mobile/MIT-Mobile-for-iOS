@@ -1,12 +1,17 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import <MapKit/MapKit.h>
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
 @class MITMartyResource;
 
-@interface MartyMapObject : NSManagedObject
+@interface MartyMapObject : MITManagedObject <MKAnnotation>
 
-@property (nonatomic, retain) NSString * buildingName;
+@property (nonatomic, retain) NSString *roomName;
 @property (nonatomic, retain) NSOrderedSet *resources;
+@property (nonatomic, retain) NSNumber *latitude;
+@property (nonatomic, retain) NSNumber *longitude;
 @end
 
 @interface MartyMapObject (CoreDataGeneratedAccessors)

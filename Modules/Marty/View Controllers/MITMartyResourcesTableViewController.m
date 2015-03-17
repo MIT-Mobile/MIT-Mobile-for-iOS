@@ -185,7 +185,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     }
 
     NSString *buildingNumber = self.buildingSections[section];
-    return [NSString stringWithFormat:@"Building %@", buildingNumber];
+    return [NSString stringWithFormat:@"Room %@", buildingNumber];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -225,8 +225,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
         MITMartyResourceTableViewCell *resourceCell = (MITMartyResourceTableViewCell*)cell;
         MITMartyResource *resource = [self _representedObjectForIndexPath:indexPath];
 
-        NSInteger baseIndexForSection = [self _baseIndexForSection:indexPath.section];
-        resourceCell.resourceView.index = baseIndexForSection + indexPath.row;
+        resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
         resourceCell.resourceView.location = resource.room;
         [resourceCell.resourceView setStatus:MITMartyResourceStatusOnline withText:resource.status];

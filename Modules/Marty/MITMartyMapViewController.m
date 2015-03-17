@@ -9,6 +9,7 @@
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourceView.h"
+#import "MartyMapObject.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -18,11 +19,17 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
-@property (nonatomic, strong) MITMartyResource *currentlySelectResource;
+@property (nonatomic, strong) MartyMapObject *currentlySelectedRoom;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 @property (nonatomic, strong) MITMartyResource *resource;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
+
+
+@property(nonatomic,readonly,strong) NSArray *buildingSections;
+@property(nonatomic,readonly,strong) NSDictionary *resourcesByBuilding;
+@property(nonatomic,strong) NSMutableArray *buildings;
+
 
 @end
 
@@ -79,21 +86,55 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     self.tiledMapView.mapView.mitCalloutView = self.calloutView;
 }
 
-- (void)setResources:(NSArray *)resources
+- (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding animated:(BOOL)animated
 {
-    [self setResources:resources animated:NO];
-}
-
-- (void)setResources:(NSArray *)resources animated:(BOOL)animated
-{
-    if (![_resources isEqualToArray:resources]) {
-        _resources = [[[MITCoreDataController defaultController] mainQueueContext] transferManagedObjects:resources];
-
-        [self _didChangeResources:animated];
+    [self setBuildingSections:buildingSections];
+    [self setResourcesByBuilding:resourcesByBuilding];
+    
+    NSMutableArray *buildings = [[NSMutableArray alloc] init];
+    
+    [buildingSections enumerateObjectsUsingBlock:^(NSString *roomName, NSUInteger idx, BOOL *stop) {
+        
+        MartyMapObject *mapObject = [[MartyMapObject alloc] initWithEntity:[MartyMapObject entityDescription] insertIntoManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
+        mapObject.roomName = roomName;
+        
+        NSArray *resources = [[[MITCoreDataController defaultController] mainQueueContext] transferManagedObjects:resourcesByBuilding[roomName]];
+        mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];
+        MITMartyResource *resource = [mapObject.resources firstObject];
+        
+        mapObject.latitude = resource.latitude;
+        mapObject.longitude = resource.longitude;
+        
+        [buildings addObject:mapObject];
+    }];
+    
+    if (![_buildings isEqualToArray:buildings]) {
+        _buildings = buildings;
+        
+        [self _didChangeBuildings:animated];
     }
 }
 
-- (void)_didChangeResources:(BOOL)animated
+- (void)setBuildingSections:(NSArray *)buildingSections
+{
+    _buildingSections = buildingSections;
+}
+
+- (void)setResourcesByBuilding:(NSDictionary *)resourcesByBuilding
+{
+    _resourcesByBuilding = resourcesByBuilding;
+}
+
+- (NSMutableArray *)buildings
+{
+    if (!_buildings) {
+        NSMutableArray *buildings = [[NSMutableArray alloc] init];
+        _buildings = buildings;
+    }
+    return _buildings;
+}
+
+- (void)_didChangeBuildings:(BOOL)animated
 {
     [self refreshPlaceAnnotations];
     [self recenterOnVisibleResources:animated];
@@ -105,8 +146,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
 
-    if ([self.resources count]) {
-        [self.mapView showAnnotations:self.resources animated:NO];
+    if ([self.buildings count]) {
+        [self.mapView showAnnotations:self.buildings animated:NO];
         [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
@@ -116,7 +157,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)refreshPlaceAnnotations
 {
     [self removeAllPlaceAnnotations];
-    [self.mapView addAnnotations:self.resources];
+    [self.mapView addAnnotations:self.buildings];
 }
 
 - (void)removeAllPlaceAnnotations
@@ -134,11 +175,14 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)showCalloutForResource:(MITMartyResource *)resource
 {
     if (resource) {
-        for (MITMartyResource *resource2 in self.resources) {
-            if ([resource2.identifier caseInsensitiveCompare:resource.identifier] == NSOrderedSame) {
-                [self.mapView selectAnnotation:resource2 animated:YES];
+     
+        [self.buildings enumerateObjectsUsingBlock:^(MartyMapObject *mapObject, NSUInteger idx, BOOL *stop) {
+            if ([mapObject.roomName isEqualToString:resource.room]) {
+                [self.mapView selectAnnotation:mapObject animated:YES];
+                (*stop = YES);
             }
-        }
+        }];
+        
     } else {
         [self.mapView selectAnnotation:nil animated:YES];
     }
@@ -148,12 +192,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-    if ([annotation isKindOfClass:[MITMartyResource class]]) {
+    if ([annotation isKindOfClass:[MartyMapObject class]]) {
         MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
-        NSInteger placeIndex = [self.resources indexOfObject:annotation];
+        NSInteger placeIndex = [self.buildings indexOfObject:annotation];
         [annotationView setNumber:(placeIndex + 1)];
         
         return annotationView;
@@ -186,14 +230,16 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self dismissCurrentCallout];
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
         [self.calloutView dismissCallout];
-        self.currentlySelectResource = nil;
+        self.currentlySelectedRoom = nil;
     }
 }
 
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMartyResource *resource = (MITMartyResource *)view.annotation;
+        
+        MartyMapObject *mapObject = (MartyMapObject *)view.annotation;
+        MITMartyResource *resource = [mapObject.resources firstObject];
         [self pushDetailViewControllerForResource:resource];
     }
 }
@@ -206,8 +252,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     }
     
     if (self.showFirstCalloutOnNextMapRegionChange) {
-        if (self.resources.count > 0) {
-            [self showCalloutForResource:[self.resources firstObject]];
+        if (self.buildings.count > 0) {
+            [self showCalloutForResource:[self.buildings firstObject]];
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
@@ -218,7 +264,9 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    
+    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyResource *resource = [mapObject.resources firstObject];
     
     MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
     contentView.resourceView.backgroundColor = [UIColor clearColor];
@@ -240,11 +288,11 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyResource *resource = [mapObject.resources firstObject];
     
-    self.currentlySelectResource = resource;
-    
-    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+    self.currentlySelectedRoom = mapObject;
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resourcesByBuilding[resource.room] nibName:nil bundle:nil];
 
     detailContainerViewController.view.frame = CGRectMake(0, 0, 320, 500);
     
@@ -260,12 +308,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
+    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyResource *resource = [mapObject.resources firstObject];
     
-    self.currentlySelectResource = resource;
-    //self.calloutView.titleText = resource.title;
-    //self.calloutView.subtitleText = resource.subtitle;
-#warning here
+    self.currentlySelectedRoom = mapObject;
+    self.calloutView.titleText = resource.room;
+
     [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
@@ -282,7 +330,11 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        [self pushDetailViewControllerForResource:self.currentlySelectResource];
+        
+        MartyMapObject *mapObject = self.currentlySelectedRoom;
+        MITMartyResource *resource = [mapObject.resources firstObject];
+        
+        [self pushDetailViewControllerForResource:resource];
     } else {
         
         [self presentIPadCalloutForAnnotationView:self.resourceAnnotationView];
@@ -296,7 +348,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)pushDetailViewControllerForResource:(MITMartyResource *)resource
 {
-    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resourcesByBuilding[resource.room] nibName:nil bundle:nil];
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 

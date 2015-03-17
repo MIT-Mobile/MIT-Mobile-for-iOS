@@ -590,7 +590,10 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 #pragma mark MITMartyResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMartyResourcesTableViewController *)tableViewController didSelectResource:(MITMartyResource *)resource
 {
-    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:self.resources nibName:nil bundle:nil];
+    NSArray *resourcesForBuilding = self.resourcesByBuilding[resource.room];
+    
+    MITMartyDetailContainerViewController *detailContainerViewController = [[MITMartyDetailContainerViewController alloc] initWithResource:resource resources:resourcesForBuilding nibName:nil bundle:nil];
+
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 
@@ -649,12 +652,8 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
                 
                 [self _transitionToState:newState animated:YES completion:^{
                     [self.resourcesTableViewController setBuildingSections:[self buildingSections] setResourcesByBuilding:[self resourcesByBuilding]];
-
-                 //   self.resourcesTableViewController.buildingSections = [self buildingSections];
-      
-                 //   self.resourcesTableViewController.resourcesByBuilding = [self resourcesByBuilding];
                     
-                    [self.mapViewController setResources:self.dataSource.resources animated:YES];
+                    [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
                 }];
             }];
         } else {
@@ -678,11 +677,7 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
        
         [self.resourcesTableViewController setBuildingSections:[self buildingSections] setResourcesByBuilding:[self resourcesByBuilding]];
         
-        //self.resourcesTableViewController.buildingSections = [self buildingSections];
-    
-        //self.resourcesTableViewController.resourcesByBuilding = [self resourcesByBuilding];
-        
-        self.mapViewController.resources = self.dataSource.resources;
+        [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
     }];
 }
 
@@ -691,32 +686,14 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
 {
     if (!_buildingSections) {
         [self.managedObjectContext performBlockAndWait:^{
-            NSMutableOrderedSet *buildings = [[NSMutableOrderedSet alloc] init];
+            NSMutableDictionary *buildings = [[NSMutableDictionary alloc] init];
             [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
-                [buildings addObject:building];
+                buildings[resource.room] = resource.room;
             }];
             
-            [buildings sortUsingComparator:^NSComparisonResult(NSString *location1, NSString *location2) {
-                NSArray *locationComponents1 = [location1 componentsSeparatedByString:@"-"];
-                NSArray *locationComponents2 = [location2 componentsSeparatedByString:@"-"];
-                
-                NSStringCompareOptions compareOptions = (NSCaseInsensitiveSearch | NSNumericSearch);
-                
-                NSString *building1 = [locationComponents1 firstObject];
-                NSString *building2 = [locationComponents2 firstObject];
-                NSComparisonResult buildingResult = [building1 compare:building2 options:compareOptions];
-                if (buildingResult == NSOrderedSame) {
-                    NSString *room1 = [locationComponents1 lastObject];
-                    NSString *room2 = [locationComponents2 lastObject];
-                    
-                    return [room1 compare:room2 options:compareOptions];
-                } else {
-                    return buildingResult;
-                }
-            }];
+            NSArray *buildingsArray = [buildings.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];;
             
-            _buildingSections = [buildings array];
+            _buildingSections = buildingsArray;
         }];
     }
     
@@ -729,12 +706,11 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
         [self.managedObjectContext performBlockAndWait:^{
             NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
             [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
                 
-                NSMutableArray *resources = resourcesByBuilding[building];
+                NSMutableArray *resources = resourcesByBuilding[resource.room];
                 if (!resources) {
                     resources = [[NSMutableArray alloc] init];
-                    resourcesByBuilding[building] = resources;
+                    resourcesByBuilding[resource.room] = resources;
                 }
                 
                 [resources addObject:resource];

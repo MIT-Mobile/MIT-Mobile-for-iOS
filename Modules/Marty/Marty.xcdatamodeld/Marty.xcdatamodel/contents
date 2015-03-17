@@ -7,7 +7,9 @@
         <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Type" inverseName="category" inverseEntity="Type" syncable="YES"/>
     </entity>
     <entity name="MartyMapObject" representedClassName="MartyMapObject" isAbstract="YES" syncable="YES">
-        <attribute name="buildingName" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="roomName" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
     </entity>
     <entity name="MartyObject" representedClassName="MITMartyObject" isAbstract="YES" syncable="YES">
@@ -82,6 +84,7 @@
     </entity>
     <elements>
         <element name="Category" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MartyMapObject" positionX="0" positionY="0" width="128" height="103"/>
         <element name="MartyObject" positionX="0" positionY="0" width="128" height="135"/>
         <element name="MartyRecentSearchList" positionX="0" positionY="0" width="128" height="60"/>
         <element name="MITMartyRecentSearchQuery" positionX="0" positionY="0" width="128" height="75"/>
@@ -93,6 +96,5 @@
         <element name="Template" positionX="0" positionY="0" width="128" height="105"/>
         <element name="TemplateAttribute" positionX="0" positionY="0" width="128" height="165"/>
         <element name="Type" positionX="0" positionY="0" width="128" height="105"/>
-        <element name="MartyMapObject" positionX="18" positionY="90" width="128" height="73"/>
     </elements>
 </model>
