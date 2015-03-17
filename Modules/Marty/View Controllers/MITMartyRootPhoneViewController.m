@@ -220,6 +220,8 @@ typedef NS_ENUM(NSInteger, MITMartyRootViewControllerState) {
     }
 
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+    [self.navigationController setToolbarHidden:NO];
+
 }
 
 #pragma mark Public Properties
