@@ -2038,7 +2038,7 @@
 				0B5D299E1A6ED96F001A55D3 /* MITMobiusModule.m */,
 			);
 			name = Mobius;
-			path = Marty;
+			path = Mobius;
 			sourceTree = "<group>";
 		};
 		0B91DAA01959B27D00E72D83 /* ThumbnailPickerView */ = {
