@@ -30,7 +30,6 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    [self setupToolbar];
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
     [self configureForResource:self.currentResource];
@@ -39,14 +38,7 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self.navigationController setToolbarHidden:NO];
-}
-
-- (void)setupToolbar
-{
-    UIBarButtonItem *directionsButton = [[UIBarButtonItem alloc] initWithTitle:@"Directions" style:UIBarButtonItemStylePlain target:self action:@selector(directionsButtonPressed:)];
-    UIBarButtonItem *flexibleSpace = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemFlexibleSpace target:nil action:nil];
-    self.toolbarItems = @[flexibleSpace, directionsButton];
+    [self.navigationController setToolbarHidden:YES];
 }
 
 - (void)createPageViewController
@@ -146,16 +138,9 @@
         if (shouldPutNameInTitle) {
             //self.title = resource.title;
         } else {
-            self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)resourceIndex + 1, (unsigned long)self.resources.count];
+            self.title = [NSString stringWithFormat:@"%@ (%ld of %lu)",resource.room, (long)resourceIndex + 1, (unsigned long)self.resources.count];
         }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
-    } else {
-        if (shouldPutNameInTitle) {
-            //self.title = [NSString stringWithFormat:@"Side Trip - %@", resource.title];
-        } else {
-            self.title = @"Side Trip";
-        }
-        [self.navigationItem setRightBarButtonItems:nil animated:YES];
     }
 }
 
