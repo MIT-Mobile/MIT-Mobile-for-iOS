@@ -1,7 +1,7 @@
-#import "MartyMapObject.h"
+#import "MITMartyMapObject.h"
 #import "MITMartyResource.h"
 
-@implementation MartyMapObject
+@implementation MITMartyMapObject
 
 @dynamic roomName;
 @dynamic resources;

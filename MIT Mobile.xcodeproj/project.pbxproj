@@ -32,7 +32,7 @@
 		0B91DAA31959B2D000E72D83 /* ThumbnailPickerView.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B91DAA21959B2D000E72D83 /* ThumbnailPickerView.m */; };
 		0BAE69171AB1EEE100B7B8D5 /* MITMartyDetailTableViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE69121AB1EEE100B7B8D5 /* MITMartyDetailTableViewController.m */; };
 		0BAE69181AB1EEE100B7B8D5 /* MITMartyDetailContainerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE69141AB1EEE100B7B8D5 /* MITMartyDetailContainerViewController.m */; };
-		0BAE69281AB7723300B7B8D5 /* MartyMapObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE69271AB7723300B7B8D5 /* MartyMapObject.m */; };
+		0BAE69281AB7723300B7B8D5 /* MITMartyMapObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE69271AB7723300B7B8D5 /* MITMartyMapObject.m */; };
 		0BB58EC31A8014E000AA1CB7 /* MITMartyPadHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EC01A8014E000AA1CB7 /* MITMartyPadHomeViewController.m */; };
 		0BB58EF41A8128C900AA1CB7 /* MITMartyDetailCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EEF1A8128C900AA1CB7 /* MITMartyDetailCell.m */; };
 		0BB58EF51A8128C900AA1CB7 /* MITMartyDetailCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BB58EF01A8128C900AA1CB7 /* MITMartyDetailCell.xib */; };
@@ -763,8 +763,8 @@
 		0BAE69121AB1EEE100B7B8D5 /* MITMartyDetailTableViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyDetailTableViewController.m; sourceTree = "<group>"; };
 		0BAE69131AB1EEE100B7B8D5 /* MITMartyDetailContainerViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyDetailContainerViewController.h; sourceTree = "<group>"; };
 		0BAE69141AB1EEE100B7B8D5 /* MITMartyDetailContainerViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyDetailContainerViewController.m; sourceTree = "<group>"; };
-		0BAE69261AB7723300B7B8D5 /* MartyMapObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MartyMapObject.h; sourceTree = "<group>"; };
-		0BAE69271AB7723300B7B8D5 /* MartyMapObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MartyMapObject.m; sourceTree = "<group>"; };
+		0BAE69261AB7723300B7B8D5 /* MITMartyMapObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMartyMapObject.h; sourceTree = "<group>"; };
+		0BAE69271AB7723300B7B8D5 /* MITMartyMapObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMartyMapObject.m; sourceTree = "<group>"; };
 		0BB58EBF1A8014E000AA1CB7 /* MITMartyPadHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyPadHomeViewController.h; path = "View Controllers/MITMartyPadHomeViewController.h"; sourceTree = "<group>"; };
 		0BB58EC01A8014E000AA1CB7 /* MITMartyPadHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMartyPadHomeViewController.m; path = "View Controllers/MITMartyPadHomeViewController.m"; sourceTree = "<group>"; };
 		0BB58EEE1A8128C900AA1CB7 /* MITMartyDetailCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMartyDetailCell.h; path = Views/MITMartyDetailCell.h; sourceTree = "<group>"; };
@@ -3381,8 +3381,8 @@
 		2CED33D71A76B255001ED7AC /* Entities */ = {
 			isa = PBXGroup;
 			children = (
-				0BAE69261AB7723300B7B8D5 /* MartyMapObject.h */,
-				0BAE69271AB7723300B7B8D5 /* MartyMapObject.m */,
+				0BAE69261AB7723300B7B8D5 /* MITMartyMapObject.h */,
+				0BAE69271AB7723300B7B8D5 /* MITMartyMapObject.m */,
 				2C2CC25D1A72E466008E3CA5 /* MITMartyCategory.h */,
 				2C2CC25E1A72E466008E3CA5 /* MITMartyCategory.m */,
 				2C2CC2661A72E466008E3CA5 /* MITMartyObject.h */,
@@ -5339,7 +5339,7 @@
 				DEA3B48D10C9BB7300BDA774 /* AboutModule.m in Sources */,
 				2CEFFDEF1AA4EF8E003C4232 /* MITMartyResourceView.m in Sources */,
 				80C252481A8D438300042DB1 /* MITCalloutView.m in Sources */,
-				0BAE69281AB7723300B7B8D5 /* MartyMapObject.m in Sources */,
+				0BAE69281AB7723300B7B8D5 /* MITMartyMapObject.m in Sources */,
 				A5A30406198AD0FB00C9C273 /* MITEventSearchViewController.m in Sources */,
 				806205761A7AAF1A004BD08A /* ConnectionDetector.m in Sources */,
 				A59A25A719A1434D00AD7E3A /* MITDiningHallMealCollectionHeader.m in Sources */,

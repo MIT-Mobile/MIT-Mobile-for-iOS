@@ -6,7 +6,7 @@
 
 @class MITMartyResource;
 
-@interface MartyMapObject : MITManagedObject <MKAnnotation>
+@interface MITMartyMapObject : MITManagedObject <MKAnnotation>
 
 @property (nonatomic, retain) NSString *roomName;
 @property (nonatomic, retain) NSOrderedSet *resources;
@@ -14,7 +14,7 @@
 @property (nonatomic, retain) NSNumber *longitude;
 @end
 
-@interface MartyMapObject (CoreDataGeneratedAccessors)
+@interface MITMartyMapObject (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(MITMartyResource *)value inResourcesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromResourcesAtIndex:(NSUInteger)idx;

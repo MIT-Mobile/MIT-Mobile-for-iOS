@@ -9,7 +9,7 @@
 #import "MITMartyCalloutContentView.h"
 #import "MITMartyModel.h"
 #import "MITMartyResourceView.h"
-#import "MartyMapObject.h"
+#import "MITMartyMapObject.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -19,7 +19,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
-@property (nonatomic, strong) MartyMapObject *currentlySelectedRoom;
+@property (nonatomic, strong) MITMartyMapObject *currentlySelectedRoom;
 @property (nonatomic, strong) MKAnnotationView *resourceAnnotationView;
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 @property (nonatomic, strong) MITMartyResource *resource;
@@ -95,7 +95,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     
     [buildingSections enumerateObjectsUsingBlock:^(NSString *roomName, NSUInteger idx, BOOL *stop) {
         
-        MartyMapObject *mapObject = [[MartyMapObject alloc] initWithEntity:[MartyMapObject entityDescription] insertIntoManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
+        MITMartyMapObject *mapObject = [[MITMartyMapObject alloc] initWithEntity:[MITMartyMapObject entityDescription] insertIntoManagedObjectContext:[[MITCoreDataController defaultController] mainQueueContext]];
         mapObject.roomName = roomName;
         
         NSArray *resources = [[[MITCoreDataController defaultController] mainQueueContext] transferManagedObjects:resourcesByBuilding[roomName]];
@@ -176,7 +176,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     if (resource) {
      
-        [self.buildings enumerateObjectsUsingBlock:^(MartyMapObject *mapObject, NSUInteger idx, BOOL *stop) {
+        [self.buildings enumerateObjectsUsingBlock:^(MITMartyMapObject *mapObject, NSUInteger idx, BOOL *stop) {
             if ([mapObject.roomName isEqualToString:resource.room]) {
                 [self.mapView selectAnnotation:mapObject animated:YES];
                 (*stop = YES);
@@ -192,7 +192,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
 {
-    if ([annotation isKindOfClass:[MartyMapObject class]]) {
+    if ([annotation isKindOfClass:[MITMartyMapObject class]]) {
         MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
@@ -238,7 +238,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
         
-        MartyMapObject *mapObject = (MartyMapObject *)view.annotation;
+        MITMartyMapObject *mapObject = (MITMartyMapObject *)view.annotation;
         MITMartyResource *resource = [mapObject.resources firstObject];
         [self pushDetailViewControllerForResource:resource];
     }
@@ -265,7 +265,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
     
-    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyMapObject *mapObject = (MITMartyMapObject *)annotationView.annotation;
     MITMartyResource *resource = [mapObject.resources firstObject];
     
     MITMartyCalloutContentView *contentView = [[MITMartyCalloutContentView alloc] init];
@@ -288,7 +288,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyMapObject *mapObject = (MITMartyMapObject *)annotationView.annotation;
     MITMartyResource *resource = [mapObject.resources firstObject];
     
     self.currentlySelectedRoom = mapObject;
@@ -308,7 +308,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MartyMapObject *mapObject = (MartyMapObject *)annotationView.annotation;
+    MITMartyMapObject *mapObject = (MITMartyMapObject *)annotationView.annotation;
     MITMartyResource *resource = [mapObject.resources firstObject];
     
     self.currentlySelectedRoom = mapObject;
@@ -331,7 +331,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         
-        MartyMapObject *mapObject = self.currentlySelectedRoom;
+        MITMartyMapObject *mapObject = self.currentlySelectedRoom;
         MITMartyResource *resource = [mapObject.resources firstObject];
         
         [self pushDetailViewControllerForResource:resource];
