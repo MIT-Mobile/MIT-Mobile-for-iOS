@@ -11,11 +11,16 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
 
 @property(nonatomic,readonly,strong) NSArray *buildingSections;
 @property(nonatomic,readonly,strong) NSDictionary *resourcesByBuilding;
+
 @end
 
 @implementation MITMartyResourcesTableViewController
-@synthesize resourcesByBuilding = _resourcesByBuilding;
-@synthesize buildingSections = _buildingSections;
+
+- (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding
+{
+    _buildingSections = buildingSections;
+    _resourcesByBuilding = resourcesByBuilding;
+}
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -34,15 +39,6 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (void)setResources:(NSArray *)resources
-{
-    if (![_resources isEqualToArray:resources]) {
-        [self.managedObjectContext reset];
-        _resources = [self.managedObjectContext transferManagedObjects:resources];
-        [self reloadData];
-    }
 }
 
 - (void)reloadData
@@ -75,65 +71,7 @@ NSString* const MITMartyResourcesTableViewPlaceholderCellIdentifier = @"Placehol
     return resource;
 }
 
-- (NSArray*)buildingSections
-{
-    if (!_buildingSections) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableOrderedSet *buildings = [[NSMutableOrderedSet alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
-                [buildings addObject:building];
-            }];
-            
-            [buildings sortUsingComparator:^NSComparisonResult(NSString *location1, NSString *location2) {
-                NSArray *locationComponents1 = [location1 componentsSeparatedByString:@"-"];
-                NSArray *locationComponents2 = [location2 componentsSeparatedByString:@"-"];
-                
-                NSStringCompareOptions compareOptions = (NSCaseInsensitiveSearch | NSNumericSearch);
-                
-                NSString *building1 = [locationComponents1 firstObject];
-                NSString *building2 = [locationComponents2 firstObject];
-                NSComparisonResult buildingResult = [building1 compare:building2 options:compareOptions];
-                if (buildingResult == NSOrderedSame) {
-                    NSString *room1 = [locationComponents1 lastObject];
-                    NSString *room2 = [locationComponents2 lastObject];
-                    
-                    return [room1 compare:room2 options:compareOptions];
-                } else {
-                    return buildingResult;
-                }
-            }];
-            
-            _buildingSections = [buildings array];
-        }];
-    }
-    
-    return _buildingSections;
-}
 
-- (NSDictionary*)resourcesByBuilding
-{
-    if (!_resourcesByBuilding) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMartyResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
-                
-                NSMutableArray *resources = resourcesByBuilding[building];
-                if (!resources) {
-                    resources = [[NSMutableArray alloc] init];
-                    resourcesByBuilding[building] = resources;
-                }
-                
-                [resources addObject:resource];
-            }];
-
-            _resourcesByBuilding = resourcesByBuilding;
-        }];
-    }
-    
-    return _resourcesByBuilding;
-}
 
 - (MITMartyResource*)_representedObjectForIndexPath:(NSIndexPath*)indexPath
 {

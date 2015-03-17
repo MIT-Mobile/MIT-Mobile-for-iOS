@@ -1,11 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "MITMartyObject.h"
-#import <MapKit/MapKit.h>
 
 @class MITMartyCategory, MITMartyResourceAttribute, MITMartyResourceOwner, MITMartyResourceSearch, MITMartyTemplate, MITMartyType;
 
-@interface MITMartyResource : MITMartyObject <MKAnnotation>
+@interface MITMartyResource : MITMartyObject
 
 @property (nonatomic, retain) NSString * dlc;
 @property (nonatomic, retain) NSNumber * latitude;
@@ -19,8 +18,6 @@
 @property (nonatomic, retain) NSSet *searches;
 @property (nonatomic, retain) MITMartyTemplate *template;
 @property (nonatomic, retain) MITMartyType *type;
-
-@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @end
 

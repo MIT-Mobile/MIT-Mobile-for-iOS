@@ -144,14 +144,14 @@
     NSInteger resourceIndex = [self indexOfResource:resource inResources:self.resources];
     if (resourceIndex != NSNotFound) {
         if (shouldPutNameInTitle) {
-            self.title = resource.title;
+            //self.title = resource.title;
         } else {
             self.title = [NSString stringWithFormat:@"Main Loop %ld of %lu", (long)resourceIndex + 1, (unsigned long)self.resources.count];
         }
         [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
     } else {
         if (shouldPutNameInTitle) {
-            self.title = [NSString stringWithFormat:@"Side Trip - %@", resource.title];
+            //self.title = [NSString stringWithFormat:@"Side Trip - %@", resource.title];
         } else {
             self.title = @"Side Trip";
         }

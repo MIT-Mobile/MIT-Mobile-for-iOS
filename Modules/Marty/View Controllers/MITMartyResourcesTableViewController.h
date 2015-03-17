@@ -5,8 +5,10 @@
 
 @interface MITMartyResourcesTableViewController : UITableViewController
 @property(nonatomic,weak) id<MITMartyResourcesTableViewControllerDelegate> delegate;
-@property(nonatomic,copy) NSArray *resources;
+
 @property(nonatomic,readonly,weak) MITMartyResource *selectedResource;
+
+- (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding;
 
 @end
 

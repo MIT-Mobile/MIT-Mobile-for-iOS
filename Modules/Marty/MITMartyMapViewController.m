@@ -263,9 +263,9 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMartyResource *resource = (MITMartyResource *)annotationView.annotation;
     
     self.currentlySelectResource = resource;
-    self.calloutView.titleText = resource.title;
-    self.calloutView.subtitleText = resource.subtitle;
-    
+    //self.calloutView.titleText = resource.title;
+    //self.calloutView.subtitleText = resource.subtitle;
+#warning here
     [self.calloutView presentFromRect:annotationView.bounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 

@@ -1,15 +1,19 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 #import "MITMartyObject.h"
+#import <MapKit/MapKit.h>
 
 @class MITMartyResource, MITMartyTemplate, MITMartyType;
 
-@interface MITMartyCategory : MITMartyObject
+@interface MITMartyCategory : MITMartyObject <MKAnnotation>
 
 @property (nonatomic, retain) NSSet *resources;
 @property (nonatomic, retain) MITMartyTemplate *template;
 @property (nonatomic, retain) NSSet *types;
 @property (nonatomic, retain) NSString *templateIdentifier;
+
+@property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
+
 @end
 
 @interface MITMartyCategory (CoreDataGeneratedAccessors)

@@ -1,10 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14B25" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14C109" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
     <entity name="Category" representedClassName="MITMartyCategory" parentEntity="MartyObject" syncable="YES">
         <attribute name="templateIdentifier" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Resource" inverseName="category" inverseEntity="Resource" syncable="YES"/>
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="categories" inverseEntity="Template" syncable="YES"/>
         <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="Type" inverseName="category" inverseEntity="Type" syncable="YES"/>
+    </entity>
+    <entity name="MartyMapObject" representedClassName="MartyMapObject" isAbstract="YES" syncable="YES">
+        <attribute name="buildingName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
     </entity>
     <entity name="MartyObject" representedClassName="MITMartyObject" isAbstract="YES" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
@@ -89,5 +93,6 @@
         <element name="Template" positionX="0" positionY="0" width="128" height="105"/>
         <element name="TemplateAttribute" positionX="0" positionY="0" width="128" height="165"/>
         <element name="Type" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MartyMapObject" positionX="18" positionY="90" width="128" height="73"/>
     </elements>
 </model>

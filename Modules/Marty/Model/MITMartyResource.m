@@ -19,7 +19,6 @@
 @dynamic template;
 @dynamic type;
 @dynamic searches;
-@dynamic coordinate;
 
 - (id)init
 {
