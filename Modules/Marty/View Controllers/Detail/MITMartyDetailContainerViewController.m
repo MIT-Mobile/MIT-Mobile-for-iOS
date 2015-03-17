@@ -58,9 +58,14 @@
     UIViewController *currentPage = [self detailViewControllerForResource:self.currentResource];
     [self.pageViewController setViewControllers:@[currentPage] direction:UIPageViewControllerNavigationDirectionForward animated:NO completion:nil];
     
+    NSDictionary *metrics = @{
+                              @"padding" : @(self.navigationController.navigationBar.frame.size.height + 10)
+                              };
+    
     NSDictionary *pageViewDict = NSDictionaryOfVariableBindings(pageView);
     [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[pageView]|" options:0 metrics:nil views:pageViewDict]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-padding-[pageView]|" options:0 metrics:metrics views:pageViewDict]];
+
     pageView.translatesAutoresizingMaskIntoConstraints = NO;
     
     [self.inputViews addObject:self.pageViewController.view];
