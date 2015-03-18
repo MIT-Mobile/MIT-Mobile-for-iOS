@@ -50,7 +50,7 @@ NSString * const MITModuleTagLinks      = @"links";
 NSString * const MITModuleTagQRReader   = @"qrreader";
 NSString * const MITModuleTagFacilities = @"facilities";
 NSString * const MITModuleTagLibraries  = @"libraries";
-NSString * const MITModuleTagMobius      = @"marty";
+NSString * const MITModuleTagMobius     = @"mobius";
 
 
 // notification names

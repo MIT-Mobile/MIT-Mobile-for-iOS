@@ -509,8 +509,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
     [modules addObject:scannerModule];
     
-    MITMobiusModule *martyModule = [[MITMobiusModule alloc] init];
-    [modules addObject:martyModule];
+    MITMobiusModule *mobiusModule = [[MITMobiusModule alloc] init];
+    [modules addObject:mobiusModule];
 
     LinksModule *linksModule = [[LinksModule alloc] init];
     [modules addObject:linksModule];
