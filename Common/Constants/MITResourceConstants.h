@@ -15,7 +15,7 @@ extern NSString * const MITImageScannerModuleIcon;
 extern NSString * const MITImageSettingsModuleIcon;
 extern NSString * const MITImageShuttlesModuleIcon;
 extern NSString * const MITImageToursModuleIcon;
-extern NSString * const MITImageMartyModuleIcon;
+extern NSString * const MITImageMobiusModuleIcon;
 
 #pragma mark - Dining
 extern NSString * const MITImageDiningRotateDevice;

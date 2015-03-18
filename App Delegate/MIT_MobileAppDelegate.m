@@ -30,7 +30,7 @@
 #import "SettingsModule.h"
 #import "ShuttleModule.h"
 #import "ToursModule.h"
-#import "MITMartyModule.h"
+#import "MITMobiusModule.h"
 
 #import "MITTouchstoneController.h"
 #import "MITSlidingViewController.h"
@@ -457,7 +457,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
                             @"MITShuttleDataModel",
                             @"PeopleDataModel",
                             @"MITToursDataModel",
-                            @"Marty"];
+                            @"Mobius"];
 
     NSMutableArray *managedObjectModels = [[NSMutableArray alloc] init];
     [modelNames enumerateObjectsUsingBlock:^(NSString *modelName, NSUInteger idx, BOOL *stop) {
@@ -509,8 +509,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     MITScannerModule *scannerModule = [[MITScannerModule alloc] init];
     [modules addObject:scannerModule];
     
-    MITMartyModule *martyModule = [[MITMartyModule alloc] init];
-    [modules addObject:martyModule];
+    MITMobiusModule *mobiusModule = [[MITMobiusModule alloc] init];
+    [modules addObject:mobiusModule];
 
     LinksModule *linksModule = [[LinksModule alloc] init];
     [modules addObject:linksModule];
