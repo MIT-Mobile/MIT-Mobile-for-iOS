@@ -15,7 +15,7 @@ NSString * const MITImageScannerModuleIcon = @"home-qrreader";
 NSString * const MITImageSettingsModuleIcon = @"home-settings";
 NSString * const MITImageShuttlesModuleIcon = @"home-shuttle";
 NSString * const MITImageToursModuleIcon = @"home-tours";
-NSString * const MITImageMartyModuleIcon = @"home-marty";
+NSString * const MITImageMobiusModuleIcon = @"home-mobius";
 
 #pragma mark - Dining
 NSString * const MITImageDiningRotateDevice = @"dining-rotate-device";
