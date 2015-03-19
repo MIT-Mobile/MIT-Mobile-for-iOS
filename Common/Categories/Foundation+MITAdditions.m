@@ -1020,30 +1020,29 @@ typedef struct {
     }
 }
 
+// Returns an NSNumber representing an index into
+// -[NSDateFormatter weekdaySymbols]. This index is
+// zero-indexed (unlike -[NSDateComponents weekday])
 + (NSNumber *)numberForDateCode:(NSString *)dateCode
 {
     if ([dateCode isEqualToString:@"U"]) {
         return @0;
-    }
-    else if ([dateCode isEqualToString:@"M"]) {
+    } else if ([dateCode isEqualToString:@"M"]) {
         return @1;
-    }
-    else if ([dateCode isEqualToString:@"T"]) {
+    } else if ([dateCode isEqualToString:@"T"]) {
         return @2;
-    }
-    else if ([dateCode isEqualToString:@"W"]) {
+    } else if ([dateCode isEqualToString:@"W"]) {
         return @3;
-    }
-    else if ([dateCode isEqualToString:@"R"]) {
+    } else if ([dateCode isEqualToString:@"R"]) {
         return @4;
-    }
-    else if ([dateCode isEqualToString:@"F"]) {
+    } else if ([dateCode isEqualToString:@"F"]) {
         return @5;
-    }
-    else if ([dateCode isEqualToString:@"S"]) {
+    } else if ([dateCode isEqualToString:@"S"]) {
         return @6;
+    } else {
+        NSString *reason = [NSString stringWithFormat:@"unknown date code %@", dateCode];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
-    return @0;
 }
 
 @end
