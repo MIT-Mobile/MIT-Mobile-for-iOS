@@ -993,30 +993,37 @@ typedef struct {
     }
  
     switch (dateComponents.weekday) {
-        case 0:
+        case 1: {
             return @"U";
-            break;
-        case 1:
+        }
+            
+        case 2: {
             return @"M";
-            break;
-        case 2:
+        }
+            
+        case 3: {
             return @"T";
-            break;
-        case 3:
+        }
+            
+        case 4: {
             return @"W";
-            break;
-        case 4:
+        }
+            
+        case 5: {
             return @"R";
-            break;
-        case 5:
+        }
+            
+        case 6: {
             return @"F";
-            break;
-        case 6:
+        }
+            
+        case 7: {
             return @"S";
-            break;
-        default:
-            return @"";
-            break;
+        }
+            
+        default: {
+            return nil;
+        }
     }
 }
 
@@ -1059,7 +1066,6 @@ typedef struct {
 + (NSCalendar *)cachedCurrentCalendar {
     return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
 }
-
 @end
 
 @implementation NSIndexPath (MITAdditions)
