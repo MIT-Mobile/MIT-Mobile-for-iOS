@@ -984,13 +984,8 @@ typedef struct {
 
 - (NSString *)MITDateCode
 {
-    static NSDateComponents *dateComponents;
-    if (!dateComponents) {
-        NSCalendar *calendar = [NSCalendar currentCalendar];
-        dateComponents = [calendar components:(NSDayCalendarUnit |
-                                               NSWeekdayCalendarUnit)
-                                      fromDate:self];
-    }
+    NSCalendarUnit calendarUnits = (NSDayCalendarUnit | NSWeekdayCalendarUnit);
+    NSDateComponents *dateComponents = [[NSCalendar cachedCurrentCalendar] components:calendarUnits fromDate:self];
  
     switch (dateComponents.weekday) {
         case 1: {
