@@ -119,17 +119,12 @@ static NSString * const MITLibrariesRegularTermCodingKeyHours = @"MITLibrariesRe
     NSAssert(startWeekdaySymbol <= endWeekdaySymbol, @"The week cannot start before it ends!");
     
     NSMutableString *rangeString = [[NSMutableString alloc] init];
-
-    // Increment the length of the range by 1 because the range should be
-    // inclusive of the ending day.
-    NSRange weekdayRange = NSMakeRange(startWeekdaySymbol, (endWeekdaySymbol - startWeekdaySymbol) + 1);
-    NSIndexSet *indexes = [NSIndexSet indexSetWithIndexesInRange:weekdayRange];
-    NSArray *weekdays = [self.dateFormatter.weekdaySymbols objectsAtIndexes:indexes];
+    NSArray *weekdaySymbols = self.dateFormatter.weekdaySymbols;
     
-    if (weekdayRange.length == 1) {
-        [rangeString appendString:[weekdays firstObject]];
+    if (startWeekdaySymbol == endWeekdaySymbol) {
+        [rangeString appendString:weekdaySymbols[startWeekdaySymbol]];
     } else {
-        [rangeString appendFormat:@"%@-%@",[weekdays firstObject],[weekdays lastObject]];
+        [rangeString appendFormat:@"%@-%@",weekdaySymbols[startWeekdaySymbol],weekdaySymbols[endWeekdaySymbol]];
     }
     
     NSAssert(rangeString.length, @"invalid day range");
