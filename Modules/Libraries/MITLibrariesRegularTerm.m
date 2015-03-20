@@ -92,7 +92,6 @@ static NSString * const MITLibrariesRegularTermCodingKeyHours = @"MITLibrariesRe
         [rangeString appendFormat:@"%@-%@",weekdaySymbols[startWeekdaySymbol],weekdaySymbols[endWeekdaySymbol]];
     }
     
-    NSAssert(rangeString.length, @"invalid day range");
     return rangeString;
 }
 
