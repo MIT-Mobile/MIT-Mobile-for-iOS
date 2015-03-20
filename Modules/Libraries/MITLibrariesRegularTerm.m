@@ -61,57 +61,22 @@ static NSString * const MITLibrariesRegularTermCodingKeyHours = @"MITLibrariesRe
 
 - (NSString *)termsDayRangeString
 {
-    NSMutableString *dayRangeString = [[NSMutableString alloc] init];
-    NSNumber *startOfRange = nil;
-    NSNumber *endOfRange = nil;
-    
-    for (NSNumber *currentWeekdaySymbolNumber in self.sortedDateCodesArray) {
-        if (!startOfRange) {
-            // If startOfRangeis nil, we have not looped through yet or we
-            // are at the beginning of a new subset.
-            // Set the start and end dates to the same day and continue on.
-            startOfRange = currentWeekdaySymbolNumber;
-            endOfRange = currentWeekdaySymbolNumber;
-        } else {
-            NSInteger currentWeekdaySymbolIndex = [currentWeekdaySymbolNumber integerValue];
-            NSInteger startWeekdaySymbolIndex = [startOfRange integerValue];
-            NSInteger endWeekdaySymbolIndex = [endOfRange integerValue];
-            
-            // This check assumes self.sortedDateCodesArray is sorted in ascending order.
-            if ((currentWeekdaySymbolIndex - endWeekdaySymbolIndex) <= 1) {
-                // The current weekday number is either the same
-                // or immediately adjacent to the previous weekday. Move the end
-                // of range value and continue on in the loop
-                endOfRange = currentWeekdaySymbolNumber;
-            } else {
-                // If the current weekday isn't the immediate next day,
-                // append the new day range into the result string, clear the
-                // array of matching ranges and keep going.
-                NSString *rangeString = [self dayRangeStringFromWeekdaySymbolIndex:startWeekdaySymbolIndex toWeekdaySymbolIndex:endWeekdaySymbolIndex];
-                
-                if (dayRangeString.length) {
-                    [dayRangeString appendFormat:@", %@",rangeString];
-                } else {
-                    [dayRangeString appendString:rangeString];
-                }
-                
-                startOfRange = nil;
-                endOfRange = nil;
-            }
-        }
-    }
-    
-    if (!dayRangeString.length) {
-        // If we get to this point the dayRangeString was not generated because
-        // the weekday symbol indexes in sortedDateCodesArray are a single
-        // contiguous block.
-        NSInteger startWeekday = [startOfRange integerValue];
-        NSInteger endWeekday = [endOfRange integerValue];
-        
-        [dayRangeString appendString:[self dayRangeStringFromWeekdaySymbolIndex:startWeekday toWeekdaySymbolIndex:endWeekday]];
-    }
-    
-    return dayRangeString;
+    NSMutableArray *dayRanges = [[NSMutableArray alloc] init];
+    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
+
+    [self.sortedDateCodesArray enumerateObjectsUsingBlock:^(NSNumber *number, NSUInteger idx, BOOL *stop) {
+        [indexSet addIndex:[number unsignedIntegerValue]];
+    }];
+
+    [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL *stop) {
+        NSInteger startWeekdaySymbolIndex = range.location;
+        NSInteger endWeekdaySymbolIndex = range.location + (range.length - 1); // Decrement length by 1 to account for 0 indexing
+
+        NSString *rangeString = [self dayRangeStringFromWeekdaySymbolIndex:startWeekdaySymbolIndex toWeekdaySymbolIndex:endWeekdaySymbolIndex];
+        [dayRanges addObject:rangeString];
+    }];
+
+    return [dayRanges componentsJoinedByString:@", "];
 }
 
 - (NSString *)dayRangeStringFromWeekdaySymbolIndex:(NSInteger)startWeekdaySymbol toWeekdaySymbolIndex:(NSInteger)endWeekdaySymbol
