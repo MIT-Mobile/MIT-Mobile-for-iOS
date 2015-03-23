@@ -3,6 +3,6 @@
 
 @interface MITMobiusDetailContainerViewController : UIViewController
 
-- (instancetype)initWithResource:(MITMobiusResource *)resource resources:(NSArray *)resources;
+- (instancetype)initWithResource:(MITMobiusResource *)resource inResources:(NSArray *)resources;
 
 @end

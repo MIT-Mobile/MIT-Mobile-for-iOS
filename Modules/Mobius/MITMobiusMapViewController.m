@@ -292,7 +292,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     self.currentlySelectedRoom = mapObject;
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource resources:self.resourcesByBuilding[resource.room]];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:self.resourcesByBuilding[resource.room]];
 
     detailContainerViewController.view.frame = CGRectMake(0, 0, 320, 500);
     
@@ -348,7 +348,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)pushDetailViewControllerForResource:(MITMobiusResource *)resource
 {
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource resources:self.resourcesByBuilding[resource.room]];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:self.resourcesByBuilding[resource.room]];
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 

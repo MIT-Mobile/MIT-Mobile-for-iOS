@@ -594,7 +594,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSArray *resourcesForBuilding = self.resourcesByBuilding[resource.room];
     
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource resources:resourcesForBuilding];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:resourcesForBuilding];
 
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
