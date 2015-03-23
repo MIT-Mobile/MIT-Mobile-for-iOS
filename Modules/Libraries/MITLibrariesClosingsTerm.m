@@ -24,16 +24,7 @@ static NSString * const MITLibrariesClosingTermCodingKeyReason = @"MITLibrariesC
 
 - (BOOL)isClosedOnDate:(NSDate *)date
 {
-    return ([date dateFallsBetweenStartDate:self.dates.startDate endDate:self.dates.endDate]);
-}
-
-- (NSDateFormatter *)dateFormatter
-{
-    static NSDateFormatter *dateFormatter;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-    }
-    return dateFormatter;
+    return ([date dateFallsBetweenStartDate:self.dates.startDate endDate:self.dates.endDate components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)]);
 }
 
 #pragma mark - NSCoding
