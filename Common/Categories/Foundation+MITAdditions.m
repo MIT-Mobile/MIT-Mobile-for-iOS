@@ -698,10 +698,11 @@ typedef struct {
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     
-    NSDate *date1 = [calendar dateFromComponents:[calendar components:components
-                                                             fromDate:self]];
-    NSDate *date2 = [calendar dateFromComponents:[calendar components:components
-                                                             fromDate:otherDate]];
+    NSDateComponents *dateComponents1 = [calendar components:components fromDate:self];
+    NSDateComponents *dateComponents2 = [calendar components:components fromDate:otherDate];
+    
+    NSDate *date1 = [calendar dateFromComponents:dateComponents1];
+    NSDate *date2 = [calendar dateFromComponents:dateComponents2];
     
 	return [date1 isEqual:date2];
 }
@@ -965,8 +966,30 @@ typedef struct {
 
 - (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate
 {
-    return ([self timeIntervalSince1970] >= [startDate timeIntervalSince1970] &&
-            [self timeIntervalSince1970] <= [endDate timeIntervalSince1970]);
+    NSParameterAssert(startDate);
+    NSParameterAssert(endDate);
+    
+    NSComparisonResult startDateComparison = [self compare:startDate];
+    NSComparisonResult endDateComparison = [self compare:endDate];
+    
+    return ((startDateComparison != NSOrderedAscending) && (endDateComparison != NSOrderedDescending));
+}
+
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate components:(NSCalendarUnit)components
+{
+    NSParameterAssert(startDate);
+    NSParameterAssert(endDate);
+    
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *currentDateComponents = [calendar components:components fromDate:self];
+    NSDateComponents *startDateComponents = [calendar components:components fromDate:startDate];
+    NSDateComponents *endDateComponents = [calendar components:components fromDate:endDate];
+    
+    NSDate *currentDate = [calendar dateFromComponents:currentDateComponents];
+    startDate = [calendar dateFromComponents:startDateComponents];
+    endDate = [calendar dateFromComponents:endDateComponents];
+    
+    return [currentDate dateFallsBetweenStartDate:startDate endDate:endDate];
 }
 
 - (NSString *)ISO8601String
@@ -984,66 +1007,67 @@ typedef struct {
 
 - (NSString *)MITDateCode
 {
-    static NSDateComponents *dateComponents;
-    if (!dateComponents) {
-        NSCalendar *calendar = [NSCalendar currentCalendar];
-        dateComponents = [calendar components:(NSDayCalendarUnit |
-                                               NSWeekdayCalendarUnit)
-                                      fromDate:self];
-    }
+    NSCalendarUnit calendarUnits = (NSDayCalendarUnit | NSWeekdayCalendarUnit);
+    NSDateComponents *dateComponents = [[NSCalendar cachedCurrentCalendar] components:calendarUnits fromDate:self];
  
     switch (dateComponents.weekday) {
-        case 0:
+        case 1: {
             return @"U";
-            break;
-        case 1:
+        }
+            
+        case 2: {
             return @"M";
-            break;
-        case 2:
+        }
+            
+        case 3: {
             return @"T";
-            break;
-        case 3:
+        }
+            
+        case 4: {
             return @"W";
-            break;
-        case 4:
+        }
+            
+        case 5: {
             return @"R";
-            break;
-        case 5:
+        }
+            
+        case 6: {
             return @"F";
-            break;
-        case 6:
+        }
+            
+        case 7: {
             return @"S";
-            break;
-        default:
-            return @"";
-            break;
+        }
+            
+        default: {
+            return nil;
+        }
     }
 }
 
+// Returns an NSNumber representing an index into
+// -[NSDateFormatter weekdaySymbols]. This index is
+// zero-indexed (unlike -[NSDateComponents weekday])
 + (NSNumber *)numberForDateCode:(NSString *)dateCode
 {
     if ([dateCode isEqualToString:@"U"]) {
         return @0;
-    }
-    else if ([dateCode isEqualToString:@"M"]) {
+    } else if ([dateCode isEqualToString:@"M"]) {
         return @1;
-    }
-    else if ([dateCode isEqualToString:@"T"]) {
+    } else if ([dateCode isEqualToString:@"T"]) {
         return @2;
-    }
-    else if ([dateCode isEqualToString:@"W"]) {
+    } else if ([dateCode isEqualToString:@"W"]) {
         return @3;
-    }
-    else if ([dateCode isEqualToString:@"R"]) {
+    } else if ([dateCode isEqualToString:@"R"]) {
         return @4;
-    }
-    else if ([dateCode isEqualToString:@"F"]) {
+    } else if ([dateCode isEqualToString:@"F"]) {
         return @5;
-    }
-    else if ([dateCode isEqualToString:@"S"]) {
+    } else if ([dateCode isEqualToString:@"S"]) {
         return @6;
+    } else {
+        NSString *reason = [NSString stringWithFormat:@"unknown date code %@", dateCode];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
-    return @0;
 }
 
 @end
@@ -1060,7 +1084,6 @@ typedef struct {
 + (NSCalendar *)cachedCurrentCalendar {
     return (NSCalendar*)CFBridgingRelease(CFCalendarCopyCurrent());
 }
-
 @end
 
 @implementation NSIndexPath (MITAdditions)
