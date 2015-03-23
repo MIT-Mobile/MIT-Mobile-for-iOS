@@ -89,10 +89,10 @@
 
 - (NSOrderedSet *)attributes
 {
-    [self willAccessValueForKey:@"attributes"];
-    
+    [self willAccessValueForKey:@"attributes"];    
     NSOrderedSet *attributes = [self primitiveValueForKey:@"attributes"];
-    
+    [self didAccessValueForKey:@"attributes"];
+
     for (MITMobiusResourceAttribute *rAttribute in attributes) {
 
         NSMutableArray *valuesToDelete = [[NSMutableArray alloc] init];
@@ -107,7 +107,6 @@
         [values removeObjectsInArray:valuesToDelete];
         rAttribute.values = values;
     }
-    [self didAccessValueForKey:@"attributes"];
     
     return attributes;
 }
