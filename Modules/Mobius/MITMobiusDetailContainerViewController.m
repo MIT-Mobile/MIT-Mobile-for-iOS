@@ -17,9 +17,8 @@
 
 @implementation MITMobiusDetailContainerViewController
 
-- (instancetype)initWithResource:(MITMobiusResource *)resource resources:(NSArray *)resources nibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
+- (instancetype)initWithResource:(MITMobiusResource *)resource resources:(NSArray *)resources
 {
-    self = [super initWithNibName:nil bundle:nil];
     if (self) {
         self.currentResource = resource;
         self.resources = resources;
