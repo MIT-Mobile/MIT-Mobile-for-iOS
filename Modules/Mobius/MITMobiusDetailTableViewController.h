@@ -5,4 +5,6 @@
 
 @property (nonatomic, weak) MITMobiusResource *resource;
 
+- (instancetype)initWithResource:(MITMobiusResource *)resource;
+
 @end

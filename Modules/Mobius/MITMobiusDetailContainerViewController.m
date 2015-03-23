@@ -204,9 +204,7 @@
 
 - (MITMobiusDetailTableViewController *)detailViewControllerForResource:(MITMobiusResource *)resource
 {
-//TODO change to initWithResource
-    MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] init];
-    detailViewController.resource = resource;
+    MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] initWithResource:resource];
     return detailViewController;
 }
 
