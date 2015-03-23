@@ -698,10 +698,11 @@ typedef struct {
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     
-    NSDate *date1 = [calendar dateFromComponents:[calendar components:components
-                                                             fromDate:self]];
-    NSDate *date2 = [calendar dateFromComponents:[calendar components:components
-                                                             fromDate:otherDate]];
+    NSDateComponents *dateComponents1 = [calendar components:components fromDate:self];
+    NSDateComponents *dateComponents2 = [calendar components:components fromDate:otherDate];
+    
+    NSDate *date1 = [calendar dateFromComponents:dateComponents1];
+    NSDate *date2 = [calendar dateFromComponents:dateComponents2];
     
 	return [date1 isEqual:date2];
 }
