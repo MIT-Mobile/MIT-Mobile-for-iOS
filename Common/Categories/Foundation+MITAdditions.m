@@ -974,6 +974,23 @@ typedef struct {
     return ((startDateComparison != NSOrderedAscending) && (endDateComparison != NSOrderedDescending));
 }
 
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate components:(NSCalendarUnit)components
+{
+    NSParameterAssert(startDate);
+    NSParameterAssert(endDate);
+    
+    NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
+    NSDateComponents *currentDateComponents = [calendar components:components fromDate:self];
+    NSDateComponents *startDateComponents = [calendar components:components fromDate:startDate];
+    NSDateComponents *endDateComponents = [calendar components:components fromDate:endDate];
+    
+    NSDate *currentDate = [calendar dateFromComponents:currentDateComponents];
+    startDate = [calendar dateFromComponents:startDateComponents];
+    endDate = [calendar dateFromComponents:endDateComponents];
+    
+    return [currentDate dateFallsBetweenStartDate:startDate endDate:endDate];
+}
+
 - (NSString *)ISO8601String
 {
 	struct tm *timeinfo;
