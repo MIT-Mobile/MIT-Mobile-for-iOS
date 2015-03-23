@@ -6,7 +6,26 @@ static NSString * const MITLibrariesExceptionTermCodingKeyDates = @"MITLibraries
 static NSString * const MITLibrariesExceptionTermCodingKeyHours = @"MITLibrariesExceptionTermCodingKeyHours";
 static NSString * const MITLibrariesExceptionTermCodingKeyReason = @"MITLibrariesExceptionTermCodingKeyReason";
 
+@interface MITLibrariesExceptionsTerm ()
+@property(nonatomic,readonly,strong) NSDate *startDate;
+@property(nonatomic,readonly,strong) NSDate *endDate;
+@end
+
 @implementation MITLibrariesExceptionsTerm
+@synthesize startDate = _startDate;
+@synthesize endDate = _endDate;
+
++ (NSDateFormatter*)dateTimeFormatter
+{
+    static NSDateFormatter *dateTimeFormatter = nil;
+    static dispatch_once_t dateTimeFormatterToken;
+    dispatch_once(&dateTimeFormatterToken, ^{
+        dateTimeFormatter = [[NSDateFormatter alloc] init];
+        dateTimeFormatter.dateFormat = @"yyyy-MM-dd HH:mm:ss";
+    });
+    
+    return dateTimeFormatter;
+}
 
 + (RKMapping *)objectMapping
 {
@@ -21,42 +40,42 @@ static NSString * const MITLibrariesExceptionTermCodingKeyReason = @"MITLibrarie
 
 - (BOOL)isOpenOnDate:(NSDate *)date
 {
-    NSString *startDateString = [NSString stringWithFormat:@"%@ %@", self.dates.start, self.hours.start];
-    NSString *endDateString = [NSString stringWithFormat:@"%@ %@", self.dates.end, self.hours.end];
-    
-    [self.dateFormatter setDateFormat:@"yyyy-MM-dd HH:mm:ss"];
-
-    NSDate *startDate = [self.dateFormatter dateFromString:startDateString];
-    
-    NSDate *endDate = [self.dateFormatter dateFromString:endDateString];
+    NSDate *endDate = self.endDate;
     if ([endDate isEqualToDate:[date startOfDay]]) {
         endDate = [endDate dateByAddingDay];
     }
     
-    return ([date dateFallsBetweenStartDate:startDate endDate:endDate]);
+    return ([date dateFallsBetweenStartDate:self.startDate endDate:endDate]);
 }
 
 - (BOOL)isOpenOnDayOfDate:(NSDate *)date
 {
-    [self.dateFormatter setDateFormat:@"yyyy-MM-dd"];
+    return [date dateFallsBetweenStartDate:self.startDate endDate:self.endDate components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)];
+}
 
-    NSDate *startDate = [self.dateFormatter dateFromString:self.dates.start];
+- (NSDate*)startDate
+{
+    if (!_startDate) {
+        NSString *startDateString = [NSString stringWithFormat:@"%@ %@", self.dates.start, self.hours.start];
+        _startDate = [[MITLibrariesExceptionsTerm dateTimeFormatter] dateFromString:startDateString];
+    }
     
-    return [date isEqualToDateIgnoringTime:startDate];
+    return _startDate;
+}
+
+- (NSDate*)endDate
+{
+    if (!_endDate) {
+        NSString *startDateString = [NSString stringWithFormat:@"%@ %@", self.dates.end, self.hours.end];
+        _endDate = [[MITLibrariesExceptionsTerm dateTimeFormatter] dateFromString:startDateString];
+    }
+    
+    return _endDate;
 }
 
 - (NSString *)termHoursDescription
 {
     return [NSString stringWithFormat:@"%@ %@ (%@)", [self.dates dayRangesString], [self.hours hoursRangesString], self.reason];
-}
-
-- (NSDateFormatter *)dateFormatter
-{
-    static NSDateFormatter *dateFormatter;
-    if (!dateFormatter) {
-        dateFormatter = [[NSDateFormatter alloc] init];
-    }
-    return dateFormatter;
 }
 
 #pragma mark - NSCoding
