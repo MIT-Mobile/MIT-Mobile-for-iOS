@@ -169,7 +169,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
         [detailCell setTitle: self.resource.name];
         [detailCell setStatus:self.resource.status];
 
-    } else if ([cell isKindOfClass:[MITActionCell class]] && indexPath.section == MITMobiusTableViewSectionLocation) {
+    } else if (indexPath.section == MITMobiusTableViewSectionLocation) {
         MITActionCell *actionCell = (MITActionCell*)cell;
         [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:self.resource.room];
 
