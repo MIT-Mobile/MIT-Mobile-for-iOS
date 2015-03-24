@@ -4,6 +4,7 @@
 #import "MITMobiusResourceOwner.h"
 #import "MITMobiusTemplate.h"
 #import "MITMobiusType.h"
+#import "MITMobiusResourceAttributeValue.h"
 
 @implementation MITMobiusResource
 
@@ -84,6 +85,30 @@
 - (CLLocationCoordinate2D)coordinate
 {
     return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+}
+
+- (NSOrderedSet *)attributes
+{
+    [self willAccessValueForKey:@"attributes"];    
+    NSOrderedSet *attributes = [self primitiveValueForKey:@"attributes"];
+    [self didAccessValueForKey:@"attributes"];
+
+    for (MITMobiusResourceAttribute *rAttribute in attributes) {
+
+        NSMutableArray *valuesToDelete = [[NSMutableArray alloc] init];
+        
+        for (MITMobiusResourceAttributeValue *value in rAttribute.values) {
+            
+            if ([value.value length] == 0) {
+                [valuesToDelete addObject:value];
+            }
+        }
+        NSMutableOrderedSet *values = [rAttribute.values mutableCopy];
+        [values removeObjectsInArray:valuesToDelete];
+        rAttribute.values = values;
+    }
+    
+    return attributes;
 }
 
 @end
