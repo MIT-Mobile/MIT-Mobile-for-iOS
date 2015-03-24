@@ -88,37 +88,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 {
     [super viewDidLoad];
     
-    // Navbar setup
-    self.navigationBarExtensionView = [[MITExtendedNavBarView alloc] init];
-    self.navigationBarExtensionView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.navigationBarExtensionView];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[navigationBarExtensionView]-0-|" options:0 metrics:nil views:@{@"navigationBarExtensionView": self.navigationBarExtensionView}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[navigationBarExtensionView]" options:0 metrics:nil views:@{@"navigationBarExtensionView": self.navigationBarExtensionView}]];
-    
-    self.navigationBarExtensionViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBarExtensionView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kNavigationBarStopStateExtensionHeight];
-    [self.navigationBarExtensionView addConstraint:self.navigationBarExtensionViewHeightConstraint];
-    
-    self.navigationBarExtensionViewTopSpaceConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBarExtensionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0];
-    [self.view addConstraint:self.navigationBarExtensionViewTopSpaceConstraint];
-    
-    
-    self.scrollView = [[UIScrollView alloc] init];
-    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.view addSubview:self.scrollView];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[scrollView]-0-|" options:0 metrics:nil views:@{@"scrollView": self.scrollView}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[navigationBarExtensionView]-0-[scrollView]-0-|" options:0 metrics:nil views:@{@"scrollView": self.scrollView, @"navigationBarExtensionView": self.navigationBarExtensionView}]];
-    
-    
-    self.mapContainerView = [[UIView alloc] init];
-    UITapGestureRecognizer *mapTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mapContainerViewTapped)];
-    [self.mapContainerView addGestureRecognizer:mapTapGestureRecognizer];
-    self.mapContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.scrollView addSubview:self.mapContainerView];
-    
-    
-    self.routeStopContainerView = [[UIView alloc] init];
-    self.routeStopContainerView.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.scrollView addSubview:self.routeStopContainerView];
+    [self setupViews];
     
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self addPortraitConstraints];
@@ -126,10 +96,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
         [self addLandscapeConstraints];
     }
     
-    [self setupMapViewController];
-    [self setupRouteViewController];
-    [self setupStopsPageViewController];
-    [self setupStopTitleViews];
+    [self setupChildViewControllers];
     
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
@@ -150,6 +117,92 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 }
 
 #pragma mark - View Setup
+
+- (void)setupViews
+{
+    [self setupNavigationBarExtensionViews];
+    [self setupStopTitleViews];
+    [self setupScrollView];
+    [self setupMapContainerView];
+    [self setupRouteStopContainerView];
+}
+
+- (void)setupNavigationBarExtensionViews
+{
+    self.navigationBarExtensionView = [[MITExtendedNavBarView alloc] init];
+    self.navigationBarExtensionView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.navigationBarExtensionView];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[navigationBarExtensionView]-0-|" options:0 metrics:nil views:@{@"navigationBarExtensionView": self.navigationBarExtensionView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[navigationBarExtensionView]" options:0 metrics:nil views:@{@"navigationBarExtensionView": self.navigationBarExtensionView}]];
+    
+    self.navigationBarExtensionViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBarExtensionView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kNavigationBarStopStateExtensionHeight];
+    [self.navigationBarExtensionView addConstraint:self.navigationBarExtensionViewHeightConstraint];
+    
+    self.navigationBarExtensionViewTopSpaceConstraint = [NSLayoutConstraint constraintWithItem:self.navigationBarExtensionView attribute:NSLayoutAttributeTop relatedBy:NSLayoutRelationEqual toItem:self.view attribute:NSLayoutAttributeTop multiplier:1 constant:0];
+    [self.view addConstraint:self.navigationBarExtensionViewTopSpaceConstraint];
+}
+
+- (void)setupStopTitleViews
+{
+    self.stopTitleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 195, 60)];
+    
+    // Stop title label
+    self.stopTitleLabel = [[UILabel alloc] init];
+    self.stopTitleLabel.font = [UIFont boldSystemFontOfSize:17];
+    self.stopTitleLabel.textAlignment = NSTextAlignmentCenter;
+    self.stopTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.stopTitleView addSubview:self.stopTitleLabel];
+    
+    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-2-[stopTitleLabel]-2-|" options:0 metrics:nil views:@{@"stopTitleLabel": self.stopTitleLabel}]];
+    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[stopTitleLabel(==21)]" options:0 metrics:nil views:@{@"stopTitleLabel": self.stopTitleLabel}]];
+    
+    // Stop subtitle label
+    self.stopSubtitleLabel = [[UILabel alloc] init];
+    self.stopSubtitleLabel.font = [UIFont systemFontOfSize:15];
+    self.stopSubtitleLabel.textAlignment = NSTextAlignmentCenter;
+    self.stopSubtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.stopTitleView addSubview:self.stopSubtitleLabel];
+    
+    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[stopSubtitleLabel(==18)]-3-|" options:0 metrics:nil views:@{@"stopSubtitleLabel": self.stopSubtitleLabel}]];
+    [self.stopTitleView addConstraint:[NSLayoutConstraint constraintWithItem:self.stopSubtitleLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.stopTitleView attribute:NSLayoutAttributeWidth multiplier:1 constant:-4]];
+    
+    self.stopSubtitleLabelCenterAlignmentConstraint = [NSLayoutConstraint constraintWithItem:self.stopSubtitleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.stopTitleView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
+    [self.stopTitleView addConstraint:self.stopSubtitleLabelCenterAlignmentConstraint];
+}
+
+- (void)setupScrollView
+{
+    self.scrollView = [[UIScrollView alloc] init];
+    self.scrollView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:self.scrollView];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[scrollView]-0-|" options:0 metrics:nil views:@{@"scrollView": self.scrollView}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[navigationBarExtensionView]-0-[scrollView]-0-|" options:0 metrics:nil views:@{@"scrollView": self.scrollView, @"navigationBarExtensionView": self.navigationBarExtensionView}]];
+}
+
+- (void)setupMapContainerView
+{
+    self.mapContainerView = [[UIView alloc] init];
+    UITapGestureRecognizer *mapTapGestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(mapContainerViewTapped)];
+    [self.mapContainerView addGestureRecognizer:mapTapGestureRecognizer];
+    self.mapContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.scrollView addSubview:self.mapContainerView];
+}
+
+- (void)setupRouteStopContainerView
+{
+    self.routeStopContainerView = [[UIView alloc] init];
+    self.routeStopContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.scrollView addSubview:self.routeStopContainerView];
+}
+
+#pragma mark - Child ViewController Setup
+
+- (void)setupChildViewControllers
+{
+    [self setupMapViewController];
+    [self setupRouteViewController];
+    [self setupStopsPageViewController];
+}
 
 - (void)setupMapViewController
 {
@@ -201,34 +254,6 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     
     [self.routeStopContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[stopsPageViewController]-0-|" options:0 metrics:nil views:@{@"stopsPageViewController": self.stopsPageViewController.view}]];
     [self.routeStopContainerView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[stopsPageViewController]-0-|" options:0 metrics:nil views:@{@"stopsPageViewController": self.stopsPageViewController.view}]];
-}
-
-- (void)setupStopTitleViews
-{
-    self.stopTitleView = [[UIView alloc] initWithFrame:CGRectMake(0, 0, 195, 60)];
-    
-    // Stop title label
-    self.stopTitleLabel = [[UILabel alloc] init];
-    self.stopTitleLabel.font = [UIFont boldSystemFontOfSize:17];
-    self.stopTitleLabel.textAlignment = NSTextAlignmentCenter;
-    self.stopTitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.stopTitleView addSubview:self.stopTitleLabel];
-    
-    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-2-[stopTitleLabel]-2-|" options:0 metrics:nil views:@{@"stopTitleLabel": self.stopTitleLabel}]];
-    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-20-[stopTitleLabel(==21)]" options:0 metrics:nil views:@{@"stopTitleLabel": self.stopTitleLabel}]];
-    
-    // Stop subtitle label
-    self.stopSubtitleLabel = [[UILabel alloc] init];
-    self.stopSubtitleLabel.font = [UIFont systemFontOfSize:15];
-    self.stopSubtitleLabel.textAlignment = NSTextAlignmentCenter;
-    self.stopSubtitleLabel.translatesAutoresizingMaskIntoConstraints = NO;
-    [self.stopTitleView addSubview:self.stopSubtitleLabel];
-    
-    [self.stopTitleView addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:[stopSubtitleLabel(==18)]-3-|" options:0 metrics:nil views:@{@"stopSubtitleLabel": self.stopSubtitleLabel}]];
-    [self.stopTitleView addConstraint:[NSLayoutConstraint constraintWithItem:self.stopSubtitleLabel attribute:NSLayoutAttributeWidth relatedBy:NSLayoutRelationEqual toItem:self.stopTitleView attribute:NSLayoutAttributeWidth multiplier:1 constant:-4]];
-    
-    self.stopSubtitleLabelCenterAlignmentConstraint = [NSLayoutConstraint constraintWithItem:self.stopSubtitleLabel attribute:NSLayoutAttributeCenterX relatedBy:NSLayoutRelationEqual toItem:self.stopTitleView attribute:NSLayoutAttributeCenterX multiplier:1 constant:0];
-    [self.stopTitleView addConstraint:self.stopSubtitleLabelCenterAlignmentConstraint];
 }
 
 #pragma mark - Constraints
@@ -394,15 +419,12 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     switch (state) {
         case MITShuttleRouteStopMapContainerStateRoute:
             [self configureLayoutForRouteStateAnimated:animated];
-            
             break;
         case MITShuttleRouteStopMapContainerStateStop:
             [self configureLayoutForStopStateAnimated:animated];
-            
             break;
         case MITShuttleRouteStopMapContainerStateMap:
             [self configureLayoutForMapStateAnimated:animated];
-            
             break;
         default:
             break;
@@ -447,7 +469,6 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
         self.routeViewController.shouldSuppressPredictionRefreshReloads = NO;
         [self.routeViewController.tableView reloadData];
     };
-    
     
     self.routeViewController.tableView.contentOffset = CGPointZero;
     [self.mapViewController setState:MITShuttleMapStateContracting];
