@@ -738,6 +738,31 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     self.stop = stop;
 }
 
+- (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
+{
+    // There should only be one view controller displayed at a time
+    MITShuttleStopViewController *stopVC = [pageViewController.viewControllers firstObject];
+    MITShuttleStop *stop = stopVC.stop;
+    
+    MITShuttleStopSubtitleLabelAnimationType animationType;
+    NSInteger previousStopIndex = [self.route.stops indexOfObject:self.stop];
+    NSInteger newStopIndex = [self.route.stops indexOfObject:stop];
+    NSInteger maxIndex = self.route.stops.count - 1;
+    if (previousStopIndex == maxIndex && newStopIndex == 0) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
+    } else if (previousStopIndex == 0 && newStopIndex == maxIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
+    } else if (previousStopIndex < newStopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeForward;
+    } else if (previousStopIndex > newStopIndex) {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeBackward;
+    } else {
+        animationType = MITShuttleStopSubtitleLabelAnimationTypeNone;
+    }
+    [self setStopSubtitleWithStop:stop animationType:animationType];
+    self.stop = stop;
+}
+
 #pragma mark - UINavigationBarDelegate
 
 - (BOOL)navigationShouldPopOnBackButton
