@@ -43,7 +43,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,weak) MITMobiusMapViewController *mapViewController;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
-@property(nonatomic,weak) MITMobiusRecentSearchController *typeAheadViewController;
+@property(nonatomic,weak) MITMobiusRecentSearchController *recentSearchViewController;
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
 @property(nonatomic,getter=isSearching) BOOL searching;
@@ -58,7 +58,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 @synthesize resourcesTableViewController = _resourcesTableViewController;
 @synthesize mapViewController = _mapViewController;
-@synthesize typeAheadViewController = _typeAheadViewController;
+@synthesize recentSearchViewController = _recentSearchViewController;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -89,7 +89,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     
     if (self.currentState == MITMobiusRootViewControllerStateSearch) {
         UIEdgeInsets contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame), 0, 0, 0);
-        self.typeAheadViewController.tableView.contentInset = contentInset;
+        self.recentSearchViewController.tableView.contentInset = contentInset;
     }
 }
 
@@ -156,6 +156,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+                        [self.recentSearchViewController addRecentSearchTerm:queryString];
                     }
                 }];
             }
@@ -308,21 +309,21 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 
 #pragma mark typeAheadViewController
-- (UITableViewController*)typeAheadViewController
+- (UITableViewController*)recentSearchViewController
 {
-    if (!_typeAheadViewController) {
-        [self loadTypeAheadViewController];
+    if (!_recentSearchViewController) {
+        [self loadRecentSearchViewController];
     }
 
-    return _typeAheadViewController;
+    return _recentSearchViewController;
 }
 
-- (void)loadTypeAheadViewController
+- (void)loadRecentSearchViewController
 {
-    MITMobiusRecentSearchController *typeAheadViewController = [[MITMobiusRecentSearchController alloc] init];
-    typeAheadViewController.delegate = self;
-    [self _addChildViewController:typeAheadViewController toView:self.view];
-    _typeAheadViewController = typeAheadViewController;
+    MITMobiusRecentSearchController *recentSearchViewController = [[MITMobiusRecentSearchController alloc] init];
+    recentSearchViewController.delegate = self;
+    [self _addChildViewController:recentSearchViewController toView:self.view];
+    _recentSearchViewController = recentSearchViewController;
 }
 
 - (NSArray*)resources
@@ -405,8 +406,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            self.typeAheadViewController.view.hidden = NO;
-            self.typeAheadViewController.view.alpha = 0.;
+            self.recentSearchViewController.view.hidden = NO;
+            self.recentSearchViewController.view.alpha = 0.;
         } break;
             
         case MITMobiusRootViewControllerStateResults: {
@@ -424,8 +425,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            self.typeAheadViewController.view.hidden = NO;
-            self.typeAheadViewController.view.alpha = 1.;
+            self.recentSearchViewController.view.hidden = NO;
+            self.recentSearchViewController.view.alpha = 1.;
         } break;
             
         case MITMobiusRootViewControllerStateResults: {
@@ -445,7 +446,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            self.typeAheadViewController.view.alpha = 1;
+            self.recentSearchViewController.view.alpha = 1;
             [self.navigationItem setLeftBarButtonItem:nil animated:animated];
             [self.searchBar setShowsCancelButton:YES animated:animated];
         } break;
@@ -468,7 +469,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            self.typeAheadViewController.view.alpha = 0;
+            self.recentSearchViewController.view.alpha = 0;
             [self.searchBar setShowsCancelButton:NO animated:animated];
         } break;
             
@@ -489,7 +490,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             
         case MITMobiusRootViewControllerStateSearch: {
             [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
-            self.typeAheadViewController.view.hidden = YES;
+            self.recentSearchViewController.view.hidden = YES;
         } break;
             
         case MITMobiusRootViewControllerStateResults: {
@@ -500,7 +501,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (void)_searchSuggestionsTimerFired:(NSTimer*)timer
 {
-    [self.typeAheadViewController filterResultsUsingString:self.searchBar.text];
+    [self.recentSearchViewController filterResultsUsingString:self.searchBar.text];
 }
 
 - (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
