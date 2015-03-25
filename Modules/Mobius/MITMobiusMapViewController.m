@@ -15,7 +15,7 @@ static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnno
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 
 
-@interface MITMobiusMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate>
+@interface MITMobiusMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate, MITMobiusDetailPagingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
@@ -292,7 +292,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     self.currentlySelectedRoom = mapObject;
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:self.resourcesByBuilding[resource.room]];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource];
+    detailContainerViewController.delegate = self;
 
     detailContainerViewController.view.frame = CGRectMake(0, 0, 320, 500);
     
@@ -348,7 +349,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)pushDetailViewControllerForResource:(MITMobiusResource *)resource
 {
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:self.resourcesByBuilding[resource.room]];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource];
+    detailContainerViewController.delegate = self;
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
 
@@ -360,5 +362,48 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 }
 
 
+#pragma mark - MITMobiusDetailPagingDelegate
+- (NSUInteger)numberOfResourcesInDetailViewController:(MITMobiusDetailContainerViewController*)viewController
+{
+    // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
+    // not requiring the view controller to do it for us.
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return resources.count;
+}
+
+- (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return resources[index];
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResource:(MITMobiusResource*)resource
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+        return [otherResource.identifier isEqualToString:resource.identifier];
+    }];
+
+    return index;
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    if (index >= (resources.count - 1)) {
+        return NSNotFound;
+    } else {
+        return ++index;
+    }
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
+{
+    if (index == 0) {
+        return NSNotFound;
+    } else {
+        return --index;
+    }
+}
 
 @end
