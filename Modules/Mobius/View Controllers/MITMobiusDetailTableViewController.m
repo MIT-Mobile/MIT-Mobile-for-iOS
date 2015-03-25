@@ -6,6 +6,7 @@
 #import "MITMobiusSpecificationsHeader.h"
 
 #import "MITMobiusModel.h"
+#import "MITMapModelController.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
@@ -90,7 +91,6 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     tableView.tableFooterView = [UIView new];
     
     tableView.separatorStyle = UITableViewCellSelectionStyleNone;
-    tableView.allowsSelection = NO;
 }
 
 - (NSManagedObjectContext*)managedObjectContext
@@ -144,6 +144,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
    
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    cell.selectionStyle = UITableViewCellSelectionStyleNone;
     [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
     
     return cell;
@@ -164,26 +165,30 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
         [detailCell setTitle: self.resource.name];
         [detailCell setStatus:self.resource.status];
 
-    } else if ([cell isKindOfClass:[MITActionCell class]]) {
+    } else if ([cell isKindOfClass:[MITActionCell class]] && indexPath.section == MITMobiusTableViewSectionLocation) {
         MITActionCell *actionCell = (MITActionCell*)cell;
         [actionCell setupCellOfType:MITActionRowTypeLocation withDetailText:self.resource.room];
 
     } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMobiusTableViewSectionSpecificatons) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-
         NSString *title = self.titles[indexPath.row];
         NSString *description = self.descriptions[indexPath.row];
         [titleDescriptionCell setTitle:title withDescription:description];
+ 
     } else if ([cell isKindOfClass:[MITTitleDescriptionCell class]] && indexPath.section == MITMobiusTableViewSectionFakeHours) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-        
-        
         if (indexPath.row == 0) {
             [titleDescriptionCell setTitle:@"mon-fri" withDescription:@"9am - 5pm"];
         } else {
             [titleDescriptionCell setTitle:@"sat-sun" withDescription:@"closed"];
         }
+    }
+}
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section == MITMobiusTableViewSectionLocation) {
+        [MITMapModelController openMapWithUnsanitizedSearchString:self.resource.room];
     }
 }
 
