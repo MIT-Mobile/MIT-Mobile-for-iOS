@@ -709,9 +709,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 - (CAShapeLayer *)shadowShapeLayer {
     if (!_shadowShapeLayer) {
         _shadowShapeLayer = [CAShapeLayer new];
-        _shadowShapeLayer.lineWidth = 2.0;
+        _shadowShapeLayer.lineWidth = 1.0;
         _shadowShapeLayer.fillColor = [UIColor clearColor].CGColor;
-        _shadowShapeLayer.strokeColor = [UIColor colorWithWhite:0.85 alpha:0.62].CGColor;
+        _shadowShapeLayer.strokeColor = [UIColor colorWithWhite:0.74 alpha:0.78].CGColor;
         // Must have default path set for animations to work
         _shadowShapeLayer.path = [UIBezierPath bezierPath].CGPath;
         [self.layer addSublayer:_shadowShapeLayer];
