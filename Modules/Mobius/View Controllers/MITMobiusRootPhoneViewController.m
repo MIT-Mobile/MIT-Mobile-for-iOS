@@ -49,8 +49,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
-@property(nonatomic,strong) NSArray *buildingSections;
-@property(nonatomic,strong) NSDictionary *resourcesByBuilding;
+@property(nonatomic,copy) NSArray *buildingSections;
+@property(nonatomic,copy) NSDictionary *resourcesByBuilding;
 
 @end
 
@@ -650,7 +650,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 }
                 
                 [self _transitionToState:newState animated:YES completion:^{
-                    [self.resourcesTableViewController setBuildingSections:[self buildingSections] setResourcesByBuilding:[self resourcesByBuilding]];
+                    [self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
                     
                     [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
                 }];

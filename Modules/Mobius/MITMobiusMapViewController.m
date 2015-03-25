@@ -26,8 +26,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
 
 
-@property(nonatomic,readonly,strong) NSArray *buildingSections;
-@property(nonatomic,readonly,strong) NSDictionary *resourcesByBuilding;
+@property(nonatomic,copy) NSArray *buildingSections;
+@property(nonatomic,copy) NSDictionary *resourcesByBuilding;
 @property(nonatomic,strong) NSMutableArray *buildings;
 
 
@@ -88,8 +88,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding animated:(BOOL)animated
 {
-    [self setBuildingSections:buildingSections];
-    [self setResourcesByBuilding:resourcesByBuilding];
+    self.buildingSections = buildingSections;
+    self.resourcesByBuilding = resourcesByBuilding;
     
     NSMutableArray *buildings = [[NSMutableArray alloc] init];
     
