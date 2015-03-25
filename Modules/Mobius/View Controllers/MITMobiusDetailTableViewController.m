@@ -191,8 +191,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
-    if ([cell isKindOfClass:[MITActionCell class]]) {
+    if (indexPath.section == MITMobiusTableViewSectionLocation) {
         [MITMapModelController openMapWithUnsanitizedSearchString:self.resource.room];
     }
 }
