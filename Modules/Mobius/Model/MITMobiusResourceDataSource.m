@@ -10,7 +10,7 @@
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
 
-static NSString* const MITMobiusDefaultServer = @"https://kairos-dev.mit.edu";
+static NSString* const MITMobiusDefaultServer = @"https://kairos-test.mit.edu";
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
