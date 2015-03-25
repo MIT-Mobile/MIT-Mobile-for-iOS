@@ -155,7 +155,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 }
             } else {
                 [self.managedObjectContext performBlockAndWait:^{
-                    [self.managedObjectContext reset];
+                    // TODO: Clean up the core data interaction patterns between
+                    // this class and the detail view. Uncommenting below breaks things because
+                    // objects are not being copied back into the MOC.
+                    // 2015.03.25
+                    //[self.managedObjectContext reset];
 
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
