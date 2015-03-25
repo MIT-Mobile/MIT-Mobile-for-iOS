@@ -155,11 +155,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 }
             } else {
                 [self.managedObjectContext performBlockAndWait:^{
-                    // TODO: Clean up the core data interaction patterns between
-                    // this class and the detail view. Uncommenting below breaks things because
-                    // objects are not being copied back into the MOC.
-                    // 2015.03.25
-                    //[self.managedObjectContext reset];
+                    [self.managedObjectContext reset];
+                    _resourcesByBuilding = nil;
+                    _buildingSections = nil;
 
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
@@ -648,7 +646,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             [self reloadDataSourceForSearch:queryString completion:^{
                 MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
                 
-                if ([self.dataSource.resources count]) {
+                if ([self.resources count]) {
                     newState = MITMobiusRootViewControllerStateResults;
                     self.mapFullScreen = NO;
                 }
@@ -688,16 +686,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (NSArray*)buildingSections
 {
     if (!_buildingSections) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *buildings = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                buildings[resource.room] = resource.room;
-            }];
-            
-            NSArray *buildingsArray = [buildings.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];;
-            
-            _buildingSections = buildingsArray;
-        }];
+        NSArray *buildingsArray = [self.resourcesByBuilding.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+        _buildingSections = buildingsArray;
     }
     
     return _buildingSections;
@@ -706,23 +696,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (NSDictionary*)resourcesByBuilding
 {
     if (!_resourcesByBuilding) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                
-                NSMutableArray *resources = resourcesByBuilding[resource.room];
-                if (!resources) {
-                    resources = [[NSMutableArray alloc] init];
-                    resourcesByBuilding[resource.room] = resources;
-                }
-                
-                [resources addObject:resource];
-            }];
-            
-            _resourcesByBuilding = resourcesByBuilding;
-        }];
+        _resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
     }
-    
+
     return _resourcesByBuilding;
 }
 
