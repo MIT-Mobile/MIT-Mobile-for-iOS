@@ -62,6 +62,35 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     return resources;
 }
 
+- (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context
+{
+    NSParameterAssert(context);
+
+    if (self.resourceObjectIdentifiers.count > 0) {
+        NSMutableDictionary *groupedResources = [[NSMutableDictionary alloc] init];
+        [context performBlockAndWait:^{
+            [self.resourceObjectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
+                NSManagedObject *object = [context existingObjectWithID:objectID error:nil];
+                if (object) {
+                    id<NSCopying> keyValue = [object valueForKey:key];
+
+                    NSMutableArray *values = groupedResources[keyValue];
+                    if (!values) {
+                        values = [[NSMutableArray alloc] init];
+                        groupedResources[keyValue] = values;
+                    }
+
+                    [values addObject:object];
+                }
+            }];
+        }];
+
+        return groupedResources;
+    } else {
+        return nil;
+    }
+}
+
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
     if (![queryString length]) {

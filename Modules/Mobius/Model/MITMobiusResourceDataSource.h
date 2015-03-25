@@ -7,6 +7,7 @@
 
 - (instancetype)init;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context;
 
 - (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString;
 - (NSArray *)recentSearchItemswithFilterString:(NSString *)filterString;
