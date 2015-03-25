@@ -54,8 +54,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     [super viewWillAppear:animated];
 }
 
-//Temporary fix for remove blank description rows
-- (void)removeBlankDescriptionsFromTitleDescriptionPairs
+- (void)combineDescriptionsForTitle
 {
     self.titles = [[NSMutableArray alloc] init];
     self.descriptions = [[NSMutableArray alloc] init];
@@ -63,13 +62,10 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     for(MITMobiusResourceAttribute *rAttribute in self.resource.attributes) {
         NSString *valueString = nil;
         for (MITMobiusResourceAttributeValue *value in rAttribute.values) {
-            NSString *trimmedValue = [value.value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-            if ([trimmedValue length] != 0) {
-                if ([valueString length] == 0) {
-                    valueString = trimmedValue;
-                } else {
-                    valueString = [NSString stringWithFormat:@"%@\n%@",valueString, trimmedValue];
-                }
+            if ([valueString length] == 0) {
+                valueString = value.value;
+            } else {
+                valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];
             }
         }
         if (valueString.length != 0) {
@@ -113,7 +109,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     if (![_resource.objectID isEqual:resource.objectID]) {
         if (resource) {
             _resource = (MITMobiusResource*)[self.managedObjectContext objectWithID:resource.objectID];
-            [self removeBlankDescriptionsFromTitleDescriptionPairs];
+            [self combineDescriptionsForTitle];
         } else {
             _resource = nil;
             self.descriptions = nil;

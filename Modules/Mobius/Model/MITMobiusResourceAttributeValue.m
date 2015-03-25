@@ -17,4 +17,14 @@
     return mapping;
 }
 
+- (NSString *)value
+{
+    [self willAccessValueForKey:@"value"];
+    NSString *value = [self primitiveValueForKey:@"value"];
+    [self didAccessValueForKey:@"value"];
+    
+    value = [value stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
+    return value;
+}
+
 @end
