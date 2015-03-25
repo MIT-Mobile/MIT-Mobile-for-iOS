@@ -152,4 +152,9 @@
     [self filterResultsUsingString:query.text];
 }
 
+- (void)addRecentSearchTerm:(NSString *)searchTerm
+{
+    [self.modelController addRecentSearchItem:searchTerm error:nil];
+}
+
 @end
