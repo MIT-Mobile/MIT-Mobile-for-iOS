@@ -33,6 +33,12 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 @property (weak, nonatomic) NSLayoutConstraint *leftContentConstraint;
 @property (weak, nonatomic) NSLayoutConstraint *bottomContentConstraint;
 @property (weak, nonatomic) NSLayoutConstraint *rightContentConstraint;
+
+@property (nonatomic) BOOL keepSizeWithinConstrainingView;
+@property (nonatomic) CGSize contentViewMaxSize;
+@property (nonatomic) CGFloat contentViewConstraintPaddingHorizontal;
+@property (nonatomic) CGFloat contentViewConstraintPaddingVertical;
+
 @end
 
 @implementation MITCalloutView
@@ -49,6 +55,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         _externalInsets = kMITCalloutViewDefaultExternalInsets;
         _shouldHighlightOnTouch = YES;
         _permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
+        _contentViewConstraintPaddingHorizontal = 20;
+        _contentViewConstraintPaddingVertical = 40;
+        _keepSizeWithinConstrainingView = YES;
         self.backgroundColor = [UIColor whiteColor];
     }
     return self;
@@ -86,6 +95,15 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         // Save preferred size at time of set because constraints will resize
         maxHeight = self.contentViewPreferredSize.height + self.internalInsets.top + self.internalInsets.bottom;
         maxWidth = self.contentViewPreferredSize.width + self.internalInsets.left + self.internalInsets.right;
+    }
+    
+    if (self.keepSizeWithinConstrainingView) {
+        if (maxHeight > self.contentViewMaxSize.height) {
+            maxHeight = self.contentViewMaxSize.height;
+        }
+        if (maxWidth > self.contentViewMaxSize.width) {
+            maxWidth = self.contentViewMaxSize.width;
+        }
     }
     
     switch (self.currentArrowDirection) {
@@ -434,8 +452,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat availableBottomSpace = CGRectGetHeight(constrainingView.bounds) - CGRectGetMaxY(presentationRect);
     CGFloat availableLeftSpace = CGRectGetMinX(presentationRect);
     
-    CGFloat constrainHeight = CGRectGetHeight(constrainingView.bounds);
+    CGFloat constraintHeight = CGRectGetHeight(constrainingView.bounds);
     CGFloat constraintWidth = CGRectGetWidth(constrainingView.bounds);
+    
+    self.contentViewMaxSize = CGSizeMake(constraintWidth - self.contentViewConstraintPaddingHorizontal, constraintHeight - self.contentViewConstraintPaddingVertical);
     
     // Reset to none to readjust our views for none and measure
     self.currentArrowDirection = MITCalloutArrowDirectionNone;
@@ -486,8 +506,8 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         case MITCalloutArrowDirectionRight:
             if (originY < self.externalInsets.top) {
                 originY = self.externalInsets.top;
-            } else if (constrainHeight - (originY + CGRectGetHeight(self.bounds)) < self.externalInsets.bottom) {
-                originY = constrainHeight - self.externalInsets.bottom - CGRectGetHeight(self.bounds);
+            } else if (constraintHeight - (originY + CGRectGetHeight(self.bounds)) < self.externalInsets.bottom) {
+                originY = constraintHeight - self.externalInsets.bottom - CGRectGetHeight(self.bounds);
             }
             break;
         case MITCalloutArrowDirectionNone:
@@ -500,7 +520,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat presentationRectMiddleX = CGRectGetMidX(presentationRect);
     CGFloat constraintHalfWidth = constraintWidth / 2.0;
     CGFloat presentationRectMiddleY = CGRectGetMidY(presentationRect);
-    CGFloat constraintHalfHeight = constrainHeight / 2.0;
+    CGFloat constraintHalfHeight = constraintHeight / 2.0;
     
     NSSortDescriptor *highestToLowest = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:NO];
     NSArray *availableSpace = [@[@(availableTopSpace), @(availableBottomSpace), @(availableLeftSpace), @(availableRightSpace)] sortedArrayUsingDescriptors:@[highestToLowest]];
