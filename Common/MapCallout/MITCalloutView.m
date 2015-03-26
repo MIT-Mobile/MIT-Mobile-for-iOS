@@ -3,7 +3,7 @@
 
 NSInteger const MITCalloutPermittedArrowDirectionAny = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionLeft | MITCalloutArrowDirectionBottom | MITCalloutArrowDirectionRight;
 
-static CGSize const kMITCalloutViewDefaultArrowSize = {30,14};
+static CGSize const kMITCalloutViewDefaultArrowSize = {30,15};
 static CGFloat const kMITCalloutViewDefaultCornerRadius = 10;
 static CGFloat const kMITCalloutViewDefaultArrowOffset = 5.0;
 static UIEdgeInsets const kMITCalloutViewDefaultInternalInsets = {5,5,5,5};
@@ -190,8 +190,8 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGPoint lowerRight = CGPointMake(rightEdge, bottomEdge);
     CGPoint lowerLeft = CGPointMake(originX, bottomEdge);
     
-    CGFloat arrowTipHeight = arrowHeight / 8;
-    CGFloat arrowTipWidth = arrowWidth / 8;
+    CGFloat arrowTipHeight = arrowHeight / 10;
+    CGFloat arrowTipWidth = arrowWidth / 10;
     CGFloat arrowBaseBezierControlInset = arrowWidth / 10;
     
     UIBezierPath *path = [UIBezierPath bezierPath];
