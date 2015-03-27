@@ -22,7 +22,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -49,8 +49,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
-@property(nonatomic,strong) NSArray *buildingSections;
-@property(nonatomic,strong) NSDictionary *resourcesByBuilding;
+@property(nonatomic,copy) NSArray *buildingSections;
+@property(nonatomic,copy) NSDictionary *resourcesByBuilding;
 
 @end
 
@@ -156,6 +156,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             } else {
                 [self.managedObjectContext performBlockAndWait:^{
                     [self.managedObjectContext reset];
+                    _resourcesByBuilding = nil;
+                    _buildingSections = nil;
 
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
@@ -592,9 +594,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 #pragma mark MITMobiusResourcesTableViewControllerDelegate
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
-    NSArray *resourcesForBuilding = self.resourcesByBuilding[resource.room];
-    
-    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource inResources:resourcesForBuilding];
+    MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource];
+    detailContainerViewController.delegate = self;
 
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
 }
@@ -645,13 +646,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             [self reloadDataSourceForSearch:queryString completion:^{
                 MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
                 
-                if ([self.dataSource.resources count]) {
+                if ([self.resources count]) {
                     newState = MITMobiusRootViewControllerStateResults;
                     self.mapFullScreen = NO;
                 }
                 
                 [self _transitionToState:newState animated:YES completion:^{
-                    [self.resourcesTableViewController setBuildingSections:[self buildingSections] setResourcesByBuilding:[self resourcesByBuilding]];
+                    [self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
                     
                     [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
                 }];
@@ -685,16 +686,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (NSArray*)buildingSections
 {
     if (!_buildingSections) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *buildings = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                buildings[resource.room] = resource.room;
-            }];
-            
-            NSArray *buildingsArray = [buildings.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];;
-            
-            _buildingSections = buildingsArray;
-        }];
+        NSArray *buildingsArray = [self.resourcesByBuilding.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+        _buildingSections = buildingsArray;
     }
     
     return _buildingSections;
@@ -703,23 +696,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (NSDictionary*)resourcesByBuilding
 {
     if (!_resourcesByBuilding) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                
-                NSMutableArray *resources = resourcesByBuilding[resource.room];
-                if (!resources) {
-                    resources = [[NSMutableArray alloc] init];
-                    resourcesByBuilding[resource.room] = resources;
-                }
-                
-                [resources addObject:resource];
-            }];
-            
-            _resourcesByBuilding = resourcesByBuilding;
-        }];
+        _resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
     }
-    
+
     return _resourcesByBuilding;
 }
 
@@ -746,6 +725,43 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
+}
+
+#pragma mark MITMobiusDetailPagingDelegate
+- (NSUInteger)numberOfResourcesInDetailViewController:(MITMobiusDetailContainerViewController*)viewController
+{
+    // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
+    // not requiring the view controller to do it for us.
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return resources.count;
+}
+
+- (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return resources[index];
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+        return [otherResource.identifier isEqualToString:resourceIdentifier];
+    }];
+
+    return index;
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return (index + 1) % resources.count;
+}
+
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return ((index + resources.count) - 1) % resources.count;
 }
 
 @end

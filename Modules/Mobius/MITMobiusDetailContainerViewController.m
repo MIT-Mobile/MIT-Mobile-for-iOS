@@ -3,40 +3,62 @@
 
 @interface MITMobiusDetailContainerViewController () <UIPageViewControllerDataSource, UIPageViewControllerDelegate>
 
-@property (strong, nonatomic) NSArray *resources;
-
 @property (strong, nonatomic) UIPageViewController *pageViewController;
 @property (strong, nonatomic) NSArray *mainLoopCycleButtons;
 
-@property (strong, nonatomic) MITMobiusResource *currentResource;
+@property (nonatomic) NSUInteger currentIndex;
 
-@property (nonatomic) BOOL isTransitioning;
+@property (nonatomic,getter=isTransitioning) BOOL transitioning;
 @property (nonatomic, strong) NSMutableArray *inputViews;
+@property (nonatomic,getter=isPagingEnabled) BOOL pagingEnabled;
+
+@property (nonatomic,weak) UIBarButtonItem *pagingBarButtonItem;
+@property (nonatomic,weak) UIButton *nextPageButton;
+@property (nonatomic,weak) UIButton *previousPageButton;
 
 @end
 
 @implementation MITMobiusDetailContainerViewController
-
-- (instancetype)initWithResource:(MITMobiusResource *)resource inResources:(NSArray *)resources
+- (instancetype)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
+    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
+
     if (self) {
-        self.currentResource = resource;
-        self.resources = resources;
+        _currentIndex = NSNotFound;
+        _pagingEnabled = YES;
     }
+
+    return self;
+}
+
+- (instancetype)initWithResource:(MITMobiusResource *)resource
+{
+    self = [self initWithNibName:nil bundle:nil];
+    if (self) {
+        _currentResource = resource;
+        _currentIndex = NSNotFound;
+    }
+    
     return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
+
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
-    [self configureForResource:self.currentResource];
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    if (self.currentIndex != NSNotFound) {
+        self.currentResource = [self resourceAtIndex:self.currentIndex];
+    }
+    
+    [self configureForResource:self.currentResource animated:animated];
     [self.navigationController setToolbarHidden:YES];
 }
 
@@ -48,6 +70,12 @@
                                                                             options:pageViewControllerOptions];
     self.pageViewController.dataSource = self;
     self.pageViewController.delegate = self;
+
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+
+    self.pageViewController.automaticallyAdjustsScrollViewInsets = YES;
+    self.pageViewController.edgesForExtendedLayout = UIRectEdgeAll;
     
     UIView *pageView = self.pageViewController.view;
     [self addChildViewController:self.pageViewController];
@@ -102,6 +130,43 @@
     
     [self.inputViews addObject:upButton];
     [self.inputViews addObject:downButton];
+
+    self.pagingBarButtonItem = buttonContainerItem;
+    self.nextPageButton = upButton;
+    self.previousPageButton = downButton;
+}
+
+- (void)_updatePagingButtonState:(BOOL)animated
+{
+    NSTimeInterval duration = (animated ? 0.33 : 0.);
+    if (self.isPagingEnabled) {
+        NSUInteger nextIndex = [self indexAfterIndex:self.currentIndex];
+        NSUInteger previousIndex = [self indexBeforeIndex:self.currentIndex];
+
+        [UIView animateWithDuration:duration animations:^{
+            self.nextPageButton.alpha = 1.;
+            self.previousPageButton.alpha = 1.;
+            self.pagingBarButtonItem.enabled = YES;
+
+            if (nextIndex == NSNotFound) {
+                self.nextPageButton.enabled = NO;
+            } else {
+                self.nextPageButton.enabled = YES;
+            }
+
+            if (previousIndex == NSNotFound) {
+                self.previousPageButton.enabled = NO;
+            } else {
+                self.previousPageButton.enabled = YES;
+            }
+        }];
+    } else {
+        [UIView animateWithDuration:duration animations:^{
+            self.nextPageButton.alpha = 0;
+            self.previousPageButton.alpha = 0;
+            self.pagingBarButtonItem.enabled = NO;
+        }];
+    }
 }
 
 #pragma mark - Transition
@@ -113,34 +178,47 @@
     return _inputViews;
 }
 
-- (void)setIsTransitioning:(BOOL)isTransitioning {
-    if (isTransitioning != _isTransitioning) {
-        _isTransitioning = isTransitioning;
+- (void)setTransitioning:(BOOL)transitioning {
+    if (_transitioning != transitioning) {
+        _transitioning = transitioning;
+
         for (UIView *view in self.inputViews) {
-            view.userInteractionEnabled = !isTransitioning;
+            view.userInteractionEnabled = !transitioning;
         }
     }
+}
+
+#pragma mark Properties
+- (BOOL)isPagingEnabled
+{
+    return (_pagingEnabled && (self.delegate != nil) && ([self numberOfResources] > 1));
 }
 
 #pragma mark - Configuration for Resource
 
-- (void)configureForResource:(MITMobiusResource *)resource
+- (void)configureForResource:(MITMobiusResource *)resource animated:(BOOL)animated
 {
-    self.currentResource = resource;
-    [self configureNavigationForResource:resource shouldPutNameInTitle:NO];
+    if (self.currentIndex == NSNotFound) {
+        self.currentIndex = [self indexForResource:resource];
+    }
+    
+    [self configureNavigationForResource:resource animated:animated];
 }
 
-- (void)configureNavigationForResource:(MITMobiusResource *)resource shouldPutNameInTitle:(BOOL)shouldPutNameInTitle
+- (void)configureNavigationForResource:(MITMobiusResource*)resource animated:(BOOL)animated
 {
-    NSInteger resourceIndex = [self indexOfResource:resource inResources:self.resources];
-    if (resourceIndex != NSNotFound) {
-        if (shouldPutNameInTitle) {
-            //self.title = resource.title;
-        } else {
-            self.title = [NSString stringWithFormat:@"%@ (%ld of %lu)",resource.room, (long)resourceIndex + 1, (unsigned long)self.resources.count];
-        }
-        [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:YES];
+    NSParameterAssert(resource);
+
+    if (!self.isPagingEnabled) {
+        self.title = nil;
+    } else {
+        NSUInteger index = [self indexForResource:resource] + 1; // Increment by 1 to make the display value 1-indexed
+        NSUInteger numberOfResources = [self numberOfResources];
+        self.title = [NSString stringWithFormat:@"%@ (%lu of %lu)",resource.room, (unsigned long)index, (unsigned long)numberOfResources];
     }
+
+    [self.navigationItem setRightBarButtonItems:self.mainLoopCycleButtons animated:animated];
+    [self _updatePagingButtonState:animated];
 }
 
 #pragma mark - UIPageViewControllerDataSource Methods
@@ -148,33 +226,34 @@
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerBeforeViewController:(UIViewController *)viewController
 {
     MITMobiusResource *currentResource = [self resourceForViewController:viewController];
-    NSInteger index = [self indexOfResource:currentResource inResources:self.resources];
-    
-    if (index != NSNotFound) {
-        NSInteger prevIndex = [self indexBeforeIndex:index];
-        MITMobiusResource *prevResource = [self.resources objectAtIndex:prevIndex];
-        return [self detailViewControllerForResource:prevResource];
+    NSUInteger resourceIndex = [self indexForResource:currentResource];
+
+    if (resourceIndex != NSNotFound) {
+        NSUInteger previousIndex = [self indexBeforeIndex:resourceIndex];
+        return [self detailViewControllerForResourceAtIndex:previousIndex];
     }
+
     return nil;
 }
 
 - (UIViewController *)pageViewController:(UIPageViewController *)pageViewController viewControllerAfterViewController:(UIViewController *)viewController
 {
     MITMobiusResource *currentResource = [self resourceForViewController:viewController];
-    NSInteger index = [self indexOfResource:currentResource inResources:self.resources];
+    NSUInteger resourceIndex = [self indexForResource:currentResource];
 
-    if (index != NSNotFound) {
-        NSInteger nextIndex = [self indexAfterIndex:index];
-        MITMobiusResource *nextResource = [self.resources objectAtIndex:nextIndex];
-        return [self detailViewControllerForResource:nextResource];
+    if (resourceIndex != NSNotFound) {
+        NSUInteger nextIndex = [self indexAfterIndex:resourceIndex];
+        return [self detailViewControllerForResourceAtIndex:nextIndex];
     }
+
     return nil;
 }
 
 #pragma mark - UIPageViewControllerDelegateMethods
 
-- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers {
-    self.isTransitioning = YES;
+- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
+{
+    self.transitioning = YES;
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
@@ -182,9 +261,10 @@
     if (completed) {
         UIViewController *currentViewController = self.pageViewController.viewControllers[0];
         MITMobiusResource *newResource = [self resourceForViewController:currentViewController];
-        [self configureForResource:newResource];
+        [self configureForResource:newResource animated:NO];
     }
-    self.isTransitioning = NO;
+
+    self.transitioning = NO;
 }
 
 #pragma mark - Detail View Controllers
@@ -197,6 +277,16 @@
     return nil;
 }
 
+- (MITMobiusDetailTableViewController *)detailViewControllerForResourceAtIndex:(NSUInteger)index
+{
+    if (index == NSNotFound) {
+        return nil;
+    } else {
+        MITMobiusResource *resource = [self resourceAtIndex:index];
+        return [self detailViewControllerForResource:resource];
+    }
+}
+
 - (MITMobiusDetailTableViewController *)detailViewControllerForResource:(MITMobiusResource *)resource
 {
     MITMobiusDetailTableViewController *detailViewController = [[MITMobiusDetailTableViewController alloc] initWithResource:resource];
@@ -207,86 +297,107 @@
 
 - (void)displayNextResource
 {
-    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
-    
-    if (currentIndex != NSNotFound) {
-        NSInteger nextIndex = [self indexAfterIndex:currentIndex];
-        MITMobiusResource *nextResource = [self.resources objectAtIndex:nextIndex];
-        [self transitionToResource:nextResource];
-    }
+    NSUInteger nextIndex = [self indexAfterIndex:self.currentIndex];
+    [self transitionToResourceAtIndex:nextIndex];
 }
 
 - (void)displayPreviousResource
 {
-    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
+    NSUInteger previousIndex = [self indexBeforeIndex:self.currentIndex];
+    [self transitionToResourceAtIndex:previousIndex];
+}
 
-    if (currentIndex != NSNotFound) {
-        NSInteger prevIndex = [self indexBeforeIndex:currentIndex];
-        MITMobiusResource *prevResource = [self.resources objectAtIndex:prevIndex];
-        [self transitionToResource:prevResource];
+- (void)transitionToResourceAtIndex:(NSUInteger)index
+{
+    if (index == NSNotFound) {
+        return;
+    }
+
+    MITMobiusResource *resource = [self resourceAtIndex:index];
+    if (resource) {
+        [self transitionFromResourceAtIndex:self.currentIndex toIndex:index animated:YES];
     }
 }
 
-- (void)transitionToResource:(MITMobiusResource *)resource
+- (void)transitionFromResourceAtIndex:(NSUInteger)oldIndex toIndex:(NSUInteger)newIndex animated:(BOOL)animated
 {
     if (self.isTransitioning) {
         return;
     }
-    self.isTransitioning = YES;
-    
-    NSInteger currentIndex = [self indexOfResource:self.currentResource inResources:self.resources];
-    NSInteger newIndex = [self indexOfResource:resource inResources:self.resources];
 
-    
+    self.transitioning = YES;
+
     // If the new resource is immediately before or after the current one in main loop order, then
     // we want the transition to be animated as if the user had swiped.
-    BOOL animated = NO;
     UIPageViewControllerNavigationDirection direction = UIPageViewControllerNavigationDirectionForward;
-    if (currentIndex != NSNotFound && newIndex != NSNotFound) {
-        NSInteger nextIndex = [self indexAfterIndex:currentIndex];
-        NSInteger prevIndex = [self indexBeforeIndex:currentIndex];
-        if (newIndex == nextIndex) {
-            animated = YES;
+
+    if (oldIndex != NSNotFound && newIndex != NSNotFound) {
+        NSInteger nextIndex = [self indexAfterIndex:oldIndex];
+        NSInteger prevIndex = [self indexBeforeIndex:oldIndex];
+        if ((newIndex != nextIndex) && (newIndex != prevIndex)) {
+            animated = NO;
         } else if (newIndex == prevIndex) {
-            animated = YES;
             direction = UIPageViewControllerNavigationDirectionReverse;
         }
     }
-    
+
+    MITMobiusResource *resource = [self resourceAtIndex:newIndex];
     MITMobiusDetailTableViewController *detailViewController = [self detailViewControllerForResource:resource];
-    __weak MITMobiusDetailContainerViewController *weakSelf = self;
-    [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
-        // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new resource after we are done.
-        [weakSelf configureForResource:resource];
-        weakSelf.isTransitioning = NO;
-    }];
+
+    if (detailViewController) {
+        self.currentIndex = newIndex;
+
+        __weak MITMobiusDetailContainerViewController *weakSelf = self;
+        [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
+            // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new resource after we are done.
+            [weakSelf configureForResource:resource animated:animated];
+            weakSelf.transitioning = NO;
+        }];
+    }
 }
 
 #pragma mark - Main Loop Index Math
-
-- (NSInteger)indexAfterIndex:(NSInteger)index
+- (NSUInteger)numberOfResources
 {
-    return (index + 1) % self.resources.count;
+    return [self.delegate numberOfResourcesInDetailViewController:self];
+}
+
+- (MITMobiusResource*)resourceAtIndex:(NSUInteger)index
+{
+    if (index == NSNotFound) {
+        return self.currentResource;
+    } else {
+        return [self.delegate detailViewController:self resourceAtIndex:index];
+    }
+
+}
+
+- (NSUInteger)indexForResource:(MITMobiusResource*)resource
+{
+    if (resource) {
+        return [self.delegate detailViewController:self indexForResourceWithIdentifier:resource.identifier];
+    } else {
+        return NSNotFound;
+    }
+}
+
+- (NSUInteger)indexAfterIndex:(NSUInteger)index
+{
+    if (self.delegate) {
+        return [self.delegate detailViewController:self indexAfterIndex:index];
+    } else {
+        return NSNotFound;
+    }
 }
 
 - (NSInteger)indexBeforeIndex:(NSInteger)index
 {
-    return (index + self.resources.count - 1 ) % self.resources.count;
+    if (self.delegate) {
+        return [self.delegate detailViewController:self indexBeforeIndex:index];
+    } else {
+        return NSNotFound;
+    }
 }
-
-- (NSInteger)indexOfResource:(MITMobiusResource *)resource inResources:(NSArray *)resources
-{
-    __block NSInteger index = NSNotFound;
-    
-    [resources enumerateObjectsUsingBlock:^(MITMobiusResource *obj, NSUInteger idx, BOOL *stop) {
-        if([obj.identifier isEqualToString:resource.identifier]) {
-            index = idx;
-            (*stop) = YES;
-        }
-    }];
-    return index;
-}
-
 
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
