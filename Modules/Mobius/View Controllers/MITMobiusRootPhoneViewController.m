@@ -53,6 +53,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 @implementation MITMobiusRootPhoneViewController {
     CGFloat _mapVerticalOffset;
+    CGFloat _standardMapHeight;
     CGAffineTransform _previousMapTransform;
 }
 
@@ -90,6 +91,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     if (self.currentState == MITMobiusRootViewControllerStateSearch) {
         UIEdgeInsets contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame), 0, 0, 0);
         self.recentSearchViewController.tableView.contentInset = contentInset;
+    }
+
+    if (!self.isMapFullScreen) {
+        _standardMapHeight = CGRectGetHeight(self.mapViewContainer.frame);
     }
 }
 
@@ -618,7 +623,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController
 {
-    return CGRectGetHeight(self.mapViewContainer.bounds);
+    return _standardMapHeight;
 }
 
 #pragma mark UISearchBarDelegate
