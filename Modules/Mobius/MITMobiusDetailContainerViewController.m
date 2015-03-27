@@ -8,7 +8,7 @@
 
 @property (nonatomic) NSUInteger currentIndex;
 
-@property (nonatomic) BOOL isTransitioning;
+@property (nonatomic,getter=isTransitioning) BOOL transitioning;
 @property (nonatomic, strong) NSMutableArray *inputViews;
 @property (nonatomic,getter=isPagingEnabled) BOOL pagingEnabled;
 
@@ -172,11 +172,12 @@
     return _inputViews;
 }
 
-- (void)setIsTransitioning:(BOOL)isTransitioning {
-    if (isTransitioning != _isTransitioning) {
-        _isTransitioning = isTransitioning;
+- (void)setTransitioning:(BOOL)transitioning {
+    if (_transitioning != transitioning) {
+        _transitioning = transitioning;
+
         for (UIView *view in self.inputViews) {
-            view.userInteractionEnabled = !isTransitioning;
+            view.userInteractionEnabled = !transitioning;
         }
     }
 }
@@ -244,8 +245,9 @@
 
 #pragma mark - UIPageViewControllerDelegateMethods
 
-- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers {
-    self.isTransitioning = YES;
+- (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
+{
+    self.transitioning = YES;
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
@@ -256,7 +258,7 @@
         [self configureForResource:newResource animated:NO];
     }
 
-    self.isTransitioning = NO;
+    self.transitioning = NO;
 }
 
 #pragma mark - Detail View Controllers
@@ -317,7 +319,7 @@
         return;
     }
 
-    self.isTransitioning = YES;
+    self.transitioning = YES;
 
     // If the new resource is immediately before or after the current one in main loop order, then
     // we want the transition to be animated as if the user had swiped.
@@ -343,7 +345,7 @@
         [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
             // Programmatic transitions do not trigger the delegate methods, so we need to manually reconfigure for the new resource after we are done.
             [weakSelf configureForResource:resource animated:animated];
-            weakSelf.isTransitioning = NO;
+            weakSelf.transitioning = NO;
         }];
     }
 }
