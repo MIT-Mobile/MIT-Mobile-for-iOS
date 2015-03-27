@@ -18,8 +18,13 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 
 - (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding
 {
-    _buildingSections = buildingSections;
-    _resourcesByBuilding = resourcesByBuilding;
+    if (![_buildingSections isEqualToArray:buildingSections] || ![_resourcesByBuilding isEqualToDictionary:resourcesByBuilding]) {
+        _buildingSections = buildingSections;
+        _resourcesByBuilding = resourcesByBuilding;
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            [self.tableView reloadData];
+        }];
+    }
 }
 
 - (void)viewDidLoad {
@@ -39,18 +44,6 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
-}
-
-- (void)reloadData
-{
-    [self.managedObjectContext performBlock:^{
-        _buildingSections = nil;
-        _resourcesByBuilding = nil;
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadData];
-        }];
-    }];
 }
 
 - (MITMobiusResource*)selectedResource
