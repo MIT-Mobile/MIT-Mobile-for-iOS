@@ -387,23 +387,26 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     return index;
 }
 
+- (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
+{
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+        return [otherResource.identifier isEqualToString:resourceIdentifier];
+    }];
+    
+    return index;
+}
+
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
 {
     NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
-    if (index >= (resources.count - 1)) {
-        return NSNotFound;
-    } else {
-        return ++index;
-    }
+    return (index + 1) % resources.count;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
 {
-    if (index == 0) {
-        return NSNotFound;
-    } else {
-        return --index;
-    }
+    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    return ((index + resources.count) - 1) % resources.count;
 }
 
 @end
