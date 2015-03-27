@@ -70,6 +70,12 @@
                                                                             options:pageViewControllerOptions];
     self.pageViewController.dataSource = self;
     self.pageViewController.delegate = self;
+
+    self.automaticallyAdjustsScrollViewInsets = NO;
+    self.edgesForExtendedLayout = UIRectEdgeNone;
+
+    self.pageViewController.automaticallyAdjustsScrollViewInsets = YES;
+    self.pageViewController.edgesForExtendedLayout = UIRectEdgeAll;
     
     UIView *pageView = self.pageViewController.view;
     [self addChildViewController:self.pageViewController];
