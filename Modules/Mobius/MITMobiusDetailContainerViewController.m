@@ -315,7 +315,7 @@
 
     MITMobiusResource *resource = [self resourceAtIndex:index];
     if (resource) {
-        [self transitionFromResourceAtIndex:self.currentIndex toIndex:index animated:NO];
+        [self transitionFromResourceAtIndex:self.currentIndex toIndex:index animated:YES];
     }
 }
 
