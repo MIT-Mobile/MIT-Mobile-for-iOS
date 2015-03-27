@@ -4,6 +4,7 @@
 #import "MITMobiusResourceOwner.h"
 #import "MITMobiusTemplate.h"
 #import "MITMobiusType.h"
+#import "MITMobiusResourceAttributeValue.h"
 
 @implementation MITMobiusResource
 
