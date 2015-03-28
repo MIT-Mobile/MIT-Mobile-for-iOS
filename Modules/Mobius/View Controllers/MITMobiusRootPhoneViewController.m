@@ -287,6 +287,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusResourcesTableViewController *resourcesTableViewController = [[MITMobiusResourcesTableViewController alloc] init];
     resourcesTableViewController.delegate = self;
+    resourcesTableViewController.dataSource = self;
+
     [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
     _resourcesTableViewController = resourcesTableViewController;
 }
@@ -661,11 +663,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                     
                     [self roomObjects];
 #warning make delegate to tell map / table data has changed
+                    [self.resourcesTableViewController reloadTable];
                     [self.mapViewController newBuildingsanimated:YES];
-                    //[self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
-                    
-                   // [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
-                    
                 }];
             }];
         } else {
@@ -689,11 +688,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
       
         [self roomObjects];
 #warning make delegate to tell map / table data has changed
+        [self.resourcesTableViewController reloadTable];
         [self.mapViewController newBuildingsanimated:YES];
-
-    //    [self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
-        
-    //    [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
     }];
 }
 
@@ -720,23 +716,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         _rooms = rooms;
     }
     return _rooms;
-}
-
-- (NSArray *)allRooms
-{
-    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-
-    NSMutableArray *rooms = [[NSMutableArray alloc] init];
-    for (NSString *roomName in buildingsArray) {
-        [rooms addObject:self.rooms[roomName]];
-    }
-    return rooms;
-}
-
-- (NSArray *)resourcesForRoom:(NSString *)roomString;
-{
-    MITMobiusRoomObject *room = self.rooms[roomString];
-    return [room.resources array];
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -806,6 +785,46 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
     NSOrderedSet *resources = room.resources;
     return ((index + resources.count) - 1) % resources.count;
+}
+
+#pragma mark MITMobiusRoomDataSource
+- (NSArray *)allRooms
+{
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    
+    NSMutableArray *rooms = [[NSMutableArray alloc] init];
+    for (NSString *roomName in buildingsArray) {
+        [rooms addObject:self.rooms[roomName]];
+    }
+    return rooms;
+}
+
+- (NSArray *)resourcesForRoom:(NSString *)roomNumber;
+{
+    MITMobiusRoomObject *room = self.rooms[roomNumber];
+    return [room.resources array];
+}
+
+- (NSString *)roomNumberAtIndex:(NSInteger)index
+{
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    return buildingsArray[index];
+}
+- (MITMobiusResource *)resourceInRoom:(NSString *)roomNumber withIndex:(NSInteger)index
+{
+    MITMobiusRoomObject *room = self.rooms[roomNumber];
+    return room.resources[index];
+}
+
+- (NSInteger)numberOfRooms
+{
+    return [self.rooms.allKeys count];
+}
+
+- (NSInteger)numberOfResourcesForRoom:(NSString *)roomNumber
+{
+    MITMobiusRoomObject *room = self.rooms[roomNumber];
+    return [room.resources count];
 }
 
 @end
