@@ -1,7 +1,7 @@
-#import "MITMobiusMapObject.h"
+#import "MITMobiusRoomObject.h"
 #import "MITMobiusResource.h"
 
-@implementation MITMobiusMapObject
+@implementation MITMobiusRoomObject
 
 @dynamic roomName;
 @dynamic longitude;

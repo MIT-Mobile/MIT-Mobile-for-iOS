@@ -10,12 +10,6 @@
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="MobiusMapObject" representedClassName="MITMobiusMapObject" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="roomName" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
-    </entity>
     <entity name="MobiusObject" representedClassName="MITMobiusObject" isAbstract="YES" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="createdBy" optional="YES" attributeType="String" syncable="YES"/>
@@ -26,6 +20,12 @@
     </entity>
     <entity name="MobiusRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
         <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMobiusRecentSearchQuery" syncable="YES"/>
+    </entity>
+    <entity name="MobiusRoomObject" representedClassName="MITMobiusRoomObject" syncable="YES">
+        <attribute name="latitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="roomName" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
     </entity>
     <entity name="Resource" representedClassName="MITMobiusResource" parentEntity="MobiusObject" syncable="YES">
         <attribute name="dlc" optional="YES" attributeType="String" syncable="YES"/>
@@ -83,18 +83,18 @@
         <relationship name="template" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Template" inverseName="types" inverseEntity="Template" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Category" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MITMobiusRecentSearchQuery" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MobiusObject" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MobiusRecentSearchList" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Resource" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="ResourceAttribute" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="ResourceAttributeValue" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="ResourceOwner" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="ResourceSearch" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Template" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="TemplateAttribute" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="Type" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MobiusMapObject" positionX="0" positionY="0" width="0" height="0"/>
+        <element name="Category" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MITMobiusRecentSearchQuery" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="MobiusRoomObject" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MobiusObject" positionX="0" positionY="0" width="128" height="135"/>
+        <element name="MobiusRecentSearchList" positionX="0" positionY="0" width="128" height="60"/>
+        <element name="Resource" positionX="0" positionY="0" width="128" height="225"/>
+        <element name="ResourceAttribute" positionX="0" positionY="0" width="128" height="120"/>
+        <element name="ResourceAttributeValue" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="ResourceOwner" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="ResourceSearch" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="Template" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="TemplateAttribute" positionX="0" positionY="0" width="128" height="165"/>
+        <element name="Type" positionX="0" positionY="0" width="128" height="105"/>
     </elements>
 </model>

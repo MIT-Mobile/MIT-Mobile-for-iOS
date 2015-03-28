@@ -6,7 +6,7 @@
 
 @class MITMobiusResource;
 
-@interface MITMobiusMapObject : MITManagedObject <MKAnnotation>
+@interface MITMobiusRoomObject : MITManagedObject <MKAnnotation>
 
 @property (nonatomic, retain) NSString * roomName;
 @property (nonatomic, retain) NSNumber * longitude;
@@ -14,7 +14,7 @@
 @property (nonatomic, retain) NSOrderedSet *resources;
 @end
 
-@interface MITMobiusMapObject (CoreDataGeneratedAccessors)
+@interface MITMobiusRoomObject (CoreDataGeneratedAccessors)
 
 - (void)insertObject:(MITMobiusResource *)value inResourcesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromResourcesAtIndex:(NSUInteger)idx;
