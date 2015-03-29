@@ -81,7 +81,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     self.tiledMapView.mapView.mitCalloutView = self.calloutView;
 }
 
-- (void)newBuildingsanimated:(BOOL)animated
+- (void)reloadMapAnimated:(BOOL)animated
 {
     [self _didChangeBuildings:animated];
 }

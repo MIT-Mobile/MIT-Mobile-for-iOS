@@ -23,7 +23,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRoomDataSource>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -662,9 +662,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 [self _transitionToState:newState animated:YES completion:^{
                     
                     [self roomObjects];
-#warning make delegate to tell map / table data has changed
                     [self.resourcesTableViewController reloadTable];
-                    [self.mapViewController newBuildingsanimated:YES];
+                    [self.mapViewController reloadMapAnimated:YES];
                 }];
             }];
         } else {
@@ -687,9 +686,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self reloadDataSourceForSearch:searchBar.text completion:^{
       
         [self roomObjects];
-#warning make delegate to tell map / table data has changed
         [self.resourcesTableViewController reloadTable];
-        [self.mapViewController newBuildingsanimated:YES];
+        [self.mapViewController reloadMapAnimated:YES];
     }];
 }
 

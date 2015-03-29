@@ -11,7 +11,7 @@
 
 @end
 
-@protocol MITMobiusRoomDataSource <NSObject>
+@protocol MITMobiusRootViewRoomDataSource <NSObject>
 
 - (NSArray *)allRooms;
 - (NSArray *)resourcesForRoom:(NSString *)roomNumber;

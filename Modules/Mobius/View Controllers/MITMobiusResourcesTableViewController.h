@@ -2,11 +2,11 @@
 
 @class MITMobiusResource;
 @protocol MITMobiusResourcesTableViewControllerDelegate;
-@protocol MITMobiusRoomDataSource;
+@protocol MITMobiusRootViewRoomDataSource;
 
 @interface MITMobiusResourcesTableViewController : UITableViewController
 
-@property (nonatomic,weak) id<MITMobiusRoomDataSource> dataSource;
+@property (nonatomic,weak) id<MITMobiusRootViewRoomDataSource> dataSource;
 @property(nonatomic,weak) id<MITMobiusResourcesTableViewControllerDelegate> delegate;
 @property(nonatomic,readonly,weak) MITMobiusResource *selectedResource;
 - (void)reloadTable;
