@@ -280,6 +280,7 @@
 		2C3C534C1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C3C534B1896B22100D1F9B5 /* NewsStoryExternalTableCell.xib */; };
 		2C3DD88E1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */; };
 		2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */; };
+		2C3DF65A1AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */; };
 		2C3DF6601AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DF65F1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m */; };
 		2C44DAA019B79F09001AA874 /* MITDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
@@ -1203,6 +1204,8 @@
 		2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = MITSlidingUnderLeftSegue.m; path = "App Delegate/MITSlidingUnderLeftSegue.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2C3DD8921A1CF68200D0A061 /* MITSlidingTopSegue.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITSlidingTopSegue.h; path = "App Delegate/MITSlidingTopSegue.h"; sourceTree = "<group>"; };
 		2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = MITSlidingTopSegue.m; path = "App Delegate/MITSlidingTopSegue.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
+		2C3DF6581AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusAdvancedSearchViewController.h; path = "View Controllers/MITMobiusAdvancedSearchViewController.h"; sourceTree = "<group>"; };
+		2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusAdvancedSearchViewController.m; path = "View Controllers/MITMobiusAdvancedSearchViewController.m"; sourceTree = "<group>"; };
 		2C3DF65E1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusAttributesDataSource.h; sourceTree = "<group>"; };
 		2C3DF65F1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusAttributesDataSource.m; sourceTree = "<group>"; };
 		2C3FB1D51808810300F23D40 /* CampusMap v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v2.xcdatamodel"; sourceTree = "<group>"; };
@@ -3235,6 +3238,8 @@
 				2C64A1E61A7FC1ED00020AFB /* MITMobiusResourcesTableViewController.m */,
 				0BB58F381A816AED00AA1CB7 /* MITMobiusRecentSearchController.h */,
 				0BB58F391A816AED00AA1CB7 /* MITMobiusRecentSearchController.m */,
+				2C3DF6581AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.h */,
+				2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -5510,6 +5515,7 @@
 				A535E1C11A5DF1A3009271DF /* MITShuttleVehiclesDataSource.m in Sources */,
 				2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */,
 				2C18090218F33B95008F9775 /* MITTouchstoneDefaultLoginViewController.m in Sources */,
+				2C3DF65A1AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m in Sources */,
 				0BB58F101A81476800AA1CB7 /* MITMobiusCalloutContentView.m in Sources */,
 				2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */,
 				806205421A7AAF1A004BD08A /* UIImage+Resize.m in Sources */,
