@@ -786,43 +786,49 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark MITMobiusRoomDataSource
-- (NSArray *)allRoomsForViewController:(UIViewController *)viewController;
-{
-    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    
-    NSMutableArray *rooms = [[NSMutableArray alloc] init];
-    for (NSString *roomName in buildingsArray) {
-        [rooms addObject:self.rooms[roomName]];
-    }
-    return rooms;
-}
 
-- (NSArray *)viewController:(UIViewController *)viewController resourcesForRoom:(NSString *)roomNumber;
-{
-    MITMobiusRoomObject *room = self.rooms[roomNumber];
-    return [room.resources array];
-}
-
-- (NSString *)viewController:(UIViewController *)viewController roomNumberAtIndex:(NSInteger)index;
-{
-    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    return buildingsArray[index];
-}
-- (MITMobiusResource *)viewController:(UIViewController *)viewController resourceInRoom:(NSString *)roomNumber withIndex:(NSInteger)index;
-{
-    MITMobiusRoomObject *room = self.rooms[roomNumber];
-    return room.resources[index];
-}
-
-- (NSInteger)numberOfRoomsForViewController:(UIViewController *)viewController;
+- (NSInteger)numberOfRoomsForViewController:(UIViewController*)viewController
 {
     return [self.rooms.allKeys count];
 }
 
-- (NSInteger)viewController:(UIViewController *)viewController numberOfResourcesForRoom:(NSString *)roomNumber;
+- (MITMobiusRoomObject*)viewController:(UIViewController*)viewController roomAtIndex:(NSInteger)roomIndex
 {
-    MITMobiusRoomObject *room = self.rooms[roomNumber];
+    if (roomIndex >= [self.rooms.allKeys count]) {
+        return nil;
+    }
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    
+    NSString *key = buildingsArray[roomIndex];
+    
+    return self.rooms[key];
+}
+
+- (NSInteger)viewController:(UIViewController*)viewController numberOfResourcesInRoomAtIndex:(NSInteger)roomIndex
+{
+    if (roomIndex >= [self.rooms.allKeys count]) {
+        return nil;
+    }
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *key = buildingsArray[roomIndex];
+    MITMobiusRoomObject *room = self.rooms[key];
+    
     return [room.resources count];
+}
+
+- (MITMobiusResource*)viewController:(UIViewController*)viewController resourceAtIndex:(NSInteger)resourceIndex inRoomAtIndex:(NSInteger)roomIndex
+{
+    if (roomIndex >= [self.rooms.allKeys count]) {
+        return nil;
+    }
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *key = buildingsArray[roomIndex];
+    MITMobiusRoomObject *room = self.rooms[key];
+    if (resourceIndex >= [room.resources count]) {
+        return nil;
+    } else {
+        return room.resources[resourceIndex];
+    }
 }
 
 @end

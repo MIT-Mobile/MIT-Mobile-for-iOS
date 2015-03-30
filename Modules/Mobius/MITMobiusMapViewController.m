@@ -220,9 +220,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
-    
     MITMobiusRoomObject *mapObject = (MITMobiusRoomObject *)annotationView.annotation;
-    self.selectedIndex = mapObject.index;
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
@@ -267,6 +265,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
     MITMobiusRoomObject *mapObject = (MITMobiusRoomObject *)annotationView.annotation;
+    self.selectedIndex = mapObject.index;
+
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     self.currentlySelectedRoom = mapObject;
@@ -323,13 +323,13 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    
-    return [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
+    NSInteger number = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
+    return number;
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
 {
-    MITMobiusResource *resource = [self.dataSource viewController:self resourceAtIndex:self.selectedIndex inRoomAtIndex:index];
+    MITMobiusResource *resource = [self.dataSource viewController:self resourceAtIndex:index inRoomAtIndex:self.selectedIndex];
     return resource;
 }
 

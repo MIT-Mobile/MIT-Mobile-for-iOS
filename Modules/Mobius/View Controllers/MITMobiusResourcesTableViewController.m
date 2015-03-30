@@ -44,7 +44,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         --section;
     }
 
-    NSManagedObjectID *resourceObjectID = [[self.dataSource viewController:self resourceAtIndex:indexPath.section inRoomAtIndex:indexPath.row] objectID];
+    NSManagedObjectID *resourceObjectID = [[self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:indexPath.section] objectID];
     MITMobiusResource *resource = (MITMobiusResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
     return resource;
 }
@@ -61,7 +61,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
             --section;
         }
         
-        return [self.dataSource viewController:self resourceAtIndex:indexPath.section inRoomAtIndex:indexPath.row];
+        return [self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:section];
     }
 }
 #warning Is this needed?
@@ -145,7 +145,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         if ([self shouldDisplayPlaceholderCell]) {
             --section;
         }
-        return [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:section];
+        NSInteger room = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:section];
+        return room;
     }
 }
 
