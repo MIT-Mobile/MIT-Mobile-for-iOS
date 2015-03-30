@@ -110,10 +110,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)refreshPlaceAnnotations
 {
     [self removeAllPlaceAnnotations];
-    [self makeStuff];
+    [self addPlaceAnnotations];
 }
 
-- (void)makeStuff
+- (void)addPlaceAnnotations
 {
     NSInteger numberOfRooms = [self.dataSource numberOfRoomsForViewController:self];
     for (NSInteger roomIndex = 0 ; roomIndex < numberOfRooms ; roomIndex++) {
