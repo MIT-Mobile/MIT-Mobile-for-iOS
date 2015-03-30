@@ -44,8 +44,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         --section;
     }
 
-    NSString *roomNumber = [self.dataSource viewController:self roomNumberAtIndex:section];
-    NSManagedObjectID *resourceObjectID = [[self.dataSource viewController:self resourceInRoom:roomNumber withIndex:indexPath.row] objectID];
+    NSManagedObjectID *resourceObjectID = [[self.dataSource viewController:self resourceAtIndex:indexPath.section inRoomAtIndex:indexPath.row] objectID];
     MITMobiusResource *resource = (MITMobiusResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
     return resource;
 }
@@ -62,8 +61,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
             --section;
         }
         
-        NSString *roomNumber = [self.dataSource viewController:self roomNumberAtIndex:section];
-        return [self.dataSource viewController:self resourceInRoom:roomNumber withIndex:indexPath.row];
+        return [self.dataSource viewController:self resourceAtIndex:indexPath.section inRoomAtIndex:indexPath.row];
     }
 }
 #warning Is this needed?
@@ -147,13 +145,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         if ([self shouldDisplayPlaceholderCell]) {
             --section;
         }
-        
-        __block NSInteger numberOfRows = 0;
-        
-        NSString *roomNumber = [self.dataSource viewController:self roomNumberAtIndex:section];
-        numberOfRows = [self.dataSource viewController:self numberOfResourcesForRoom:roomNumber];
-        
-        return numberOfRows;
+        return [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:section];
     }
 }
 
@@ -165,8 +157,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         --section;
     }
 
-    NSString *roomNumber = [self.dataSource viewController:self roomNumberAtIndex:section];
-    return [NSString stringWithFormat:@"Room %@", roomNumber];
+    MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:section];
+    return [NSString stringWithFormat:@"Room %@", room.roomName];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {

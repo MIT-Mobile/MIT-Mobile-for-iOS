@@ -25,6 +25,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 @property (nonatomic) BOOL showFirstCalloutOnNextMapRegionChange;
 @property (nonatomic, strong) MITMobiusResource *resource;
 @property (nonatomic) BOOL shouldRefreshAnnotationsOnNextMapRegionChange;
+@property (nonatomic) NSInteger selectedIndex;
 
 @end
 
@@ -98,8 +99,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
-    if ([[self.dataSource allRoomsForViewController:self] count]) {
-        [self.mapView showAnnotations:[self.dataSource allRoomsForViewController:self] animated:NO];
+    if ([self.dataSource numberOfRoomsForViewController:self]) {
+        [self.mapView showAnnotations:[self.mapView annotations] animated:NO];
         [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
@@ -109,7 +110,17 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)refreshPlaceAnnotations
 {
     [self removeAllPlaceAnnotations];
-    [self.mapView addAnnotations:[self.dataSource allRoomsForViewController:self]];
+    [self makeStuff];
+}
+
+- (void)makeStuff
+{
+    NSInteger numberOfRooms = [self.dataSource numberOfRoomsForViewController:self];
+    for (NSInteger roomIndex = 0 ; roomIndex < numberOfRooms ; roomIndex++) {
+        MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:roomIndex];
+        room.index = roomIndex;
+        [self.mapView addAnnotation:room];
+    }
 }
 
 - (void)removeAllPlaceAnnotations
@@ -124,17 +135,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.mapView removeAnnotations:annotationsToRemove];
 }
 
-- (void)showCalloutForResource:(MITMobiusResource *)resource
+- (void)showCalloutForRoom:(MITMobiusRoomObject *)room
 {
-    if (resource) {
-     
-        [[self.dataSource allRoomsForViewController:self] enumerateObjectsUsingBlock:^(MITMobiusRoomObject *mapObject, NSUInteger idx, BOOL *stop) {
-            if ([mapObject.roomName isEqualToString:resource.room]) {
-                [self.mapView selectAnnotation:mapObject animated:YES];
-                (*stop = YES);
-            }
-        }];
-        
+    if (room) {
+        [self.mapView selectAnnotation:room animated:YES];
     } else {
         [self.mapView selectAnnotation:nil animated:YES];
     }
@@ -149,8 +153,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
-        NSInteger placeIndex = [[self.dataSource allRoomsForViewController:self] indexOfObject:annotation];
-        [annotationView setNumber:(placeIndex + 1)];
+        MITMobiusRoomObject *room = (MITMobiusRoomObject *)annotation;
+        [annotationView setNumber:(room.index + 1)];
         
         return annotationView;
     }
@@ -204,8 +208,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     }
     
     if (self.showFirstCalloutOnNextMapRegionChange) {
-        if ([self.dataSource allRoomsForViewController:self].count > 0) {
-            [self showCalloutForResource:[[self.dataSource allRoomsForViewController:self] firstObject]];
+        if ([self.dataSource numberOfRoomsForViewController:self] > 0) {
+            [self showCalloutForRoom:[self.dataSource viewController:self roomAtIndex:0]];
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;
@@ -218,6 +222,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     
     MITMobiusRoomObject *mapObject = (MITMobiusRoomObject *)annotationView.annotation;
+    self.selectedIndex = mapObject.index;
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
@@ -318,21 +323,20 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    //MITMobiusRoomObject *room = [self.dataSource roomsObject][viewController.currentResource.room];
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    return resources.count;
+    
+    return [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
 {
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    return resources[index];
+    MITMobiusResource *resource = [self.dataSource viewController:self resourceAtIndex:self.selectedIndex inRoomAtIndex:index];
+    return resource;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResource:(MITMobiusResource*)resource
 {
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+    MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:self.selectedIndex];
+    NSUInteger index = [room.resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
         return [otherResource.identifier isEqualToString:resource.identifier];
     }];
 
@@ -341,8 +345,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+    MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:self.selectedIndex];
+    NSUInteger index = [room.resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
         return [otherResource.identifier isEqualToString:resourceIdentifier];
     }];
     
@@ -351,14 +355,14 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
 {
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    return (index + 1) % resources.count;
+    NSInteger nubmerOfResources = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
+    return (index + 1) % nubmerOfResources;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
 {
-    NSArray *resources = [self.dataSource viewController:self resourcesForRoom:viewController.currentResource.room];
-    return ((index + resources.count) - 1) % resources.count;
+    NSInteger nubmerOfResources = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
+    return ((index + nubmerOfResources) - 1) % nubmerOfResources;
 }
 
 @end

@@ -1,6 +1,6 @@
 #import <UIKit/UIKit.h>
 #import "MITMobiusResource.h"
-
+#import "MITMobiusRoomObject.h"
 @interface MITMobiusRootPhoneViewController : UIViewController
 
 @property(nonatomic,strong) NSManagedObjectContext *managedObjectContext;
@@ -12,12 +12,8 @@
 @end
 
 @protocol MITMobiusRootViewRoomDataSource <NSObject>
-
-- (NSArray *)allRoomsForViewController:(UIViewController *)viewController;
-- (NSArray *)viewController:(UIViewController *)viewController resourcesForRoom:(NSString *)roomNumber;
-- (NSString *)viewController:(UIViewController *)viewController roomNumberAtIndex:(NSInteger)index;
-- (MITMobiusResource *)viewController:(UIViewController *)viewController resourceInRoom:(NSString *)roomNumber withIndex:(NSInteger)index;
-- (NSInteger)numberOfRoomsForViewController:(UIViewController *)viewController;
-- (NSInteger)viewController:(UIViewController *)viewController numberOfResourcesForRoom:(NSString *)roomNumber;
-
+- (NSInteger)numberOfRoomsForViewController:(UIViewController*)viewController;
+- (MITMobiusRoomObject*)viewController:(UIViewController*)viewController roomAtIndex:(NSInteger)roomIndex;
+- (NSInteger)viewController:(UIViewController*)viewController numberOfResourcesInRoomAtIndex:(NSInteger)roomIndex;
+- (MITMobiusResource*)viewController:(UIViewController*)viewController resourceAtIndex:(NSInteger)resourceIndex inRoomAtIndex:(NSInteger)roomIndex;
 @end
