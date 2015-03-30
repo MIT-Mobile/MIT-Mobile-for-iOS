@@ -13,11 +13,11 @@
 
 @protocol MITMobiusRootViewRoomDataSource <NSObject>
 
-- (NSArray *)allRoomsInViewController:(UIViewController *)viewController;
+- (NSArray *)allRoomsForViewController:(UIViewController *)viewController;
 - (NSArray *)viewController:(UIViewController *)viewController resourcesForRoom:(NSString *)roomNumber;
 - (NSString *)viewController:(UIViewController *)viewController roomNumberAtIndex:(NSInteger)index;
 - (MITMobiusResource *)viewController:(UIViewController *)viewController resourceInRoom:(NSString *)roomNumber withIndex:(NSInteger)index;
-- (NSInteger)numberOfRoomsInViewController:(UIViewController *)viewController;
+- (NSInteger)numberOfRoomsForViewController:(UIViewController *)viewController;
 - (NSInteger)viewController:(UIViewController *)viewController numberOfResourcesForRoom:(NSString *)roomNumber;
 
 @end

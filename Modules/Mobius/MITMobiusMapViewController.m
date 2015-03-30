@@ -98,8 +98,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
-    if ([[self.dataSource allRoomsInViewController:self] count]) {
-        [self.mapView showAnnotations:[self.dataSource allRoomsInViewController:self] animated:NO];
+    if ([[self.dataSource allRoomsForViewController:self] count]) {
+        [self.mapView showAnnotations:[self.dataSource allRoomsForViewController:self] animated:NO];
         [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
@@ -109,7 +109,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)refreshPlaceAnnotations
 {
     [self removeAllPlaceAnnotations];
-    [self.mapView addAnnotations:[self.dataSource allRoomsInViewController:self]];
+    [self.mapView addAnnotations:[self.dataSource allRoomsForViewController:self]];
 }
 
 - (void)removeAllPlaceAnnotations
@@ -128,7 +128,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     if (resource) {
      
-        [[self.dataSource allRoomsInViewController:self] enumerateObjectsUsingBlock:^(MITMobiusRoomObject *mapObject, NSUInteger idx, BOOL *stop) {
+        [[self.dataSource allRoomsForViewController:self] enumerateObjectsUsingBlock:^(MITMobiusRoomObject *mapObject, NSUInteger idx, BOOL *stop) {
             if ([mapObject.roomName isEqualToString:resource.room]) {
                 [self.mapView selectAnnotation:mapObject animated:YES];
                 (*stop = YES);
@@ -149,7 +149,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
         if (!annotationView) {
             annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:kMITMapPlaceAnnotationViewIdentifier];
         }
-        NSInteger placeIndex = [[self.dataSource allRoomsInViewController:self] indexOfObject:annotation];
+        NSInteger placeIndex = [[self.dataSource allRoomsForViewController:self] indexOfObject:annotation];
         [annotationView setNumber:(placeIndex + 1)];
         
         return annotationView;
@@ -204,8 +204,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     }
     
     if (self.showFirstCalloutOnNextMapRegionChange) {
-        if ([self.dataSource allRoomsInViewController:self].count > 0) {
-            [self showCalloutForResource:[[self.dataSource allRoomsInViewController:self] firstObject]];
+        if ([self.dataSource allRoomsForViewController:self].count > 0) {
+            [self showCalloutForResource:[[self.dataSource allRoomsForViewController:self] firstObject]];
         }
         
         self.showFirstCalloutOnNextMapRegionChange = NO;

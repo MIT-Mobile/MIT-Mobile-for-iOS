@@ -786,7 +786,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark MITMobiusRoomDataSource
-- (NSArray *)allRoomsInViewController:(UIViewController *)viewController;
+- (NSArray *)allRoomsForViewController:(UIViewController *)viewController;
 {
     NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     
@@ -814,7 +814,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     return room.resources[index];
 }
 
-- (NSInteger)numberOfRoomsInViewController:(UIViewController *)viewController;
+- (NSInteger)numberOfRoomsForViewController:(UIViewController *)viewController;
 {
     return [self.rooms.allKeys count];
 }

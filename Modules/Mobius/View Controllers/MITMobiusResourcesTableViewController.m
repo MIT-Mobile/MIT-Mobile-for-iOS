@@ -131,7 +131,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     __block NSInteger numberOfSections = 0;
-    numberOfSections = [self.dataSource numberOfRoomsInViewController:self];
+    numberOfSections = [self.dataSource numberOfRoomsForViewController:self];
 
     if ([self shouldDisplayPlaceholderCell]) {
         ++numberOfSections;
