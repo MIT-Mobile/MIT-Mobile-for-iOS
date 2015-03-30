@@ -9,7 +9,6 @@
 @property (nonatomic,weak) id<MITMobiusRootViewRoomDataSource> dataSource;
 @property(nonatomic,weak) id<MITMobiusResourcesTableViewControllerDelegate> delegate;
 @property(nonatomic,readonly,weak) MITMobiusResource *selectedResource;
-- (void)reloadTable;
 
 @end
 

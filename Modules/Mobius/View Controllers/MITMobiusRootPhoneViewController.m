@@ -662,7 +662,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 [self _transitionToState:newState animated:YES completion:^{
                     
                     [self roomObjects];
-                    [self.resourcesTableViewController reloadTable];
+                    [self.resourcesTableViewController.tableView reloadData];
                     [self.mapViewController reloadMapAnimated:YES];
                 }];
             }];
@@ -686,7 +686,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self reloadDataSourceForSearch:searchBar.text completion:^{
       
         [self roomObjects];
-        [self.resourcesTableViewController reloadTable];
+        [self.resourcesTableViewController.tableView reloadData];
         [self.mapViewController reloadMapAnimated:YES];
     }];
 }
@@ -700,7 +700,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         
         [resourcesByBuilding enumerateKeysAndObjectsUsingBlock:^(NSString *roomName, NSArray *resources, BOOL *stop) {
             
-            MITMobiusRoomObject *mapObject = [[MITMobiusRoomObject alloc] initWithEntity:[MITMobiusRoomObject entityDescription] insertIntoManagedObjectContext:self.managedObjectContext];
+            MITMobiusRoomObject *mapObject = [[MITMobiusRoomObject alloc] init];
             mapObject.roomName = roomName;
             
             mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];

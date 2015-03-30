@@ -14,13 +14,6 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 
 @implementation MITMobiusResourcesTableViewController
 
-- (void)reloadTable
-{
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
-}
-
 - (void)viewDidLoad {
     [super viewDidLoad];
     
