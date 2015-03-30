@@ -97,7 +97,6 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)recenterOnVisibleResources:(BOOL)animated
 {
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
-
     
     if ([[self.dataSource allRooms] count]) {
         [self.mapView showAnnotations:[self.dataSource allRooms] animated:NO];

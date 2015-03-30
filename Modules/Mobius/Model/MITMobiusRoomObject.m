@@ -3,11 +3,6 @@
 
 @implementation MITMobiusRoomObject
 
-@dynamic roomName;
-@dynamic longitude;
-@dynamic latitude;
-@dynamic resources;
-
 #pragma mark MKAnnotation
 
 - (NSString*)title

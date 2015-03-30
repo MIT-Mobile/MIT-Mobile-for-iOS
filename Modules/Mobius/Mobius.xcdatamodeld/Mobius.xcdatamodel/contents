@@ -21,12 +21,6 @@
     <entity name="MobiusRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
         <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MITMobiusRecentSearchQuery" syncable="YES"/>
     </entity>
-    <entity name="MobiusRoomObject" representedClassName="MITMobiusRoomObject" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="roomName" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
-    </entity>
     <entity name="Resource" representedClassName="MITMobiusResource" parentEntity="MobiusObject" syncable="YES">
         <attribute name="dlc" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
@@ -85,7 +79,6 @@
     <elements>
         <element name="Category" positionX="0" positionY="0" width="128" height="105"/>
         <element name="MITMobiusRecentSearchQuery" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="MobiusRoomObject" positionX="0" positionY="0" width="128" height="105"/>
         <element name="MobiusObject" positionX="0" positionY="0" width="128" height="135"/>
         <element name="MobiusRecentSearchList" positionX="0" positionY="0" width="128" height="60"/>
         <element name="Resource" positionX="0" positionY="0" width="128" height="225"/>

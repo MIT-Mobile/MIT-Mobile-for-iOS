@@ -3022,6 +3022,8 @@
 				2C2CC2131A72E0E4008E3CA5 /* MITMobiusResourceDataSource.m */,
 				2CD1F83A1A7A9B5200743332 /* Mobius.xcdatamodeld */,
 				2CD1F8431A7ACE3700743332 /* MITMobiusModel.h */,
+				0BAE69421ABA0DF500B7B8D5 /* MITMobiusRoomObject.h */,
+				0BAE69431ABA0DF500B7B8D5 /* MITMobiusRoomObject.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -3396,8 +3398,6 @@
 				0BB58F331A81643A00AA1CB7 /* MITMobiusRecentSearchList.m */,
 				0BB58F2F1A81643900AA1CB7 /* MITMobiusRecentSearchQuery.h */,
 				0BB58F301A81643900AA1CB7 /* MITMobiusRecentSearchQuery.m */,
-				0BAE69421ABA0DF500B7B8D5 /* MITMobiusRoomObject.h */,
-				0BAE69431ABA0DF500B7B8D5 /* MITMobiusRoomObject.m */,
 			);
 			name = Entities;
 			sourceTree = "<group>";
