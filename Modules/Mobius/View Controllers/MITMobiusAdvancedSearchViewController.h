@@ -6,6 +6,4 @@
 - (instancetype)initWithStyle:(UITableViewStyle)style;
 - (instancetype)initWithSearchText:(NSString*)searchText;
 
-- (NSArray*)attributeValuesInManagedObjectContext:(NSManagedObjectContext*)context;
-
 @end
