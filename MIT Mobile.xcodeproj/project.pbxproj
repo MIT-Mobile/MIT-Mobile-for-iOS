@@ -281,6 +281,7 @@
 		2C3DD88E1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD88D1A1CF4C300D0A061 /* MITSlidingUnderLeftSegue.m */; };
 		2C3DD8941A1CF68200D0A061 /* MITSlidingTopSegue.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */; };
 		2C3DF65A1AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */; };
+		2C3DF65D1AC9EE1400BC41E1 /* MITMobiusDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DF65C1AC9EE1400BC41E1 /* MITMobiusDataSource.m */; };
 		2C3DF6601AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C3DF65F1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m */; };
 		2C44DAA019B79F09001AA874 /* MITDrawerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C44DA9E19B79F09001AA874 /* MITDrawerViewController.m */; };
 		2C49DBB217E8AB9400ABA319 /* MITMapModelController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C49DBB117E8AB9400ABA319 /* MITMapModelController.m */; };
@@ -1206,6 +1207,8 @@
 		2C3DD8931A1CF68200D0A061 /* MITSlidingTopSegue.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; lineEnding = 0; name = MITSlidingTopSegue.m; path = "App Delegate/MITSlidingTopSegue.m"; sourceTree = "<group>"; xcLanguageSpecificationIdentifier = xcode.lang.objc; };
 		2C3DF6581AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusAdvancedSearchViewController.h; path = "View Controllers/MITMobiusAdvancedSearchViewController.h"; sourceTree = "<group>"; };
 		2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusAdvancedSearchViewController.m; path = "View Controllers/MITMobiusAdvancedSearchViewController.m"; sourceTree = "<group>"; };
+		2C3DF65B1AC9EE1400BC41E1 /* MITMobiusDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusDataSource.h; sourceTree = "<group>"; };
+		2C3DF65C1AC9EE1400BC41E1 /* MITMobiusDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusDataSource.m; sourceTree = "<group>"; };
 		2C3DF65E1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusAttributesDataSource.h; sourceTree = "<group>"; };
 		2C3DF65F1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusAttributesDataSource.m; sourceTree = "<group>"; };
 		2C3FB1D51808810300F23D40 /* CampusMap v2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "CampusMap v2.xcdatamodel"; sourceTree = "<group>"; };
@@ -3018,6 +3021,8 @@
 			isa = PBXGroup;
 			children = (
 				2CED33D71A76B255001ED7AC /* Entities */,
+				2C3DF65B1AC9EE1400BC41E1 /* MITMobiusDataSource.h */,
+				2C3DF65C1AC9EE1400BC41E1 /* MITMobiusDataSource.m */,
 				2C2CC2121A72E0E4008E3CA5 /* MITMobiusResourceDataSource.h */,
 				2C2CC2131A72E0E4008E3CA5 /* MITMobiusResourceDataSource.m */,
 				2C3DF65E1AC9EF3E00BC41E1 /* MITMobiusAttributesDataSource.h */,
@@ -5604,6 +5609,7 @@
 				2CF89EA718A3EFFC00ABFE03 /* MITNewsMediaGalleryViewController.m in Sources */,
 				5EC89F681926517200E06204 /* MITShuttleVehicleList.m in Sources */,
 				A59A259919A142EB00AD7E3A /* MITDiningHouseHomeViewControllerPad.m in Sources */,
+				2C3DF65D1AC9EE1400BC41E1 /* MITMobiusDataSource.m in Sources */,
 				A52E0CF019B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.m in Sources */,
 				A563912019E4708F001DE763 /* MITLibrariesSingleSubtitleLabelCell.m in Sources */,
 				5EE17BDF196207CE00F375B5 /* MITMapPlaceAnnotationView.m in Sources */,
