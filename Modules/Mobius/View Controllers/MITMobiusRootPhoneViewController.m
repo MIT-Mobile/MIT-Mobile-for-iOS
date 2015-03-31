@@ -8,6 +8,7 @@
 
 #import "MITMobiusMapViewController.h"
 #import "MITMobiusRecentSearchController.h"
+#import "MITMobiusAdvancedSearchViewController.h"
 #import "MITMapPlaceSelector.h"
 
 #import "DDLog.h"
@@ -342,6 +343,17 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark - Private
+- (IBAction)_didTapShowFilterButton:(UIBarButtonItem*)sender
+{
+    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithSearchText:self.searchBar.text];
+
+    viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark State Management
 - (BOOL)_canTransitionToState:(MITMobiusRootViewControllerState)newState
 {
@@ -452,7 +464,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             
         case MITMobiusRootViewControllerStateSearch: {
             self.recentSearchViewController.view.alpha = 1;
-            [self.navigationItem setLeftBarButtonItem:nil animated:animated];
+
+            UIImage *image = [UIImage imageNamed:MITImageBarButtonFilter];
+            UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
+            [self.navigationItem setLeftBarButtonItem:filterBarButton animated:animated];
             [self.searchBar setShowsCancelButton:YES animated:animated];
         } break;
             
