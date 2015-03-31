@@ -3,7 +3,7 @@
 
 @protocol MITMobiusRootViewRoomDataSource;
 
-@class MITMobiusResource;
+@class MITMobiusRoomObject;
 @class MITCalloutMapView;
 
 @interface MITMobiusMapViewController : UIViewController
@@ -14,7 +14,7 @@
 @property (nonatomic, readonly, weak) MITCalloutMapView *mapView;
 
 - (UIBarButtonItem *)userLocationButton;
-- (void)showCalloutForRoom:(MITMobiusResource *)resource;
+- (void)showCalloutForRoom:(MITMobiusRoomObject *)room;
 - (void)recenterOnVisibleResources:(BOOL)animated;
 - (void)reloadMapAnimated:(BOOL)animated;
 

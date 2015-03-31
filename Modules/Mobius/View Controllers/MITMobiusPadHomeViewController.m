@@ -549,7 +549,8 @@
 
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
-    [self.mapViewController showCalloutForRoom:resource];
+#warning come back to this later when setting up iPad datasource
+    //[self.mapViewController showCalloutForRoom:resource];
 }
 
 #pragma mark - MITMobiusResourcesTableViewControllerDelegate
