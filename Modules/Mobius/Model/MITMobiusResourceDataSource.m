@@ -5,12 +5,12 @@
 #import "MITCoreData.h"
 #import "CoreData+MITAdditions.h"
 #import "MITAdditions.h"
+#import "MITMobiusDataSource.h"
 #import "MITMobiusResource.h"
 
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
 
-static NSString* const MITMobiusDefaultServer = @"https://kairos-test.mit.edu";
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
@@ -76,7 +76,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             }
         }];
     } else {
-        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMobiusDefaultServer];
+        NSURL *resourceReservations = [MITMobiusDataSource mobiusServerURL];
         NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
 
         if (queryString) {
