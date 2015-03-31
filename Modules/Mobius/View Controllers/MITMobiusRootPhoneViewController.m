@@ -754,11 +754,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
     NSOrderedSet *resources = room.resources;
-    if (index >= resources.count) {
-        return nil;
-    } else {
-        return resources[index];
-    }
+    return resources[index];
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
@@ -787,7 +783,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark MITMobiusRoomDataSource
-
 - (NSInteger)numberOfRoomsForViewController:(UIViewController*)viewController
 {
     return self.rooms.allKeys.count;
@@ -795,41 +790,25 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (MITMobiusRoomObject*)viewController:(UIViewController*)viewController roomAtIndex:(NSInteger)roomIndex
 {
-    if (roomIndex >= self.rooms.allKeys.count) {
-        return nil;
-    }
     NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-    
     NSString *key = buildingsArray[roomIndex];
-    
     return self.rooms[key];
 }
 
 - (NSInteger)viewController:(UIViewController*)viewController numberOfResourcesInRoomAtIndex:(NSInteger)roomIndex
 {
-    if (roomIndex >= self.rooms.allKeys.count) {
-        return nil;
-    }
     NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     NSString *key = buildingsArray[roomIndex];
     MITMobiusRoomObject *room = self.rooms[key];
-    
     return room.resources.count;
 }
 
 - (MITMobiusResource*)viewController:(UIViewController*)viewController resourceAtIndex:(NSInteger)resourceIndex inRoomAtIndex:(NSInteger)roomIndex
 {
-    if (roomIndex >= self.rooms.allKeys.count) {
-        return nil;
-    }
     NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
     NSString *key = buildingsArray[roomIndex];
     MITMobiusRoomObject *room = self.rooms[key];
-    if (resourceIndex >= room.resources.count) {
-        return nil;
-    } else {
-        return room.resources[resourceIndex];
-    }
+    return room.resources[resourceIndex];
 }
 
 @end
