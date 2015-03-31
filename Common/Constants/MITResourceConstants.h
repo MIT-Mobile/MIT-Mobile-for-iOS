@@ -157,6 +157,7 @@ extern NSString * const MITImageBarButtonLocation;
 extern NSString * const MITImageBarButtonGrid;
 extern NSString * const MITImageBarButtonList;
 extern NSString * const MITImageBarButtonListSelected;
+extern NSString * const MITImageBarButtonFilter;
 
 // TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;

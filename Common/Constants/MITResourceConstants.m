@@ -164,6 +164,7 @@ NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
 NSString * const MITImageBarButtonGrid = @"global-barbutton-grid";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
 NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
+NSString * const MITImageBarButtonFilter = @"global-barbutton-filter";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";

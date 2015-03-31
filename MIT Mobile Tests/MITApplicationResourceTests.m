@@ -180,6 +180,7 @@
     MITCheckAsset(MITImageBarButtonGrid);
     MITCheckAsset(MITImageBarButtonList);
     MITCheckAsset(MITImageBarButtonListSelected);
+    MITCheckAsset(MITImageBarButtonFilter);
     
     MITCheckAsset(MITImageBarButtonSearch);
     MITCheckAsset(MITImageBarButtonSearchMagnifier);
