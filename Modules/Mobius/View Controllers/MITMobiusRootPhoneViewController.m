@@ -276,7 +276,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                                  
                                  [self.mapViewController recenterOnVisibleResources:animated];
                                  [self.navigationController setToolbarHidden:YES animated:animated];
-                                 [self.mapViewController showCalloutForResource:nil];
+                                 [self.mapViewController showCalloutForRoom:nil];
                              }];
         }
     }

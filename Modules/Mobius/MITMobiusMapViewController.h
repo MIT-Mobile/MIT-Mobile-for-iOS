@@ -14,7 +14,7 @@
 @property (nonatomic, readonly, weak) MITCalloutMapView *mapView;
 
 - (UIBarButtonItem *)userLocationButton;
-- (void)showCalloutForResource:(MITMobiusResource *)resource;
+- (void)showCalloutForRoom:(MITMobiusResource *)resource;
 - (void)recenterOnVisibleResources:(BOOL)animated;
 - (void)reloadMapAnimated:(BOOL)animated;
 
