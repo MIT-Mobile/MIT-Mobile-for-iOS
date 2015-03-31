@@ -161,7 +161,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             } else {
                 [self.managedObjectContext performBlockAndWait:^{
                     [self.managedObjectContext reset];
-                   
                     _rooms = nil;
                     
                     if (block) {
@@ -661,7 +660,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 
                 [self _transitionToState:newState animated:YES completion:^{
                     
-                    [self roomObjects];
+                    [self createRoomObjects];
                     [self.resourcesTableViewController.tableView reloadData];
                     [self.mapViewController reloadMapAnimated:YES];
                 }];
@@ -685,13 +684,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
       
-        [self roomObjects];
+        [self createRoomObjects];
         [self.resourcesTableViewController.tableView reloadData];
         [self.mapViewController reloadMapAnimated:YES];
     }];
 }
 
-- (NSDictionary *)roomObjects
+- (NSDictionary *)createRoomObjects
 {
     if (!_rooms) {
         NSDictionary *resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
@@ -742,12 +741,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark MITMobiusDetailPagingDelegate
-
 - (NSUInteger)numberOfResourcesInDetailViewController:(MITMobiusDetailContainerViewController*)viewController
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    
     MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
     NSOrderedSet *resources = room.resources;
     return resources.count;

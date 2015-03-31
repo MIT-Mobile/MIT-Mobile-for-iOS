@@ -15,7 +15,6 @@
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
 
-
 @interface MITMobiusMapViewController () <MKMapViewDelegate, MITCalloutViewDelegate, MITMobiusDetailPagingDelegate>
 
 @property (weak, nonatomic) IBOutlet MITTiledMapView *tiledMapView;
@@ -323,8 +322,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    NSInteger number = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
-    return number;
+    NSInteger numberOfResources = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:self.selectedIndex];
+    return numberOfResources;
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
