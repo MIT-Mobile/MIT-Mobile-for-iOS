@@ -64,7 +64,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         return [self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:section];
     }
 }
-
+/*
 - (NSInteger)_baseIndexForSection:(NSInteger)sectionIndex
 {
     if ([self shouldDisplayPlaceholderCell] && sectionIndex == 0) {
@@ -86,6 +86,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 
     return baseIndex;
 }
+*/
 
 #pragma mark Delegate Passthroughs
 - (NSIndexPath*)_indexPathForPlaceholderCell
