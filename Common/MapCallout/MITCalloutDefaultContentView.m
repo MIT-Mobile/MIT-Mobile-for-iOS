@@ -36,8 +36,8 @@ static CGFloat const kMITCalloutViewLabelToAccessorySpacing = 8.0;
 }
 
 - (void)setupAccessoryView {
-    self.accessoryView = [UIImageView new];
-    [self.accessoryView setImage:[UIImage imageNamed:@"disclosure-indicator"]];
+    self.accessoryView = [[UIImageView alloc] init];
+    self.accessoryView.image = [UIImage imageNamed:MITImageCalloutDisclosureRight];
     self.accessoryView.contentMode = UIViewContentModeScaleAspectFit;
     self.accessoryView.clipsToBounds = YES;
     self.accessoryView.translatesAutoresizingMaskIntoConstraints = NO;
