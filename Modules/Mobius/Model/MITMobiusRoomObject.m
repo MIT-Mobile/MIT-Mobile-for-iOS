@@ -55,7 +55,7 @@
                 if (!object) {
                     DDLogWarn(@"failed to fetch object %@: %@",objectID,error);
                 } else {
-                    [objects addObject:objects];
+                    [objects addObject:object];
                 }
             }];
         }];
