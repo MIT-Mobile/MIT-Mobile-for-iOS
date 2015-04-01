@@ -549,7 +549,7 @@
 
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
-    [self.mapViewController showCalloutForResource:resource];
+    //[self.mapViewController showCalloutForRoom:resource];
 }
 
 #pragma mark - MITMobiusResourcesTableViewControllerDelegate

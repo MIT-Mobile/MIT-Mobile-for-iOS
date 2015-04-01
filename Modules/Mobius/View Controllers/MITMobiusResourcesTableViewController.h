@@ -2,11 +2,13 @@
 
 @class MITMobiusResource;
 @protocol MITMobiusResourcesTableViewControllerDelegate;
+@protocol MITMobiusRootViewRoomDataSource;
 
 @interface MITMobiusResourcesTableViewController : UITableViewController
+
+@property (nonatomic,weak) id<MITMobiusRootViewRoomDataSource> dataSource;
 @property(nonatomic,weak) id<MITMobiusResourcesTableViewControllerDelegate> delegate;
 @property(nonatomic,readonly,weak) MITMobiusResource *selectedResource;
-- (void)setBuildingSections:(NSArray *)buildingSections setResourcesByBuilding:(NSDictionary *)resourcesByBuilding;
 
 @end
 

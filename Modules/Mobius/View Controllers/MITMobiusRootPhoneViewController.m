@@ -12,6 +12,7 @@
 
 #import "DDLog.h"
 #import "MITAdditions.h"
+#import "MITMobiusRoomObject.h"
 
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
@@ -22,7 +23,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -49,8 +50,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
-@property(nonatomic,copy) NSArray *buildingSections;
-@property(nonatomic,copy) NSDictionary *resourcesByBuilding;
+@property (nonatomic, strong) NSDictionary *rooms;
 
 @end
 
@@ -161,9 +161,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             } else {
                 [self.managedObjectContext performBlockAndWait:^{
                     [self.managedObjectContext reset];
-                    _resourcesByBuilding = nil;
-                    _buildingSections = nil;
-
+                    _rooms = nil;
+                    
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
                         [self.recentSearchViewController addRecentSearchTerm:queryString];
@@ -276,7 +275,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                                  
                                  [self.mapViewController recenterOnVisibleResources:animated];
                                  [self.navigationController setToolbarHidden:YES animated:animated];
-                                 [self.mapViewController showCalloutForResource:nil];
+                                 [self.mapViewController showCalloutForRoom:nil];
                              }];
         }
     }
@@ -287,6 +286,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusResourcesTableViewController *resourcesTableViewController = [[MITMobiusResourcesTableViewController alloc] init];
     resourcesTableViewController.delegate = self;
+    resourcesTableViewController.dataSource = self;
+
     [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
     _resourcesTableViewController = resourcesTableViewController;
 }
@@ -314,7 +315,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)loadMapViewController
 {
     MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
-
+    mapViewController.dataSource = self;
     [self _addChildViewController:mapViewController toView:self.mapViewContainer];
     _mapViewController = mapViewController;
 }
@@ -658,9 +659,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 }
                 
                 [self _transitionToState:newState animated:YES completion:^{
-                    [self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
                     
-                    [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
+                    [self createRoomObjects];
+                    [self.resourcesTableViewController.tableView reloadData];
+                    [self.mapViewController reloadMapAnimated:YES];
                 }];
             }];
         } else {
@@ -681,31 +683,36 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [searchBar resignFirstResponder];
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
-       
-        [self.resourcesTableViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding];
-        
-        [self.mapViewController setBuildingSections:self.buildingSections setResourcesByBuilding:self.resourcesByBuilding animated:YES];
+      
+        [self createRoomObjects];
+        [self.resourcesTableViewController.tableView reloadData];
+        [self.mapViewController reloadMapAnimated:YES];
     }];
 }
 
-
-- (NSArray*)buildingSections
+- (NSDictionary *)createRoomObjects
 {
-    if (!_buildingSections) {
-        NSArray *buildingsArray = [self.resourcesByBuilding.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
-        _buildingSections = buildingsArray;
+    if (!_rooms) {
+        NSDictionary *resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
+        
+        NSMutableDictionary *rooms = [[NSMutableDictionary alloc] init];
+        
+        [resourcesByBuilding enumerateKeysAndObjectsUsingBlock:^(NSString *roomName, NSArray *resources, BOOL *stop) {
+            
+            MITMobiusRoomObject *mapObject = [[MITMobiusRoomObject alloc] init];
+            mapObject.roomName = roomName;
+            
+            mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];
+            MITMobiusResource *resource = [mapObject.resources firstObject];
+            
+            mapObject.latitude = resource.latitude;
+            mapObject.longitude = resource.longitude;
+            
+            [rooms setValue:mapObject forKey:roomName];
+        }];
+        _rooms = rooms;
     }
-    
-    return _buildingSections;
-}
-
-- (NSDictionary*)resourcesByBuilding
-{
-    if (!_resourcesByBuilding) {
-        _resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
-    }
-
-    return _resourcesByBuilding;
+    return _rooms;
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -738,19 +745,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
+    NSOrderedSet *resources = room.resources;
     return resources.count;
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
 {
-    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
+    NSOrderedSet *resources = room.resources;
     return resources[index];
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
-    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
+    NSOrderedSet *resources = room.resources;
     NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
         return [otherResource.identifier isEqualToString:resourceIdentifier];
     }];
@@ -760,14 +770,45 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
 {
-    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
+    NSOrderedSet *resources = room.resources;
     return (index + 1) % resources.count;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
 {
-    NSArray *resources = self.resourcesByBuilding[viewController.currentResource.room];
+    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
+    NSOrderedSet *resources = room.resources;
     return ((index + resources.count) - 1) % resources.count;
+}
+
+#pragma mark MITMobiusRoomDataSource
+- (NSInteger)numberOfRoomsForViewController:(UIViewController*)viewController
+{
+    return self.rooms.allKeys.count;
+}
+
+- (MITMobiusRoomObject*)viewController:(UIViewController*)viewController roomAtIndex:(NSInteger)roomIndex
+{
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *key = buildingsArray[roomIndex];
+    return self.rooms[key];
+}
+
+- (NSInteger)viewController:(UIViewController*)viewController numberOfResourcesInRoomAtIndex:(NSInteger)roomIndex
+{
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *key = buildingsArray[roomIndex];
+    MITMobiusRoomObject *room = self.rooms[key];
+    return room.resources.count;
+}
+
+- (MITMobiusResource*)viewController:(UIViewController*)viewController resourceAtIndex:(NSInteger)resourceIndex inRoomAtIndex:(NSInteger)roomIndex
+{
+    NSArray *buildingsArray = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+    NSString *key = buildingsArray[roomIndex];
+    MITMobiusRoomObject *room = self.rooms[key];
+    return room.resources[resourceIndex];
 }
 
 @end

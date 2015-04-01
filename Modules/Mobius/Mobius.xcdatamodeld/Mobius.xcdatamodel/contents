@@ -10,12 +10,6 @@
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
     </entity>
-    <entity name="MobiusMapObject" representedClassName="MITMobiusMapObject" syncable="YES">
-        <attribute name="latitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="longitude" optional="YES" attributeType="Float" defaultValueString="0.0" syncable="YES"/>
-        <attribute name="roomName" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="Resource" syncable="YES"/>
-    </entity>
     <entity name="MobiusObject" representedClassName="MITMobiusObject" isAbstract="YES" syncable="YES">
         <attribute name="created" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="createdBy" optional="YES" attributeType="String" syncable="YES"/>
@@ -95,6 +89,5 @@
         <element name="Template" positionX="0" positionY="0" width="0" height="0"/>
         <element name="TemplateAttribute" positionX="0" positionY="0" width="0" height="0"/>
         <element name="Type" positionX="0" positionY="0" width="0" height="0"/>
-        <element name="MobiusMapObject" positionX="0" positionY="0" width="0" height="0"/>
     </elements>
 </model>
