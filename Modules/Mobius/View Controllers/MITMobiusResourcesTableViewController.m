@@ -64,29 +64,6 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         return [self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:section];
     }
 }
-/*
-- (NSInteger)_baseIndexForSection:(NSInteger)sectionIndex
-{
-    if ([self shouldDisplayPlaceholderCell] && sectionIndex == 0) {
-        return NSNotFound;
-    } else if ([self shouldDisplayPlaceholderCell]) {
-        --sectionIndex;
-    }
-
-
-    __block NSInteger baseIndex = 1;
-    [self.buildingSections enumerateObjectsUsingBlock:^(id key, NSUInteger idx, BOOL *stop) {
-        if (idx < sectionIndex) {
-            NSArray *resources = self.resourcesByBuilding[key];
-            baseIndex += [resources count];
-        } else {
-            (*stop) = YES;
-        }
-    }];
-
-    return baseIndex;
-}
-*/
 
 #pragma mark Delegate Passthroughs
 - (NSIndexPath*)_indexPathForPlaceholderCell
