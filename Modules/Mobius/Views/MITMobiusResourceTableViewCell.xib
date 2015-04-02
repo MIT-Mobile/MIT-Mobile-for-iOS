@@ -17,8 +17,22 @@
                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="gWe-mw-XFJ" customClass="MITMobiusResourceView">
                         <rect key="frame" x="0.0" y="0.0" width="292" height="50.5"/>
                         <subviews>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global-callout-disclosure" translatesAutoresizingMaskIntoConstraints="NO" id="DRb-J8-I2j">
+                                <rect key="frame" x="262" y="16" width="15" height="20"/>
+                                <constraints>
+                                    <constraint firstAttribute="width" constant="15" id="5L5-uB-qtt"/>
+                                    <constraint firstAttribute="height" constant="20" id="m77-cV-Es9"/>
+                                </constraints>
+                            </imageView>
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="angle-" translatesAutoresizingMaskIntoConstraints="NO" id="E9Z-pW-ejY" userLabel="alertimage">
+                                <rect key="frame" x="9" y="17.5" width="15" height="15"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="15" id="68T-zB-iw5"/>
+                                    <constraint firstAttribute="width" constant="15" id="qy5-fk-8Vb"/>
+                                </constraints>
+                            </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="950" text="Resource" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="348" translatesAutoresizingMaskIntoConstraints="NO" id="ZWZ-Kd-XH6" userLabel="Machine Name">
-                                <rect key="frame" x="25" y="12" width="222" height="26.5"/>
+                                <rect key="frame" x="32" y="12" width="215" height="26.5"/>
                                 <constraints>
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="20" id="Bjw-BZ-gn4"/>
                                 </constraints>
@@ -26,19 +40,15 @@
                                 <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="global-callout-disclosure" translatesAutoresizingMaskIntoConstraints="NO" id="DRb-J8-I2j">
-                                <rect key="frame" x="262" y="15.5" width="15" height="20"/>
-                                <constraints>
-                                    <constraint firstAttribute="width" constant="15" id="5L5-uB-qtt"/>
-                                    <constraint firstAttribute="height" constant="20" id="m77-cV-Es9"/>
-                                </constraints>
-                            </imageView>
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
                             <constraint firstItem="DRb-J8-I2j" firstAttribute="top" secondItem="ZWZ-Kd-XH6" secondAttribute="bottom" id="2Qy-a5-aRi"/>
                             <constraint firstAttribute="trailing" secondItem="DRb-J8-I2j" secondAttribute="trailing" constant="15" id="4AF-FH-uEB"/>
+                            <constraint firstAttribute="centerY" secondItem="E9Z-pW-ejY" secondAttribute="centerY" id="Acy-KC-qbI"/>
+                            <constraint firstItem="E9Z-pW-ejY" firstAttribute="leading" secondItem="gWe-mw-XFJ" secondAttribute="leading" constant="9" id="DhI-d1-7Ua"/>
                             <constraint firstItem="ZWZ-Kd-XH6" firstAttribute="leading" secondItem="gWe-mw-XFJ" secondAttribute="leading" constant="25" id="Myh-2w-TfF"/>
+                            <constraint firstItem="ZWZ-Kd-XH6" firstAttribute="leading" secondItem="E9Z-pW-ejY" secondAttribute="trailing" constant="8" id="REA-sG-gM6"/>
                             <constraint firstItem="DRb-J8-I2j" firstAttribute="leading" secondItem="ZWZ-Kd-XH6" secondAttribute="trailing" constant="15" id="ZGu-bv-8n6"/>
                             <constraint firstAttribute="centerY" secondItem="DRb-J8-I2j" secondAttribute="centerY" id="f1v-Wr-Dpe"/>
                             <constraint firstItem="ZWZ-Kd-XH6" firstAttribute="top" secondItem="gWe-mw-XFJ" secondAttribute="top" constant="12" id="hGB-qc-abW"/>
@@ -46,11 +56,13 @@
                         </constraints>
                         <variation key="default">
                             <mask key="constraints">
+                                <exclude reference="Myh-2w-TfF"/>
                                 <exclude reference="2Qy-a5-aRi"/>
                             </mask>
                         </variation>
                         <connections>
                             <outlet property="machineNameLabel" destination="ZWZ-Kd-XH6" id="Ykd-v8-V9a"/>
+                            <outlet property="machineStatus" destination="E9Z-pW-ejY" id="vOL-Qr-XHk"/>
                         </connections>
                     </view>
                 </subviews>
@@ -68,6 +80,7 @@
         </tableViewCell>
     </objects>
     <resources>
+        <image name="angle-" width="10" height="17"/>
         <image name="global-callout-disclosure" width="10" height="17"/>
     </resources>
 </document>

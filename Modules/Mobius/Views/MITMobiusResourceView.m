@@ -1,5 +1,13 @@
 #import "MITMobiusResourceView.h"
 #import "MITAdditions.h"
+#import "MITResourceConstants.h"
+
+@interface MITMobiusResourceView ()
+
+@property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *machineStatus;
+
+@end
 
 @implementation MITMobiusResourceView
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -38,6 +46,25 @@
         _machineName = [machineName copy];
         [self _refreshContent];
     }
+}
+
+- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString *)statusText
+{
+    switch (status) {
+        case MITMobiusResourceStatusOffline: {
+            self.machineStatus.image = [UIImage imageNamed:MITImageLibrariesStatusAlert];
+        } break;
+            
+        case MITMobiusResourceStatusOnline: {
+            self.machineStatus = nil;
+        } break;
+            
+        case MITMobiusResourceStatusUnknown: {
+            self.machineStatus = nil;
+        } break;
+    }
+    
+    [self _refreshContent];
 }
 
 - (void)_refreshContent

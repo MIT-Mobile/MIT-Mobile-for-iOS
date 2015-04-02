@@ -7,9 +7,10 @@ typedef NS_ENUM(NSInteger, MITMobiusResourceStatus) {
 };
 
 @interface MITMobiusResourceView : UIView
-@property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
 
 @property(nonatomic) NSUInteger index;
 @property(nonatomic,copy) NSString *machineName;
+
+- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString*)statusText;
 
 @end

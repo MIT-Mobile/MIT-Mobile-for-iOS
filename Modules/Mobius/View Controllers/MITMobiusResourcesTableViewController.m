@@ -227,6 +227,8 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
 
         resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
+        [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline withText:resource.status];
+
     }
 }
 
