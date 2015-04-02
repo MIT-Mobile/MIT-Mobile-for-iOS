@@ -133,10 +133,7 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     
     if ([headerView isKindOfClass:[MITMobiusSearchHeader class]]) {
         MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)headerView;
-#warning fake data
-        searchHeaderView.shopName = @"1. Edgerton Student Shop";
-        searchHeaderView.shopHours = @"9:30am - 12pm, 1pm - 4pm";
-        searchHeaderView.shopStaus = @"Closed";
+        [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
     }
     return headerView;
 }
@@ -152,10 +149,7 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     
     if ([headerView isKindOfClass:[MITMobiusSearchHeader class]]) {
         MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)headerView;
-#warning fake data
-        searchHeaderView.shopName = @"1. Edgerton Student Shop";
-        searchHeaderView.shopHours = @"9:30am - 12pm, 1pm - 4pm";
-        searchHeaderView.shopStaus = @"Closed";
+        [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
         
         CGRect frame = searchHeaderView.frame;
         frame.size.width = self.tableView.bounds.size.width;
@@ -168,6 +162,19 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     
     return 0;
 }
+
+- (void)tableView:(UITableView*)tableView configureHeaderView:(UIView*)view forSection:(NSInteger)section
+{
+#warning fake data
+    NSAssert([view isKindOfClass:[MITMobiusSearchHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusSearchHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusSearchHeader class]));
+    
+    MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)view;
+
+    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, @"Edgerton Student Shop"];
+    searchHeaderView.shopHours = @"9:30am - 12pm, 1pm - 4pm";
+    searchHeaderView.shopStaus = @"Closed";
+}
+
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([self shouldDisplayPlaceholderCell] && section == 0) {
