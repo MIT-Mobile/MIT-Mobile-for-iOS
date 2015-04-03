@@ -1,9 +1,11 @@
 #import <UIKit/UIKit.h>
+#import "MITMobiusResource.h"
 
-@interface MITMobiusDetailHeader : UITableViewHeaderFooterView
+@interface MITMobiusDetailHeader : UIView
+
+@property (nonatomic, copy) MITMobiusResource *resource;
 
 + (UINib *)titleHeaderNib;
 + (NSString *)titleHeaderNibName;
-@property (nonatomic,weak) IBOutlet UILabel *titleLabel;
 
 @end

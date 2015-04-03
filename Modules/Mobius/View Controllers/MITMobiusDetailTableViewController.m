@@ -4,7 +4,7 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITTitleDescriptionCell.h"
 #import "MITMobiusSpecificationsHeader.h"
-
+#import "MITMobiusDetailHeader.h"
 #import "MITMobiusModel.h"
 #import "MITMapModelController.h"
 
@@ -91,6 +91,23 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     tableView.tableFooterView = [UIView new];
     
     tableView.separatorStyle = UITableViewCellSelectionStyleNone;
+    
+    MITMobiusDetailHeader *detailHeader = [[[NSBundle mainBundle]
+                     loadNibNamed:@"MITMobiusDetailHeader"
+                     owner:self options:nil]
+                    firstObject];
+    detailHeader.resource = self.resource;
+    
+    tableView.tableHeaderView = detailHeader;
+    [detailHeader setNeedsLayout];
+    [detailHeader layoutIfNeeded];
+    CGFloat height = [detailHeader systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    
+    //update the header's frame and set it again
+    CGRect tableHeaderViewFrame = detailHeader.frame;
+    tableHeaderViewFrame.size.height = height;
+    detailHeader.frame = tableHeaderViewFrame;
+    self.tableView.tableHeaderView = detailHeader;
 }
 
 - (NSManagedObjectContext*)managedObjectContext
