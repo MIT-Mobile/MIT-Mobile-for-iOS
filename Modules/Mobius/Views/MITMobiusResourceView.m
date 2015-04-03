@@ -48,7 +48,7 @@
     }
 }
 
-- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString *)statusText
+- (void)setStatus:(MITMobiusResourceStatus)status
 {
     switch (status) {
         case MITMobiusResourceStatusOffline: {
