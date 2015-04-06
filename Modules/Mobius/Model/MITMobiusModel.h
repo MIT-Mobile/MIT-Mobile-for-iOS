@@ -10,10 +10,8 @@
 #import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
 #import "MITMobiusType.h"
-#import "MITMobiusTemplate.h"
-#import "MITMobiusResourceAttribute.h"
-#import "MITMobiusResourceAttributeValue.h"
-#import "MITMobiusResourceSearch.h"
-#import "MITMobiusTemplateAttribute.h"
+#import "MITMobiusAttribute.h"
+#import "MITMobiusAttributeValue.h"
+#import "MITMobiusRecentSearchQuery.h"
 
 #endif
