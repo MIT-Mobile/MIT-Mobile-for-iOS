@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
     
 };
 
-@interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing>
+@interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing, MITMobiusDetailDelegate>
 
 @property(nonatomic,strong) NSMutableArray *titles;
 @property(nonatomic,strong) NSMutableArray *descriptions;
@@ -97,6 +97,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
                      owner:self options:nil]
                     firstObject];
     detailHeader.resource = self.resource;
+    detailHeader.delegate = self;
     
     tableView.tableHeaderView = detailHeader;
     [detailHeader setNeedsLayout];
@@ -276,6 +277,11 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
 {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)detailSegmentControlAction:(UISegmentedControl *)segmentedControl
+{
+    
 }
 
 @end

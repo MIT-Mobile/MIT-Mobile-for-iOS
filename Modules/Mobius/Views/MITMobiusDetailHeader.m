@@ -89,7 +89,7 @@
 
 - (IBAction)detailSegmentControlAction:(UISegmentedControl *)segmentedControl
 {
-    
+    [self.delegate detailSegmentControlAction:segmentedControl];
 }
 
 @end
