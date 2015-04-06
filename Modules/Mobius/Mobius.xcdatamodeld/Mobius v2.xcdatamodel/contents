@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model userDefinedModelVersionIdentifier="" type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="6254" systemVersion="14D87h" minimumToolsVersion="Automatic" macOSVersion="Automatic" iOSVersion="Automatic">
+    <entity name="MobiusAttribute" representedClassName="MITMobiusAttribute" syncable="YES">
+        <attribute name="fieldType" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="label" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="widgetType" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="attributes" inverseEntity="MobiusResource" syncable="YES"/>
+        <relationship name="valueSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusAttributeValueSet" inverseName="attribute" inverseEntity="MobiusAttributeValueSet" syncable="YES"/>
+    </entity>
+    <entity name="MobiusAttributeValue" representedClassName="MITMobiusAttributeValue" syncable="YES">
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="value" attributeType="String" syncable="YES"/>
+        <relationship name="valueSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusAttributeValueSet" inverseName="values" inverseEntity="MobiusAttributeValueSet" syncable="YES"/>
+    </entity>
+    <entity name="MobiusAttributeValueSet" representedClassName="MITMobiusAttributeValueSet" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusAttribute" inverseName="valueSet" inverseEntity="MobiusAttribute" syncable="YES"/>
+        <relationship name="values" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusAttributeValue" inverseName="valueSet" inverseEntity="MobiusAttributeValue" syncable="YES"/>
+    </entity>
+    <entity name="MobiusCategory" representedClassName="MITMobiusCategory" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="category" inverseEntity="MobiusResource" syncable="YES"/>
+        <relationship name="types" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusType" inverseName="category" inverseEntity="MobiusType" syncable="YES"/>
+    </entity>
+    <entity name="MobiusRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
+        <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MobiusRecentSearchQuery" inverseName="search" inverseEntity="MobiusRecentSearchQuery" syncable="YES"/>
+    </entity>
+    <entity name="MobiusRecentSearchQuery" representedClassName="MITMobiusRecentSearchQuery" syncable="YES">
+        <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
+        <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusRecentSearchList" inverseName="recentQueries" inverseEntity="MobiusRecentSearchList" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResource" representedClassName="MITMobiusResource" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="latitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="longitude" optional="YES" attributeType="Double" defaultValueString="0.0" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="reservable" optional="YES" attributeType="Boolean" syncable="YES"/>
+        <attribute name="room" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="status" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="attributes" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MobiusAttribute" inverseName="resources" inverseEntity="MobiusAttribute" syncable="YES"/>
+        <relationship name="attributeValues" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MobiusResourceAttributeValueSet" inverseName="attribute" inverseEntity="MobiusResourceAttributeValueSet" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusCategory" inverseName="resources" inverseEntity="MobiusCategory" syncable="YES"/>
+        <relationship name="dlc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResourceDLC" inverseName="resource" inverseEntity="MobiusResourceDLC" syncable="YES"/>
+        <relationship name="hours" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MobiusResourceHours" inverseName="resource" inverseEntity="MobiusResourceHours" syncable="YES"/>
+        <relationship name="owners" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MobiusResourceOwner" inverseName="resource" inverseEntity="MobiusResourceOwner" syncable="YES"/>
+        <relationship name="roomset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusRoomSet" inverseName="resources" inverseEntity="MobiusRoomSet" syncable="YES"/>
+        <relationship name="type" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusType" inverseName="resources" inverseEntity="MobiusType" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResourceAttributeValue" representedClassName="MITMobiusResourceAttributeValue" syncable="YES">
+        <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="valueSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResourceAttributeValueSet" inverseName="values" inverseEntity="MobiusResourceAttributeValueSet" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResourceAttributeValueSet" representedClassName="MITMobiusResourceAttributeValueSet" syncable="YES">
+        <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="attributeValues" inverseEntity="MobiusResource" syncable="YES"/>
+        <relationship name="values" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MobiusResourceAttributeValue" inverseName="valueSet" inverseEntity="MobiusResourceAttributeValue" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResourceDLC" representedClassName="MITMobiusResourceDLC" syncable="YES">
+        <attribute name="code" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="dlc" inverseEntity="MobiusResource" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResourceHours" representedClassName="MITMobiusResourceHours" syncable="YES">
+        <attribute name="endDate" attributeType="Date" syncable="YES"/>
+        <attribute name="startDate" attributeType="Date" syncable="YES"/>
+        <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="hours" inverseEntity="MobiusResource" syncable="YES"/>
+    </entity>
+    <entity name="MobiusResourceOwner" representedClassName="MITMobiusResourceOwner" syncable="YES">
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="owners" inverseEntity="MobiusResource" syncable="YES"/>
+    </entity>
+    <entity name="MobiusRoomSet" representedClassName="MITMobiusRoomSet" syncable="YES">
+        <attribute name="code" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="roomset" inverseEntity="MobiusResource" syncable="YES"/>
+    </entity>
+    <entity name="MobiusType" representedClassName="MITMobiusType" syncable="YES">
+        <attribute name="categoryIdentifier" optional="YES" transient="YES" attributeType="String" syncable="YES"/>
+        <relationship name="category" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusCategory" inverseName="types" inverseEntity="MobiusCategory" syncable="YES"/>
+        <relationship name="resources" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="type" inverseEntity="MobiusResource" syncable="YES"/>
+    </entity>
+    <elements>
+        <element name="MobiusResourceAttributeValueSet" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="MobiusRoomSet" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MobiusAttribute" positionX="0" positionY="0" width="128" height="133"/>
+        <element name="MobiusAttributeValue" positionX="0" positionY="0" width="128" height="88"/>
+        <element name="MobiusAttributeValueSet" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="MobiusCategory" positionX="0" positionY="0" width="128" height="105"/>
+        <element name="MobiusRecentSearchList" positionX="0" positionY="0" width="128" height="58"/>
+        <element name="MobiusRecentSearchQuery" positionX="0" positionY="0" width="128" height="88"/>
+        <element name="MobiusResource" positionX="0" positionY="0" width="128" height="270"/>
+        <element name="MobiusResourceAttributeValue" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="MobiusResourceDLC" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="MobiusResourceHours" positionX="0" positionY="0" width="128" height="90"/>
+        <element name="MobiusResourceOwner" positionX="0" positionY="0" width="128" height="75"/>
+        <element name="MobiusType" positionX="0" positionY="0" width="128" height="90"/>
+    </elements>
+</model>
