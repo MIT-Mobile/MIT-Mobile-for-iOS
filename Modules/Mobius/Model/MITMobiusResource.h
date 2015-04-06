@@ -5,7 +5,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusAttribute, MITMobiusCategory, MITMobiusResourceAttributeValueSet, MITMobiusResourceDLC, MITMobiusResourceHours, MITMobiusResourceOwner, MITMobiusType;
+@class MITMobiusAttribute, MITMobiusResourceAttributeValueSet, MITMobiusResourceDLC, MITMobiusResourceHours, MITMobiusResourceOwner, MITMobiusRoomSet;
 
 @interface MITMobiusResource : MITManagedObject <MITMappedObject,MKAnnotation>
 
@@ -16,14 +16,14 @@
 @property (nonatomic, retain) NSNumber * reservable;
 @property (nonatomic, retain) NSString * room;
 @property (nonatomic, retain) NSString * status;
+@property (nonatomic, retain) NSString *category;
+@property (nonatomic, retain) NSString *type;
 @property (nonatomic, retain) NSOrderedSet *attributes;
 @property (nonatomic, retain) NSOrderedSet *attributeValues;
-@property (nonatomic, retain) MITMobiusCategory *category;
 @property (nonatomic, retain) MITMobiusResourceDLC *dlc;
 @property (nonatomic, retain) NSSet *hours;
 @property (nonatomic, retain) NSOrderedSet *owners;
 @property (nonatomic, retain) NSManagedObject *roomset;
-@property (nonatomic, retain) MITMobiusType *type;
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @end

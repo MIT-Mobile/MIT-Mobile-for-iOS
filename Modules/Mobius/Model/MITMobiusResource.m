@@ -36,21 +36,11 @@
                                @"latitude" : @"latitude",
                                @"longitude" : @"longitude",
                                @"status" : @"status",
-                               @"reservable" : @"reservable"};
+                               @"reservable" : @"reservable",
+                               @"_category.category" : @"category",
+                               @"_type.type" : @"type"};
 
     [mapping addAttributeMappingsFromDictionary:mappings];
-
-
-    RKRelationshipMapping *categoryMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_category"
-                                                                                         toKeyPath:@"category"
-                                                                                       withMapping:[MITMobiusCategory objectMapping]];
-    [mapping addPropertyMapping:categoryMapping];
-
-    RKRelationshipMapping *typeMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_type"
-                                                                                     toKeyPath:@"type"
-                                                                                   withMapping:[MITMobiusType objectMapping]];
-    [mapping addPropertyMapping:typeMapping];
-
 
 
     RKEntityMapping *resourceOwnerMapping = [[RKEntityMapping alloc] initWithEntity:[MITMobiusResourceOwner entityDescription]];
