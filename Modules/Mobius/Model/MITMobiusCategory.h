@@ -1,15 +1,18 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
-#import "MITMobiusObject.h"
 
-@class MITMobiusResource, MITMobiusTemplate, MITMobiusType;
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
 
-@interface MITMobiusCategory : MITMobiusObject
+@class MITMobiusResource, MITMobiusType;
+
+@interface MITMobiusCategory : MITManagedObject <MITMappedObject>
+
+@property (nonatomic, retain) NSString * identifier;
+@property (nonatomic, retain) NSString * name;
 
 @property (nonatomic, retain) NSSet *resources;
-@property (nonatomic, retain) MITMobiusTemplate *template;
 @property (nonatomic, retain) NSSet *types;
-@property (nonatomic, retain) NSString *templateIdentifier;
 @end
 
 @interface MITMobiusCategory (CoreDataGeneratedAccessors)
