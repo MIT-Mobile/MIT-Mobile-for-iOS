@@ -1,25 +1,23 @@
 #import "MITMobiusType.h"
 #import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
-#import "MITMobiusTemplate.h"
 
 
 @implementation MITMobiusType
 
+@dynamic identifier;
+@dynamic name;
+@dynamic categoryIdentifier;
 @dynamic category;
 @dynamic resources;
-@dynamic template;
 
 + (RKMapping *)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
 
-    NSDictionary *mappings = @{@"type" : @"name",
-                               @"created_by" : @"createdBy",
-                               @"date_created" : @"created",
-                               @"modified_by" : @"modifiedBy",
-                               @"date_modified" : @"modified",
-                               @"_id" : @"identifier"};
+    NSDictionary *mappings = @{@"_id" : @"identifier",
+                               @"_category" : @"categoryIdentifier",
+                               @"type" : @"name"};
 
     [mapping addAttributeMappingsFromDictionary:mappings];
 
