@@ -1,11 +1,9 @@
 #import "MITMobiusResource.h"
 #import "MITMobiusAttribute.h"
-#import "MITMobiusCategory.h"
 #import "MITMobiusResourceAttributeValueSet.h"
 #import "MITMobiusResourceDLC.h"
 #import "MITMobiusResourceHours.h"
 #import "MITMobiusResourceOwner.h"
-#import "MITMobiusType.h"
 #import "MITMobiusAttributeValue.h"
 
 @implementation MITMobiusResource

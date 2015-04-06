@@ -7,9 +7,7 @@
 
 #import "MITMobiusResourceDataSource.h"
 
-#import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
-#import "MITMobiusType.h"
 #import "MITMobiusAttribute.h"
 #import "MITMobiusAttributeValue.h"
 #import "MITMobiusRecentSearchQuery.h"
