@@ -8,8 +8,17 @@
 #import "MITMobiusResourceDataSource.h"
 
 #import "MITMobiusResource.h"
+#import "MITMobiusResourceAttributeValue.h"
+#import "MITMobiusResourceAttributeValueSet.h"
+#import "MITMobiusResourceDLC.h"
+#import "MITMobiusResourceHours.h"
+#import "MITMobiusResourceOwner.h"
+
 #import "MITMobiusAttribute.h"
+#import "MITMobiusAttributeValueSet.h"
 #import "MITMobiusAttributeValue.h"
+
 #import "MITMobiusRecentSearchQuery.h"
+#import "MITMobiusRecentSearchList.h"
 
 #endif
