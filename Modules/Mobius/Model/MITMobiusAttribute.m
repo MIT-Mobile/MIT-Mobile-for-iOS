@@ -29,10 +29,6 @@
     RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueSet" toKeyPath:@"valueSet" withMapping:[MITMobiusAttributeValueSet objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
-    NSRelationshipDescription *attributeRelationship = [[self entityDescription] relationshipsByName][@"attribute"];
-    RKConnectionDescription *attributeConnection = [[RKConnectionDescription alloc] initWithRelationship:attributeRelationship attributes:@{@"templateAttributeIdentifier": @"identifier"}];
-    [mapping addConnection:attributeConnection];
-
     return mapping;
 }
 
