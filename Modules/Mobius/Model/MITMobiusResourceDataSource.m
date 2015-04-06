@@ -210,7 +210,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         if (!searchItem) {
             searchItem = [[MITMobiusRecentSearchQuery alloc] initWithEntity:[MITMobiusRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
             searchItem.text = searchTerm;
-            [recentSearchList addRecentQueriesObject:searchItem];
+            searchItem.search = recentSearchList;
         }
         
         searchItem.date = [NSDate date];
