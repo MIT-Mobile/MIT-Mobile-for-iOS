@@ -38,7 +38,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 @property(nonatomic) NSInteger currentSegementedSection;
 @property(nonatomic,strong) NSArray *hours;
 @property(nonatomic,strong) NSArray *rowTypes;
-@property(nonatomic,strong) MITMobiusSegmentedHeader *segmentedHeaderView;
+
 @end
 
 @implementation MITMobiusDetailTableViewController
@@ -271,12 +271,13 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
     if (section == MITMobiusTableViewSectionSegmented) {
         UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSegmentedHeaderIdentifier];
         
-        if ([headerView isKindOfClass:[MITMobiusSegmentedHeader class]] && !self.segmentedHeaderView) {
-            self.segmentedHeaderView = (MITMobiusSegmentedHeader*)headerView;
-            self.segmentedHeaderView.delegate = self;
+        if ([headerView isKindOfClass:[MITMobiusSegmentedHeader class]]) {
+            MITMobiusSegmentedHeader *segmentedHeaderView = (MITMobiusSegmentedHeader*)headerView;
+            segmentedHeaderView.delegate = self;
+            segmentedHeaderView.segmentedControl.selectedSegmentIndex = self.currentSegementedSection;
         }
         
-        return self.segmentedHeaderView;
+        return headerView;
     }
     return nil;
 }

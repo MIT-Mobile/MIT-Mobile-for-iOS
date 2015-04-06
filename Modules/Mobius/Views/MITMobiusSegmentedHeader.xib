@@ -51,6 +51,9 @@
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
+            <connections>
+                <outlet property="segmentedControl" destination="3uh-o4-0kS" id="0td-M0-mT1"/>
+            </connections>
             <point key="canvasLocation" x="283" y="197"/>
         </view>
     </objects>

@@ -5,6 +5,7 @@
 @interface MITMobiusSegmentedHeader : UITableViewHeaderFooterView
 
 @property(nonatomic,weak) id<MITMobiusSegmentedHeaderDelegate> delegate;
+@property (weak, nonatomic) IBOutlet UISegmentedControl *segmentedControl;
 
 + (UINib *)segmentedHeaderNib;
 + (NSString *)segmentedHeaderNibName;
