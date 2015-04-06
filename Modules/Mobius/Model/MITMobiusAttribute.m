@@ -1,31 +1,32 @@
-//
-//  MITMobiusResourceAttribute.m
-//  MIT Mobile
-//
-//  Created by Blake Skinner on 1/29/15.
-//
-//
+#import "MITMobiusAttribute.h"
+#import "MITMobiusAttributeValueSet.h"
+#import "MITMobiusResource.h"
+#import "MITMobiusAttributeValue.h"
 
-#import "MITMobiusResourceAttribute.h"
-#import "MITMobiusResourceAttributeValue.h"
-#import "MITMobiusTemplateAttribute.h"
 
-@implementation MITMobiusResourceAttribute
+@implementation MITMobiusAttribute
 
-@dynamic templateAttributeIdentifier;
+@dynamic fieldType;
 @dynamic identifier;
-@dynamic attribute;
+@dynamic label;
+@dynamic widgetType;
+@dynamic resources;
+@dynamic valueSet;
 @dynamic values;
 
 + (RKMapping*)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
 
+    mapping.assignsNilForMissingRelationships = YES;
+
     NSDictionary *mappings = @{@"_id" : @"identifier",
-                               @"_attribute" : @"templateAttributeIdentifier"};
+                               @"field_type" : @"fieldType",
+                               @"widget_type" : @"widgetType",
+                               @"label" : @"label"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"value" toKeyPath:@"values" withMapping:[MITMobiusResourceAttributeValue objectMapping]];
+    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueSet" toKeyPath:@"valueSet" withMapping:[MITMobiusAttributeValueSet objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
     NSRelationshipDescription *attributeRelationship = [[self entityDescription] relationshipsByName][@"attribute"];
