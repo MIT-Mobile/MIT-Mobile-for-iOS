@@ -57,12 +57,6 @@
                                                                                     withMapping:[MITMobiusResourceHours objectMapping]];
     [mapping addPropertyMapping:hoursMapping];
 
-
-    RKRelationshipMapping *attributeValuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values" toKeyPath:@"attributeValues" withMapping:[MITMobiusResourceAttributeValueSet objectMapping]];
-    [mapping addPropertyMapping:attributeValuesMapping];
-
-    [mapping addConnectionForRelationship:@"attributes" connectedBy:@{@"attribute_values._attribute._id" : @"identifier"}];
-
     mapping.assignsNilForMissingRelationships = YES;
 
     return mapping;
