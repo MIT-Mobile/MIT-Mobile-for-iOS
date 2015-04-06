@@ -8,9 +8,10 @@
 
 @interface MITMobiusResourceAttributeValueSet : MITManagedObject <MITMappedObject>
 
+@property (nonatomic, retain) NSString *attributeIdentifier;
+@property (nonatomic, retain) NSString *label;
 @property (nonatomic, retain) NSSet *values;
 @property (nonatomic, retain) MITMobiusResource *resource;
-@property (nonatomic, retain) MITMobiusAttribute *attribute;
 @end
 
 @interface MITMobiusResourceAttributeValueSet (CoreDataGeneratedAccessors)

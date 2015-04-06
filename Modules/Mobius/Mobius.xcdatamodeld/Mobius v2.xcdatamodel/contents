@@ -5,7 +5,6 @@
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="label" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="widgetType" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="resourceValueSets" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusResourceAttributeValueSet" inverseName="attribute" inverseEntity="MobiusResourceAttributeValueSet" syncable="YES"/>
         <relationship name="valueSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusAttributeValueSet" inverseName="attribute" inverseEntity="MobiusAttributeValueSet" syncable="YES"/>
     </entity>
     <entity name="MobiusAttributeValue" representedClassName="MITMobiusAttributeValue" syncable="YES">
@@ -53,7 +52,8 @@
         <relationship name="valueSet" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResourceAttributeValueSet" inverseName="values" inverseEntity="MobiusResourceAttributeValueSet" syncable="YES"/>
     </entity>
     <entity name="MobiusResourceAttributeValueSet" representedClassName="MITMobiusResourceAttributeValueSet" syncable="YES">
-        <relationship name="attribute" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusAttribute" inverseName="resourceValueSets" inverseEntity="MobiusAttribute" syncable="YES"/>
+        <attribute name="attributeIdentifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="label" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="attributeValues" inverseEntity="MobiusResource" syncable="YES"/>
         <relationship name="values" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MobiusResourceAttributeValue" inverseName="valueSet" inverseEntity="MobiusResourceAttributeValue" syncable="YES"/>
     </entity>
@@ -79,14 +79,14 @@
     </entity>
     <elements>
         <element name="MobiusImage" positionX="0" positionY="0" width="128" height="90"/>
-        <element name="MobiusAttribute" positionX="0" positionY="0" width="128" height="133"/>
+        <element name="MobiusAttribute" positionX="0" positionY="0" width="128" height="118"/>
         <element name="MobiusAttributeValue" positionX="0" positionY="0" width="128" height="88"/>
         <element name="MobiusAttributeValueSet" positionX="0" positionY="0" width="128" height="88"/>
         <element name="MobiusRecentSearchList" positionX="0" positionY="0" width="128" height="60"/>
         <element name="MobiusRecentSearchQuery" positionX="0" positionY="0" width="128" height="90"/>
         <element name="MobiusResource" positionX="0" positionY="0" width="128" height="268"/>
         <element name="MobiusResourceAttributeValue" positionX="0" positionY="0" width="128" height="75"/>
-        <element name="MobiusResourceAttributeValueSet" positionX="0" positionY="0" width="128" height="88"/>
+        <element name="MobiusResourceAttributeValueSet" positionX="0" positionY="0" width="128" height="103"/>
         <element name="MobiusResourceDLC" positionX="0" positionY="0" width="128" height="90"/>
         <element name="MobiusResourceHours" positionX="0" positionY="0" width="128" height="90"/>
         <element name="MobiusResourceOwner" positionX="0" positionY="0" width="128" height="75"/>

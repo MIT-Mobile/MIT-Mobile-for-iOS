@@ -16,7 +16,6 @@
 @dynamic reservable;
 @dynamic room;
 @dynamic status;
-@dynamic attributes;
 @dynamic attributeValues;
 @dynamic category;
 @dynamic dlc;
@@ -90,19 +89,6 @@
 - (CLLocationCoordinate2D)coordinate
 {
     return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
-}
-
-- (NSOrderedSet *)attributes
-{
-    NSOrderedSet *attributedValues = self.attributeValues;
-    NSMutableOrderedSet *attributes = [[NSMutableOrderedSet alloc] init];
-    for (MITMobiusResourceAttributeValueSet *valueSet in attributedValues) {
-        if (valueSet.attribute) {
-            [attributes addObject:valueSet.attribute];
-        }
-    }
-    
-    return attributes;
 }
 
 @end

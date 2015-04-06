@@ -6,16 +6,16 @@
 
 @implementation MITMobiusResourceAttributeValueSet
 
+@dynamic attributeIdentifier;
 @dynamic values;
-@dynamic attribute;
+@dynamic label;
 @dynamic resource;
 
 + (RKMapping*)objectMapping
 {
     RKEntityMapping *valueSetMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
-
-    RKRelationshipMapping *attributeMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_attribute" toKeyPath:@"attribute" withMapping:[MITMobiusAttribute objectMapping]];
-    [valueSetMapping addPropertyMapping:attributeMapping];
+    [valueSetMapping addAttributeMappingsFromDictionary:@{@"_attribute._id" : @"attributeIdentifier",
+                                                          @"_attribute.label" : @"label"}];
 
     RKEntityMapping *valueMapping = [[RKEntityMapping alloc] initWithEntity:[MITMobiusResourceAttributeValue entityDescription]];
     RKAttributeMapping *valueAttributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"value"];

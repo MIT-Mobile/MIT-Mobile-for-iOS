@@ -73,7 +73,7 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
         }
 
         if (valueString.length > 0) {
-            [self.titles addObject:valueSet.attribute.label];
+            [self.titles addObject:valueSet.label];
             [self.descriptions addObject:valueString];
         }
     }
