@@ -97,21 +97,19 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
             [rowTypes addObject:@(MITMobiusTableViewRowHoursLabel)];
         }
         
-        for (NSString *hours in self.hours) {
-            if (hours.length > 0) {
-                [rowTypes addObject:@(MITMobiusTableViewRowHours)];
-            }
-        }
+        [self.hours enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [rowTypes addObject:@(MITMobiusTableViewRowHours)];
+        }];
         
         if (self.resource.room) {
             [rowTypes addObject:@(MITMobiusTableViewRowLocation)];
         }
     } else if (self.currentSegementedSection == MITMobiusTableViewSectionSpecs) {
-        for (NSString *title in self.titles) {
-            if (title.length > 0) {
-                [rowTypes addObject:@(MITMobiusTableViewRowDetails)];
-            }
-        }
+        
+        [self.titles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+            [rowTypes addObject:@(MITMobiusTableViewRowDetails)];
+        }];
+        
     }
     self.rowTypes = rowTypes;
     [self.tableView reloadData];
