@@ -64,6 +64,12 @@
                                                                                        withMapping:[MITMobiusImage objectMapping]];
     [mapping addPropertyMapping:topImageMapping];
 
+    RKRelationshipMapping *attributeValuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values"
+                                                                                                toKeyPath:@"attributeValues"
+                                                                                              withMapping:[MITMobiusResourceAttributeValueSet objectMapping]];
+
+    [mapping addPropertyMapping:attributeValuesMapping];
+
     mapping.assignsNilForMissingRelationships = YES;
 
     return mapping;
@@ -88,23 +94,12 @@
 
 - (NSOrderedSet *)attributes
 {
-    [self willAccessValueForKey:@"attributes"];
-    NSOrderedSet *attributes = [self primitiveValueForKey:@"attributes"];
-    [self didAccessValueForKey:@"attributes"];
-
-    for (MITMobiusAttribute *rAttribute in attributes) {
-
-        NSMutableArray *valuesToDelete = [[NSMutableArray alloc] init];
-
-        for (MITMobiusAttributeValue *value in rAttribute.values) {
-
-            if ([value.value length] == 0) {
-                [valuesToDelete addObject:value];
-            }
+    NSOrderedSet *attributedValues = self.attributeValues;
+    NSMutableOrderedSet *attributes = [[NSMutableOrderedSet alloc] init];
+    for (MITMobiusResourceAttributeValueSet *valueSet in attributedValues) {
+        if (valueSet.attribute) {
+            [attributes addObject:valueSet.attribute];
         }
-        NSMutableOrderedSet *values = [rAttribute.values mutableCopy];
-        [values removeObjectsInArray:valuesToDelete];
-        rAttribute.values = values;
     }
     
     return attributes;

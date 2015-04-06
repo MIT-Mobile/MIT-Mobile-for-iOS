@@ -8,6 +8,7 @@
 
 @dynamic values;
 @dynamic attribute;
+@dynamic resource;
 
 + (RKMapping*)objectMapping
 {
@@ -16,7 +17,7 @@
     RKRelationshipMapping *attributeMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_attribute" toKeyPath:@"attribute" withMapping:[MITMobiusAttribute objectMapping]];
     [valueSetMapping addPropertyMapping:attributeMapping];
 
-    RKEntityMapping *valueMapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
+    RKEntityMapping *valueMapping = [[RKEntityMapping alloc] initWithEntity:[MITMobiusResourceAttributeValue entityDescription]];
     RKAttributeMapping *valueAttributeMapping = [RKAttributeMapping attributeMappingFromKeyPath:nil toKeyPath:@"value"];
     [valueMapping addPropertyMapping:valueAttributeMapping];
 

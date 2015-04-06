@@ -18,7 +18,7 @@
 @property (nonatomic, retain) NSString * status;
 @property (nonatomic, retain) NSString *category;
 @property (nonatomic, retain) NSString *type;
-@property (nonatomic, retain) NSOrderedSet *attributes;
+@property (nonatomic, readonly, copy) NSOrderedSet *attributes;
 @property (nonatomic, retain) NSOrderedSet *attributeValues;
 @property (nonatomic, retain) MITMobiusResourceDLC *dlc;
 @property (nonatomic, retain) NSOrderedSet *images;

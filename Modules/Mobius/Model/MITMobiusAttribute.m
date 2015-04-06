@@ -18,8 +18,6 @@
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
 
-    mapping.assignsNilForMissingRelationships = YES;
-
     NSDictionary *mappings = @{@"_id" : @"identifier",
                                @"field_type" : @"fieldType",
                                @"widget_type" : @"widgetType",
