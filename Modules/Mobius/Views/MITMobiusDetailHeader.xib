@@ -18,45 +18,31 @@
                             <rect key="frame" x="0.0" y="0.0" width="429" height="309"/>
                             <subviews>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resource" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                                    <rect key="frame" x="15" y="214" width="399" height="20.5"/>
+                                    <rect key="frame" x="15" y="252.5" width="399" height="20.5"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
                                 <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="EHt-Yf-Qbd">
-                                    <rect key="frame" x="15" y="244" width="399" height="16.5"/>
+                                    <rect key="frame" x="15" y="282.5" width="399" height="16.5"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <segmentedControl opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="top" segmentControlStyle="plain" selectedSegmentIndex="0" translatesAutoresizingMaskIntoConstraints="NO" id="hLH-Y3-6UN">
-                                    <rect key="frame" x="28" y="271" width="373" height="29"/>
-                                    <segments>
-                                        <segment title="Shop Details"/>
-                                        <segment title="Specs"/>
-                                    </segments>
-                                    <connections>
-                                        <action selector="detailSegmentControlAction:" destination="w51-xu-vRG" eventType="valueChanged" id="XUT-nJ-py8"/>
-                                    </connections>
-                                </segmentedControl>
                                 <imageView userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="USA-ls-5hk">
-                                    <rect key="frame" x="0.0" y="0.0" width="429" height="206"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="429" height="244.5"/>
                                 </imageView>
                             </subviews>
                             <constraints>
                                 <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="15" id="1a4-TI-VRD"/>
-                                <constraint firstItem="hLH-Y3-6UN" firstAttribute="top" secondItem="EHt-Yf-Qbd" secondAttribute="bottom" constant="10" id="D9K-cr-cI8"/>
-                                <constraint firstAttribute="trailing" secondItem="hLH-Y3-6UN" secondAttribute="trailing" constant="28" id="GZY-VL-FRn"/>
                                 <constraint firstItem="EHt-Yf-Qbd" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="10" id="Gzb-3t-Sbm"/>
                                 <constraint firstItem="USA-ls-5hk" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" id="Uwf-Lf-nEb"/>
                                 <constraint firstItem="USA-ls-5hk" firstAttribute="top" secondItem="rq1-KP-oP6" secondAttribute="top" id="bGw-eP-frf"/>
                                 <constraint firstItem="EHt-Yf-Qbd" firstAttribute="leading" secondItem="las-NX-67L" secondAttribute="leading" id="csk-Wd-So9"/>
                                 <constraint firstAttribute="trailing" secondItem="EHt-Yf-Qbd" secondAttribute="trailing" constant="15" id="ecd-hA-2tr"/>
-                                <constraint firstAttribute="centerX" secondItem="hLH-Y3-6UN" secondAttribute="centerX" id="fhq-cK-brX"/>
                                 <constraint firstAttribute="trailing" secondItem="USA-ls-5hk" secondAttribute="trailing" id="gqy-kg-CR8"/>
-                                <constraint firstItem="hLH-Y3-6UN" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="28" id="hC6-P5-cgp"/>
                                 <constraint firstItem="las-NX-67L" firstAttribute="top" secondItem="USA-ls-5hk" secondAttribute="bottom" constant="8" id="pL3-yK-5Zm"/>
-                                <constraint firstAttribute="bottom" secondItem="hLH-Y3-6UN" secondAttribute="bottom" constant="10" id="qfr-qW-NDy"/>
+                                <constraint firstAttribute="bottom" secondItem="EHt-Yf-Qbd" secondAttribute="bottom" constant="10" id="tr3-KV-nBW"/>
                                 <constraint firstAttribute="trailing" secondItem="las-NX-67L" secondAttribute="trailing" constant="15" id="xgk-ZI-bw1"/>
                             </constraints>
                         </view>
