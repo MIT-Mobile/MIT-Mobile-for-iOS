@@ -5,7 +5,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusAttribute, MITMobiusResourceAttributeValueSet, MITMobiusResourceDLC, MITMobiusResourceHours, MITMobiusResourceOwner, MITMobiusRoomSet;
+@class MITMobiusAttribute, MITMobiusResourceAttributeValueSet, MITMobiusResourceDLC, MITMobiusResourceHours, MITMobiusResourceOwner, MITMobiusRoomSet, MITMobiusImage;
 
 @interface MITMobiusResource : MITManagedObject <MITMappedObject,MKAnnotation>
 
@@ -21,6 +21,7 @@
 @property (nonatomic, retain) NSOrderedSet *attributes;
 @property (nonatomic, retain) NSOrderedSet *attributeValues;
 @property (nonatomic, retain) MITMobiusResourceDLC *dlc;
+@property (nonatomic, retain) NSOrderedSet *images;
 @property (nonatomic, retain) NSSet *hours;
 @property (nonatomic, retain) NSOrderedSet *owners;
 @property (nonatomic, retain) NSManagedObject *roomset;
@@ -29,17 +30,6 @@
 @end
 
 @interface MITMobiusResource (CoreDataGeneratedAccessors)
-
-- (void)insertObject:(MITMobiusAttribute *)value inAttributesAtIndex:(NSUInteger)idx;
-- (void)removeObjectFromAttributesAtIndex:(NSUInteger)idx;
-- (void)insertAttributes:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
-- (void)removeAttributesAtIndexes:(NSIndexSet *)indexes;
-- (void)replaceObjectInAttributesAtIndex:(NSUInteger)idx withObject:(MITMobiusAttribute *)value;
-- (void)replaceAttributesAtIndexes:(NSIndexSet *)indexes withAttributes:(NSArray *)values;
-- (void)addAttributesObject:(MITMobiusAttribute *)value;
-- (void)removeAttributesObject:(MITMobiusAttribute *)value;
-- (void)addAttributes:(NSOrderedSet *)values;
-- (void)removeAttributes:(NSOrderedSet *)values;
 - (void)insertObject:(MITMobiusResourceAttributeValueSet *)value inAttributeValuesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromAttributeValuesAtIndex:(NSUInteger)idx;
 - (void)insertAttributeValues:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
@@ -65,4 +55,15 @@
 - (void)removeOwnersObject:(MITMobiusResourceOwner *)value;
 - (void)addOwners:(NSOrderedSet *)values;
 - (void)removeOwners:(NSOrderedSet *)values;
+
+- (void)insertObject:(MITMobiusImage *)value inImagesAtIndex:(NSUInteger)idx;
+- (void)removeObjectFromImagesAtIndex:(NSUInteger)idx;
+- (void)insertImages:(NSArray *)value atIndexes:(NSIndexSet *)indexes;
+- (void)removeImagesAtIndexes:(NSIndexSet *)indexes;
+- (void)replaceObjectInImagesAtIndex:(NSUInteger)idx withObject:(MITMobiusImage *)value;
+- (void)replaceImagesAtIndexes:(NSIndexSet *)indexes withImages:(NSArray *)values;
+- (void)addImagesObject:(MITMobiusImage *)value;
+- (void)removeImagesObject:(MITMobiusImage *)value;
+- (void)addImages:(NSOrderedSet *)values;
+- (void)removeImages:(NSOrderedSet *)values;
 @end

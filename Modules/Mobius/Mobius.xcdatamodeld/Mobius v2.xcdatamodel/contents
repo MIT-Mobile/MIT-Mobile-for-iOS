@@ -21,7 +21,7 @@
     <entity name="MobiusImage" representedClassName="MITMobiusImage" syncable="YES">
         <attribute name="filename" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="topImage" inverseEntity="MobiusResource" syncable="YES"/>
+        <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="images" inverseEntity="MobiusResource" syncable="YES"/>
     </entity>
     <entity name="MobiusRecentSearchList" representedClassName="MITMobiusRecentSearchList" syncable="YES">
         <relationship name="recentQueries" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MobiusRecentSearchQuery" inverseName="search" inverseEntity="MobiusRecentSearchQuery" syncable="YES"/>
@@ -45,9 +45,9 @@
         <relationship name="attributeValues" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MobiusResourceAttributeValueSet" inverseName="attribute" inverseEntity="MobiusResourceAttributeValueSet" syncable="YES"/>
         <relationship name="dlc" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResourceDLC" inverseName="resource" inverseEntity="MobiusResourceDLC" syncable="YES"/>
         <relationship name="hours" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="MobiusResourceHours" inverseName="resource" inverseEntity="MobiusResourceHours" syncable="YES"/>
+        <relationship name="images" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MobiusImage" inverseName="resource" inverseEntity="MobiusImage" syncable="YES"/>
         <relationship name="owners" optional="YES" toMany="YES" deletionRule="Cascade" ordered="YES" destinationEntity="MobiusResourceOwner" inverseName="resource" inverseEntity="MobiusResourceOwner" syncable="YES"/>
         <relationship name="roomset" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusRoomSet" inverseName="resources" inverseEntity="MobiusRoomSet" syncable="YES"/>
-        <relationship name="topImage" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusImage" inverseName="resource" inverseEntity="MobiusImage" syncable="YES"/>
     </entity>
     <entity name="MobiusResourceAttributeValue" representedClassName="MITMobiusResourceAttributeValue" syncable="YES">
         <attribute name="value" optional="YES" attributeType="String" syncable="YES"/>

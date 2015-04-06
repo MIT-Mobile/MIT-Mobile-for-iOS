@@ -5,6 +5,7 @@
 #import "MITMobiusResourceHours.h"
 #import "MITMobiusResourceOwner.h"
 #import "MITMobiusAttributeValue.h"
+#import "MITMobiusImage.h"
 
 @implementation MITMobiusResource
 
@@ -23,6 +24,7 @@
 @dynamic owners;
 @dynamic roomset;
 @dynamic type;
+@dynamic images;
 
 + (RKMapping *)objectMapping
 {
@@ -56,6 +58,11 @@
                                                                                       toKeyPath:@"hours"
                                                                                     withMapping:[MITMobiusResourceHours objectMapping]];
     [mapping addPropertyMapping:hoursMapping];
+
+    RKRelationshipMapping *topImageMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_image"
+                                                                                         toKeyPath:@"images"
+                                                                                       withMapping:[MITMobiusImage objectMapping]];
+    [mapping addPropertyMapping:topImageMapping];
 
     mapping.assignsNilForMissingRelationships = YES;
 
