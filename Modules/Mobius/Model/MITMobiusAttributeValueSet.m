@@ -19,7 +19,7 @@
                                @"value_set" : @"name"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"values" toKeyPath:@"values" withMapping:[MITMobiusAttributeValueSet objectMapping]];
+    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"values" toKeyPath:@"values" withMapping:[MITMobiusAttributeValue objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
     return mapping;
