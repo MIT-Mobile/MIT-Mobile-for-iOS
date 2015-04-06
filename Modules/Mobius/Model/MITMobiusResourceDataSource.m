@@ -10,7 +10,8 @@
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
 
-static NSString* const MITMobiusDefaultServer = @"https://kairos-dev.mit.edu";
+#import "MITMobileServerConfiguration.h"
+
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
@@ -22,6 +23,19 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @implementation MITMobiusResourceDataSource
 @dynamic resources;
+
++ (NSURL*)defaultServerURL {
+    MITMobileWebServerType serverType = MITMobileWebGetCurrentServerType();
+
+    switch (serverType) {
+        case MITMobileWebProduction:
+        case MITMobileWebStaging:
+            return [NSURL URLWithString:@"https://kairos-test.mit.edu"];
+
+        case MITMobileWebDevelopment:
+            return [NSURL URLWithString:@"https://kairos-dev.mit.edu"];
+    }
+}
 
 - (instancetype)init
 {
@@ -76,7 +90,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             }
         }];
     } else {
-        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMobiusDefaultServer];
+        NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
         NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
 
         if (queryString) {
