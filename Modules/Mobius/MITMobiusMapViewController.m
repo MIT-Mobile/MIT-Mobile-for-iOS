@@ -99,8 +99,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
     if ([self.dataSource numberOfRoomsForViewController:self]) {
-        [self.mapView showAnnotations:[self.mapView annotations] animated:NO];
-        [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
+        if (UIEdgeInsetsEqualToEdgeInsets(self.mapEdgeInsets, UIEdgeInsetsZero)) {
+            [self.mapView showAnnotations:self.mapView.annotations animated:YES];
+        } else {
+            [self.mapView showAnnotations:self.mapView.annotations animated:NO];
+            [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
+        }
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
