@@ -25,9 +25,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
-@property (nonatomic) BOOL isUpdating;
-
-
 @end
 
 @implementation MITShuttleRouteViewController
@@ -67,7 +64,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [super viewWillAppear:animated];
     
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
 }
 
@@ -109,14 +105,8 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 #pragma mark - Update Data
 
-- (void)predictionsWillUpdate
-{
-    self.isUpdating = YES;
-}
-
 - (void)predictionsDidUpdate
 {
-    self.isUpdating = NO;
     if (!self.shouldSuppressPredictionRefreshReloads) {
         [self.tableView reloadDataAndMaintainSelection];
     }
@@ -158,7 +148,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self predictionsWillUpdate];
     [[MITShuttleController sharedController] getPredictionsForRoute:self.route completion:^(NSArray *predictionLists, NSError *error) {
         [self.refreshControl endRefreshing];
         if ([self.delegate respondsToSelector:@selector(routeViewControllerDidFinishRefreshing:)]) {
