@@ -58,18 +58,22 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
 {
     self.titles = [[NSMutableArray alloc] init];
     self.descriptions = [[NSMutableArray alloc] init];
-    
-    for(MITMobiusResourceAttribute *rAttribute in self.resource.attributes) {
-        NSString *valueString = nil;
-        for (MITMobiusResourceAttributeValue *value in rAttribute.values) {
-            if ([valueString length] == 0) {
-                valueString = value.value;
-            } else {
-                valueString = [NSString stringWithFormat:@"%@\n%@",valueString, value.value];
+
+    for (MITMobiusResourceAttributeValueSet *valueSet in self.resource.attributeValues) {
+        NSMutableString *valueString = [[NSMutableString alloc] init];
+
+        for (MITMobiusResourceAttributeValue *value in valueSet.values) {
+            if (value.value.length > 0) {
+                if (valueString.length > 0) {
+                    [valueString appendString:@"\n"];
+                }
+
+                [valueString appendString:value.value];
             }
         }
-        if (valueString.length != 0) {
-            [self.titles addObject:rAttribute.attribute.label];
+
+        if (valueString.length > 0) {
+            [self.titles addObject:valueSet.label];
             [self.descriptions addObject:valueString];
         }
     }

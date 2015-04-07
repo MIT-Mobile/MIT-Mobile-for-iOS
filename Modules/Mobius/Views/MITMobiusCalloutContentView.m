@@ -27,35 +27,9 @@
     
     return self;
 }
-/*
-- (void)setup
-{
-    UIView *view = nil;
-    NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MITMobiusCalloutContentView" owner:self options:nil];
-    for (id object in objects) {
-        if ([object isKindOfClass:[UIView class]]) {
-            view = object;
-            break;
-        }
-    }
-    if (view) {
-        [self addSubview:view];
-        
-        self.userInteractionEnabled = NO;
-        self.exclusiveTouch = NO;
-    }
-}*/
-
 
 - (void)setup
 {
-  /*  NSString *nibName = NSStringFromClass([self class]);
-    UINib *nib = [UINib nibWithNibName:nibName bundle:nil];
-    NSAssert(nib, @"failed to load nib %@",nibName);
-    [nib instantiateWithOwner:self options:nil];
-    
-    */
-    
     UIView *calloutContentView = nil;
     NSArray *objects = [[NSBundle mainBundle] loadNibNamed:@"MITMobiusCalloutContentView" owner:self options:nil];
     for (id object in objects) {
@@ -65,8 +39,6 @@
         }
     }
     if (calloutContentView) {
-        
-        //NSAssert([view isKindOfClass:[MITMobiusCalloutContentView class]], @"root view in nib %@ is kind of %@, expected %@",nibName,NSStringFromClass([view class]),NSStringFromClass([MITMobiusCalloutContentView class]));
         
         calloutContentView.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
         calloutContentView.translatesAutoresizingMaskIntoConstraints = YES;

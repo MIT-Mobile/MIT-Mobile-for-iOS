@@ -7,13 +7,17 @@
 
 #import "MITMobiusResourceDataSource.h"
 
-#import "MITMobiusCategory.h"
 #import "MITMobiusResource.h"
-#import "MITMobiusType.h"
-#import "MITMobiusTemplate.h"
-#import "MITMobiusResourceAttribute.h"
 #import "MITMobiusResourceAttributeValue.h"
-#import "MITMobiusResourceSearch.h"
-#import "MITMobiusTemplateAttribute.h"
+#import "MITMobiusResourceAttributeValueSet.h"
+#import "MITMobiusResourceDLC.h"
+#import "MITMobiusResourceHours.h"
+#import "MITMobiusResourceOwner.h"
+
+#import "MITMobiusAttribute.h"
+#import "MITMobiusAttributeValue.h"
+
+#import "MITMobiusRecentSearchQuery.h"
+#import "MITMobiusRecentSearchList.h"
 
 #endif
