@@ -1,15 +1,20 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
 
+#import "MITManagedObject.h"
+#import "MITMappedObject.h"
+
 @class MITMobiusResource;
 
-@interface MITMobiusResourceSearch : NSManagedObject
+@interface MITMobiusRoomSet : MITManagedObject <MITMappedObject>
 
-@property (nonatomic, retain) NSString * query;
+@property (nonatomic, retain) NSString * code;
+@property (nonatomic, retain) NSString * identifier;
+@property (nonatomic, retain) NSString * name;
 @property (nonatomic, retain) NSSet *resources;
 @end
 
-@interface MITMobiusResourceSearch (CoreDataGeneratedAccessors)
+@interface MITMobiusRoomSet (CoreDataGeneratedAccessors)
 
 - (void)addResourcesObject:(MITMobiusResource *)value;
 - (void)removeResourcesObject:(MITMobiusResource *)value;

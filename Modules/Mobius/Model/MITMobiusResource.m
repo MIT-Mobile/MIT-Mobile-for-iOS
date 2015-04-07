@@ -1,36 +1,30 @@
 #import "MITMobiusResource.h"
-#import "MITMobiusCategory.h"
-#import "MITMobiusResourceAttribute.h"
+#import "MITMobiusAttribute.h"
+#import "MITMobiusResourceAttributeValueSet.h"
+#import "MITMobiusResourceDLC.h"
+#import "MITMobiusResourceHours.h"
 #import "MITMobiusResourceOwner.h"
-#import "MITMobiusTemplate.h"
-#import "MITMobiusType.h"
-#import "MITMobiusResourceAttributeValue.h"
+#import "MITMobiusAttributeValue.h"
+#import "MITMobiusImage.h"
 
 @implementation MITMobiusResource
 
-@dynamic dlc;
+@dynamic identifier;
 @dynamic latitude;
 @dynamic longitude;
+@dynamic name;
 @dynamic reservable;
 @dynamic room;
 @dynamic status;
-@dynamic attributes;
+@dynamic attributeValues;
 @dynamic category;
+@dynamic dlc;
+@dynamic hours;
 @dynamic owners;
-@dynamic template;
+@dynamic roomset;
 @dynamic type;
-@dynamic searches;
-@dynamic coordinate;
+@dynamic images;
 
-- (id)init
-{
-    self = [super init];
-    if (self) {
-        
-    }
-    
-    return self;
-}
 + (RKMapping *)objectMapping
 {
     RKEntityMapping *mapping = [[RKEntityMapping alloc] initWithEntity:[self entityDescription]];
@@ -40,30 +34,40 @@
                                @"room" : @"room",
                                @"latitude" : @"latitude",
                                @"longitude" : @"longitude",
-                               @"dlc" : @"dlc",
                                @"status" : @"status",
                                @"reservable" : @"reservable",
-                               @"created_by" : @"createdBy",
-                               @"date_created" : @"created",
-                               @"modified_by" : @"modifiedBy",
-                               @"date_modified" : @"modified"};
+                               @"_category.category" : @"category",
+                               @"_type.type" : @"type"};
+
     [mapping addAttributeMappingsFromDictionary:mappings];
 
 
-    RKRelationshipMapping *categoryMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_category" toKeyPath:@"category" withMapping:[MITMobiusCategory objectMapping]];
-    [mapping addPropertyMapping:categoryMapping];
+    RKEntityMapping *resourceOwnerMapping = [[RKEntityMapping alloc] initWithEntity:[MITMobiusResourceOwner entityDescription]];
+    RKAttributeMapping *resourceOwnerNameMapping = [RKAttributeMapping attributeMappingFromKeyPath:nil
+                                                                                         toKeyPath:@"name"];
+    [resourceOwnerMapping addPropertyMapping:resourceOwnerNameMapping];
 
-    RKRelationshipMapping *typeMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_type" toKeyPath:@"type" withMapping:[MITMobiusType objectMapping]];
-    [mapping addPropertyMapping:typeMapping];
-
-    RKRelationshipMapping *templateMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_template" toKeyPath:@"template" withMapping:[MITMobiusTemplate objectMapping]];
-    [mapping addPropertyMapping:templateMapping];
-
-    RKRelationshipMapping *ownersMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"owner" toKeyPath:@"owners" withMapping:[MITMobiusResourceOwner objectMapping]];
+    RKRelationshipMapping *ownersMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"owner"
+                                                                                       toKeyPath:@"owners"
+                                                                                     withMapping:resourceOwnerMapping];
     [mapping addPropertyMapping:ownersMapping];
 
-    RKRelationshipMapping *attributesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values" toKeyPath:@"attributes" withMapping:[MITMobiusResourceAttribute objectMapping]];
-    [mapping addPropertyMapping:attributesMapping];
+
+    RKRelationshipMapping *hoursMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"hours"
+                                                                                      toKeyPath:@"hours"
+                                                                                    withMapping:[MITMobiusResourceHours objectMapping]];
+    [mapping addPropertyMapping:hoursMapping];
+
+    RKRelationshipMapping *topImageMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_image"
+                                                                                         toKeyPath:@"images"
+                                                                                       withMapping:[MITMobiusImage objectMapping]];
+    [mapping addPropertyMapping:topImageMapping];
+
+    RKRelationshipMapping *attributeValuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values"
+                                                                                                toKeyPath:@"attributeValues"
+                                                                                              withMapping:[MITMobiusResourceAttributeValueSet objectMapping]];
+
+    [mapping addPropertyMapping:attributeValuesMapping];
 
     mapping.assignsNilForMissingRelationships = YES;
 
@@ -85,30 +89,6 @@
 - (CLLocationCoordinate2D)coordinate
 {
     return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
-}
-
-- (NSOrderedSet *)attributes
-{
-    [self willAccessValueForKey:@"attributes"];    
-    NSOrderedSet *attributes = [self primitiveValueForKey:@"attributes"];
-    [self didAccessValueForKey:@"attributes"];
-
-    for (MITMobiusResourceAttribute *rAttribute in attributes) {
-
-        NSMutableArray *valuesToDelete = [[NSMutableArray alloc] init];
-        
-        for (MITMobiusResourceAttributeValue *value in rAttribute.values) {
-            
-            if ([value.value length] == 0) {
-                [valuesToDelete addObject:value];
-            }
-        }
-        NSMutableOrderedSet *values = [rAttribute.values mutableCopy];
-        [values removeObjectsInArray:valuesToDelete];
-        rAttribute.values = values;
-    }
-    
-    return attributes;
 }
 
 @end
