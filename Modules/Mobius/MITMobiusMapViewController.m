@@ -345,7 +345,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
     MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:self.selectedIndex];
-    NSUInteger index = [room.resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+    NSOrderedSet *resources = room.resources;
+    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
         return [otherResource.identifier isEqualToString:resourceIdentifier];
     }];
     
