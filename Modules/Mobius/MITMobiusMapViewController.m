@@ -126,7 +126,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     NSMutableArray *annotationsToRemove = [NSMutableArray array];
     for (id <MKAnnotation> annotation in self.mapView.annotations) {
-        if ([annotation isKindOfClass:[MITMobiusResource class]]) {
+        if ([annotation isKindOfClass:[MITMobiusRoomObject class]]) {
             [annotationsToRemove addObject:annotation];
         }
     }
@@ -344,7 +344,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
     MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:self.selectedIndex];
-    NSUInteger index = [room.resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+    NSOrderedSet *resources = room.resources;
+    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
         return [otherResource.identifier isEqualToString:resourceIdentifier];
     }];
     
