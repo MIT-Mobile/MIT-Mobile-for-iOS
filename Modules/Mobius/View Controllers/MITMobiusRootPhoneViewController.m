@@ -706,8 +706,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];
             MITMobiusResource *resource = [mapObject.resources firstObject];
             
-            mapObject.latitude = resource.latitude;
-            mapObject.longitude = resource.longitude;
             
             [rooms setValue:mapObject forKey:roomName];
         }];
