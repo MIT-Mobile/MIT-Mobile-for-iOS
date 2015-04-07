@@ -96,7 +96,11 @@
 
 - (CLLocationCoordinate2D)coordinate
 {
-    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+    if (self.latitude && self.longitude) {
+        return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+    } else {
+        return kCLLocationCoordinate2DInvalid;
+    }
 }
 
 @end
