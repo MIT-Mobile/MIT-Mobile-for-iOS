@@ -533,7 +533,6 @@
 		A5455E3819CB64AB005E762C /* MITShuttleRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E0693021947522A009D1449 /* MITShuttleRootViewController.m */; };
 		A5455E3919CB64AB005E762C /* MITShuttleMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 5E70E39A192F87CA00165B41 /* MITShuttleMapViewController.m */; };
 		A5455E3A19CB64D7005E762C /* MITShuttleStopAlarmCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A53F6DB21935077D0018E66C /* MITShuttleStopAlarmCell.m */; };
-		A559CFF71ACC90BC004CC238 /* mit_ptrf_loading_icon@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A559CFF61ACC90BC004CC238 /* mit_ptrf_loading_icon@2x.png */; };
 		A563904219D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A563904019D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.m */; };
 		A563904319D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A563904119D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.xib */; };
 		A563904F19D992CD001DE763 /* MITLibrariesHoldingLibraryHeaderCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A563904D19D992CD001DE763 /* MITLibrariesHoldingLibraryHeaderCell.m */; };
@@ -562,6 +561,8 @@
 		A564FA9419F82FCA00967F08 /* MITLibrariesItemLoanFineCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A564FA9219F82FCA00967F08 /* MITLibrariesItemLoanFineCollectionCell.xib */; };
 		A564FA9819F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A564FA9619F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.m */; };
 		A564FA9919F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A564FA9719F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.xib */; };
+		A565A7141AD422470079EC6B /* mit_ptrf_loading_wheel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A565A7121AD422470079EC6B /* mit_ptrf_loading_wheel@2x.png */; };
+		A565A7151AD422470079EC6B /* mit_ptrf_progress_wheel@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = A565A7131AD422470079EC6B /* mit_ptrf_progress_wheel@2x.png */; };
 		A569BE6119CB610E0014C29E /* MITDiningMenuComparisonViewController.xib in Sources */ = {isa = PBXBuildFile; fileRef = 2CE1C89B18C156B0001B8FEB /* MITDiningMenuComparisonViewController.xib */; };
 		A569BE6219CB610E0014C29E /* MITDiningHallMenuComparisonLayout.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86621725956A00A054F1 /* MITDiningHallMenuComparisonLayout.m */; };
 		A569BE6319CB610E0014C29E /* MITDiningHallMenuComparisonSectionHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 483C86651725D9C900A054F1 /* MITDiningHallMenuComparisonSectionHeaderView.m */; };
@@ -1641,7 +1642,6 @@
 		A544EF111965A7AF0046823E /* MITMapPlaceContentCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMapPlaceContentCell.h; sourceTree = "<group>"; };
 		A544EF121965A7AF0046823E /* MITMapPlaceContentCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMapPlaceContentCell.m; sourceTree = "<group>"; };
 		A544EF131965A7AF0046823E /* MITMapPlaceContentCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMapPlaceContentCell.xib; sourceTree = "<group>"; };
-		A559CFF61ACC90BC004CC238 /* mit_ptrf_loading_icon@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mit_ptrf_loading_icon@2x.png"; sourceTree = "<group>"; };
 		A563903F19D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesSearchResultDetailViewController.h; sourceTree = "<group>"; };
 		A563904019D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesSearchResultDetailViewController.m; sourceTree = "<group>"; };
 		A563904119D9913F001DE763 /* MITLibrariesSearchResultDetailViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesSearchResultDetailViewController.xib; sourceTree = "<group>"; };
@@ -1684,6 +1684,8 @@
 		A564FA9519F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITLibrariesItemHoldCollectionCell.h; sourceTree = "<group>"; };
 		A564FA9619F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITLibrariesItemHoldCollectionCell.m; sourceTree = "<group>"; };
 		A564FA9719F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITLibrariesItemHoldCollectionCell.xib; sourceTree = "<group>"; };
+		A565A7121AD422470079EC6B /* mit_ptrf_loading_wheel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mit_ptrf_loading_wheel@2x.png"; sourceTree = "<group>"; };
+		A565A7131AD422470079EC6B /* mit_ptrf_progress_wheel@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "mit_ptrf_progress_wheel@2x.png"; sourceTree = "<group>"; };
 		A56A57561ABBD2D700C4918A /* MITShuttleStopsPageViewControllerDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopsPageViewControllerDataSource.h; sourceTree = "<group>"; };
 		A56A57571ABBD2D700C4918A /* MITShuttleStopsPageViewControllerDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleStopsPageViewControllerDataSource.m; sourceTree = "<group>"; };
 		A580266A193E04B600BD0DDE /* MITShuttleStopNotificationManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleStopNotificationManager.h; sourceTree = "<group>"; };
@@ -4368,7 +4370,8 @@
 		A58D645F1AC9DC0600251247 /* MITPullToRefresh */ = {
 			isa = PBXGroup;
 			children = (
-				A559CFF61ACC90BC004CC238 /* mit_ptrf_loading_icon@2x.png */,
+				A565A7121AD422470079EC6B /* mit_ptrf_loading_wheel@2x.png */,
+				A565A7131AD422470079EC6B /* mit_ptrf_progress_wheel@2x.png */,
 				A58D64631AC9DDEB00251247 /* MITPullToRefresh.h */,
 				A58D64641AC9DDEB00251247 /* MITPullToRefresh.m */,
 			);
@@ -4836,7 +4839,6 @@
 				A564FA9419F82FCA00967F08 /* MITLibrariesItemLoanFineCollectionCell.xib in Resources */,
 				AF41E4E11A06AC2700EC4F18 /* MITToursCalloutContentView.xib in Resources */,
 				A563910619E2E61F001DE763 /* MITLibrariesCitationsViewController.xib in Resources */,
-				A559CFF71ACC90BC004CC238 /* mit_ptrf_loading_icon@2x.png in Resources */,
 				A564FA9919F832BF00967F08 /* MITLibrariesItemHoldCollectionCell.xib in Resources */,
 				A52E0CF119B60D34009A6B07 /* MITDiningHomeContainerViewControllerPad.xib in Resources */,
 				2CFFD00918A5231E00D83104 /* MITNewsImageViewController.xib in Resources */,
@@ -4894,6 +4896,7 @@
 				22E180A919DDE6770017AC9A /* MITLibrariesYourAccountViewController.xib in Resources */,
 				2258CBDB19CA1E450067E35C /* MITLibrariesHomeViewController.xib in Resources */,
 				5E70E39D192F87CA00165B41 /* MITShuttleMapViewController.xib in Resources */,
+				A565A7141AD422470079EC6B /* mit_ptrf_loading_wheel@2x.png in Resources */,
 				801062611A0BC7C8002C8A8B /* MITLibrariesFormSheetOptionsSelectionViewController.xib in Resources */,
 				2CDA8CFF18B7E359002A16C0 /* NewsStoryExternalNoImageTableCell.xib in Resources */,
 				2737F3511A333EF400E728C3 /* MITBatchScanningAlertView.xib in Resources */,
@@ -4925,6 +4928,7 @@
 				0B7602561A3A231E0061AC3B /* NewsStoryDekCollectionViewCell.xib in Resources */,
 				2217548C1A07D48A002AD787 /* MITToursInfoCollectionCell.xib in Resources */,
 				A56390E719E07F67001DE763 /* MITLibrariesAvailabilityDetailCell.xib in Resources */,
+				A565A7151AD422470079EC6B /* mit_ptrf_progress_wheel@2x.png in Resources */,
 				2209CC3119929BE300E17100 /* MITEventsTableViewController.xib in Resources */,
 				80598DBB1A0A81460095CEAA /* MITLibrariesFormSheetCellSingleLineTextEntry.xib in Resources */,
 				0B76025A1A3A231E0061AC3B /* NewsStoryLoadMoreCollectionViewCell.xib in Resources */,

@@ -95,6 +95,13 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
 
 #pragma mark MITPullToRefreshView "private" interface
 
+static NSString * const StartingProgressViewAnimationGroupKey = @"StartingProgressViewAnimationGroupKey";
+static NSString * const StartingLoadingViewAnimationGroupKey = @"StartingLoadingViewAnimationGroupKey";
+
+static NSString * const LoadingViewChoppyRotationKey = @"LoadingViewChoppyRotationKey";
+
+static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingViewAnimationGroupKey";
+
 @interface MITPullToRefreshView ()
 
 @property (nonatomic, assign) BOOL isActive;
@@ -106,7 +113,7 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
 
 @property (nonatomic, strong) UIImageView *progressView;
 @property (nonatomic, strong) CAShapeLayer *maskLayer;
-@property (nonatomic, strong) UIActivityIndicatorView *activityIndicatorView;
+@property (nonatomic, strong) UIImageView *loadingView;
 
 @end
 
@@ -122,16 +129,18 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.state = MITPullToRefreshStateStopped;
         
-        self.progressView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_loading_icon"]];
+        self.progressView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_progress_wheel"]];
         self.progressView.frame = CGRectMake(0, 0, 25, 25);
         self.progressView.alpha = 0;
         [self addSubview:self.progressView];
         
+        self.loadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_loading_wheel"]];
+        self.loadingView.frame = self.progressView.frame;
+        self.loadingView.alpha = 0;
+        [self addSubview:self.loadingView];
+        
         self.maskLayer = [CAShapeLayer layer];
         self.maskLayer.frame = self.progressView.frame;
-        
-        self.activityIndicatorView = [[UIActivityIndicatorView alloc] initWithActivityIndicatorStyle:UIActivityIndicatorViewStyleGray];
-        [self addSubview:self.activityIndicatorView];
     }
     
     return self;
@@ -145,7 +154,7 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
     
     self.progressView.frame = progressViewFrame;
     self.maskLayer.frame = self.progressView.bounds;
-    self.activityIndicatorView.frame = self.progressView.frame;
+    self.loadingView.frame = self.progressView.frame;
 }
 
 - (void)activateWithScrollView:(UIScrollView *)scrollView
@@ -180,19 +189,80 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
 {
     self.state = MITPullToRefreshStateLoading;
     [self setScrollViewContentInsetForLoadingAnimated:YES];
-    self.progressView.alpha = 0;
-    self.activityIndicatorView.alpha = 1;
-    [self.activityIndicatorView startAnimating];
+    [self startAnimating];
     self.pullToRefreshActionHandler();
+}
+
+- (void)startAnimating
+{
+    // Rotate and fade out progress view
+    CABasicAnimation *progressSmoothRotationAnimation = [CABasicAnimation animation];
+    progressSmoothRotationAnimation.keyPath = @"transform.rotation.z";
+    progressSmoothRotationAnimation.duration = 1.2;
+    progressSmoothRotationAnimation.fromValue = @0;
+    progressSmoothRotationAnimation.toValue = @(M_PI);
+    
+    CABasicAnimation *progressFadeOutAnimation = [CABasicAnimation animation];
+    progressFadeOutAnimation.keyPath = @"alpha";
+    progressFadeOutAnimation.duration = 1.0;
+    progressFadeOutAnimation.fromValue = @1;
+    progressFadeOutAnimation.toValue = @0;
+    
+    CAAnimationGroup *startingProgressViewRotationGroup = [[CAAnimationGroup alloc] init];
+    startingProgressViewRotationGroup.animations = @[progressSmoothRotationAnimation, progressFadeOutAnimation];
+    startingProgressViewRotationGroup.duration = 1.2;
+    
+    // Rotate and fade in loading view
+    CABasicAnimation *loadingSmoothRotationAnimation = [CABasicAnimation animation];
+    loadingSmoothRotationAnimation.keyPath = @"transform.rotation.z";
+    loadingSmoothRotationAnimation.duration = 1.2;
+    loadingSmoothRotationAnimation.fromValue = @0;
+    loadingSmoothRotationAnimation.toValue = @(M_PI);
+    
+    CABasicAnimation *loadingFadeOutAnimation = [CABasicAnimation animation];
+    loadingFadeOutAnimation.keyPath = @"alpha";
+    loadingFadeOutAnimation.duration = 1.0;
+    loadingFadeOutAnimation.fromValue = @0;
+    loadingFadeOutAnimation.toValue = @1;
+    
+    CAAnimationGroup *startingLoadingViewRotationGroup = [[CAAnimationGroup alloc] init];
+    startingLoadingViewRotationGroup.animations = @[loadingSmoothRotationAnimation, loadingFadeOutAnimation];
+    startingLoadingViewRotationGroup.duration = 1.2;
+    
+    // Use this to begin the choppy rotation animation after the starting animations finish
+    startingLoadingViewRotationGroup.delegate = self;
+    
+    [self.progressView.layer addAnimation:startingProgressViewRotationGroup forKey:nil];
+    [self.loadingView.layer addAnimation:startingLoadingViewRotationGroup forKey:nil];
+    self.progressView.alpha = 0;
+    self.loadingView.alpha = 1;
+    self.loadingView.transform = CGAffineTransformMakeRotation(M_PI);
 }
 
 - (void)stopAnimating
 {
     self.state = MITPullToRefreshStateStopped;
     [self resetScrollViewContentInsetAnimated:YES];
-    self.activityIndicatorView.alpha = 0;
+    self.loadingView.alpha = 0;
+    [self.loadingView.layer removeAnimationForKey:LoadingViewChoppyRotationKey];
     [self updateViewForProgress:0];
-    [self.activityIndicatorView stopAnimating];
+}
+
+#pragma mark CAAnimation Delegate
+
+- (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)finished
+{
+    // Begin choppy loading rotation animation
+    CAKeyframeAnimation *loadingChoppyRotationAnimation = [CAKeyframeAnimation animation];
+    loadingChoppyRotationAnimation.keyPath = @"transform.rotation.z";
+    loadingChoppyRotationAnimation.duration = 0.9;
+    double pi_6 = M_PI / 6.0;
+    loadingChoppyRotationAnimation.values = @[@(pi_6), @(2.0 * pi_6), @(3.0 * pi_6), @(4.0 * pi_6), @(5.0 * pi_6), @(M_PI), @(7.0 * pi_6), @(8.0 * pi_6), @(9.0 * pi_6), @(10.0 * pi_6), @(11.0 * pi_6), @(2.0 * M_PI)];
+    loadingChoppyRotationAnimation.calculationMode = kCAAnimationDiscrete;
+    loadingChoppyRotationAnimation.repeatCount = HUGE_VALF;
+    loadingChoppyRotationAnimation.additive = YES;
+    
+    [self.loadingView.layer addAnimation:loadingChoppyRotationAnimation forKey:LoadingViewChoppyRotationKey];
 }
 
 #pragma mark KVO
@@ -266,6 +336,8 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
     progress = MAX(0, MIN(1.0, progress));
     CGFloat alphaThreshold = 0.25;
     
+    self.progressView.alpha = MIN(1, (progress / alphaThreshold));
+    
     [CATransaction begin];
     [CATransaction setValue:(id)kCFBooleanTrue forKey:kCATransactionDisableActions];
     
@@ -283,16 +355,14 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
     CGPoint maskCenter = CGPointMake(CGRectGetWidth(self.maskLayer.frame) / 2.0, CGRectGetWidth(self.maskLayer.frame) / 2.0);
     CGFloat radius = CGRectGetWidth(self.maskLayer.frame) / 2.0;
     
-    UIBezierPath *circleMaskPath = [UIBezierPath bezierPath];
-    [circleMaskPath addArcWithCenter:maskCenter radius:radius startAngle:startRadians endAngle:(startRadians + progressRadians) clockwise:YES];
-    [circleMaskPath addLineToPoint:maskCenter];
-    [circleMaskPath closePath];
+    UIBezierPath *progressMaskPath = [UIBezierPath bezierPath];
+    [progressMaskPath addArcWithCenter:maskCenter radius:radius startAngle:startRadians endAngle:(startRadians + progressRadians) clockwise:YES];
+    [progressMaskPath addLineToPoint:maskCenter];
+    [progressMaskPath closePath];
     
-    self.maskLayer.path = circleMaskPath.CGPath;
+    self.maskLayer.path = progressMaskPath.CGPath;
     
     self.progressView.layer.mask = self.maskLayer;
-    
-    self.progressView.alpha = MIN(1, (progress / alphaThreshold));
     
     [CATransaction commit];
 }
