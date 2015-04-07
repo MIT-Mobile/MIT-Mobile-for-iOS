@@ -122,7 +122,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     for (NSInteger roomIndex = 0 ; roomIndex < numberOfRooms ; roomIndex++) {
         MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:roomIndex];
         room.index = roomIndex;
-        [self.mapView addAnnotation:room];
+
+        if (CLLocationCoordinate2DIsValid(room.coordinate)) {
+            [self.mapView addAnnotation:room];
+        } else {
+            DDLogWarn(@"Failed to add annotation for room %@, coordinate is invalid",room.roomName);
+        }
     }
 }
 
