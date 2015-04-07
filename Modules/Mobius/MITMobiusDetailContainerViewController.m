@@ -198,9 +198,7 @@
 
 - (void)configureForResource:(MITMobiusResource *)resource animated:(BOOL)animated
 {
-    if (self.currentIndex == NSNotFound) {
-        self.currentIndex = [self indexForResource:resource];
-    }
+    self.currentIndex = [self indexForResource:resource];
     
     [self configureNavigationForResource:resource animated:animated];
 }
@@ -345,7 +343,6 @@
     MITMobiusDetailTableViewController *detailViewController = [self detailViewControllerForResource:resource];
 
     if (detailViewController) {
-        self.currentIndex = newIndex;
 
         __weak MITMobiusDetailContainerViewController *weakSelf = self;
         [self.pageViewController setViewControllers:@[detailViewController] direction:direction animated:animated completion:^(BOOL finished) {
