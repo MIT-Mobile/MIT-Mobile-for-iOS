@@ -129,15 +129,15 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.state = MITPullToRefreshStateStopped;
         
-        self.progressView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_progress_wheel"]];
-        self.progressView.frame = CGRectMake(0, 0, 25, 25);
-        self.progressView.alpha = 0;
-        [self addSubview:self.progressView];
-        
         self.loadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_loading_wheel"]];
         self.loadingView.frame = self.progressView.frame;
         self.loadingView.alpha = 0;
         [self addSubview:self.loadingView];
+        
+        self.progressView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_progress_wheel"]];
+        self.progressView.frame = CGRectMake(0, 0, 25, 25);
+        self.progressView.alpha = 0;
+        [self addSubview:self.progressView];
         
         self.maskLayer = [CAShapeLayer layer];
         self.maskLayer.frame = self.progressView.frame;
@@ -195,45 +195,37 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
 
 - (void)startAnimating
 {
+    CAMediaTimingFunction *rotationTiming = [CAMediaTimingFunction functionWithControlPoints:0.2 :0.1 :0.8 :0.9];
+    
     // Rotate and fade out progress view
-    CABasicAnimation *progressSmoothRotationAnimation = [CABasicAnimation animation];
-    progressSmoothRotationAnimation.keyPath = @"transform.rotation.z";
-    progressSmoothRotationAnimation.duration = 1.2;
-    progressSmoothRotationAnimation.fromValue = @0;
-    progressSmoothRotationAnimation.toValue = @(M_PI);
+    CABasicAnimation *progressRotation = [CABasicAnimation animation];
+    progressRotation.keyPath = @"transform.rotation.z";
+    progressRotation.duration = 1.2;
+    progressRotation.fromValue = @0;
+    progressRotation.toValue = @(M_PI);
+    progressRotation.timingFunction = rotationTiming;
     
-    CABasicAnimation *progressFadeOutAnimation = [CABasicAnimation animation];
-    progressFadeOutAnimation.keyPath = @"alpha";
-    progressFadeOutAnimation.duration = 1.0;
-    progressFadeOutAnimation.fromValue = @1;
-    progressFadeOutAnimation.toValue = @0;
+    CABasicAnimation *progressFadeOut = [CABasicAnimation animation];
+    progressFadeOut.keyPath = @"opacity";
+    progressFadeOut.duration = 1.0;
+    progressFadeOut.fromValue = @1;
+    progressFadeOut.toValue = @0;
     
-    CAAnimationGroup *startingProgressViewRotationGroup = [[CAAnimationGroup alloc] init];
-    startingProgressViewRotationGroup.animations = @[progressSmoothRotationAnimation, progressFadeOutAnimation];
-    startingProgressViewRotationGroup.duration = 1.2;
+    CAAnimationGroup *progressViewRotationGroup = [[CAAnimationGroup alloc] init];
+    progressViewRotationGroup.animations = @[progressRotation, progressFadeOut];
+    progressViewRotationGroup.duration = 1.2;
     
     // Rotate and fade in loading view
-    CABasicAnimation *loadingSmoothRotationAnimation = [CABasicAnimation animation];
-    loadingSmoothRotationAnimation.keyPath = @"transform.rotation.z";
-    loadingSmoothRotationAnimation.duration = 1.2;
-    loadingSmoothRotationAnimation.fromValue = @0;
-    loadingSmoothRotationAnimation.toValue = @(M_PI);
+    CABasicAnimation *loadingRotation = [CABasicAnimation animation];
+    loadingRotation.keyPath = @"transform.rotation.z";
+    loadingRotation.duration = 1.2;
+    loadingRotation.fromValue = @0;
+    loadingRotation.toValue = @(M_PI);
+    loadingRotation.timingFunction = rotationTiming;
+    loadingRotation.delegate = self;
     
-    CABasicAnimation *loadingFadeOutAnimation = [CABasicAnimation animation];
-    loadingFadeOutAnimation.keyPath = @"alpha";
-    loadingFadeOutAnimation.duration = 1.0;
-    loadingFadeOutAnimation.fromValue = @0;
-    loadingFadeOutAnimation.toValue = @1;
-    
-    CAAnimationGroup *startingLoadingViewRotationGroup = [[CAAnimationGroup alloc] init];
-    startingLoadingViewRotationGroup.animations = @[loadingSmoothRotationAnimation, loadingFadeOutAnimation];
-    startingLoadingViewRotationGroup.duration = 1.2;
-    
-    // Use this to begin the choppy rotation animation after the starting animations finish
-    startingLoadingViewRotationGroup.delegate = self;
-    
-    [self.progressView.layer addAnimation:startingProgressViewRotationGroup forKey:nil];
-    [self.loadingView.layer addAnimation:startingLoadingViewRotationGroup forKey:nil];
+    [self.progressView.layer addAnimation:progressViewRotationGroup forKey:nil];
+    [self.loadingView.layer addAnimation:loadingRotation forKey:nil];
     self.progressView.alpha = 0;
     self.loadingView.alpha = 1;
     self.loadingView.transform = CGAffineTransformMakeRotation(M_PI);
@@ -245,6 +237,7 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
     [self resetScrollViewContentInsetAnimated:YES];
     self.loadingView.alpha = 0;
     [self.loadingView.layer removeAnimationForKey:LoadingViewChoppyRotationKey];
+    self.loadingView.transform = CGAffineTransformIdentity;
     [self updateViewForProgress:0];
 }
 
