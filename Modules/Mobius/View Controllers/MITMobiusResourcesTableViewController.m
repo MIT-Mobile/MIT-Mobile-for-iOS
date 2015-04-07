@@ -5,6 +5,7 @@
 #import "MITMobiusResourceView.h"
 #import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusSearchHeader.h"
+#import "MITMobiusRoomSet.h"
 
 NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentifier";
@@ -167,10 +168,12 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
 {
 #warning fake data
     NSAssert([view isKindOfClass:[MITMobiusSearchHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusSearchHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusSearchHeader class]));
+
+     MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
     
     MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)view;
 
-    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, @"Edgerton Student Shop"];
+    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, resource.roomset.name];
     searchHeaderView.shopHours = @"9:30am - 12pm, 1pm - 4pm";
     searchHeaderView.shopStaus = @"Closed";
 }
