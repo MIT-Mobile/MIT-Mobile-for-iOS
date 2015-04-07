@@ -15,7 +15,6 @@
 #import "MITMobiusResourceOwner.h"
 
 #import "MITMobiusAttribute.h"
-#import "MITMobiusAttributeValueSet.h"
 #import "MITMobiusAttributeValue.h"
 
 #import "MITMobiusRecentSearchQuery.h"

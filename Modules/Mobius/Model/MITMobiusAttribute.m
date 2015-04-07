@@ -1,5 +1,4 @@
 #import "MITMobiusAttribute.h"
-#import "MITMobiusAttributeValueSet.h"
 #import "MITMobiusResource.h"
 #import "MITMobiusAttributeValue.h"
 
@@ -11,7 +10,7 @@
 @dynamic label;
 @dynamic widgetType;
 @dynamic resources;
-@dynamic valueSet;
+@dynamic valueSetName;
 @dynamic values;
 
 + (RKMapping*)objectMapping
@@ -21,10 +20,11 @@
     NSDictionary *mappings = @{@"_id" : @"identifier",
                                @"field_type" : @"fieldType",
                                @"widget_type" : @"widgetType",
-                               @"label" : @"label"};
+                               @"label" : @"label",
+                               @"_valueSet.value_set" : @"valueSetName"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueSet" toKeyPath:@"valueSet" withMapping:[MITMobiusAttributeValueSet objectMapping]];
+    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueSet.values" toKeyPath:@"values" withMapping:[MITMobiusAttributeValue objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
     return mapping;
