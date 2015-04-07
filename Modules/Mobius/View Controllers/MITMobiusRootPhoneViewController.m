@@ -80,10 +80,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
     self.fullScreenMapGesture = gestureRecognizer;
 
+    UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
     UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
     UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_dismissFullScreenMap:)];
-    self.toolbarItems = @[[UIBarButtonItem flexibleSpace],dismissMapButton];
-
+    self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
+    
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
 }
 

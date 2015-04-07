@@ -1,13 +1,15 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusResourceAttribute;
+@class MITMobiusAttribute, MITMobiusResource;
 
-@interface MITMobiusResourceAttributeValue : MITManagedObject <MITMappedObject>
+@interface MITMobiusResourceAttributeValue : MITManagedObject
 
 @property (nonatomic, retain) NSString * value;
-@property (nonatomic, retain) MITMobiusResourceAttribute *attribute;
+@property (nonatomic, retain) MITMobiusAttribute *attribute;
+@property (nonatomic, retain) MITMobiusResource *resource;
 
 @end
