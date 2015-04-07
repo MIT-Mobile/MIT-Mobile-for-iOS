@@ -102,6 +102,7 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
 
 @property (nonatomic, weak) UIScrollView *scrollView;
 @property (nonatomic, assign) UIEdgeInsets unmodifiedInsets;
+@property (nonatomic, assign) BOOL originalAlwaysBounceVertical;
 
 @property (nonatomic, strong) UIImageView *progressView;
 @property (nonatomic, strong) CAShapeLayer *maskLayer;
@@ -156,6 +157,10 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
     self.isActive = YES;
     self.scrollView = scrollView;
     self.unmodifiedInsets = scrollView.contentInset;
+    
+    self.originalAlwaysBounceVertical = scrollView.alwaysBounceVertical;
+    scrollView.alwaysBounceVertical = YES;
+    
     [self observeScrollView:scrollView];
 }
 
@@ -167,6 +172,7 @@ static void * MITPullToRefreshScrollViewProperty_pullToRefreshView = &MITPullToR
     
     self.isActive = NO;
     [self unobserveScrollView:self.scrollView];
+    self.scrollView.alwaysBounceVertical = self.originalAlwaysBounceVertical;
     self.scrollView = nil;
 }
 
