@@ -303,6 +303,8 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
         case MITPullToRefreshStateTriggered: {
             if (!self.scrollView.isDragging) {
                 [self startLoading];
+            } else if (pullingDownHeight < MITPullToRefreshTriggerHeight) {
+                self.state = MITPullToRefreshStateStopped;
             }
             break;
         }
@@ -312,22 +314,8 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
         }
     }
     
-    if (self.state == MITPullToRefreshStateLoading) {
-        [self setScrollViewContentInsetForLoadingAnimated:NO];
-    } else {
-        CGFloat pullingDownHeight = -1 * (contentOffset.y + self.unmodifiedInsets.top);
-        
-        if (!self.scrollView.isDragging && self.state == MITPullToRefreshStateTriggered) {
-            [self startLoading];
-        } else if (pullingDownHeight >= MITPullToRefreshTriggerHeight && self.scrollView.isDragging && self.state == MITPullToRefreshStateStopped) {
-            self.state = MITPullToRefreshStateTriggered;
-        } else if (pullingDownHeight < MITPullToRefreshTriggerHeight && self.state != MITPullToRefreshStateStopped) {
-            self.state = MITPullToRefreshStateStopped;
-        }
-        
-        if (pullingDownHeight > 0 && self.state != MITPullToRefreshStateLoading) {
-            [self updateViewForProgress:(pullingDownHeight * 1 / MITPullToRefreshTriggerHeight)];
-        }
+    if (pullingDownHeight > 0 && self.state != MITPullToRefreshStateLoading) {
+        [self updateViewForProgress:(pullingDownHeight * 1 / MITPullToRefreshTriggerHeight)];
     }
 }
 
