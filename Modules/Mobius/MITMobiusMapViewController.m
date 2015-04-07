@@ -11,6 +11,7 @@
 #import "MITMobiusResourceView.h"
 #import "MITMobiusRoomObject.h"
 #import "MITMobiusRootPhoneViewController.h"
+#import "MITMobiusRoomSet.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -217,7 +218,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
-    contentView.roomName = resource.room;
+    contentView.roomName = resource.roomset.name;
     
     NSString *machineList = [resource.name stringByAppendingString:(mapObject.resources.count > 1) ? [NSString stringWithFormat:@" + %ld more",(unsigned long)mapObject.resources.count -1] : @""];
     contentView.machineList = machineList;
