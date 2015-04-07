@@ -660,8 +660,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 }
                 
                 [self _transitionToState:newState animated:YES completion:^{
-                    
-                    [self createRoomObjects];
+
+                    self.rooms = nil;
                     [self.resourcesTableViewController.tableView reloadData];
                     [self.mapViewController reloadMapAnimated:YES];
                 }];
@@ -685,32 +685,35 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
       
-        [self createRoomObjects];
+        self.rooms = nil;
         [self.resourcesTableViewController.tableView reloadData];
         [self.mapViewController reloadMapAnimated:YES];
     }];
 }
 
-- (NSDictionary *)createRoomObjects
+- (NSDictionary*)rooms
 {
     if (!_rooms) {
         NSDictionary *resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
-        
+
         NSMutableDictionary *rooms = [[NSMutableDictionary alloc] init];
-        
+
         [resourcesByBuilding enumerateKeysAndObjectsUsingBlock:^(NSString *roomName, NSArray *resources, BOOL *stop) {
-            
+
             MITMobiusRoomObject *mapObject = [[MITMobiusRoomObject alloc] init];
             mapObject.roomName = roomName;
-            
             mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];
-            MITMobiusResource *resource = [mapObject.resources firstObject];
-            
-            
-            [rooms setValue:mapObject forKey:roomName];
+
+            if (!CLLocationCoordinate2DIsValid(mapObject.coordinate)) {
+                DDLogWarn(@"Coordinate for room with name %@ is invalid", roomName);
+            }
+
+            rooms[roomName] = mapObject;
         }];
+        
         _rooms = rooms;
     }
+
     return _rooms;
 }
 
