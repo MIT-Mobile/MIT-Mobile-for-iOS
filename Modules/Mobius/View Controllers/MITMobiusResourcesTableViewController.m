@@ -4,12 +4,12 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusResourceView.h"
 #import "MITMobiusRootPhoneViewController.h"
-#import "MITMobiusSearchHeader.h"
+#import "MITMobiusShopHeader.h"
 #import "MITMobiusRoomSet.h"
 #import "Foundation+MITAdditions.h"
 
 NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
-NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentifier";
+NSString* const MITMobiusShopHeaderIdentifier = @"MITMobiusShopHeaderIdentifier";
 
 @interface MITMobiusResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
@@ -38,7 +38,7 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     
     [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourcesTableViewPlaceholderCellIdentifier];
    
-    [tableView registerNib:[MITMobiusSearchHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusSearchHeaderIdentifier];
+    [tableView registerNib:[MITMobiusShopHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusShopHeaderIdentifier];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -133,10 +133,10 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     } else if ([self shouldDisplayPlaceholderCell]) {
         --section;
     }
-    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSearchHeaderIdentifier];
+    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusShopHeaderIdentifier];
     
-    if ([headerView isKindOfClass:[MITMobiusSearchHeader class]]) {
-        MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)headerView;
+    if ([headerView isKindOfClass:[MITMobiusShopHeader class]]) {
+        MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)headerView;
         [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
     }
     return headerView;
@@ -149,10 +149,10 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     } else if ([self shouldDisplayPlaceholderCell]) {
         --section;
     }
-    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusSearchHeaderIdentifier];
+    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusShopHeaderIdentifier];
     
-    if ([headerView isKindOfClass:[MITMobiusSearchHeader class]]) {
-        MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)headerView;
+    if ([headerView isKindOfClass:[MITMobiusShopHeader class]]) {
+        MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)headerView;
         [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
         
         CGRect frame = searchHeaderView.frame;
@@ -169,16 +169,25 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
 
 - (void)tableView:(UITableView*)tableView configureHeaderView:(UIView*)view forSection:(NSInteger)section
 {
-    NSAssert([view isKindOfClass:[MITMobiusSearchHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusSearchHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusSearchHeader class]));
+    NSAssert([view isKindOfClass:[MITMobiusShopHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusShopHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusShopHeader class]));
 
     MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
     
-    MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)view;
-    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, resource.roomset.name];
+    MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)view;
     
-    NSString *hours = [resource getHoursStringForDate:[NSDate date]];
+    NSString *shopName = resource.roomset.name.length > 0 ? [NSString stringWithFormat:@"%@ - (%@)", resource.roomset.name, resource.room]: resource.room;
+        
+    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, shopName];
+    
+    NSDate *todaysDate = [NSDate date];
+    
+    NSString *hours = [resource getHoursStringForDate:todaysDate];
     searchHeaderView.shopHours = hours;
-    searchHeaderView.shopStatus = @"Closed";
+    if ([hours length] == 0) {
+        [searchHeaderView setStatus:MITMobiusShopStatusUnknown];
+    } else {
+        [searchHeaderView setStatus:[resource isOpenOnDate:todaysDate]];
+    }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section

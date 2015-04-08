@@ -101,6 +101,16 @@
     return hoursString;
 }
 
+- (BOOL)isOpenOnDate:(NSDate *)date
+{
+    for (MITMobiusResourceHours *resourceHours in self.hours) {
+        if ([date dateFallsBetweenStartDate:resourceHours.startDate endDate:resourceHours.endDate]) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 #pragma mark MKAnnotation
 
 - (NSString*)title

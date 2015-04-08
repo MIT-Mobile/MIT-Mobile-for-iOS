@@ -1,13 +1,13 @@
-#import "MITMobiusSearchHeader.h"
+#import "MITMobiusShopHeader.h"
 #import "UIKit+MITAdditions.h"
 
-@interface MITMobiusSearchHeader ()
+@interface MITMobiusShopHeader ()
 @property (weak, nonatomic) IBOutlet UILabel *shopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *shopHoursLabel;
 @property (weak, nonatomic) IBOutlet UILabel *shopStatusLabel;
 @end
 
-@implementation MITMobiusSearchHeader
+@implementation MITMobiusShopHeader
 
 - (id)initWithFrame:(CGRect)frame
 {
@@ -29,7 +29,7 @@
 
 + (NSString *)searchHeaderNibName
 {
-    return @"MITMobiusSearchHeader";
+    return @"MITMobiusShopHeader";
 }
 
 - (void)updateConstraints
@@ -60,19 +60,26 @@
     [self setNeedsLayout];
 }
 
-- (void)setShopStatus:(NSString *)shopStatus
+- (void)setStatus:(MITMobiusShopStatus)status
 {
-    if (![_shopStatus isEqualToString:shopStatus]) {
-        _shopStatus = [shopStatus copy];
-        
-        if ([shopStatus caseInsensitiveCompare:@"open"] == NSOrderedSame) {
-            _shopStatusLabel.textColor = [UIColor mit_openGreenColor];
-        } else if ([shopStatus caseInsensitiveCompare:@"closed"] == NSOrderedSame) {
-            _shopStatusLabel.textColor = [UIColor mit_closedRedColor];
-        }
-        _shopStatusLabel.text = shopStatus;
+    switch (status) {
+        case MITMobiusShopStatusClosed: {
+            self.shopStatusLabel.text = @"Closed";
+            self.shopStatusLabel.textColor = [UIColor mit_closedRedColor];
+        } break;
+            
+        case MITMobiusShopStatusOpen: {
+            self.shopStatusLabel.text = @"Open";
+            self.shopStatusLabel.textColor = [UIColor mit_openGreenColor];
+        } break;
+            
+        case MITMobiusShopStatusUnknown: {
+            self.shopStatusLabel.text = @"";
+        } break;
     }
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
+
 }
+
 @end
