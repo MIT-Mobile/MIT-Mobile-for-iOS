@@ -1,11 +1,12 @@
 #import "MITMobiusDetailHeader.h"
 #import "UIKit+MITAdditions.h"
 #import <SDWebImage/UIImageView+WebCache.h>
+#import "MITMobiusImage.h"
 
 @interface MITMobiusDetailHeader ()
 @property (weak, nonatomic) IBOutlet UILabel *resourceName;
 @property (weak, nonatomic) IBOutlet UILabel *resourceStatus;
-@property (weak, nonatomic) IBOutlet UIImageView *resourceImage;
+@property (weak, nonatomic) IBOutlet UIImageView *resourceImageView;
 
 @end
 
@@ -41,14 +42,9 @@
             status = resource.status;
             
             CGSize idealImageSize = CGSizeZero;
-            idealImageSize = self.resourceImage.frame.size;
-#warning setup image when data model is ready
-            /*
-            MITNewsImageRepresentation *representation = [story.coverImage bestRepresentationForSize:idealImageSize];
-            if (representation) {
-                imageURL = representation.url;
-            }
-            */
+            idealImageSize = self.resourceImageView.frame.size;
+            MITMobiusImage *image = [self.resource.images firstObject];
+            imageURL = [image URLForImageWithSize:MITMobiusImageSmall];
         }];
         
         self.resourceName.text = name;
@@ -59,26 +55,24 @@
             self.resourceStatus.textColor = [UIColor mit_closedRedColor];
         }
         self.resourceStatus.text = status;
-#warning setup image when data model is ready
-/*
+
         if (imageURL) {
-            MITNewsStory *currentStory = self.story;
-            __weak MITNewsStoryCell *weakSelf = self;
-            [self.storyImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
-                MITNewsStoryCell *blockSelf = weakSelf;
-                if (blockSelf && (blockSelf->_story == currentStory)) {
+            MITMobiusResource *currentResource = self.resource;
+            __weak MITMobiusDetailHeader *weakSelf = self;
+            [self.resourceImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                MITMobiusDetailHeader *blockSelf = weakSelf;
+                if (blockSelf && (blockSelf.resource == currentResource)) {
                     if (error) {
-                        blockSelf.storyImageView.image = nil;
+                        blockSelf.resourceImageView.image = nil;
                     }
                 }
             }];
         } else {
-            self.storyImageView.image = nil;
+            self.resourceImageView.image = nil;
         }
- */
     } else {
-        [self.resourceImage sd_cancelCurrentImageLoad];
-        self.resourceImage.image = nil;
+        [self.resourceImageView sd_cancelCurrentImageLoad];
+        self.resourceImageView.image = nil;
         self.resourceName.text = nil;
         self.resourceStatus.text = nil;
     }

@@ -746,7 +746,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self.searchSuggestionsTimer invalidate];
     self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                    target:self
-                                                                 selector:@selector(_searchSuggestionsTimerFired:)
+                                                                 selector:@selector(searchSuggestionsTimerFired:)
                                                                  userInfo:nil
                                                                   repeats:NO];
 }
