@@ -309,7 +309,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
     // Dispose of any resources that can be recreated.
 }
 
-#pragma MITMobiusSegmentedHeaderDelegate
+#pragma mark MITMobiusSegmentedHeaderDelegate
 - (void)detailSegmentControlAction:(UISegmentedControl *)segmentedControl
 {
     self.currentSegementedSection = segmentedControl.selectedSegmentIndex;
