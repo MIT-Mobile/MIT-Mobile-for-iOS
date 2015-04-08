@@ -129,13 +129,15 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
         self.autoresizingMask = UIViewAutoresizingFlexibleWidth;
         self.state = MITPullToRefreshStateStopped;
         
+        CGRect wheelFrame = CGRectMake(0, 0, 28, 28);
+        
         self.loadingView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_loading_wheel"]];
-        self.loadingView.frame = self.progressView.frame;
+        self.loadingView.frame = wheelFrame;
         self.loadingView.alpha = 0;
         [self addSubview:self.loadingView];
         
         self.progressView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:@"mit_ptrf_progress_wheel"]];
-        self.progressView.frame = CGRectMake(0, 0, 25, 25);
+        self.progressView.frame = wheelFrame;
         self.progressView.alpha = 0;
         [self addSubview:self.progressView];
         
@@ -149,7 +151,7 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
 - (void)layoutSubviews
 {
     CGRect progressViewBounds = [self.progressView bounds];
-    CGPoint origin = CGPointMake(roundf((CGRectGetWidth(self.bounds) - CGRectGetWidth(progressViewBounds)) / 2), roundf(( CGRectGetHeight(self.bounds) - CGRectGetHeight(progressViewBounds)) / 2));
+    CGPoint origin = CGPointMake(ceilf((CGRectGetWidth(self.bounds) - CGRectGetWidth(progressViewBounds)) / 2), ceilf(( CGRectGetHeight(self.bounds) - CGRectGetHeight(progressViewBounds)) / 2));
     CGRect progressViewFrame = CGRectMake(origin.x, origin.y - 10, CGRectGetWidth(progressViewBounds), CGRectGetHeight(progressViewBounds));
     
     self.progressView.frame = progressViewFrame;
@@ -195,49 +197,81 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
 
 - (void)startAnimating
 {
-    CAMediaTimingFunction *rotationTiming = [CAMediaTimingFunction functionWithControlPoints:0.2 :0.1 :0.8 :0.9];
+    CAMediaTimingFunction *rotationTiming = [CAMediaTimingFunction functionWithControlPoints:0.3 :0.1 :0.7 :0.9];
     
     // Rotate and fade out progress view
     CABasicAnimation *progressRotation = [CABasicAnimation animation];
     progressRotation.keyPath = @"transform.rotation.z";
-    progressRotation.duration = 1.2;
+    progressRotation.duration = 0.7;
     progressRotation.fromValue = @0;
-    progressRotation.toValue = @(M_PI);
+    progressRotation.toValue = @(M_PI_2);
     progressRotation.timingFunction = rotationTiming;
     
     CABasicAnimation *progressFadeOut = [CABasicAnimation animation];
     progressFadeOut.keyPath = @"opacity";
-    progressFadeOut.duration = 1.0;
+    progressFadeOut.duration = 0.65;
     progressFadeOut.fromValue = @1;
     progressFadeOut.toValue = @0;
     
     CAAnimationGroup *progressViewRotationGroup = [[CAAnimationGroup alloc] init];
     progressViewRotationGroup.animations = @[progressRotation, progressFadeOut];
-    progressViewRotationGroup.duration = 1.2;
+    progressViewRotationGroup.duration = 0.7;
     
-    // Rotate and fade in loading view
+    // Rotate loading view so it is in sync with progress view as progress view disappears
     CABasicAnimation *loadingRotation = [CABasicAnimation animation];
     loadingRotation.keyPath = @"transform.rotation.z";
-    loadingRotation.duration = 1.2;
-    loadingRotation.fromValue = @0;
-    loadingRotation.toValue = @(M_PI);
+    loadingRotation.duration = 0.7;
+    loadingRotation.fromValue = @(M_PI);
+    loadingRotation.toValue = @(3.0 * M_PI_2);
     loadingRotation.timingFunction = rotationTiming;
     loadingRotation.delegate = self;
+    loadingRotation.removedOnCompletion = NO;
     
     [self.progressView.layer addAnimation:progressViewRotationGroup forKey:nil];
-    [self.loadingView.layer addAnimation:loadingRotation forKey:nil];
+    [self.loadingView.layer addAnimation:loadingRotation forKey:StartingLoadingViewAnimationGroupKey];
+    
     self.progressView.alpha = 0;
     self.loadingView.alpha = 1;
-    self.loadingView.transform = CGAffineTransformMakeRotation(M_PI);
+    self.loadingView.transform = CGAffineTransformMakeRotation(3.0 * M_PI_2);
 }
 
 - (void)stopAnimating
 {
     self.state = MITPullToRefreshStateStopped;
     [self resetScrollViewContentInsetAnimated:YES];
-    self.loadingView.alpha = 0;
+    
     [self.loadingView.layer removeAnimationForKey:LoadingViewChoppyRotationKey];
-    self.loadingView.transform = CGAffineTransformIdentity;
+    
+    CFTimeInterval endingAnimationDuration = 0.25;
+    
+    CABasicAnimation *loadingRotation = [CABasicAnimation animation];
+    loadingRotation.keyPath = @"transform.rotation.z";
+    loadingRotation.duration = endingAnimationDuration;
+    loadingRotation.fromValue = @0;
+    loadingRotation.toValue = @(M_PI_2);
+    loadingRotation.additive = YES;
+    
+    
+    CABasicAnimation *loadingSize = [CABasicAnimation animation];
+    loadingSize.keyPath = @"transform.scale";
+    loadingSize.duration = endingAnimationDuration;
+    loadingSize.fromValue = @1;
+    loadingSize.toValue = @0.5;
+    
+    CABasicAnimation *loadingFadeOut = [CABasicAnimation animation];
+    loadingFadeOut.keyPath = @"opacity";
+    loadingFadeOut.duration = endingAnimationDuration;
+    loadingFadeOut.fromValue = @1;
+    loadingFadeOut.toValue = @0.8;
+    
+    CAAnimationGroup *endingAnimationGroup = [[CAAnimationGroup alloc] init];
+    endingAnimationGroup.animations = @[loadingRotation, loadingSize];
+    endingAnimationGroup.duration = endingAnimationDuration;
+    endingAnimationGroup.delegate = self;
+    endingAnimationGroup.removedOnCompletion = NO;
+    
+    [self.loadingView.layer addAnimation:endingAnimationGroup forKey:EndingLoadingViewAnimationGroupKey];
+    
     [self updateViewForProgress:0];
 }
 
@@ -245,17 +279,28 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
 
 - (void)animationDidStop:(CAAnimation *)animation finished:(BOOL)finished
 {
-    // Begin choppy loading rotation animation
-    CAKeyframeAnimation *loadingChoppyRotationAnimation = [CAKeyframeAnimation animation];
-    loadingChoppyRotationAnimation.keyPath = @"transform.rotation.z";
-    loadingChoppyRotationAnimation.duration = 0.9;
-    double pi_6 = M_PI / 6.0;
-    loadingChoppyRotationAnimation.values = @[@(pi_6), @(2.0 * pi_6), @(3.0 * pi_6), @(4.0 * pi_6), @(5.0 * pi_6), @(M_PI), @(7.0 * pi_6), @(8.0 * pi_6), @(9.0 * pi_6), @(10.0 * pi_6), @(11.0 * pi_6), @(2.0 * M_PI)];
-    loadingChoppyRotationAnimation.calculationMode = kCAAnimationDiscrete;
-    loadingChoppyRotationAnimation.repeatCount = HUGE_VALF;
-    loadingChoppyRotationAnimation.additive = YES;
-    
-    [self.loadingView.layer addAnimation:loadingChoppyRotationAnimation forKey:LoadingViewChoppyRotationKey];
+    if ([animation isEqual:[self.loadingView.layer animationForKey:StartingLoadingViewAnimationGroupKey]]) {
+        [self.loadingView.layer removeAnimationForKey:StartingLoadingViewAnimationGroupKey];
+        
+        // Begin choppy loading rotation animation
+        CAKeyframeAnimation *loadingChoppyRotationAnimation = [CAKeyframeAnimation animation];
+        loadingChoppyRotationAnimation.keyPath = @"transform.rotation.z";
+        loadingChoppyRotationAnimation.duration = 0.9;
+        double pi_6 = M_PI / 6.0;
+        loadingChoppyRotationAnimation.values = @[@(pi_6), @(2.0 * pi_6), @(3.0 * pi_6), @(4.0 * pi_6), @(5.0 * pi_6), @(M_PI), @(7.0 * pi_6), @(8.0 * pi_6), @(9.0 * pi_6), @(10.0 * pi_6), @(11.0 * pi_6), @(2.0 * M_PI)];
+        loadingChoppyRotationAnimation.calculationMode = kCAAnimationDiscrete;
+        loadingChoppyRotationAnimation.repeatCount = HUGE_VALF;
+        loadingChoppyRotationAnimation.additive = YES;
+        
+        [self.loadingView.layer addAnimation:loadingChoppyRotationAnimation forKey:LoadingViewChoppyRotationKey];
+    } else if ([animation isEqual:[self.loadingView.layer animationForKey:EndingLoadingViewAnimationGroupKey]]) {
+        [self.loadingView.layer removeAnimationForKey:EndingLoadingViewAnimationGroupKey];
+        
+        self.loadingView.alpha = 0;
+        self.loadingView.transform = CGAffineTransformIdentity;
+    } else {
+        NSLog(@"none");
+    }
 }
 
 #pragma mark KVO
@@ -333,8 +378,8 @@ static NSString * const EndingLoadingViewAnimationGroupKey = @"EndingLoadingView
     // We are going to use clockwise calculation since that is the direction we want the mask to unfold in
     CGFloat startRadians = -M_PI_2 - (M_PI / 12);
     
-    CGPoint maskCenter = CGPointMake(CGRectGetWidth(self.maskLayer.frame) / 2.0, CGRectGetWidth(self.maskLayer.frame) / 2.0);
-    CGFloat radius = CGRectGetWidth(self.maskLayer.frame) / 2.0;
+    CGPoint maskCenter = CGPointMake(ceilf(CGRectGetWidth(self.maskLayer.frame) / 2.0), ceilf(CGRectGetWidth(self.maskLayer.frame) / 2.0));
+    CGFloat radius = ceilf(CGRectGetWidth(self.maskLayer.frame) / 2.0);
     
     UIBezierPath *progressMaskPath = [UIBezierPath bezierPath];
     [progressMaskPath addArcWithCenter:maskCenter radius:radius startAngle:startRadians endAngle:(startRadians + progressRadians) clockwise:YES];
