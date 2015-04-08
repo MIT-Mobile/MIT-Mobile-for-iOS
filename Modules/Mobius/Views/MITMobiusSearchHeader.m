@@ -44,7 +44,7 @@
 {
     if (![_shopName isEqualToString:shopName]) {
         _shopName = [shopName copy];
-        _shopNameLabel.text = _shopName;
+        _shopNameLabel.text = shopName;
     }
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
@@ -54,7 +54,7 @@
 {
     if (![_shopHours isEqualToString:shopHours]) {
         _shopHours = [shopHours copy];
-        _shopHoursLabel.text = _shopHours;
+        _shopHoursLabel.text = shopHours;
     }
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
@@ -70,7 +70,7 @@
         } else if ([shopStatus caseInsensitiveCompare:@"closed"] == NSOrderedSame) {
             _shopStatusLabel.textColor = [UIColor mit_closedRedColor];
         }
-        _shopStatusLabel.text = _shopStatus;
+        _shopStatusLabel.text = shopStatus;
     }
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];

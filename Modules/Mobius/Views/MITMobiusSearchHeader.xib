@@ -24,20 +24,28 @@
                                         <constraint firstAttribute="height" constant="1" id="lg4-rr-gk0"/>
                                     </constraints>
                                 </view>
-                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="252" text="1. Edgerton Student Shop" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="WfH-Kf-7sk">
-                                    <rect key="frame" x="15" y="10" width="204" height="21"/>
+                                <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="1. Edgerton Student Shop" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="204" translatesAutoresizingMaskIntoConstraints="NO" id="WfH-Kf-7sk">
+                                    <rect key="frame" x="15" y="10" width="204" height="27"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="9:30am - 12pm, 1pm - 4pm" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nyA-9F-vww">
-                                    <rect key="frame" x="15" y="30" width="204" height="24"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="9:30am - 12pm, 1pm - 4pm" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="204" translatesAutoresizingMaskIntoConstraints="NO" id="nyA-9F-vww">
+                                    <rect key="frame" x="15" y="37" width="204" height="17"/>
+                                    <constraints>
+                                        <constraint firstAttribute="width" relation="greaterThanOrEqual" id="UBz-pK-Zor"/>
+                                    </constraints>
                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                                     <color key="textColor" red="0.37647058823529411" green="0.37647058823529411" blue="0.37647058823529411" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                     <nil key="highlightedColor"/>
+                                    <variation key="default">
+                                        <mask key="constraints">
+                                            <exclude reference="UBz-pK-Zor"/>
+                                        </mask>
+                                    </variation>
                                 </label>
-                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" text="Open" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Ydz-IK-Y7L">
-                                    <rect key="frame" x="226" y="24" width="74" height="16"/>
+                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" verticalHuggingPriority="251" text="Closed" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="30" translatesAutoresizingMaskIntoConstraints="NO" id="Ydz-IK-Y7L">
+                                    <rect key="frame" x="227" y="17" width="73" height="31"/>
                                     <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="13"/>
                                     <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                                     <nil key="highlightedColor"/>
@@ -57,6 +65,7 @@
                                 <constraint firstItem="L9r-yf-XGt" firstAttribute="top" secondItem="nyA-9F-vww" secondAttribute="bottom" constant="10" id="ZUt-Mp-gRj"/>
                                 <constraint firstItem="Ydz-IK-Y7L" firstAttribute="leading" secondItem="WfH-Kf-7sk" secondAttribute="trailing" constant="8" symbolic="YES" id="dD1-qz-Nde"/>
                                 <constraint firstItem="WfH-Kf-7sk" firstAttribute="leading" secondItem="4Ci-cv-7ve" secondAttribute="leading" constant="15" id="lRb-lh-rhY"/>
+                                <constraint firstItem="WfH-Kf-7sk" firstAttribute="width" secondItem="nyA-9F-vww" secondAttribute="width" id="pQe-x0-Y0v"/>
                                 <constraint firstItem="WfH-Kf-7sk" firstAttribute="top" secondItem="L9r-yf-XGt" secondAttribute="bottom" constant="5" id="vOz-uv-kPZ"/>
                                 <constraint firstItem="Ydz-IK-Y7L" firstAttribute="leading" secondItem="nyA-9F-vww" secondAttribute="trailing" constant="8" symbolic="YES" id="y0F-nW-QGU"/>
                             </constraints>
@@ -65,6 +74,7 @@
                                     <exclude reference="vOz-uv-kPZ"/>
                                     <exclude reference="9qv-vC-D0N"/>
                                     <exclude reference="Vv3-kc-Wv8"/>
+                                    <exclude reference="y0F-nW-QGU"/>
                                 </mask>
                             </variation>
                         </view>
