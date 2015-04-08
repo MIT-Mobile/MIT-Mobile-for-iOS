@@ -50,7 +50,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
-@property (nonatomic, strong) NSDictionary *rooms;
+@property (nonatomic, copy) NSDictionary *rooms;
+@property (nonatomic, readonly, copy) NSArray *allResources;
 
 @end
 
@@ -721,6 +722,20 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     return _rooms;
 }
 
+- (NSArray*)allResources
+{
+    NSArray *sortedKeys = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+
+    NSMutableArray *resources = [[NSMutableArray alloc] init];
+
+    [sortedKeys enumerateObjectsUsingBlock:^(id<NSCopying> key, NSUInteger idx, BOOL *stop) {
+        MITMobiusRoomObject *room = self.rooms[key];
+        [resources addObjectsFromArray:[room.resources array]];
+    }];
+
+    return resources;
+}
+
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
 {
     return YES;
@@ -751,24 +766,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return resources.count;
+    return self.allResources.count;
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return resources[index];
+    return self.allResources[index];
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
-        return [otherResource.identifier isEqualToString:resourceIdentifier];
+    __block NSUInteger index = NSNotFound;
+    [self.allResources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
+        if ([resource.identifier isEqualToString:resourceIdentifier]) {
+            index = idx;
+            (*stop) = YES;
+        }
     }];
 
     return index;
@@ -776,16 +789,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return (index + 1) % resources.count;
+    return (index + 1) % self.allResources.count;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
-{
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return ((index + resources.count) - 1) % resources.count;
+{true
+    NSArray *allResources = self.allResources;
+    return ((index + allResources.count) - 1) % allResources.count;
 }
 
 #pragma mark MITMobiusRoomDataSource
