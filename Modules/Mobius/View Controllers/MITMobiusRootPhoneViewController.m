@@ -83,7 +83,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
     UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
-    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_dismissFullScreenMap:)];
+    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(dismissFullScreenMap:)];
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
