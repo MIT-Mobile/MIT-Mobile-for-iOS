@@ -793,7 +793,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
-{true
+{
     NSArray *allResources = self.allResources;
     return ((index + allResources.count) - 1) % allResources.count;
 }
