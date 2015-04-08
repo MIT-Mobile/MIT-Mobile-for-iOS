@@ -85,20 +85,17 @@
 
 - (NSString *)getHoursStringForDate:(NSDate *)date;
 {
-    NSMutableString *hoursString = [[NSMutableString alloc] init];
+    NSMutableArray *hours = [[NSMutableArray alloc] init];
     
     for (MITMobiusResourceHours *resourceHours in self.hours) {
         if ([[date dateWithoutTime] dateFallsBetweenStartDate:[resourceHours.startDate dateWithoutTime] endDate:[resourceHours.endDate dateWithoutTime]]) {
             
             NSString *resourceHoursString = [NSString stringWithFormat:@"%@ - %@",[resourceHours.startDate MITShortTimeOfDayString], [resourceHours.endDate MITShortTimeOfDayString]];
-            
-            if (hoursString.length > 0) {
-                [hoursString appendString:@", "];
-            }
-            [hoursString appendString:resourceHoursString];
+
+            [hours addObject:resourceHoursString];
         }
     }
-    return hoursString;
+    return [hours componentsJoinedByString:@", "];
 }
 
 - (BOOL)isOpenOnDate:(NSDate *)date
