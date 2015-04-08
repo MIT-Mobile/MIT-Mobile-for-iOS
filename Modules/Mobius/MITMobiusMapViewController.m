@@ -83,10 +83,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)reloadMapAnimated:(BOOL)animated
 {
-    [self _didChangeBuildings:animated];
+    [self didChangeBuildings:animated];
 }
 
-- (void)_didChangeBuildings:(BOOL)animated
+- (void)didChangeBuildings:(BOOL)animated
 {
     [self refreshPlaceAnnotations];
     [self recenterOnVisibleResources:animated];
