@@ -75,7 +75,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     _previousMapTransform = CGAffineTransformIdentity;
     self.mapViewContainer.userInteractionEnabled = NO;
 
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleFullScreenMapGesture:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
     self.fullScreenMapGesture = gestureRecognizer;
@@ -139,7 +139,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     [super viewWillAppear:animated];
 
-    [self _transitionToState:self.currentState animated:animated completion:nil];
+    [self transitionToState:self.currentState animated:animated completion:nil];
     
     [self setupNavigationBar];
 }
@@ -152,21 +152,26 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
 {
     if ([queryString length]) {
+        __weak MITMobiusRootPhoneViewController *weakSelf = self;
         [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
-            if (error) {
+            MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+
+            if (!blockSelf) {
+                return;
+            } else if (error) {
                 DDLogWarn(@"Error: %@",error);
                 
                 if (block) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:block];
                 }
             } else {
-                [self.managedObjectContext performBlockAndWait:^{
-                    [self.managedObjectContext reset];
-                    _rooms = nil;
+                [blockSelf.managedObjectContext performBlockAndWait:^{
+                    [blockSelf.managedObjectContext reset];
+                    blockSelf.rooms = nil;
                     
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                        [self.recentSearchViewController addRecentSearchTerm:queryString];
+                        [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
                     }
                 }];
             }
@@ -289,7 +294,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     resourcesTableViewController.delegate = self;
     resourcesTableViewController.dataSource = self;
 
-    [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
+    [self addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
     _resourcesTableViewController = resourcesTableViewController;
 }
 
@@ -317,7 +322,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
     mapViewController.dataSource = self;
-    [self _addChildViewController:mapViewController toView:self.mapViewContainer];
+    [self addChildViewController:mapViewController toView:self.mapViewContainer];
     _mapViewController = mapViewController;
 }
 
@@ -336,7 +341,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusRecentSearchController *recentSearchViewController = [[MITMobiusRecentSearchController alloc] init];
     recentSearchViewController.delegate = self;
-    [self _addChildViewController:recentSearchViewController toView:self.view];
+    [self addChildViewController:recentSearchViewController toView:self.view];
     _recentSearchViewController = recentSearchViewController;
 }
 
@@ -352,7 +357,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 #pragma mark - Private
 #pragma mark State Management
-- (BOOL)_canTransitionToState:(MITMobiusRootViewControllerState)newState
+- (BOOL)canTransitionToState:(MITMobiusRootViewControllerState)newState
 {
     if (self.currentState == newState) {
         return YES;
@@ -379,16 +384,16 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
+- (void)transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
 {
-    NSAssert([self _canTransitionToState:newState], @"illegal state transition");
+    NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
         return;
     }
     
     MITMobiusRootViewControllerState oldState = self.currentState;
     
-    [self _willTransitionToState:newState fromState:oldState];
+    [self willTransitionToState:newState fromState:oldState];
     self.currentState = newState;
     
     [self.view setNeedsUpdateConstraints];
@@ -399,9 +404,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                           delay:0
                         options:0
                      animations:^{
-                         [self _animateTransitionToState:newState fromState:oldState animated:animate];
+                         [self animateTransitionToState:newState fromState:oldState animated:animate];
                      } completion:^(BOOL finished) {
-                         [self _didTransitionToState:newState fromState:oldState];
+                         [self didTransitionToState:newState fromState:oldState];
                          [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                              if (block) {
                                  block();
@@ -410,7 +415,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                      }];
 }
 
-- (void)_willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
+- (void)willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -451,7 +456,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
+- (void)animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
 {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -494,7 +499,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
+- (void)didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -513,12 +518,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_searchSuggestionsTimerFired:(NSTimer*)timer
+- (void)searchSuggestionsTimerFired:(NSTimer*)timer
 {
     [self.recentSearchViewController filterResultsUsingString:self.searchBar.text];
 }
 
-- (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
+- (IBAction)dismissFullScreenMap:(UIBarButtonItem*)sender
 {
     if (self.currentState != MITMobiusRootViewControllerStateResults) {
         return;
@@ -527,7 +532,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self setMapFullScreen:NO animated:YES];
 }
 
-- (IBAction)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
+- (IBAction)handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer == self.fullScreenMapGesture) {
         if (self.currentState != MITMobiusRootViewControllerStateResults) {
@@ -544,7 +549,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
+- (void)addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
 {
     NSParameterAssert(viewController);
     NSParameterAssert(superview);
@@ -562,7 +567,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [viewController didMoveToParentViewController:self];
 }
 
-- (void)_removeChildViewController:(UIViewController*)viewController
+- (void)removeChildViewController:(UIViewController*)viewController
 {
     NSParameterAssert(viewController);
     
@@ -640,7 +645,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.searching = YES;
-    [self _transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
+    [self transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -659,8 +664,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                     self.mapFullScreen = NO;
                 }
                 
-                [self _transitionToState:newState animated:YES completion:^{
-
+                [self transitionToState:newState animated:YES completion:^{
                     self.rooms = nil;
                     [self.resourcesTableViewController.tableView reloadData];
                     [self.mapViewController reloadMapAnimated:YES];
@@ -672,10 +676,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 newState = MITMobiusRootViewControllerStateResults;
             }
             
-            [self _transitionToState:newState animated:YES completion:nil];
+            [self transitionToState:newState animated:YES completion:nil];
         }
     } else {
-        [self _transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
+        [self transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
     }
 }
 
