@@ -7,6 +7,7 @@
 @property (weak, nonatomic) IBOutlet UILabel *resourceName;
 @property (weak, nonatomic) IBOutlet UILabel *resourceStatus;
 @property (weak, nonatomic) IBOutlet UIImageView *resourceImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightContraint;
 
 @end
 
@@ -47,6 +48,19 @@
             imageURL = [image URLForImageWithSize:MITMobiusImageSmall];
         }];
         
+        if (imageURL) {
+            
+            CGFloat imageRatio = 3/2;
+            CGRect screenRect = self.bounds;
+            CGFloat screenWidth = screenRect.size.width;
+            CGFloat screenHeight = screenRect.size.height;
+            CGFloat maxWidth = screenHeight < screenWidth ? screenHeight : screenWidth;
+            
+            self.resourceImageViewHeightContraint.constant = maxWidth / imageRatio;
+        } else {
+            self.resourceImageViewHeightContraint.constant = 0;
+        }
+
         self.resourceName.text = name;
 
         if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
@@ -60,6 +74,8 @@
             MITMobiusResource *currentResource = self.resource;
             __weak MITMobiusDetailHeader *weakSelf = self;
             [self.resourceImageView sd_setImageWithURL:imageURL completed:^(UIImage *image, NSError *error, SDImageCacheType cacheType, NSURL *imageURL) {
+                [self setNeedsUpdateConstraints];
+                
                 MITMobiusDetailHeader *blockSelf = weakSelf;
                 if (blockSelf && (blockSelf.resource == currentResource)) {
                     if (error) {
