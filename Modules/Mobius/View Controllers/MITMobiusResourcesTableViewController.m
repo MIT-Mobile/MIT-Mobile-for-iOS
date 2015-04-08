@@ -242,9 +242,14 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
 
         resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
-#warning look up status codes for resources
-        [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline];
 
+        if ([resource.status caseInsensitiveCompare:@"online"]) {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline];
+        } else if ([resource.status caseInsensitiveCompare:@"offline"]) {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusOffline];
+        } else {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusUnknown];
+        }
     }
 }
 

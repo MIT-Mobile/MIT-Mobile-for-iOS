@@ -24,7 +24,7 @@
                                     <constraint firstAttribute="height" constant="20" id="m77-cV-Es9"/>
                                 </constraints>
                             </imageView>
-                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="angle-" translatesAutoresizingMaskIntoConstraints="NO" id="E9Z-pW-ejY" userLabel="alertimage">
+                            <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="E9Z-pW-ejY" userLabel="alertimage">
                                 <rect key="frame" x="9" y="17.5" width="15" height="15"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="15" id="68T-zB-iw5"/>
@@ -80,7 +80,6 @@
         </tableViewCell>
     </objects>
     <resources>
-        <image name="angle-" width="10" height="17"/>
         <image name="global-callout-disclosure" width="10" height="17"/>
     </resources>
 </document>
