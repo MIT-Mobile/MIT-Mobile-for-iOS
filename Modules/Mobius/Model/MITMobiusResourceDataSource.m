@@ -10,7 +10,8 @@
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
 
-static NSString* const MITMobiusDefaultServer = @"https://kairos-test.mit.edu";
+#import "MITMobileServerConfiguration.h"
+
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
@@ -22,6 +23,17 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @implementation MITMobiusResourceDataSource
 @dynamic resources;
+
++ (NSURL*)defaultServerURL {
+    MITMobileWebServerType serverType = MITMobileWebGetCurrentServerType();
+
+    switch (serverType) {
+        case MITMobileWebProduction:
+        case MITMobileWebStaging:
+        case MITMobileWebDevelopment:
+            return [NSURL URLWithString:@"https://kairos-dev.mit.edu"];
+    }
+}
 
 - (instancetype)init
 {
@@ -62,6 +74,35 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     return resources;
 }
 
+- (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context
+{
+    NSParameterAssert(context);
+
+    if (self.resourceObjectIdentifiers.count > 0) {
+        NSMutableDictionary *groupedResources = [[NSMutableDictionary alloc] init];
+        [context performBlockAndWait:^{
+            [self.resourceObjectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
+                NSManagedObject *object = [context existingObjectWithID:objectID error:nil];
+                if (object) {
+                    id<NSCopying> keyValue = [object valueForKey:key];
+
+                    NSMutableArray *values = groupedResources[keyValue];
+                    if (!values) {
+                        values = [[NSMutableArray alloc] init];
+                        groupedResources[keyValue] = values;
+                    }
+
+                    [values addObject:object];
+                }
+            }];
+        }];
+
+        return groupedResources;
+    } else {
+        return nil;
+    }
+}
+
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
     if (![queryString length]) {
@@ -76,7 +117,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             }
         }];
     } else {
-        NSURL *resourceReservations = [[NSURL alloc] initWithString:MITMobiusDefaultServer];
+        NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
         NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
 
         if (queryString) {
@@ -91,7 +132,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
 
         RKMapping *mapping = [MITMobiusResource objectMapping];
-        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:@"collection.items" statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 
         RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
         requestOperation.managedObjectContext = self.managedObjectContext;
@@ -210,7 +251,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         if (!searchItem) {
             searchItem = [[MITMobiusRecentSearchQuery alloc] initWithEntity:[MITMobiusRecentSearchQuery entityDescription] insertIntoManagedObjectContext:context];
             searchItem.text = searchTerm;
-            [recentSearchList addRecentQueriesObject:searchItem];
+            searchItem.search = recentSearchList;
         }
         
         searchItem.date = [NSDate date];

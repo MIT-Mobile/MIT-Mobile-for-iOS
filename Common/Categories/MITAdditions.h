@@ -9,4 +9,8 @@
 #import "NSTimer+MITBlockTimer.h"
 #import "CoreData+MITAdditions.h"
 
+#ifndef MITClassAssert
+    #define MITClassAssert(object,klass) NSAssert([object isKindOfClass:klass],@"%@ is kind of %@, expected %@",object,NSStringFromClass([object class]),NSStringFromClass(klass))
+#endif //MITClassAssert
+
 #endif

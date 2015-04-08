@@ -3,19 +3,16 @@
 #import "MITMobiusResourceTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusResourceView.h"
+#import "MITMobiusRootPhoneViewController.h"
 
 NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 
 @interface MITMobiusResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
 
-@property(nonatomic,readonly,strong) NSArray *buildingSections;
-@property(nonatomic,readonly,strong) NSDictionary *resourcesByBuilding;
 @end
 
 @implementation MITMobiusResourcesTableViewController
-@synthesize resourcesByBuilding = _resourcesByBuilding;
-@synthesize buildingSections = _buildingSections;
 
 - (void)viewDidLoad {
     [super viewDidLoad];
@@ -36,27 +33,6 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
     // Dispose of any resources that can be recreated.
 }
 
-- (void)setResources:(NSArray *)resources
-{
-    if (![_resources isEqualToArray:resources]) {
-        [self.managedObjectContext reset];
-        _resources = [self.managedObjectContext transferManagedObjects:resources];
-        [self reloadData];
-    }
-}
-
-- (void)reloadData
-{
-    [self.managedObjectContext performBlock:^{
-        _buildingSections = nil;
-        _resourcesByBuilding = nil;
-        
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            [self.tableView reloadData];
-        }];
-    }];
-}
-
 - (MITMobiusResource*)selectedResource
 {
     NSIndexPath *indexPath = [self.tableView indexPathForSelectedRow];
@@ -68,72 +44,12 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         --section;
     }
 
-    NSString *sectionKey = self.buildingSections[section];
-    NSManagedObjectID *resourceObjectID = [self.resourcesByBuilding[sectionKey][indexPath.row] objectID];
-    
+    NSManagedObjectID *resourceObjectID = [[self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:section] objectID];
     MITMobiusResource *resource = (MITMobiusResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
     return resource;
 }
 
-- (NSArray*)buildingSections
-{
-    if (!_buildingSections) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableOrderedSet *buildings = [[NSMutableOrderedSet alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
-                [buildings addObject:building];
-            }];
-            
-            [buildings sortUsingComparator:^NSComparisonResult(NSString *location1, NSString *location2) {
-                NSArray *locationComponents1 = [location1 componentsSeparatedByString:@"-"];
-                NSArray *locationComponents2 = [location2 componentsSeparatedByString:@"-"];
-                
-                NSStringCompareOptions compareOptions = (NSCaseInsensitiveSearch | NSNumericSearch);
-                
-                NSString *building1 = [locationComponents1 firstObject];
-                NSString *building2 = [locationComponents2 firstObject];
-                NSComparisonResult buildingResult = [building1 compare:building2 options:compareOptions];
-                if (buildingResult == NSOrderedSame) {
-                    NSString *room1 = [locationComponents1 lastObject];
-                    NSString *room2 = [locationComponents2 lastObject];
-                    
-                    return [room1 compare:room2 options:compareOptions];
-                } else {
-                    return buildingResult;
-                }
-            }];
-            
-            _buildingSections = [buildings array];
-        }];
-    }
-    
-    return _buildingSections;
-}
 
-- (NSDictionary*)resourcesByBuilding
-{
-    if (!_resourcesByBuilding) {
-        [self.managedObjectContext performBlockAndWait:^{
-            NSMutableDictionary *resourcesByBuilding = [[NSMutableDictionary alloc] init];
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                NSString *building = [[resource.room componentsSeparatedByString:@"-"] firstObject];
-                
-                NSMutableArray *resources = resourcesByBuilding[building];
-                if (!resources) {
-                    resources = [[NSMutableArray alloc] init];
-                    resourcesByBuilding[building] = resources;
-                }
-                
-                [resources addObject:resource];
-            }];
-
-            _resourcesByBuilding = resourcesByBuilding;
-        }];
-    }
-    
-    return _resourcesByBuilding;
-}
 
 - (MITMobiusResource*)_representedObjectForIndexPath:(NSIndexPath*)indexPath
 {
@@ -145,31 +61,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
             --section;
         }
         
-        NSString *sectionKey = self.buildingSections[section];
-        return self.resourcesByBuilding[sectionKey][indexPath.row];
+        return [self.dataSource viewController:self resourceAtIndex:indexPath.row inRoomAtIndex:section];
     }
-}
-
-- (NSInteger)_baseIndexForSection:(NSInteger)sectionIndex
-{
-    if ([self shouldDisplayPlaceholderCell] && sectionIndex == 0) {
-        return NSNotFound;
-    } else if ([self shouldDisplayPlaceholderCell]) {
-        --sectionIndex;
-    }
-
-
-    __block NSInteger baseIndex = 1;
-    [self.buildingSections enumerateObjectsUsingBlock:^(id key, NSUInteger idx, BOOL *stop) {
-        if (idx < sectionIndex) {
-            NSArray *resources = self.resourcesByBuilding[key];
-            baseIndex += [resources count];
-        } else {
-            (*stop) = YES;
-        }
-    }];
-
-    return baseIndex;
 }
 
 #pragma mark Delegate Passthroughs
@@ -212,7 +105,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 #pragma mark - Table view data source
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     __block NSInteger numberOfSections = 0;
-    numberOfSections = [self.buildingSections count];
+    numberOfSections = [self.dataSource numberOfRoomsForViewController:self];
 
     if ([self shouldDisplayPlaceholderCell]) {
         ++numberOfSections;
@@ -228,13 +121,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         if ([self shouldDisplayPlaceholderCell]) {
             --section;
         }
-        
-        __block NSInteger numberOfRows = 0;
-        NSString *sectionKey = self.buildingSections[section];
-        NSArray *resources = self.resourcesByBuilding[sectionKey];
-        numberOfRows = [resources count];
-        
-        return numberOfRows;
+        NSInteger room = [self.dataSource viewController:self numberOfResourcesInRoomAtIndex:section];
+        return room;
     }
 }
 
@@ -246,8 +134,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         --section;
     }
 
-    NSString *buildingNumber = self.buildingSections[section];
-    return [NSString stringWithFormat:@"Building %@", buildingNumber];
+    MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:section];
+    return [NSString stringWithFormat:@"Room %@", room.roomName];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
@@ -287,8 +175,7 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
         MITMobiusResourceTableViewCell *resourceCell = (MITMobiusResourceTableViewCell*)cell;
         MITMobiusResource *resource = [self _representedObjectForIndexPath:indexPath];
 
-        NSInteger baseIndexForSection = [self _baseIndexForSection:indexPath.section];
-        resourceCell.resourceView.index = baseIndexForSection + indexPath.row;
+        resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
         resourceCell.resourceView.location = resource.room;
         [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline withText:resource.status];
