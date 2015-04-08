@@ -4,7 +4,7 @@
 
 @property (nonatomic, copy) NSString *shopName;
 @property (nonatomic, copy) NSString *shopHours;
-@property (nonatomic, copy) NSString *shopStaus;
+@property (nonatomic, copy) NSString *shopStatus;
 
 + (UINib *)searchHeaderNib;
 + (NSString *)searchHeaderNibName;

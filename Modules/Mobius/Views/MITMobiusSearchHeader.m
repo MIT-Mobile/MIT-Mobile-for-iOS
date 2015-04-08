@@ -4,7 +4,7 @@
 @interface MITMobiusSearchHeader ()
 @property (weak, nonatomic) IBOutlet UILabel *shopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *shopHoursLabel;
-@property (weak, nonatomic) IBOutlet UILabel *shopStausLabel;
+@property (weak, nonatomic) IBOutlet UILabel *shopStatusLabel;
 @end
 
 @implementation MITMobiusSearchHeader
@@ -36,7 +36,7 @@
 {
     self.shopNameLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopNameLabel.frame);
     self.shopHoursLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopHoursLabel.frame);
-    self.shopStausLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopStausLabel.frame);
+    self.shopStatusLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopStatusLabel.frame);
     [super updateConstraints];
 }
 
@@ -44,9 +44,8 @@
 {
     if (![_shopName isEqualToString:shopName]) {
         _shopName = [shopName copy];
-        _shopNameLabel.text = shopName;
+        _shopNameLabel.text = _shopName;
     }
-
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
 }
@@ -55,24 +54,23 @@
 {
     if (![_shopHours isEqualToString:shopHours]) {
         _shopHours = [shopHours copy];
-        _shopHoursLabel.text = shopHours;
+        _shopHoursLabel.text = _shopHours;
     }
-    _shopHoursLabel.text = shopHours;
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
 }
 
-- (void)setShopStaus:(NSString *)shopStaus
+- (void)setShopStatus:(NSString *)shopStatus
 {
-    if (![_shopHours isEqualToString:shopStaus]) {
-        _shopStaus = [shopStaus copy];
+    if (![_shopStatus isEqualToString:shopStatus]) {
+        _shopStatus = [shopStatus copy];
         
-        if ([shopStaus caseInsensitiveCompare:@"open"] == NSOrderedSame) {
-            _shopStausLabel.textColor = [UIColor mit_openGreenColor];
-        } else if ([shopStaus caseInsensitiveCompare:@"closed"] == NSOrderedSame) {
-            _shopStausLabel.textColor = [UIColor mit_closedRedColor];
+        if ([shopStatus caseInsensitiveCompare:@"open"] == NSOrderedSame) {
+            _shopStatusLabel.textColor = [UIColor mit_openGreenColor];
+        } else if ([shopStatus caseInsensitiveCompare:@"closed"] == NSOrderedSame) {
+            _shopStatusLabel.textColor = [UIColor mit_closedRedColor];
         }
-        _shopStausLabel.text = shopStaus;
+        _shopStatusLabel.text = _shopStatus;
     }
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];

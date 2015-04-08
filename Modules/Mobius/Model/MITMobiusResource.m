@@ -7,6 +7,7 @@
 #import "MITMobiusAttributeValue.h"
 #import "MITMobiusImage.h"
 #import "MITMobiusRoomSet.h"
+#import "Foundation+MITAdditions.h"
 
 @implementation MITMobiusResource
 
@@ -80,6 +81,18 @@
     mapping.assignsNilForMissingRelationships = YES;
 
     return mapping;
+}
+
+- (NSSet *)getHoursForDate:(NSDate *)date;
+{
+    NSMutableSet *set = [[NSMutableSet alloc] init];
+    
+    for (MITMobiusResourceHours *hours in self.hours) {
+        if ([[date dateWithoutTime] dateFallsBetweenStartDate:[hours.startDate dateWithoutTime] endDate:[hours.endDate dateWithoutTime]]) {
+            [set addObject:hours];
+        }
+    }
+    return set;
 }
 
 #pragma mark MKAnnotation

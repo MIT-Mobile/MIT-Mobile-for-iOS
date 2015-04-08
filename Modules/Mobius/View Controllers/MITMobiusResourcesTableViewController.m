@@ -6,6 +6,7 @@
 #import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusSearchHeader.h"
 #import "MITMobiusRoomSet.h"
+#import "Foundation+MITAdditions.h"
 
 NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
 NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentifier";
@@ -166,18 +167,23 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
 
 - (void)tableView:(UITableView*)tableView configureHeaderView:(UIView*)view forSection:(NSInteger)section
 {
-#warning fake data
+
     NSAssert([view isKindOfClass:[MITMobiusSearchHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusSearchHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusSearchHeader class]));
 
-     MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
+    MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
     
     MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)view;
-
+    
     searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, resource.roomset.name];
-    searchHeaderView.shopHours = @"9:30am - 12pm, 1pm - 4pm";
-    searchHeaderView.shopStaus = @"Closed";
+    
+    NSSet *hours = [resource getHoursForDate:[NSDate date]];
+    searchHeaderView.shopHours = @"";
+    for (MITMobiusResourceHours *hours2 in hours) {
+        searchHeaderView.shopHours = [searchHeaderView.shopHours stringByAppendingString:[NSString stringWithFormat:@"%@ - %@, ",[hours2.startDate MITShortTimeOfDayString], [hours2.endDate MITShortTimeOfDayString]]];
+    }
+#warning fake data
+    searchHeaderView.shopStatus = @"Closed";
 }
-
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
     if ([self shouldDisplayPlaceholderCell] && section == 0) {
