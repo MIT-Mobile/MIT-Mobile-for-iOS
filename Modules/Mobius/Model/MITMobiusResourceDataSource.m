@@ -30,8 +30,6 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     switch (serverType) {
         case MITMobileWebProduction:
         case MITMobileWebStaging:
-            return [NSURL URLWithString:@"https://kairos-test.mit.edu"];
-
         case MITMobileWebDevelopment:
             return [NSURL URLWithString:@"https://kairos-dev.mit.edu"];
     }

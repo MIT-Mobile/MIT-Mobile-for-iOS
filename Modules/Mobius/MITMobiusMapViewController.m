@@ -84,10 +84,10 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)reloadMapAnimated:(BOOL)animated
 {
-    [self _didChangeBuildings:animated];
+    [self didChangeBuildings:animated];
 }
 
-- (void)_didChangeBuildings:(BOOL)animated
+- (void)didChangeBuildings:(BOOL)animated
 {
     [self refreshPlaceAnnotations];
     [self recenterOnVisibleResources:animated];
@@ -100,8 +100,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     [self.view layoutIfNeeded]; // ensure that map has autoresized before setting region
     
     if ([self.dataSource numberOfRoomsForViewController:self]) {
-        [self.mapView showAnnotations:[self.mapView annotations] animated:NO];
-        [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
+        if (UIEdgeInsetsEqualToEdgeInsets(self.mapEdgeInsets, UIEdgeInsetsZero)) {
+            [self.mapView showAnnotations:self.mapView.annotations animated:YES];
+        } else {
+            [self.mapView showAnnotations:self.mapView.annotations animated:NO];
+            [self.mapView setVisibleMapRect:self.mapView.visibleMapRect edgePadding:self.mapEdgeInsets animated:animated];
+        }
     } else {
         [self.mapView setRegion:kMITShuttleDefaultMapRegion animated:animated];
     }
@@ -119,7 +123,12 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     for (NSInteger roomIndex = 0 ; roomIndex < numberOfRooms ; roomIndex++) {
         MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:roomIndex];
         room.index = roomIndex;
-        [self.mapView addAnnotation:room];
+
+        if (CLLocationCoordinate2DIsValid(room.coordinate)) {
+            [self.mapView addAnnotation:room];
+        } else {
+            DDLogWarn(@"Failed to add annotation for room %@, coordinate is invalid",room.roomName);
+        }
     }
 }
 

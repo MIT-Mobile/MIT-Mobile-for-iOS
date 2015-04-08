@@ -50,7 +50,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
-@property (nonatomic, strong) NSDictionary *rooms;
+@property (nonatomic, copy) NSDictionary *rooms;
+@property (nonatomic, readonly, copy) NSArray *allResources;
 
 @end
 
@@ -75,7 +76,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     _previousMapTransform = CGAffineTransformIdentity;
     self.mapViewContainer.userInteractionEnabled = NO;
 
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(_handleFullScreenMapGesture:)];
+    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleFullScreenMapGesture:)];
     gestureRecognizer.cancelsTouchesInView = NO;
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
     self.fullScreenMapGesture = gestureRecognizer;
@@ -139,7 +140,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     [super viewWillAppear:animated];
 
-    [self _transitionToState:self.currentState animated:animated completion:nil];
+    [self transitionToState:self.currentState animated:animated completion:nil];
     
     [self setupNavigationBar];
 }
@@ -152,21 +153,26 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
 {
     if ([queryString length]) {
+        __weak MITMobiusRootPhoneViewController *weakSelf = self;
         [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
-            if (error) {
+            MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+
+            if (!blockSelf) {
+                return;
+            } else if (error) {
                 DDLogWarn(@"Error: %@",error);
                 
                 if (block) {
                     [[NSOperationQueue mainQueue] addOperationWithBlock:block];
                 }
             } else {
-                [self.managedObjectContext performBlockAndWait:^{
-                    [self.managedObjectContext reset];
-                    _rooms = nil;
+                [blockSelf.managedObjectContext performBlockAndWait:^{
+                    [blockSelf.managedObjectContext reset];
+                    blockSelf.rooms = nil;
                     
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                        [self.recentSearchViewController addRecentSearchTerm:queryString];
+                        [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
                     }
                 }];
             }
@@ -289,7 +295,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     resourcesTableViewController.delegate = self;
     resourcesTableViewController.dataSource = self;
 
-    [self _addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
+    [self addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
     _resourcesTableViewController = resourcesTableViewController;
 }
 
@@ -317,7 +323,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
     mapViewController.dataSource = self;
-    [self _addChildViewController:mapViewController toView:self.mapViewContainer];
+    [self addChildViewController:mapViewController toView:self.mapViewContainer];
     _mapViewController = mapViewController;
 }
 
@@ -336,7 +342,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     MITMobiusRecentSearchController *recentSearchViewController = [[MITMobiusRecentSearchController alloc] init];
     recentSearchViewController.delegate = self;
-    [self _addChildViewController:recentSearchViewController toView:self.view];
+    [self addChildViewController:recentSearchViewController toView:self.view];
     _recentSearchViewController = recentSearchViewController;
 }
 
@@ -352,7 +358,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 #pragma mark - Private
 #pragma mark State Management
-- (BOOL)_canTransitionToState:(MITMobiusRootViewControllerState)newState
+- (BOOL)canTransitionToState:(MITMobiusRootViewControllerState)newState
 {
     if (self.currentState == newState) {
         return YES;
@@ -379,16 +385,16 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
+- (void)transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
 {
-    NSAssert([self _canTransitionToState:newState], @"illegal state transition");
+    NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
         return;
     }
     
     MITMobiusRootViewControllerState oldState = self.currentState;
     
-    [self _willTransitionToState:newState fromState:oldState];
+    [self willTransitionToState:newState fromState:oldState];
     self.currentState = newState;
     
     [self.view setNeedsUpdateConstraints];
@@ -399,9 +405,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                           delay:0
                         options:0
                      animations:^{
-                         [self _animateTransitionToState:newState fromState:oldState animated:animate];
+                         [self animateTransitionToState:newState fromState:oldState animated:animate];
                      } completion:^(BOOL finished) {
-                         [self _didTransitionToState:newState fromState:oldState];
+                         [self didTransitionToState:newState fromState:oldState];
                          [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                              if (block) {
                                  block();
@@ -410,7 +416,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                      }];
 }
 
-- (void)_willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
+- (void)willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -451,7 +457,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
+- (void)animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
 {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -494,7 +500,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
+- (void)didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
 {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
@@ -513,12 +519,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_searchSuggestionsTimerFired:(NSTimer*)timer
+- (void)searchSuggestionsTimerFired:(NSTimer*)timer
 {
     [self.recentSearchViewController filterResultsUsingString:self.searchBar.text];
 }
 
-- (IBAction)_dismissFullScreenMap:(UIBarButtonItem*)sender
+- (IBAction)dismissFullScreenMap:(UIBarButtonItem*)sender
 {
     if (self.currentState != MITMobiusRootViewControllerStateResults) {
         return;
@@ -527,7 +533,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self setMapFullScreen:NO animated:YES];
 }
 
-- (IBAction)_handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
+- (IBAction)handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer == self.fullScreenMapGesture) {
         if (self.currentState != MITMobiusRootViewControllerStateResults) {
@@ -544,7 +550,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)_addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
+- (void)addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
 {
     NSParameterAssert(viewController);
     NSParameterAssert(superview);
@@ -562,7 +568,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [viewController didMoveToParentViewController:self];
 }
 
-- (void)_removeChildViewController:(UIViewController*)viewController
+- (void)removeChildViewController:(UIViewController*)viewController
 {
     NSParameterAssert(viewController);
     
@@ -640,7 +646,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.searching = YES;
-    [self _transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
+    [self transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
@@ -659,9 +665,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                     self.mapFullScreen = NO;
                 }
                 
-                [self _transitionToState:newState animated:YES completion:^{
-                    
-                    [self createRoomObjects];
+                [self transitionToState:newState animated:YES completion:^{
+                    self.rooms = nil;
                     [self.resourcesTableViewController.tableView reloadData];
                     [self.mapViewController reloadMapAnimated:YES];
                 }];
@@ -672,10 +677,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                 newState = MITMobiusRootViewControllerStateResults;
             }
             
-            [self _transitionToState:newState animated:YES completion:nil];
+            [self transitionToState:newState animated:YES completion:nil];
         }
     } else {
-        [self _transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
+        [self transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
     }
 }
 
@@ -685,35 +690,50 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     [self reloadDataSourceForSearch:searchBar.text completion:^{
       
-        [self createRoomObjects];
+        self.rooms = nil;
         [self.resourcesTableViewController.tableView reloadData];
         [self.mapViewController reloadMapAnimated:YES];
     }];
 }
 
-- (NSDictionary *)createRoomObjects
+- (NSDictionary*)rooms
 {
     if (!_rooms) {
         NSDictionary *resourcesByBuilding = [self.dataSource resourcesGroupedByKey:@"room" withManagedObjectContext:self.managedObjectContext];
-        
+
         NSMutableDictionary *rooms = [[NSMutableDictionary alloc] init];
-        
+
         [resourcesByBuilding enumerateKeysAndObjectsUsingBlock:^(NSString *roomName, NSArray *resources, BOOL *stop) {
-            
+
             MITMobiusRoomObject *mapObject = [[MITMobiusRoomObject alloc] init];
             mapObject.roomName = roomName;
-            
             mapObject.resources = [NSOrderedSet orderedSetWithArray:resources];
-            MITMobiusResource *resource = [mapObject.resources firstObject];
-            
-            mapObject.latitude = resource.latitude;
-            mapObject.longitude = resource.longitude;
-            
-            [rooms setValue:mapObject forKey:roomName];
+
+            if (!CLLocationCoordinate2DIsValid(mapObject.coordinate)) {
+                DDLogWarn(@"Coordinate for room with name %@ is invalid", roomName);
+            }
+
+            rooms[roomName] = mapObject;
         }];
+        
         _rooms = rooms;
     }
+
     return _rooms;
+}
+
+- (NSArray*)allResources
+{
+    NSArray *sortedKeys = [self.rooms.allKeys sortedArrayUsingSelector:@selector(caseInsensitiveCompare:)];
+
+    NSMutableArray *resources = [[NSMutableArray alloc] init];
+
+    [sortedKeys enumerateObjectsUsingBlock:^(id<NSCopying> key, NSUInteger idx, BOOL *stop) {
+        MITMobiusRoomObject *room = self.rooms[key];
+        [resources addObjectsFromArray:[room.resources array]];
+    }];
+
+    return resources;
 }
 
 - (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
@@ -746,24 +766,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     // TODO: This approach needs some work, we should be keeping track of what chunk of data is being displayed,
     // not requiring the view controller to do it for us.
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return resources.count;
+    return self.allResources.count;
 }
 
 - (MITMobiusResource*)detailViewController:(MITMobiusDetailContainerViewController*)viewController resourceAtIndex:(NSUInteger)index
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return resources[index];
+    return self.allResources[index];
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexForResourceWithIdentifier:(NSString*)resourceIdentifier
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    NSUInteger index = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
-        return [otherResource.identifier isEqualToString:resourceIdentifier];
+    __block NSUInteger index = NSNotFound;
+    [self.allResources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
+        if ([resource.identifier isEqualToString:resourceIdentifier]) {
+            index = idx;
+            (*stop) = YES;
+        }
     }];
 
     return index;
@@ -771,16 +789,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexAfterIndex:(NSUInteger)index
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return (index + 1) % resources.count;
+    return (index + 1) % self.allResources.count;
 }
 
 - (NSUInteger)detailViewController:(MITMobiusDetailContainerViewController*)viewController indexBeforeIndex:(NSUInteger)index
 {
-    MITMobiusRoomObject *room = self.rooms[viewController.currentResource.room];
-    NSOrderedSet *resources = room.resources;
-    return ((index + resources.count) - 1) % resources.count;
+    NSArray *allResources = self.allResources;
+    return ((index + allResources.count) - 1) % allResources.count;
 }
 
 #pragma mark MITMobiusRoomDataSource
