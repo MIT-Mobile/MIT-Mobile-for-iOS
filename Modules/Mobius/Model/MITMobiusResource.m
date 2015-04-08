@@ -6,6 +6,7 @@
 #import "MITMobiusResourceOwner.h"
 #import "MITMobiusAttributeValue.h"
 #import "MITMobiusImage.h"
+#import "MITMobiusRoomSet.h"
 
 @implementation MITMobiusResource
 
@@ -58,10 +59,17 @@
                                                                                     withMapping:[MITMobiusResourceHours objectMapping]];
     [mapping addPropertyMapping:hoursMapping];
 
-    RKRelationshipMapping *topImageMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_image"
+    RKRelationshipMapping *imagesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_image"
                                                                                          toKeyPath:@"images"
                                                                                        withMapping:[MITMobiusImage objectMapping]];
-    [mapping addPropertyMapping:topImageMapping];
+    [mapping addPropertyMapping:imagesMapping];
+
+
+    RKRelationshipMapping *roomsetMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"roomset"
+                                                                                         toKeyPath:@"roomset"
+                                                                                       withMapping:[MITMobiusRoomSet objectMapping]];
+    [mapping addPropertyMapping:roomsetMapping];
+
 
     RKRelationshipMapping *attributeValuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"attribute_values"
                                                                                                 toKeyPath:@"attributeValues"
@@ -88,7 +96,11 @@
 
 - (CLLocationCoordinate2D)coordinate
 {
-    return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+    if (self.latitude && self.longitude) {
+        return CLLocationCoordinate2DMake([self.latitude doubleValue], [self.longitude doubleValue]);
+    } else {
+        return kCLLocationCoordinate2DInvalid;
+    }
 }
 
 @end

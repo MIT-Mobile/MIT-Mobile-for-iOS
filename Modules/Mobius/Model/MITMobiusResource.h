@@ -23,7 +23,7 @@
 @property (nonatomic, retain) NSOrderedSet *images;
 @property (nonatomic, retain) NSSet *hours;
 @property (nonatomic, retain) NSOrderedSet *owners;
-@property (nonatomic, retain) NSManagedObject *roomset;
+@property (nonatomic, retain) MITMobiusRoomSet *roomset;
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 @end

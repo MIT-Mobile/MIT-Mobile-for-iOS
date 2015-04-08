@@ -32,11 +32,11 @@ typedef NS_ENUM(NSInteger, MITMobiusTableViewSection) {
 @implementation MITMobiusDetailTableViewController
 @synthesize managedObjectContext = _managedObjectContext;
 
-- (instancetype)init
+- (instancetype)initWithResource:(MITMobiusResource *)resource
 {
     self = [self initWithStyle:UITableViewStylePlain];
     if (self) {
-
+        self.resource = resource;
     }
 
     return self;
