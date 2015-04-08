@@ -173,21 +173,10 @@ NSString* const MITMobiusSearchHeaderIdentifier = @"MITMobiusSearchHeaderIdentif
     MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
     
     MITMobiusSearchHeader *searchHeaderView = (MITMobiusSearchHeader*)view;
-    
     searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, resource.roomset.name];
     
-    NSSet *hours = [resource getHoursForDate:[NSDate date]];
-    searchHeaderView.shopHours = @"";
-    for (MITMobiusResourceHours *resourceHours in hours) {
-        
-        NSString *hoursString = [NSString stringWithFormat:@"%@ - %@",[resourceHours.startDate MITShortTimeOfDayString], [resourceHours.endDate MITShortTimeOfDayString]];
-        
-        if (searchHeaderView.shopHours.length > 0) {
-            searchHeaderView.shopHours = [searchHeaderView.shopHours stringByAppendingString:@", "];
-        }
-        searchHeaderView.shopHours = [searchHeaderView.shopHours stringByAppendingString:hoursString];
-    }
-#warning fake data
+    NSString *hours = [resource getHoursStringForDate:[NSDate date]];
+    searchHeaderView.shopHours = hours;
     searchHeaderView.shopStatus = @"Closed";
 }
 
