@@ -83,7 +83,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
     UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
-    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_dismissFullScreenMap:)];
+    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(dismissFullScreenMap:)];
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
@@ -143,6 +143,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self transitionToState:self.currentState animated:animated completion:nil];
     
     [self setupNavigationBar];
+
+    if (self.isMapFullScreen) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -234,8 +240,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
-    [self.navigationController setToolbarHidden:NO];
-
 }
 
 #pragma mark Public Properties
@@ -746,7 +750,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self.searchSuggestionsTimer invalidate];
     self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
                                                                    target:self
-                                                                 selector:@selector(_searchSuggestionsTimerFired:)
+                                                                 selector:@selector(searchSuggestionsTimerFired:)
                                                                  userInfo:nil
                                                                   repeats:NO];
 }
