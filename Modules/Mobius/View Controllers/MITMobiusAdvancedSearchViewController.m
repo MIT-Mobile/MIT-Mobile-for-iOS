@@ -212,7 +212,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     if (section == 0) {
-        if (self.searchText) {
+        if (self.searchText.length) {
             return self.selectedAttributeValues.count + 1;
         } else {
             return self.selectedAttributeValues.count;
