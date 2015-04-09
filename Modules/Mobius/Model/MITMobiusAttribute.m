@@ -21,10 +21,10 @@
                                @"field_type" : @"fieldType",
                                @"widget_type" : @"widgetType",
                                @"label" : @"label",
-                               @"_valueSet.value_set" : @"valueSetName"};
+                               @"_valueset.value_set" : @"valueSetName"};
     [mapping addAttributeMappingsFromDictionary:mappings];
 
-    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueSet.values" toKeyPath:@"values" withMapping:[MITMobiusAttributeValue objectMapping]];
+    RKRelationshipMapping *valuesMapping = [RKRelationshipMapping relationshipMappingFromKeyPath:@"_valueset.values" toKeyPath:@"values" withMapping:[MITMobiusAttributeValue objectMapping]];
     [mapping addPropertyMapping:valuesMapping];
 
     return mapping;
