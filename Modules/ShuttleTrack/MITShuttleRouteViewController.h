@@ -18,12 +18,7 @@
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
 - (void)highlightStop:(MITShuttleStop *)stop;
 
-@end
-
-@protocol MITShuttleRouteViewControllerDataSource <NSObject>
-
-- (BOOL)isMapEmbeddedInRouteViewController:(MITShuttleRouteViewController *)routeViewController;
-- (CGFloat)embeddedMapHeightForRouteViewController:(MITShuttleRouteViewController *)routeViewController;
+- (CGFloat)targetTableViewHeight;
 
 @end
 
@@ -32,8 +27,6 @@
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop;
 
 @optional
-- (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset;
-- (void)routeViewControllerDidRefresh:(MITShuttleRouteViewController *)routeViewController;
 - (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController;
 
 @end

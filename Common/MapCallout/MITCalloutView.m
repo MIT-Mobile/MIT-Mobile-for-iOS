@@ -3,7 +3,7 @@
 
 NSInteger const MITCalloutPermittedArrowDirectionAny = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionLeft | MITCalloutArrowDirectionBottom | MITCalloutArrowDirectionRight;
 
-static CGSize const kMITCalloutViewDefaultArrowSize = {30,30};
+static CGSize const kMITCalloutViewDefaultArrowSize = {30,15};
 static CGFloat const kMITCalloutViewDefaultCornerRadius = 10;
 static CGFloat const kMITCalloutViewDefaultArrowOffset = 5.0;
 static UIEdgeInsets const kMITCalloutViewDefaultInternalInsets = {5,5,5,5};
@@ -33,6 +33,12 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 @property (weak, nonatomic) NSLayoutConstraint *leftContentConstraint;
 @property (weak, nonatomic) NSLayoutConstraint *bottomContentConstraint;
 @property (weak, nonatomic) NSLayoutConstraint *rightContentConstraint;
+
+@property (nonatomic) BOOL keepSizeWithinConstrainingView;
+@property (nonatomic) CGSize contentViewMaxSize;
+@property (nonatomic) CGFloat contentViewConstraintPaddingHorizontal;
+@property (nonatomic) CGFloat contentViewConstraintPaddingVertical;
+
 @end
 
 @implementation MITCalloutView
@@ -49,7 +55,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         _externalInsets = kMITCalloutViewDefaultExternalInsets;
         _shouldHighlightOnTouch = YES;
         _permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
-        _contentViewPreferredSize = CGSizeZero;
+        _contentViewConstraintPaddingHorizontal = 20;
+        _contentViewConstraintPaddingVertical = 40;
+        _keepSizeWithinConstrainingView = YES;
         self.backgroundColor = [UIColor whiteColor];
     }
     return self;
@@ -87,6 +95,15 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         // Save preferred size at time of set because constraints will resize
         maxHeight = self.contentViewPreferredSize.height + self.internalInsets.top + self.internalInsets.bottom;
         maxWidth = self.contentViewPreferredSize.width + self.internalInsets.left + self.internalInsets.right;
+    }
+    
+    if (self.keepSizeWithinConstrainingView) {
+        if (maxHeight > self.contentViewMaxSize.height) {
+            maxHeight = self.contentViewMaxSize.height;
+        }
+        if (maxWidth > self.contentViewMaxSize.width) {
+            maxWidth = self.contentViewMaxSize.width;
+        }
     }
     
     switch (self.currentArrowDirection) {
@@ -157,7 +174,6 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 }
 
 - (void)drawPointerForControlPoint:(CGPoint)controlPoint animated:(BOOL)animated {
-    
     CGSize arrowSize = self.arrowSize;
     CGFloat arrowWidth = arrowSize.width;
     CGFloat arrowHeight = arrowSize.height;
@@ -174,6 +190,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGPoint lowerRight = CGPointMake(rightEdge, bottomEdge);
     CGPoint lowerLeft = CGPointMake(originX, bottomEdge);
     
+    CGFloat arrowTipHeight = arrowHeight / 10;
+    CGFloat arrowTipWidth = arrowWidth / 10;
+    CGFloat arrowBaseBezierControlInset = arrowWidth / 10;
+    
     UIBezierPath *path = [UIBezierPath bezierPath];
     
     // Top left corner
@@ -183,12 +203,17 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Top edge arrow
     if (self.currentArrowDirection == MITCalloutArrowDirectionTop) {
-        CGFloat arrowLeftX = controlPoint.x - halfArrowWidth;
-        CGFloat arrowMiddleX = controlPoint.x;
-        CGFloat arrowRightX = controlPoint.x + halfArrowWidth;
-        [path addLineToPoint:CGPointMake(topLeft.x + arrowLeftX, topLeft.y)];
-        [path addLineToPoint:CGPointMake(topLeft.x + arrowMiddleX, topLeft.y - arrowHeight)];
-        [path addLineToPoint:CGPointMake(topLeft.x + arrowRightX, topLeft.y)];
+        CGFloat arrowLeftX = topLeft.x + controlPoint.x - halfArrowWidth;
+        CGFloat arrowMidX = topLeft.x + controlPoint.x;
+        CGFloat arrowRightX = topLeft.x + controlPoint.x + halfArrowWidth;
+        
+        CGPoint bottomLeftPointOfArrowTipCurve = CGPointMake(arrowMidX - arrowTipWidth, topLeft.y - arrowHeight + arrowTipHeight);
+        CGPoint bottomRightPointOfArrowTipCurve = CGPointMake(arrowMidX + arrowTipWidth, topLeft.y - arrowHeight + arrowTipHeight);
+        
+        [path addLineToPoint:CGPointMake(arrowLeftX, topLeft.y)];
+        [path addQuadCurveToPoint:bottomLeftPointOfArrowTipCurve controlPoint:CGPointMake(arrowLeftX + arrowBaseBezierControlInset, topLeft.y)];
+        [path addQuadCurveToPoint:bottomRightPointOfArrowTipCurve controlPoint:CGPointMake(arrowMidX, bottomLeftPointOfArrowTipCurve.y - (2 * arrowTipHeight))];
+        [path addQuadCurveToPoint:CGPointMake(arrowRightX, topLeft.y) controlPoint:CGPointMake(arrowRightX - arrowBaseBezierControlInset, topLeft.y)];
     }
     
     // Top edge finisher
@@ -200,12 +225,17 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Right edge arrow
     if (self.currentArrowDirection == MITCalloutArrowDirectionRight) {
-        CGFloat arrowTopY = controlPoint.y - halfArrowWidth;
-        CGFloat arrowMidY = controlPoint.y;
-        CGFloat arrowBottomY = controlPoint.y + halfArrowWidth;
-        [path addLineToPoint:CGPointMake(topRight.x, topRight.y + arrowTopY)];
-        [path addLineToPoint:CGPointMake(topRight.x + arrowHeight, topRight.y + arrowMidY)];
-        [path addLineToPoint:CGPointMake(topRight.x, topRight.y + arrowBottomY)];
+        CGFloat arrowTopY = topRight.y + controlPoint.y - halfArrowWidth;
+        CGFloat arrowMidY = topRight.y + controlPoint.y;
+        CGFloat arrowBottomY = topRight.y + controlPoint.y + halfArrowWidth;
+        
+        CGPoint topLeftPointOfArrowTipCurve = CGPointMake(topRight.x + arrowHeight - arrowTipHeight, arrowMidY - arrowTipWidth);
+        CGPoint bottomLeftPointOfArrowTipCurve = CGPointMake(topRight.x + arrowHeight - arrowTipHeight, arrowMidY + arrowTipWidth);
+        
+        [path addLineToPoint:CGPointMake(topRight.x, arrowTopY)];
+        [path addQuadCurveToPoint:topLeftPointOfArrowTipCurve controlPoint:CGPointMake(topRight.x, arrowTopY + arrowBaseBezierControlInset)];
+        [path addQuadCurveToPoint:bottomLeftPointOfArrowTipCurve controlPoint:CGPointMake(topLeftPointOfArrowTipCurve.x + (2 * arrowTipHeight), arrowMidY)];
+        [path addQuadCurveToPoint:CGPointMake(topRight.x, arrowBottomY) controlPoint:CGPointMake(topRight.x, arrowBottomY - arrowBaseBezierControlInset)];
     }
     
     // Right edge finisher
@@ -217,13 +247,17 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     
     // Bottom edge arrow
     if (self.currentArrowDirection == MITCalloutArrowDirectionBottom) {
-        CGFloat arrowRightX = controlPoint.x + halfArrowWidth;
-        CGFloat arrowMidX = controlPoint.x;
-        CGFloat arrowLeftX = controlPoint.x - halfArrowWidth;
-        // Position these points from left corner
-        [path addLineToPoint:CGPointMake(lowerLeft.x + arrowRightX, lowerRight.y)];
-        [path addLineToPoint:CGPointMake(lowerLeft.x + arrowMidX, lowerRight.y + arrowHeight)];
-        [path addLineToPoint:CGPointMake(lowerLeft.x + arrowLeftX, lowerRight.y)];
+        CGFloat arrowRightX = lowerLeft.x + controlPoint.x + halfArrowWidth;
+        CGFloat arrowMidX = lowerLeft.x + controlPoint.x;
+        CGFloat arrowLeftX = lowerLeft.x + controlPoint.x - halfArrowWidth;
+        
+        CGPoint topRightPointOfArrowTipCurve = CGPointMake(arrowMidX + arrowTipWidth, lowerRight.y + arrowHeight - arrowTipHeight);
+        CGPoint topLeftPointOfArrowTipCurve = CGPointMake(arrowMidX - arrowTipWidth, lowerRight.y + arrowHeight - arrowTipHeight);
+        
+        [path addLineToPoint:CGPointMake(arrowRightX, lowerRight.y)];
+        [path addQuadCurveToPoint:topRightPointOfArrowTipCurve controlPoint:CGPointMake(arrowRightX - arrowBaseBezierControlInset, lowerRight.y)];
+        [path addQuadCurveToPoint:topLeftPointOfArrowTipCurve controlPoint:CGPointMake(arrowMidX, topRightPointOfArrowTipCurve.y + (2 * arrowTipHeight))];
+        [path addQuadCurveToPoint:CGPointMake(arrowLeftX, lowerRight.y) controlPoint:CGPointMake(arrowLeftX + arrowBaseBezierControlInset, lowerRight.y)];
     }
     
     // Bottom edge finisher
@@ -233,14 +267,19 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     [path addQuadCurveToPoint:CGPointMake(lowerLeft.x, lowerLeft.y - self.cornerRadius)
                  controlPoint:lowerLeft];
     
+    // Left edge arrow
     if (self.currentArrowDirection == MITCalloutArrowDirectionLeft) {
-        CGFloat arrowBottomY = controlPoint.y + halfArrowWidth;
-        CGFloat arrowMidY = controlPoint.y;
-        CGFloat arrowTopY = controlPoint.y - halfArrowWidth;
+        CGFloat arrowBottomY = topLeft.y + controlPoint.y + halfArrowWidth;
+        CGFloat arrowMidY = topLeft.y + controlPoint.y;
+        CGFloat arrowTopY = topLeft.y + controlPoint.y - halfArrowWidth;
         
-        [path addLineToPoint:CGPointMake(lowerLeft.x, topLeft.y + arrowBottomY)];
-        [path addLineToPoint:CGPointMake(lowerLeft.x - arrowHeight, topLeft.y + arrowMidY)];
-        [path addLineToPoint:CGPointMake(lowerLeft.x, topLeft.y + arrowTopY)];
+        CGPoint bottomRightPointOfArrowTipCurve = CGPointMake(lowerLeft.x - arrowHeight + arrowTipHeight, arrowMidY + arrowTipWidth);
+        CGPoint topRightPointOfArrowTipCurve = CGPointMake(lowerLeft.x - arrowHeight + arrowTipHeight, arrowMidY - arrowTipWidth);
+        
+        [path addLineToPoint:CGPointMake(lowerLeft.x, arrowBottomY)];
+        [path addQuadCurveToPoint:bottomRightPointOfArrowTipCurve controlPoint:CGPointMake(lowerLeft.x, arrowBottomY - arrowBaseBezierControlInset)];
+        [path addQuadCurveToPoint:topRightPointOfArrowTipCurve controlPoint:CGPointMake(bottomRightPointOfArrowTipCurve.x - (2 * arrowTipHeight), arrowMidY)];
+        [path addQuadCurveToPoint:CGPointMake(lowerLeft.x, arrowTopY) controlPoint:CGPointMake(lowerLeft.x, arrowTopY + arrowBaseBezierControlInset)];
     }
     
     // Left edge finisher
@@ -413,8 +452,10 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat availableBottomSpace = CGRectGetHeight(constrainingView.bounds) - CGRectGetMaxY(presentationRect);
     CGFloat availableLeftSpace = CGRectGetMinX(presentationRect);
     
-    CGFloat constrainHeight = CGRectGetHeight(constrainingView.bounds);
+    CGFloat constraintHeight = CGRectGetHeight(constrainingView.bounds);
     CGFloat constraintWidth = CGRectGetWidth(constrainingView.bounds);
+    
+    self.contentViewMaxSize = CGSizeMake(constraintWidth - self.contentViewConstraintPaddingHorizontal, constraintHeight - self.contentViewConstraintPaddingVertical);
     
     // Reset to none to readjust our views for none and measure
     self.currentArrowDirection = MITCalloutArrowDirectionNone;
@@ -465,8 +506,8 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
         case MITCalloutArrowDirectionRight:
             if (originY < self.externalInsets.top) {
                 originY = self.externalInsets.top;
-            } else if (constrainHeight - (originY + CGRectGetHeight(self.bounds)) < self.externalInsets.bottom) {
-                originY = constrainHeight - self.externalInsets.bottom - CGRectGetHeight(self.bounds);
+            } else if (constraintHeight - (originY + CGRectGetHeight(self.bounds)) < self.externalInsets.bottom) {
+                originY = constraintHeight - self.externalInsets.bottom - CGRectGetHeight(self.bounds);
             }
             break;
         case MITCalloutArrowDirectionNone:
@@ -479,7 +520,7 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
     CGFloat presentationRectMiddleX = CGRectGetMidX(presentationRect);
     CGFloat constraintHalfWidth = constraintWidth / 2.0;
     CGFloat presentationRectMiddleY = CGRectGetMidY(presentationRect);
-    CGFloat constraintHalfHeight = constrainHeight / 2.0;
+    CGFloat constraintHalfHeight = constraintHeight / 2.0;
     
     NSSortDescriptor *highestToLowest = [NSSortDescriptor sortDescriptorWithKey:@"self" ascending:NO];
     NSArray *availableSpace = [@[@(availableTopSpace), @(availableBottomSpace), @(availableLeftSpace), @(availableRightSpace)] sortedArrayUsingDescriptors:@[highestToLowest]];
@@ -688,9 +729,9 @@ static UIEdgeInsets const kMITCalloutViewDefaultExternalInsets = {10,10,10,10};
 - (CAShapeLayer *)shadowShapeLayer {
     if (!_shadowShapeLayer) {
         _shadowShapeLayer = [CAShapeLayer new];
-        _shadowShapeLayer.lineWidth = 2.0;
+        _shadowShapeLayer.lineWidth = 1.0;
         _shadowShapeLayer.fillColor = [UIColor clearColor].CGColor;
-        _shadowShapeLayer.strokeColor = [UIColor colorWithWhite:0.85 alpha:0.62].CGColor;
+        _shadowShapeLayer.strokeColor = [UIColor colorWithWhite:0.74 alpha:0.78].CGColor;
         // Must have default path set for animations to work
         _shadowShapeLayer.path = [UIBezierPath bezierPath].CGPath;
         [self.layer addSublayer:_shadowShapeLayer];

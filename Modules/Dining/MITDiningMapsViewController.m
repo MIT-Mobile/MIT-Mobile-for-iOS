@@ -118,6 +118,8 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
     calloutView.delegate = self;
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         calloutView.shouldHighlightOnTouch = NO;
+    } else {
+        calloutView.permittedArrowDirections = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom;
     }
     self.calloutView = calloutView;
     self.tiledMapView.mapView.mitCalloutView = self.calloutView;

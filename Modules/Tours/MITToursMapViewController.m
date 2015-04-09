@@ -98,7 +98,9 @@ static NSInteger kAnnotationMarginRight = 50;
 {
     MITCalloutView *calloutView = [MITCalloutView new];
     calloutView.delegate = self;
-    
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+        calloutView.permittedArrowDirections = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom;
+    }
     self.calloutView = calloutView;
     [self updateCalloutViewInsets];
     
