@@ -8,6 +8,7 @@
 #import "MITMapModelController.h"
 #import "MITMobiusSegmentedHeader.h"
 #import "MITMobiusDailyHoursObject.h"
+#import "MITMobiusTitleValueObject.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
@@ -33,8 +34,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 
 @interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing, MITMobiusSegmentedHeaderDelegate>
 
-@property(nonatomic,strong) NSMutableArray *titles;
-@property(nonatomic,strong) NSMutableArray *descriptions;
+@property(nonatomic,strong) NSMutableArray *titleValueObjects;
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
 @property(nonatomic) NSInteger currentSegementedSection;
 @property(nonatomic,strong) NSArray *hours;
@@ -72,8 +72,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 
 - (void)combineDescriptionsForTitle
 {
-    self.titles = [[NSMutableArray alloc] init];
-    self.descriptions = [[NSMutableArray alloc] init];
+    self.titleValueObjects = [[NSMutableArray alloc] init];
 
     for (MITMobiusResourceAttributeValueSet *valueSet in self.resource.attributeValues) {
         NSMutableString *valueString = [[NSMutableString alloc] init];
@@ -89,8 +88,13 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         }
 
         if (valueString.length > 0) {
-            [self.titles addObject:valueSet.label];
-            [self.descriptions addObject:valueString];
+            
+            MITMobiusTitleValueObject *titleValueObject = [[MITMobiusTitleValueObject alloc] init];
+            
+            titleValueObject.title = valueSet.label;
+            titleValueObject.value = valueString;
+            
+            [self.titleValueObjects addObject:titleValueObject];
         }
     }
 }
@@ -114,7 +118,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         }
     } else if (self.currentSegementedSection == MITMobiusTableViewSectionSpecs) {
         
-        [self.titles enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
+        [self.titleValueObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [rowTypes addObject:@(MITMobiusTableViewRowDetails)];
         }];
         
@@ -186,8 +190,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
             [self combineDescriptionsForTitle];
         } else {
             _resource = nil;
-            self.descriptions = nil;
-            self.titles = nil;
+            self.titleValueObjects = nil;
         }
         [self refreshEventRows];
     }
@@ -233,8 +236,11 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         
     } else if (rowType == MITMobiusTableViewRowDetails ) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-        NSString *title = self.titles[indexPath.row];
-        NSString *description = self.descriptions[indexPath.row];
+        
+        MITMobiusTitleValueObject *titleValueObject = self.titleValueObjects[indexPath.row];
+        
+        NSString *title = titleValueObject.title;
+        NSString *description = titleValueObject.value;
         [titleDescriptionCell setTitle:title withDescription:description];
         
     } else if (rowType == MITMobiusTableViewRowHours) {

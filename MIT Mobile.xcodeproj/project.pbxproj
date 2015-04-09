@@ -40,6 +40,7 @@
 		0BAE717D1AD2EE6B008B0CAF /* MITMobiusSegmentedHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE717C1AD2EE6B008B0CAF /* MITMobiusSegmentedHeader.m */; };
 		0BAE717F1AD2F07A008B0CAF /* MITMobiusSegmentedHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BAE717E1AD2F07A008B0CAF /* MITMobiusSegmentedHeader.xib */; };
 		0BAE71851AD6FA86008B0CAF /* MITMobiusDailyHoursObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE71841AD6FA86008B0CAF /* MITMobiusDailyHoursObject.m */; };
+		0BAE71881AD6FE4A008B0CAF /* MITMobiusTitleValueObject.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BAE71871AD6FE4A008B0CAF /* MITMobiusTitleValueObject.m */; };
 		0BB58EC31A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EC01A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m */; };
 		0BB58EF61A8128C900AA1CB7 /* MITMobiusSpecificationsHeader.m in Sources */ = {isa = PBXBuildFile; fileRef = 0BB58EF21A8128C900AA1CB7 /* MITMobiusSpecificationsHeader.m */; };
 		0BB58EF71A8128C900AA1CB7 /* MITMobiusSpecificationsHeader.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0BB58EF31A8128C900AA1CB7 /* MITMobiusSpecificationsHeader.xib */; };
@@ -781,6 +782,8 @@
 		0BAE717E1AD2F07A008B0CAF /* MITMobiusSegmentedHeader.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITMobiusSegmentedHeader.xib; path = Views/MITMobiusSegmentedHeader.xib; sourceTree = "<group>"; };
 		0BAE71831AD6FA86008B0CAF /* MITMobiusDailyHoursObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusDailyHoursObject.h; sourceTree = "<group>"; };
 		0BAE71841AD6FA86008B0CAF /* MITMobiusDailyHoursObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusDailyHoursObject.m; sourceTree = "<group>"; };
+		0BAE71861AD6FE4A008B0CAF /* MITMobiusTitleValueObject.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusTitleValueObject.h; sourceTree = "<group>"; };
+		0BAE71871AD6FE4A008B0CAF /* MITMobiusTitleValueObject.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusTitleValueObject.m; sourceTree = "<group>"; };
 		0BB58EBF1A8014E000AA1CB7 /* MITMobiusPadHomeViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusPadHomeViewController.h; path = "View Controllers/MITMobiusPadHomeViewController.h"; sourceTree = "<group>"; };
 		0BB58EC01A8014E000AA1CB7 /* MITMobiusPadHomeViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusPadHomeViewController.m; path = "View Controllers/MITMobiusPadHomeViewController.m"; sourceTree = "<group>"; };
 		0BB58EF11A8128C900AA1CB7 /* MITMobiusSpecificationsHeader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusSpecificationsHeader.h; path = Views/MITMobiusSpecificationsHeader.h; sourceTree = "<group>"; };
@@ -3040,6 +3043,8 @@
 				0BAE69431ABA0DF500B7B8D5 /* MITMobiusRoomObject.m */,
 				0BAE71831AD6FA86008B0CAF /* MITMobiusDailyHoursObject.h */,
 				0BAE71841AD6FA86008B0CAF /* MITMobiusDailyHoursObject.m */,
+				0BAE71861AD6FE4A008B0CAF /* MITMobiusTitleValueObject.h */,
+				0BAE71871AD6FE4A008B0CAF /* MITMobiusTitleValueObject.m */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -5543,6 +5548,7 @@
 				22E6BCBB19E46949003E278C /* MITLibrariesHomeViewControllerPad.m in Sources */,
 				DE9EFBD210FE7D8900F5F07E /* SettingsModule.m in Sources */,
 				80885CB61991410700D6661C /* MITEventsHomeViewControllerPad.m in Sources */,
+				0BAE71881AD6FE4A008B0CAF /* MITMobiusTitleValueObject.m in Sources */,
 				806205551A7AAF1A004BD08A /* MITAutoSizingCell.m in Sources */,
 				806205411A7AAF1A004BD08A /* UIImage+Metadata.m in Sources */,
 				A59D4C9619F6A0870074E392 /* MITLibrariesWorldcatItemCollectionCell.m in Sources */,
