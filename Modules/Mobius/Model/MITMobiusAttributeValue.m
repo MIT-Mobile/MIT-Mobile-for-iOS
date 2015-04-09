@@ -5,7 +5,7 @@
 
 @dynamic value;
 @dynamic text;
-@dynamic valueSet;
+@dynamic attribute;
 
 + (RKMapping*)objectMapping
 {
