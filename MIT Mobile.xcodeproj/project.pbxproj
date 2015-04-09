@@ -3057,6 +3057,15 @@
 			path = FacilitiesLocation;
 			sourceTree = "<group>";
 		};
+		2C5267CE1AD61C4E005F509C /* Advanced Search View Controller */ = {
+			isa = PBXGroup;
+			children = (
+				2C3DF6581AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.h */,
+				2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */,
+			);
+			name = "Advanced Search View Controller";
+			sourceTree = "<group>";
+		};
 		2C5A5C11188727E40013981A /* View Controllers */ = {
 			isa = PBXGroup;
 			children = (
@@ -3297,8 +3306,7 @@
 				2C64A1E61A7FC1ED00020AFB /* MITMobiusResourcesTableViewController.m */,
 				0BB58F381A816AED00AA1CB7 /* MITMobiusRecentSearchController.h */,
 				0BB58F391A816AED00AA1CB7 /* MITMobiusRecentSearchController.m */,
-				2C3DF6581AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.h */,
-				2C3DF6591AC9E8C200BC41E1 /* MITMobiusAdvancedSearchViewController.m */,
+				2C5267CE1AD61C4E005F509C /* Advanced Search View Controller */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
