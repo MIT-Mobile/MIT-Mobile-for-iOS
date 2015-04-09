@@ -91,7 +91,10 @@ static NSString* const MITMobiusAttributesPathPattern = @"/attribute";
             blockSelf->_requestInProgress = NO;
             blockSelf.lastUpdated = [NSDate date];
             [blockSelf.managedObjectContext performBlock:^{
-                blockSelf->_attributes = [blockSelf.managedObjectContext transferManagedObjects:[mappingResult array]];
+                NSArray *attributes = [blockSelf.managedObjectContext transferManagedObjects:[mappingResult array]];
+                
+#warning Filtering out the raw text widget types for now
+                blockSelf->_attributes = [attributes filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"self.widgetType != text"]];
                 blockSelf.completionOperationQueue.suspended = NO;
             }];
         } failure:^(RKObjectRequestOperation *operation, NSError *error) {
