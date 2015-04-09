@@ -171,7 +171,11 @@ NSString* const MITMobiusShopHeaderIdentifier = @"MITMobiusShopHeaderIdentifier"
 {
     NSAssert([view isKindOfClass:[MITMobiusShopHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusShopHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusShopHeader class]));
 
-    MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
+    // we have already deducted 1 off of the section
+    // _representedObjectForIndexPath deducts 1 off the section again
+    // so add one to the section before sending it
+    // Mark Novak 4/9/2015
+    MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section + 1]];
     
     MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)view;
     
