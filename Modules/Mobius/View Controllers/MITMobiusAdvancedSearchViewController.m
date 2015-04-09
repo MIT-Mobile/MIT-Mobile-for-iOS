@@ -1,6 +1,7 @@
 #import "MITMobiusAdvancedSearchViewController.h"
 #import "MITMobiusAttributesDataSource.h"
 #import "UITableView+DynamicSizing.h"
+#import "MITMobiusModel.h"
 
 @interface MITMobiusAdvancedSearchViewController () <UITableViewDataSourceDynamicSizing>
 @property (nonatomic,strong) MITMobiusAttributesDataSource *dataSource;
@@ -8,18 +9,23 @@
 
 static NSString* const MITMobiusAdvancedSearchSelectedAttributeCellIdentifier = @"SelectedAttributeCellIdentifier";
 static NSString* const MITMobiusAdvancedSearchAttributeCellIdentifier = @"AttributeCellIdentifier";
+static NSString* const MITMobiusAdvancedSearchAttributeValueCellIdentifier = @"AttributeValueCellIdentifier";
 
 typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     MITMobiusAdvancedSearchSelectedAttributes,
     MITMobiusAdvancedSearchAttributes
 };
 
+@interface MITMobiusAdvancedSearchViewController ()
+
+@end
+
 @implementation MITMobiusAdvancedSearchViewController
 - (instancetype)initWithStyle:(UITableViewStyle)style
 {
     self = [super initWithStyle:style];
     if (self) {
-
+        _dataSource = [[MITMobiusAttributesDataSource alloc] init];
     }
 
     return self;
@@ -27,12 +33,22 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
 - (instancetype)initWithSearchText:(NSString *)searchText
 {
-    self = [super initWithStyle:UITableViewStyleGrouped];
+    self = [self initWithStyle:UITableViewStyleGrouped];
     if (self) {
         _searchText = [searchText copy];
     }
 
     return self;
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
+    
+    self.tableView.dataSource = self;
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchAttributeCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchSelectedAttributeCellIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchAttributeValueCellIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -44,6 +60,10 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         [self.navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:animated];
         [self.navigationItem setRightBarButtonItem:doneBarButtonItem animated:animated];
     }
+    
+    [self.dataSource attributes:^(MITMobiusAttributesDataSource *dataSource, NSError *error) {
+        [self.tableView reloadData];
+    }];
 
 }
 
@@ -104,7 +124,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
     switch (sectionType) {
         case MITMobiusAdvancedSearchAttributes:
-            return 0;
+            return self.dataSource.attributes.count;
 
         case MITMobiusAdvancedSearchSelectedAttributes:
             return 0;
@@ -120,19 +140,47 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     return cell;
 }
 
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    return 44.;
+}
+
 - (void)tableView:(UITableView *)tableView configureCell:(UITableViewCell *)cell forRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([cell.reuseIdentifier isEqualToString:MITMobiusAdvancedSearchSelectedAttributeCellIdentifier]) {
 
-    } else if ([cell.reuseIdentifier isEqualToString:MITMobiusAdvancedSearchSelectedAttributes]) {
-
+    } else if ([cell.reuseIdentifier isEqualToString:MITMobiusAdvancedSearchAttributeCellIdentifier]) {
+        MITMobiusAttribute *attribute = self.dataSource.attributes[indexPath.row];
+        cell.textLabel.text = attribute.label;
+        
+        BOOL isAttributeExpanded = NO;
+        UIImage *image = nil;
+        if (isAttributeExpanded) {
+            image = [UIImage imageNamed:MITImageDisclosureRight];
+        } else {
+            image = [UIImage imageNamed:MITImageNameRightArrow];
+        }
+        
+        cell.accessoryType = UITableViewCellAccessoryNone;
+        cell.accessoryView = [[UIImageView alloc] initWithImage:image];
+    } else if ([cell.reuseIdentifier isEqualToString:MITMobiusAdvancedSearchAttributeValueCellIdentifier]) {
+        MITMobiusAttributeValue *value = [self attributeValueForIndexPath:indexPath];
     } else {
         NSString *reason = [NSString stringWithFormat:@"unknown cell reuse identifier %@",cell.reuseIdentifier];
         @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
     }
 }
 
-#pragma mark UITableViewDataSource
+#pragma mark UITableViewDelegate
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
 
 
+@end
+
+@interface MITMobiusAttributeElement
+@property (nonatomic,readonly,strong)
+- (instancetype)initWithAttribute:(MITMobiusAttribute*)attribute;
 @end
