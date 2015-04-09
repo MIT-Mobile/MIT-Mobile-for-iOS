@@ -1,6 +1,7 @@
 #import "MITMobiusImage.h"
 #import "MITMobiusResource.h"
 #import "MITMobiusResourceDataSource.h"
+#import "MITMobiusDataSource.h"
 
 
 @implementation MITMobiusImage
@@ -20,7 +21,7 @@
 
 - (NSURL*)URLForImageWithSize:(MITMobiusImageSize)imageSize
 {
-    NSURL *serverURL = [MITMobiusResourceDataSource defaultServerURL];
+    NSURL *serverURL = [MITMobiusDataSource mobiusServerURL];
 
     NSMutableString *imagePath = [[NSMutableString alloc] initWithFormat:@"image/%@",self.identifier];
 

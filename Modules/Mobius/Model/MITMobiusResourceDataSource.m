@@ -23,17 +23,6 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 @implementation MITMobiusResourceDataSource
 @dynamic resources;
 
-+ (NSURL*)defaultServerURL {
-    MITMobileWebServerType serverType = MITMobileWebGetCurrentServerType();
-
-    switch (serverType) {
-        case MITMobileWebProduction:
-        case MITMobileWebStaging:
-        case MITMobileWebDevelopment:
-            return [NSURL URLWithString:@"https://kairos-dev.mit.edu"];
-    }
-}
-
 - (instancetype)init
 {
     NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
