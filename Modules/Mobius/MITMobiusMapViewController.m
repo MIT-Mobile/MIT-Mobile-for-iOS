@@ -11,6 +11,7 @@
 #import "MITMobiusResourceView.h"
 #import "MITMobiusRoomObject.h"
 #import "MITMobiusRootPhoneViewController.h"
+#import "MITMobiusRoomSet.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"kMITMapSearchSuggestionsTimerUserInfoKeySearchText";
@@ -179,14 +180,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
-    if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-            [self presentCalloutForMapView:mapView annotationView:view];
-            self.resourceAnnotationView = view;
-        } else {
-            [self presentIPhoneCalloutForAnnotationView:view];
-        }
-    }
+    [self presentCalloutForMapView:mapView annotationView:view];
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
@@ -229,12 +223,15 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView
 {
     MITMobiusRoomObject *mapObject = (MITMobiusRoomObject *)annotationView.annotation;
+    self.currentlySelectedRoom = mapObject;
+    
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
-    contentView.resourceView.backgroundColor = [UIColor clearColor];
-    contentView.resourceView.machineName = resource.name;
-    [contentView.resourceView setStatus:MITMobiusResourceStatusOnline];
+    contentView.roomName = resource.roomset.name;
+    
+    NSString *machineList = [resource.name stringByAppendingString:(mapObject.resources.count > 1) ? [NSString stringWithFormat:@" + %ld more",(unsigned long)mapObject.resources.count -1] : @""];
+    contentView.machineList = machineList;
     
     self.calloutView.contentView = contentView;
     self.calloutView.contentViewPreferredSize = [contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];

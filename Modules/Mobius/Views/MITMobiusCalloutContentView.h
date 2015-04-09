@@ -1,8 +1,8 @@
 #import <UIKit/UIKit.h>
 
-@class MITMobiusResourceView;
-
 @interface MITMobiusCalloutContentView : UIControl
-@property(nonatomic,weak) IBOutlet MITMobiusResourceView *resourceView;
+
+@property (nonatomic, copy) NSString *roomName;
+@property (nonatomic, copy) NSString *machineList;
 
 @end
