@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 };
 
 @interface MITMobiusAdvancedSearchViewController ()
-@property (nonatomic,strong) NSMutableDictionary *selectedAttributeValues;
+@property (nonatomic,strong) NSMapTable *selectedAttributeValues;
 @property (nonatomic,strong) NSIndexPath *currentExpandedIndexPath;
 @end
 
@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     self = [super initWithStyle:style];
     if (self) {
         _dataSource = [[MITMobiusAttributesDataSource alloc] init];
-        _selectedAttributeValues = [[NSMutableDictionary alloc] init];
+        _selectedAttributeValues = [NSMapTable weakToStrongObjectsMapTable];
     }
 
     return self;
@@ -231,7 +231,6 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
 - (UITableViewCell*)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    NSUInteger row = indexPath.row;
     NSString *cellIdentifier = [self _identifierForRowAtIndexPath:indexPath];
     UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:cellIdentifier forIndexPath:indexPath];
 
@@ -286,7 +285,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     MITMobiusAdvancedSearchSection sectionType = [self _typeForSection:indexPath.section];
     if (sectionType == MITMobiusAdvancedSearchAttributes) {
         if ([self isAttributeValueAtIndexPath:indexPath]) {
-            // Handle a value change
+            [self didSelectAttributeValueAtIndexPath:indexPath];
         } else {
             [tableView beginUpdates];
 
@@ -312,6 +311,30 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
+}
+
+- (void)didSelectAttributeValueAtIndexPath:(NSIndexPath*)indexPath
+{
+    MITMobiusAttributeValue *attributeValue = [self valueForIndexPath:indexPath];
+    if (attributeValue) {
+        NSMutableOrderedSet *setOptions = [self.selectedAttributeValues objectForKey:attributeValue.attribute];
+        if (!setOptions) {
+            setOptions = [[NSMutableOrderedSet alloc] init];
+            [self.selectedAttributeValues setObject:setOptions forKey:attributeValue.attribute];
+        }
+
+        MITMobiusAttribute *attribute = attributeValue.attribute;
+        if ([attribute.widgetType isEqualToString:@"radio"]) {
+            [setOptions removeAllObjects];
+            [setOptions addObject:attributeValue];
+        } else if ([attribute.widgetType isEqualToString:@"checkbox"]) {
+            if ([setOptions containsObject:attributeValue]) {
+                [setOptions removeObject:attributeValue];
+            } else {
+                [setOptions addObject:attributeValue];
+            }
+        }
+    }
 }
 
 @end
