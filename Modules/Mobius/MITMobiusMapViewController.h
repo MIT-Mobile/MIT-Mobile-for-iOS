@@ -1,18 +1,21 @@
 #import <UIKit/UIKit.h>
 #import "MITCalloutView.h"
 
-@class MITMobiusResource;
+@protocol MITMobiusRootViewRoomDataSource;
+
+@class MITMobiusRoomObject;
 @class MITCalloutMapView;
 
 @interface MITMobiusMapViewController : UIViewController
-@property (nonatomic, strong) NSArray *resources;
+
+@property (nonatomic,weak) id<MITMobiusRootViewRoomDataSource> dataSource;
 @property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic) UIEdgeInsets mapEdgeInsets;
 @property (nonatomic, readonly, weak) MITCalloutMapView *mapView;
 
 - (UIBarButtonItem *)userLocationButton;
-- (void)setResources:(NSArray *)resources animated:(BOOL)animated;
-- (void)showCalloutForResource:(MITMobiusResource *)resource;
+- (void)showCalloutForRoom:(MITMobiusRoomObject *)room;
 - (void)recenterOnVisibleResources:(BOOL)animated;
+- (void)reloadMapAnimated:(BOOL)animated;
 
 @end

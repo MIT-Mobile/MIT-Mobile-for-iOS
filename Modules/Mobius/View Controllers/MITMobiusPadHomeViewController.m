@@ -307,9 +307,10 @@
 - (void)clearPlacesAnimated:(BOOL)animated
 {
     self.searchQuery = nil;
+    //TODO hook up iPad to new Map Controller
     
-    [self.mapViewController setResources:nil animated:animated];
-    self.resourcesTableViewController.resources = nil;
+    //[self.mapViewController setResources:nil animated:animated];
+    //self.resourcesTableViewController.resources = nil;
 }
 
 
@@ -379,8 +380,10 @@
 
 - (void)setResources:(NSArray*)resources animated:(BOOL)animated
 {
-    self.resourcesTableViewController.resources = resources;
-    [self.mapViewController setResources:resources animated:animated];
+    //TODO hook up iPad to new Map Controller
+
+    //self.resourcesTableViewController.resources = resources;
+    //[self.mapViewController setResources:resources animated:animated];
     
     // TODO: Change to show a message in the table view that there
     // are no results to show (and don't prevent the user from showing/hiding
@@ -546,7 +549,7 @@
 
 - (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
-    [self.mapViewController showCalloutForResource:resource];
+    //[self.mapViewController showCalloutForRoom:resource];
 }
 
 #pragma mark - MITMobiusResourcesTableViewControllerDelegate
