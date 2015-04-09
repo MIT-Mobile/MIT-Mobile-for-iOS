@@ -143,6 +143,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self transitionToState:self.currentState animated:animated completion:nil];
     
     [self setupNavigationBar];
+
+    if (self.isMapFullScreen) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+    }
 }
 
 - (void)didReceiveMemoryWarning {
@@ -234,8 +240,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
-    [self.navigationController setToolbarHidden:NO];
-
 }
 
 #pragma mark Public Properties
