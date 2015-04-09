@@ -8,6 +8,7 @@
 #import "MITMobiusImage.h"
 #import "MITMobiusRoomSet.h"
 #import "Foundation+MITAdditions.h"
+#import "MITMobiusDailyHoursObject.h"
 
 @implementation MITMobiusResource
 
@@ -96,6 +97,33 @@
         }
     }
     return [hours componentsJoinedByString:@", "];
+}
+
+- (NSArray *)getArrayOfDailyHoursObjects
+{
+    NSArray *sortedResourceHours = [[self.hours allObjects] sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+        NSDate *first = [(MITMobiusResourceHours *)obj1 startDate];
+        NSDate *second = [(MITMobiusResourceHours *)obj2 startDate];
+        return [first compare:second];
+    }];
+    
+    NSMutableArray *dailyHoursObjectsArray = [[NSMutableArray alloc] init];
+    
+    [sortedResourceHours enumerateObjectsUsingBlock:^(MITMobiusResourceHours *hours, NSUInteger idx, BOOL *stop) {
+
+        MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
+
+        NSDateFormatter *weekday = [[NSDateFormatter alloc] init];
+        [weekday setDateFormat: @"EEEE"];
+        dailyHoursObject.dayName = [weekday stringFromDate:hours.startDate];
+        
+        NSString *startTime = [hours.startDate MITShortTimeOfDayString];
+        NSString *endTime = [hours.endDate MITShortTimeOfDayString];
+        
+        dailyHoursObject.hours = [NSString stringWithFormat:@"%@ - %@",startTime, endTime];
+        [dailyHoursObjectsArray addObject:dailyHoursObject];
+    }];
+    return dailyHoursObjectsArray;
 }
 
 - (BOOL)isOpenOnDate:(NSDate *)date

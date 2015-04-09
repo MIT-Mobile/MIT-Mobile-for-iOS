@@ -7,6 +7,7 @@
 #import "MITMobiusModel.h"
 #import "MITMapModelController.h"
 #import "MITMobiusSegmentedHeader.h"
+#import "MITMobiusDailyHoursObject.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
@@ -38,6 +39,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 @property(nonatomic) NSInteger currentSegementedSection;
 @property(nonatomic,strong) NSArray *hours;
 @property(nonatomic,strong) NSArray *rowTypes;
+@property(nonatomic) NSInteger startingHoursRow;
 
 @end
 
@@ -102,6 +104,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
             [rowTypes addObject:@(MITMobiusTableViewRowHoursLabel)];
         }
         
+        self.startingHoursRow = rowTypes.count;
         [self.hours enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [rowTypes addObject:@(MITMobiusTableViewRowHours)];
         }];
@@ -157,7 +160,11 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 
 - (NSArray *)hours
 {
-    return _hours = @[@"a",@"b",@"c"];
+    if (!_hours) {
+        NSArray * hours = [self.resource getArrayOfDailyHoursObjects];
+        _hours = hours;
+    }
+    return _hours;
 }
 
 - (NSManagedObjectContext*)managedObjectContext
@@ -232,7 +239,10 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         
     } else if (rowType == MITMobiusTableViewRowHours) {
         MITTitleDescriptionCell *titleDescriptionCell = (MITTitleDescriptionCell*)cell;
-        [titleDescriptionCell setTitle:@"mon-fri" withDescription:@"9am - 5pm"];
+        
+        MITMobiusDailyHoursObject *dailyHoursObject = self.hours[indexPath.row - self.startingHoursRow];
+        
+        [titleDescriptionCell setTitle:dailyHoursObject.dayName withDescription:dailyHoursObject.hours];
         
     } else if (rowType == MITMobiusTableViewRowHoursLabel) {
         MITActionCell *actionCell = (MITActionCell*)cell;

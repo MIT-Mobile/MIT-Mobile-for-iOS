@@ -28,6 +28,7 @@
 
 - (NSString *)getHoursStringForDate:(NSDate *)date;
 - (BOOL)isOpenOnDate:(NSDate *)date;
+- (NSArray *)getArrayOfDailyHoursObjects;
 
 @end
 
