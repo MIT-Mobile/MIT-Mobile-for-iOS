@@ -224,7 +224,8 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
 {
     MITMobiusRoomObject *mapObject = (MITMobiusRoomObject *)annotationView.annotation;
     self.currentlySelectedRoom = mapObject;
-    
+    self.selectedIndex = mapObject.index;
+
     MITMobiusResource *resource = [mapObject.resources firstObject];
     
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
