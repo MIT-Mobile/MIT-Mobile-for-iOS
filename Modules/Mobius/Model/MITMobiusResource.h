@@ -26,6 +26,9 @@
 @property (nonatomic, retain) MITMobiusRoomSet *roomset;
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
+- (NSString *)getHoursStringForDate:(NSDate *)date;
+- (BOOL)isOpenOnDate:(NSDate *)date;
+
 @end
 
 @interface MITMobiusResource (CoreDataGeneratedAccessors)

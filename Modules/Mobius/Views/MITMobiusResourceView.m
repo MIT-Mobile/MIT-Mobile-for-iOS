@@ -1,5 +1,13 @@
 #import "MITMobiusResourceView.h"
 #import "MITAdditions.h"
+#import "MITResourceConstants.h"
+
+@interface MITMobiusResourceView ()
+
+@property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
+@property (weak, nonatomic) IBOutlet UIImageView *machineStatus;
+
+@end
 
 @implementation MITMobiusResourceView
 - (instancetype)initWithCoder:(NSCoder *)aDecoder
@@ -40,30 +48,19 @@
     }
 }
 
-- (void)setLocation:(NSString *)location
+- (void)setStatus:(MITMobiusResourceStatus)status
 {
-    if (![_location isEqualToString:location]) {
-        _location = [location copy];
-        
-        [self _refreshContent];
-    }
-}
-
-- (void)setStatus:(MITMobiusResourceStatus)status withText:(NSString *)statusText
-{
-    self.statusLabel.text = [statusText copy];
-    
     switch (status) {
         case MITMobiusResourceStatusOffline: {
-            self.statusLabel.textColor = [UIColor mit_closedRedColor];
+            self.machineStatus.image = [UIImage imageNamed:MITImageLibrariesStatusAlert];
         } break;
             
         case MITMobiusResourceStatusOnline: {
-            self.statusLabel.textColor = [UIColor mit_openGreenColor];
+            self.machineStatus = nil;
         } break;
             
         case MITMobiusResourceStatusUnknown: {
-            self.statusLabel.textColor = [UIColor orangeColor];
+            self.machineStatus = nil;
         } break;
     }
     
@@ -80,7 +77,6 @@
     }
     
     self.machineNameLabel.text = machineName;
-    self.locationLabel.text = self.location;
     
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
@@ -91,8 +87,6 @@
     [super layoutSubviews];
     
     self.machineNameLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.machineNameLabel.bounds);
-    self.locationLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.locationLabel.bounds);
-    self.statusLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.statusLabel.bounds);
 }
 
 @end

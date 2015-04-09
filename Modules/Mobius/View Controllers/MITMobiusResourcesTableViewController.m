@@ -4,8 +4,12 @@
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusResourceView.h"
 #import "MITMobiusRootPhoneViewController.h"
+#import "MITMobiusShopHeader.h"
+#import "MITMobiusRoomSet.h"
+#import "Foundation+MITAdditions.h"
 
 NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"PlaceholderCell";
+NSString* const MITMobiusShopHeaderIdentifier = @"MITMobiusShopHeaderIdentifier";
 
 @interface MITMobiusResourcesTableViewController () <UITableViewDataSourceDynamicSizing>
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
@@ -14,18 +18,27 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 
 @implementation MITMobiusResourcesTableViewController
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     
     _managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     
-    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
-    [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:NSStringFromClass([MITMobiusResourceTableViewCell class])];
+    [self setupTableView:self.tableView];
+}
 
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourcesTableViewPlaceholderCellIdentifier];
+- (void)setupTableView:(UITableView *)tableView;
+{
+    tableView.dataSource = self;
+    tableView.delegate = self;
+
+    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
+   
+    [tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:NSStringFromClass([MITMobiusResourceTableViewCell class])];
     
-    self.tableView.dataSource = self;
-    self.tableView.delegate = self;
+    [tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourcesTableViewPlaceholderCellIdentifier];
+   
+    [tableView registerNib:[MITMobiusShopHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusShopHeaderIdentifier];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -48,8 +61,6 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
     MITMobiusResource *resource = (MITMobiusResource*)[[[MITCoreDataController defaultController] mainQueueContext] objectWithID:resourceObjectID];
     return resource;
 }
-
-
 
 - (MITMobiusResource*)_representedObjectForIndexPath:(NSIndexPath*)indexPath
 {
@@ -103,7 +114,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 }
 
 #pragma mark - Table view data source
-- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
+- (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
+{
     __block NSInteger numberOfSections = 0;
     numberOfSections = [self.dataSource numberOfRoomsForViewController:self];
 
@@ -114,7 +126,72 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
     return numberOfSections;
 }
 
-- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
+- (UIView*)tableView:(UITableView *)tableView viewForHeaderInSection:(NSInteger)section
+{
+    if ([self shouldDisplayPlaceholderCell] && (section == 0)) {
+        return nil;
+    } else if ([self shouldDisplayPlaceholderCell]) {
+        --section;
+    }
+    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusShopHeaderIdentifier];
+    
+    if ([headerView isKindOfClass:[MITMobiusShopHeader class]]) {
+        MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)headerView;
+        [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
+    }
+    return headerView;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)section
+{
+    if ([self shouldDisplayPlaceholderCell] && (section == 0)) {
+        return 0;
+    } else if ([self shouldDisplayPlaceholderCell]) {
+        --section;
+    }
+    UIView* const headerView = [tableView dequeueReusableHeaderFooterViewWithIdentifier:MITMobiusShopHeaderIdentifier];
+    
+    if ([headerView isKindOfClass:[MITMobiusShopHeader class]]) {
+        MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)headerView;
+        [self tableView:tableView configureHeaderView:searchHeaderView forSection:section];
+        
+        CGRect frame = searchHeaderView.frame;
+        frame.size.width = self.tableView.bounds.size.width;
+        searchHeaderView.contentView.frame = frame;
+        
+        CGSize fittingSize = [searchHeaderView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+        
+        return fittingSize.height;
+    }
+    
+    return 0;
+}
+
+- (void)tableView:(UITableView*)tableView configureHeaderView:(UIView*)view forSection:(NSInteger)section
+{
+    NSAssert([view isKindOfClass:[MITMobiusShopHeader class]], @"view for [%@,%ld] is kind of %@, expected %@",MITMobiusShopHeaderIdentifier,(unsigned long)section,NSStringFromClass([view class]),NSStringFromClass([MITMobiusShopHeader class]));
+
+    MITMobiusResource *resource = [self _representedObjectForIndexPath:[NSIndexPath indexPathForRow:0 inSection:section]];
+    
+    MITMobiusShopHeader *searchHeaderView = (MITMobiusShopHeader*)view;
+    
+    NSString *shopName = resource.roomset.name.length > 0 ? [NSString stringWithFormat:@"%@ - (%@)", resource.roomset.name, resource.room]: resource.room;
+        
+    searchHeaderView.shopName = [NSString stringWithFormat:@"%ld. %@",(unsigned long)section + 1, shopName];
+    
+    NSDate *todaysDate = [NSDate date];
+    
+    NSString *hours = [resource getHoursStringForDate:todaysDate];
+    searchHeaderView.shopHours = hours;
+    if ([hours length] == 0) {
+        [searchHeaderView setStatus:MITMobiusShopStatusUnknown];
+    } else {
+        [searchHeaderView setStatus:[resource isOpenOnDate:todaysDate]];
+    }
+}
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
     if ([self shouldDisplayPlaceholderCell] && section == 0) {
         return 1;
     } else {
@@ -126,19 +203,8 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
     }
 }
 
-- (NSString*)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self shouldDisplayPlaceholderCell] && (section == 0)) {
-        return nil;
-    } else if ([self shouldDisplayPlaceholderCell]) {
-        --section;
-    }
-
-    MITMobiusRoomObject *room = [self.dataSource viewController:self roomAtIndex:section];
-    return [NSString stringWithFormat:@"Room %@", room.roomName];
-}
-
-- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath {
     NSString *cellIdentifier = nil;
 
     if ([self _isPlaceholderCellAtIndexPath:indexPath]) {
@@ -177,8 +243,14 @@ NSString* const MITMobiusResourcesTableViewPlaceholderCellIdentifier = @"Placeho
 
         resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
-        resourceCell.resourceView.location = resource.room;
-        [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline withText:resource.status];
+
+        if ([resource.status caseInsensitiveCompare:@"online"]) {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline];
+        } else if ([resource.status caseInsensitiveCompare:@"offline"]) {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusOffline];
+        } else {
+            [resourceCell.resourceView setStatus:MITMobiusResourceStatusUnknown];
+        }
     }
 }
 

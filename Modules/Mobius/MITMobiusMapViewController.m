@@ -234,8 +234,7 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
     contentView.resourceView.backgroundColor = [UIColor clearColor];
     contentView.resourceView.machineName = resource.name;
-    contentView.resourceView.location = resource.room;
-    [contentView.resourceView setStatus:MITMobiusResourceStatusOnline withText:resource.status];
+    [contentView.resourceView setStatus:MITMobiusResourceStatusOnline];
     
     self.calloutView.contentView = contentView;
     self.calloutView.contentViewPreferredSize = [contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
