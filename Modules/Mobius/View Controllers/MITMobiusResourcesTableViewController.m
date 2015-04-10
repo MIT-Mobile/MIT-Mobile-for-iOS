@@ -248,9 +248,9 @@ NSString* const MITMobiusShopHeaderIdentifier = @"MITMobiusShopHeaderIdentifier"
         resourceCell.resourceView.index = NSNotFound;
         resourceCell.resourceView.machineName = resource.name;
 
-        if ([resource.status caseInsensitiveCompare:@"online"]) {
+        if ([resource.status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
             [resourceCell.resourceView setStatus:MITMobiusResourceStatusOnline];
-        } else if ([resource.status caseInsensitiveCompare:@"offline"]) {
+        } else if ([resource.status caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
             [resourceCell.resourceView setStatus:MITMobiusResourceStatusOffline];
         } else {
             [resourceCell.resourceView setStatus:MITMobiusResourceStatusUnknown];
