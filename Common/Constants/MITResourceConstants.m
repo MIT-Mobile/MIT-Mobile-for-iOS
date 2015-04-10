@@ -87,6 +87,8 @@ NSString * const MITImageMapCategoryResidences           = @"map-category-reside
 NSString * const MITImageMapCategoryRooms                = @"map-category-room";
 NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
 
+#pragma mark Möbius
+NSString * const MITImageMobiusResourceOffline = @"mobius-resource-offline";
 
 #pragma mark - Scanner
 NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";
