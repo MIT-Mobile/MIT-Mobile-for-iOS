@@ -84,6 +84,8 @@ extern NSString * const MITImageMapCategoryResidences;
 extern NSString * const MITImageMapCategoryRooms;
 extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
 
+#pragma mark Möbius
+extern NSString * const MITImageMobiusResourceOffline;
 
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;

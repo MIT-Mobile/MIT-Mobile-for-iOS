@@ -52,7 +52,7 @@
 {
     switch (status) {
         case MITMobiusResourceStatusOffline: {
-            self.machineStatus.image = [UIImage imageNamed:MITImageLibrariesStatusAlert];
+            self.machineStatus.image = [UIImage imageNamed:MITImageMobiusResourceOffline];
         } break;
             
         case MITMobiusResourceStatusOnline: {

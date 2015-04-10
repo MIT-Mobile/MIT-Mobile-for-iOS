@@ -5,6 +5,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *shopNameLabel;
 @property (weak, nonatomic) IBOutlet UILabel *shopHoursLabel;
 @property (weak, nonatomic) IBOutlet UILabel *shopStatusLabel;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topSeparatorHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *bottomSeparatorHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *topSeparatorVerticalSpaceConstraint;
 @end
 
 @implementation MITMobiusShopHeader
@@ -37,6 +40,12 @@
     self.shopNameLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopNameLabel.frame);
     self.shopHoursLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopHoursLabel.frame);
     self.shopStatusLabel.preferredMaxLayoutWidth = CGRectGetWidth(self.shopStatusLabel.frame);
+
+    CGFloat onePixel = 1 / [[UIScreen mainScreen] scale];
+    self.topSeparatorHeightConstraint.constant = onePixel;
+    self.bottomSeparatorHeightConstraint.constant = onePixel;
+    self.topSeparatorVerticalSpaceConstraint.constant = -1.0 * onePixel;
+
     [super updateConstraints];
 }
 

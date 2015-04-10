@@ -113,6 +113,8 @@
     MITCheckAsset(MITImageMapCategoryRooms);
     MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
+#pragma mark Möbius
+    MITCheckAsset(MITImageMobiusResourceOffline);
 
 #pragma mark - Scanner
     MITCheckAsset(MITImageScannerCameraUnsupported);
