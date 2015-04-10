@@ -49,14 +49,7 @@
         }];
         
         if (imageURL) {
-            
-            CGFloat imageRatio = 3/2;
-            CGRect screenRect = self.bounds;
-            CGFloat screenWidth = screenRect.size.width;
-            CGFloat screenHeight = screenRect.size.height;
-            CGFloat maxWidth = screenHeight < screenWidth ? screenHeight : screenWidth;
-            
-            self.resourceImageViewHeightContraint.constant = maxWidth / imageRatio;
+            self.resourceImageViewHeightContraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
         } else {
             self.resourceImageViewHeightContraint.constant = 0;
         }
