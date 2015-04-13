@@ -19,5 +19,6 @@
 
 #import "MITMobiusRecentSearchQuery.h"
 #import "MITMobiusRecentSearchList.h"
+#import "MITMobiusSearchOption.h"
 
 #endif

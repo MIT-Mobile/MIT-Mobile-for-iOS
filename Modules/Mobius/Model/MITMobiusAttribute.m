@@ -8,10 +8,10 @@
 @dynamic fieldType;
 @dynamic identifier;
 @dynamic label;
-@dynamic widgetType;
-@dynamic resources;
 @dynamic valueSetName;
+@dynamic widgetType;
 @dynamic values;
+@dynamic searchOptions;
 
 + (RKMapping*)objectMapping
 {
@@ -28,6 +28,28 @@
     [mapping addPropertyMapping:valuesMapping];
 
     return mapping;
+}
+
+- (MITMobiusAttributeType)type
+{
+    if ([self.widgetType isEqualToString:@"text_area"]) {
+        return MITMobiusAttributeTypeText;
+    } else if ([self.widgetType isEqualToString:@"text_field"]) {
+        if ([self.fieldType isEqualToString:@"number"]) {
+            return MITMobiusAttributeTypeNumeric;
+        } else if ([self.fieldType isEqualToString:@"text"]) {
+            return MITMobiusAttributeTypeString;
+        }
+    } else if ([self.widgetType isEqualToString:@"autocompletion"]) {
+        return MITMobiusAttributeTypeAutocompletion;
+    } else if ([self.widgetType isEqualToString:@"checkbox"]) {
+        return MITMobiusAttributeTypeOptionSingle;
+    } else if ([self.widgetType isEqualToString:@"radio"]) {
+        return MITMobiusAttributeTypeOptionMultiple;
+    }
+
+    NSString *reason = [NSString stringWithFormat:@"{%@:%@}",self.widgetType,self.fieldType];
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:reason userInfo:nil];
 }
 
 @end

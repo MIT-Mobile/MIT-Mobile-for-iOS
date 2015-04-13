@@ -7,5 +7,6 @@
 @dynamic date;
 @dynamic text;
 @dynamic search;
+@dynamic options;
 
 @end

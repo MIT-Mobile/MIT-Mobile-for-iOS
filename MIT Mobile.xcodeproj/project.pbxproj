@@ -245,6 +245,7 @@
 		2C03C6CE137C4C2C0005F1FC /* FacilitiesCategoryViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6CD137C4C2C0005F1FC /* FacilitiesCategoryViewController.m */; };
 		2C03C6D1137C5D470005F1FC /* FacilitiesLocationViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */; };
 		2C0A336B1355CEF300786493 /* QRReaderImageTransformer.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */; };
+		2C0F9D071ADC3EC7002CC17A /* MITMobiusSearchOption.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C0F9D061ADC3EC7002CC17A /* MITMobiusSearchOption.m */; };
 		2C107D7D1A8D0596006414D6 /* MultiLineLabel.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C107D7C1A8D0596006414D6 /* MultiLineLabel.m */; };
 		2C13D3CC1AD2FB0E0045547A /* MITMobiusImage.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C13D3CB1AD2FB0E0045547A /* MITMobiusImage.m */; };
 		2C15EB7615A349B200C9C345 /* MITScannerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C15EB7515A349B200C9C345 /* MITScannerViewController.m */; };
@@ -1138,6 +1139,8 @@
 		2C03C6D0137C5D470005F1FC /* FacilitiesLocationViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesLocationViewController.m; sourceTree = "<group>"; };
 		2C0A33691355CEF300786493 /* QRReaderImageTransformer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = QRReaderImageTransformer.h; sourceTree = "<group>"; };
 		2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = QRReaderImageTransformer.m; sourceTree = "<group>"; };
+		2C0F9D051ADC3EC7002CC17A /* MITMobiusSearchOption.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusSearchOption.h; sourceTree = "<group>"; };
+		2C0F9D061ADC3EC7002CC17A /* MITMobiusSearchOption.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusSearchOption.m; sourceTree = "<group>"; };
 		2C107D7B1A8D0596006414D6 /* MultiLineLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MultiLineLabel.h; sourceTree = "<group>"; };
 		2C107D7C1A8D0596006414D6 /* MultiLineLabel.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MultiLineLabel.m; sourceTree = "<group>"; };
 		2C13D3CA1AD2FB0E0045547A /* MITMobiusImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusImage.h; sourceTree = "<group>"; };
@@ -3234,6 +3237,8 @@
 		2C7A0CDA1ACEFDC800FC943F /* Searching */ = {
 			isa = PBXGroup;
 			children = (
+				2C0F9D051ADC3EC7002CC17A /* MITMobiusSearchOption.h */,
+				2C0F9D061ADC3EC7002CC17A /* MITMobiusSearchOption.m */,
 				0BB58F321A81643A00AA1CB7 /* MITMobiusRecentSearchList.h */,
 				0BB58F331A81643A00AA1CB7 /* MITMobiusRecentSearchList.m */,
 				0BB58F2F1A81643900AA1CB7 /* MITMobiusRecentSearchQuery.h */,
@@ -5692,6 +5697,7 @@
 				2CA91F9915CB03BB00C03732 /* MITScannerHelpViewController.m in Sources */,
 				2CDB024E15D0403500436B59 /* QRReaderResult.m in Sources */,
 				2287A7D819BE2CAA008B0DF6 /* MITCalendarsEvent.m in Sources */,
+				2C0F9D071ADC3EC7002CC17A /* MITMobiusSearchOption.m in Sources */,
 				2CB5E8931A704E4A0012F034 /* MITMobiusRootPhoneViewController.m in Sources */,
 				2CDB025115D0404500436B59 /* MITScannerImage.m in Sources */,
 				A563904F19D992CD001DE763 /* MITLibrariesHoldingLibraryHeaderCell.m in Sources */,
