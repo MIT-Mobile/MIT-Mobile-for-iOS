@@ -6,6 +6,8 @@
 #import "CoreData+MITAdditions.h"
 #import "MITAdditions.h"
 #import "MITMobiusResource.h"
+#import "MITMobiusRoomSet.h"
+#import "MITMobiusResourceType.h"
 
 #import "MITMobiusRecentSearchList.h"
 #import "MITMobiusRecentSearchQuery.h"
@@ -173,6 +175,78 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             }
         }];
 
+        [self.mappingOperationQueue addOperation:requestOperation];
+    }
+}
+
+- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* dataSource, NSError *error))block
+{
+    if (type != MITMobiusRequestTypeResourceRoomset &&
+        type != MITMobiusRequestTypeResourceType) {
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block(nil,nil);
+            }
+        }];
+    } else {
+        NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
+        NSString *urlPath = nil;
+        if (type == MITMobiusRequestTypeResourceRoomset) {
+            NSString *encodedString = [@"resourceroomset" urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
+            urlPath = [NSString stringWithFormat:@"/%@?%@",encodedString, @"format=json"];
+        } else if (type == MITMobiusRequestTypeResourceType) {
+            NSString *encodedString = [@"resourcetype" urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
+            urlPath = [NSString stringWithFormat:@"/%@?%@",encodedString, @"format=json"];
+            
+        }
+        
+        NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
+        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
+        request.HTTPShouldHandleCookies = NO;
+        request.HTTPMethod = @"GET";
+        [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+        
+        RKMapping *mapping = nil;
+        
+        if (type == MITMobiusRequestTypeResourceType) {
+            mapping = [MITMobiusResourceType objectMapping];
+        } else if (type == MITMobiusRequestTypeResourceRoomset) {
+            mapping = [MITMobiusRoomSet objectMapping];
+        }
+        RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
+        
+        RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
+        requestOperation.managedObjectContext = self.managedObjectContext;
+        
+        RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
+        requestOperation.managedObjectCache = cache;
+        
+        __weak MITMobiusResourceDataSource *weakSelf = self;
+        [requestOperation setCompletionBlockWithSuccess:^(RKObjectRequestOperation *operation, RKMappingResult *mappingResult) {
+            MITMobiusResourceDataSource *blockSelf = weakSelf;
+            if (!blockSelf) {
+                return;
+            }
+            
+            NSManagedObjectContext *context = blockSelf.managedObjectContext;
+            [context performBlock:^{
+                
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    if (block) {
+                        block([mappingResult array],nil);
+                    }
+                }];
+            }];
+        } failure:^(RKObjectRequestOperation *operation, NSError *error) {
+            
+            DDLogError(@"failed to request Mobius resources: %@",error);
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (block) {
+                    block(nil,error);
+                }
+            }];
+        }];
+        
         [self.mappingOperationQueue addOperation:requestOperation];
     }
 }

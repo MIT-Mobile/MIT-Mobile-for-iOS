@@ -13,6 +13,11 @@
 #import "DDLog.h"
 #import "MITAdditions.h"
 #import "MITMobiusRoomObject.h"
+#import "MITMobiusRootHeader.h"
+#import "MITMobiusQuickSearchTableViewCell.h"
+#import "UITableView+DynamicSizing.h"
+
+static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiusQuickSearchTableViewCellIdentifier";
 
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
@@ -23,7 +28,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource>
+typedef NS_ENUM(NSInteger, MITMobiusRootTableRows) {
+    MITMobiusRootTableRowShopsAndLabs = 0,
+    MITMobiusRootTableRowMachineTypes,
+};
+
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -65,7 +75,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 @synthesize mapViewController = _mapViewController;
 @synthesize recentSearchViewController = _recentSearchViewController;
 
-- (void)viewDidLoad {
+- (void)viewDidLoad
+{
     [super viewDidLoad];
     if (!self.managedObjectContext) {
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
@@ -87,17 +98,38 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+    [self setupTableView:self.quickLookupTableView];
+}
+
+- (void)setupTableView:(UITableView *)tableView
+{
+    [tableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
+    
+#warning header
+    /*
+    MITMobiusRootHeader *quickSearchHeader = [[[NSBundle mainBundle]
+                                            loadNibNamed:@"MITMobiusRootHeader"
+                                            owner:self options:nil]
+                                           firstObject];
+    tableView.tableHeaderView = quickSearchHeader;
+    
+    [quickSearchHeader setNeedsLayout];
+    [quickSearchHeader layoutIfNeeded];
+    CGFloat height = [quickSearchHeader systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
+    
+    //update the header's frame and set it again
+    CGRect tableHeaderViewFrame = quickSearchHeader.frame;
+    tableHeaderViewFrame.size.height = height;
+    quickSearchHeader.frame = tableHeaderViewFrame;
+    tableView.tableHeaderView = quickSearchHeader;
+    */
+    tableView.tableFooterView = [UIView new];
 }
 
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
     
-    if (self.currentState == MITMobiusRootViewControllerStateSearch) {
-        UIEdgeInsets contentInset = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame), 0, 0, 0);
-        self.recentSearchViewController.tableView.contentInset = contentInset;
-    }
-
     if (!self.isMapFullScreen) {
         _standardMapHeight = CGRectGetHeight(self.mapViewContainer.frame);
     }
@@ -162,7 +194,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         __weak MITMobiusRootPhoneViewController *weakSelf = self;
         [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
             MITMobiusRootPhoneViewController *blockSelf = weakSelf;
-
+            
             if (!blockSelf) {
                 return;
             } else if (error) {
@@ -185,7 +217,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         }];
     } else {
         self.contentContainerView.hidden = YES;
-        self.helpTextView.hidden = NO;
+        self.quickLookupTableView.hidden = NO;
     }
 }
 
@@ -425,8 +457,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.helpTextView.hidden = NO;
-            self.helpTextView.alpha = 0.;
+            self.quickLookupTableView.hidden = NO;
+            self.quickLookupTableView.alpha = 0.;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -444,8 +476,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.helpTextView.hidden = NO;
-            self.helpTextView.alpha = 1;
+            self.quickLookupTableView.hidden = NO;
+            self.quickLookupTableView.alpha = 1;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -466,7 +498,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (newState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.helpTextView.alpha = 1;
+            self.quickLookupTableView.alpha = 1;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -489,7 +521,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.helpTextView.alpha = 0;
+            self.quickLookupTableView.alpha = 0;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -509,7 +541,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.helpTextView.hidden = YES;
+            self.quickLookupTableView.hidden = YES;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -829,6 +861,61 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     NSString *key = buildingsArray[roomIndex];
     MITMobiusRoomObject *room = self.rooms[key];
     return room.resources[resourceIndex];
+}
+
+#pragma mark UITableView Methods
+
+- (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
+{
+    return 2;
+}
+
+- (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *identifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    NSAssert(identifier,@"[%@] missing cell reuse identifier in %@",self,NSStringFromSelector(_cmd));
+    
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:identifier forIndexPath:indexPath];
+    [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
+    
+    return cell;
+}
+
+- (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+    CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
+    return cellHeight;
+}
+
+- (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    if (indexPath.row == MITMobiusRootTableRowMachineTypes ||
+        indexPath.row == MITMobiusRootTableRowShopsAndLabs) {
+        return MITMobiusQuickSearchTableViewCellIdentifier;
+    }
+    return nil;
+}
+
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    
+}
+#pragma mark UITableViewDataSourceDynamicSizing
+- (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
+
+    if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
+        return;
+    }
+    if (indexPath.row == MITMobiusRootTableRowShopsAndLabs) {
+        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+        quickSearch.label.text = @"Shops & Labels";
+    } else if (indexPath.row == MITMobiusRootTableRowMachineTypes) {
+        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+        quickSearch.label.text = @"Machine Types";
+    }
 }
 
 @end

@@ -1,5 +1,10 @@
 #import <Foundation/Foundation.h>
 
+typedef NS_ENUM(NSInteger, MITMobiusRequestType) {
+    MITMobiusRequestTypeResourceType,
+    MITMobiusRequestTypeResourceRoomset
+};
+
 @interface MITMobiusResourceDataSource : NSObject
 @property (nonatomic,strong) NSDate *lastFetched;
 @property (nonatomic,readonly,copy) NSString *queryString;
@@ -8,6 +13,7 @@
 + (NSURL*)defaultServerURL;
 - (instancetype)init;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* dataSource, NSError *error))block;
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context;
 
 - (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString;
