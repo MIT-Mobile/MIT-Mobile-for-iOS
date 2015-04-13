@@ -1,9 +1,12 @@
 #import <UIKit/UIKit.h>
 
-@interface MITMobiusAdvancedSearchViewController : UITableViewController
-@property (nonatomic,copy) NSString *searchText;
+@class MITMobiusRecentSearchQuery;
 
-- (instancetype)initWithStyle:(UITableViewStyle)style;
-- (instancetype)initWithSearchText:(NSString*)searchText;
+@interface MITMobiusAdvancedSearchViewController : UITableViewController
+@property (nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic,readonly,strong) MITMobiusRecentSearchQuery *query;
+
+- (instancetype)init;
+- (instancetype)initWithQuery:(MITMobiusRecentSearchQuery*)query;
 
 @end
