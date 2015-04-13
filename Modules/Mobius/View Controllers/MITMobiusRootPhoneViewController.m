@@ -364,7 +364,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 #pragma mark - Private
 - (IBAction)_didTapShowFilterButton:(UIBarButtonItem*)sender
 {
-    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithSearchText:self.searchBar.text];
+    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] init];
+    viewController.query.text = self.searchBar.text;
 
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
     viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
