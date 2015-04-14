@@ -97,15 +97,29 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+    
     [self setupTableView:self.quickLookupTableView];
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self setupTableViewHeader:self.quickLookupTableView];
 }
 
 - (void)setupTableView:(UITableView *)tableView
 {
-    [tableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
-    
-#warning header
-    /*
+    [self.quickLookupTableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
+
+    tableView.tableFooterView = [UIView new];
+    tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1];
+}
+
+- (void)setupTableViewHeader:(UITableView *)tableView
+{
+    if (tableView.tableHeaderView) {
+        return;
+    }
     MITMobiusRootHeader *quickSearchHeader = [[[NSBundle mainBundle]
                                             loadNibNamed:@"MITMobiusRootHeader"
                                             owner:self options:nil]
@@ -121,8 +135,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     tableHeaderViewFrame.size.height = height;
     quickSearchHeader.frame = tableHeaderViewFrame;
     tableView.tableHeaderView = quickSearchHeader;
-    */
-    tableView.tableFooterView = [UIView new];
 }
 
 - (void)viewDidLayoutSubviews

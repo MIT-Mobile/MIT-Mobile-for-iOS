@@ -8,14 +8,14 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
         <view contentMode="scaleToFill" id="iN0-l3-epB" customClass="MITMobiusRootHeader">
-            <rect key="frame" x="0.0" y="0.0" width="339" height="86"/>
+            <rect key="frame" x="0.0" y="0.0" width="339" height="120"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bAU-x0-lEu">
-                    <rect key="frame" x="0.0" y="0.0" width="339" height="86"/>
+                    <rect key="frame" x="0.0" y="0.0" width="339" height="120"/>
                     <subviews>
                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="319" translatesAutoresizingMaskIntoConstraints="NO" id="asd-oY-poY" userLabel="Sample searches: Materials + machine capability: ‘plastic steel hole’ Shop + machine type: ‘Edgerton lathe’">
-                            <rect key="frame" x="10" y="10" width="319" height="66"/>
+                            <rect key="frame" x="10" y="35" width="319" height="49"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="66" id="UNI-R4-4Wn"/>
                             </constraints>
@@ -25,15 +25,27 @@ Shop + machine type: ‘Edgerton lathe’</string>
                             <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
                             <color key="textColor" red="0.37647058823529411" green="0.37647058823529411" blue="0.37647058823529411" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <nil key="highlightedColor"/>
+                            <variation key="default">
+                                <mask key="constraints">
+                                    <exclude reference="UNI-R4-4Wn"/>
+                                </mask>
+                            </variation>
                         </label>
                     </subviews>
-                    <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                     <constraints>
                         <constraint firstAttribute="trailing" secondItem="asd-oY-poY" secondAttribute="trailing" constant="10" id="AIH-zj-6u9"/>
-                        <constraint firstItem="asd-oY-poY" firstAttribute="top" secondItem="bAU-x0-lEu" secondAttribute="top" constant="10" id="EjR-pP-c4y"/>
-                        <constraint firstAttribute="bottom" secondItem="asd-oY-poY" secondAttribute="bottom" constant="10" id="Vgu-jv-F57"/>
+                        <constraint firstItem="asd-oY-poY" firstAttribute="top" secondItem="bAU-x0-lEu" secondAttribute="top" constant="20" id="EjR-pP-c4y"/>
+                        <constraint firstAttribute="centerY" secondItem="asd-oY-poY" secondAttribute="centerY" id="REu-mC-5o8"/>
+                        <constraint firstAttribute="bottom" secondItem="asd-oY-poY" secondAttribute="bottom" constant="20" id="Vgu-jv-F57"/>
+                        <constraint firstAttribute="height" constant="120" id="hJU-gx-I30"/>
                         <constraint firstItem="asd-oY-poY" firstAttribute="leading" secondItem="bAU-x0-lEu" secondAttribute="leading" constant="10" id="tMg-26-HrJ"/>
                     </constraints>
+                    <variation key="default">
+                        <mask key="constraints">
+                            <exclude reference="EjR-pP-c4y"/>
+                            <exclude reference="Vgu-jv-F57"/>
+                        </mask>
+                    </variation>
                 </view>
             </subviews>
             <constraints>
@@ -44,7 +56,7 @@ Shop + machine type: ‘Edgerton lathe’</string>
             </constraints>
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
-            <point key="canvasLocation" x="301.5" y="77"/>
+            <point key="canvasLocation" x="301.5" y="94"/>
         </view>
     </objects>
 </document>
