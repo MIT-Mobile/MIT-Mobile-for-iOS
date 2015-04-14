@@ -431,8 +431,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
     MITMobiusAttributeType type = attributeValue.attribute.type;
     BOOL isAttributeOptionType = (type == MITMobiusAttributeTypeOptionSingle |
-                                  type == MITMobiusAttributeTypeAutocompletion |
-                                  type == MITMobiusAttributeTypeOptionMultiple);
+                                        type == MITMobiusAttributeTypeAutocompletion |
+                                        type == MITMobiusAttributeTypeOptionMultiple);
     NSAssert(isAttributeOptionType, @"attempting to set attribute value on an attribute which should not have a valueset");
 
     __block MITMobiusSearchOption *searchOption = nil;
