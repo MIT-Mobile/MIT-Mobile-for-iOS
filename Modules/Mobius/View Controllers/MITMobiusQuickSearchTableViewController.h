@@ -12,6 +12,6 @@
 
 @property (nonatomic) id<MITDiningFilterDelegate> delegate;
 @property (nonatomic,strong) MITMobiusResourceDataSource *dataSource;
-@property (nonatomic) MITMobiuQuickSearchType typeOfObjects;
+@property (nonatomic) MITMobiusQuickSearchType typeOfObjects;
 
 @end

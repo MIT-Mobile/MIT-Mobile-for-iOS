@@ -35,15 +35,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 {
     __weak MITMobiusQuickSearchTableViewController *weakSelf = self;
     
-    MITMobiusRequestType *type = nil;
-    
-    if (self.typeOfObjects == MITMobiusShopsAndLabs) {
-        type = MITMobiusRequestTypeResourceRoomset;
-    } else if (self.typeOfObjects == MITMobiusMachineTypes) {
-        type = MITMobiusRequestTypeResourceType;
-    }
-    
-    [self.dataSource getObjectsForRoute:type completion:^(NSArray *objects, NSError *error) {
+    [self.dataSource getObjectsForRoute:self.typeOfObjects completion:^(NSArray *objects, NSError *error) {
         MITMobiusQuickSearchTableViewController *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
@@ -111,7 +103,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
     if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
         return;
     }
-    if (self.typeOfObjects == MITMobiusShopsAndLabs) {
+    if (self.typeOfObjects == MITMobiusQuickSearchRoomSet) {
         if ([self.objects[indexPath.row] isKindOfClass:[MITMobiusRoomSet class]]) {
 
             MITMobiusRoomSet *type = self.objects[indexPath.row];
@@ -119,7 +111,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
             quickSearch.label.text = type.name;
         }
         
-    } else if (self.typeOfObjects == MITMobiusMachineTypes) {
+    } else if (self.typeOfObjects == MITMobiusQuickSearchResourceType) {
         if ([self.objects[indexPath.row] isKindOfClass:[MITMobiusResourceType class]]) {
             
             MITMobiusResourceType *type = self.objects[indexPath.row];

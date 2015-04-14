@@ -183,10 +183,10 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     }
 }
 
-- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* objects, NSError *error))block
+- (void)getObjectsForRoute:(MITMobiusQuickSearchType)type completion:(void(^)(NSArray* objects, NSError *error))block
 {
-    if (type != MITMobiusRequestTypeResourceRoomset &&
-        type != MITMobiusRequestTypeResourceType) {
+    if (type != MITMobiusQuickSearchRoomSet &&
+        type != MITMobiusQuickSearchResourceType) {
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
                 block(nil,nil);
@@ -195,10 +195,10 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     } else {
         NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
         NSString *urlPath = nil;
-        if (type == MITMobiusRequestTypeResourceRoomset) {
+        if (type == MITMobiusQuickSearchRoomSet) {
             NSString *encodedString = [@"resourceroomset" urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
             urlPath = [NSString stringWithFormat:@"/%@?%@",encodedString, @"format=json"];
-        } else if (type == MITMobiusRequestTypeResourceType) {
+        } else if (type == MITMobiusQuickSearchResourceType) {
             NSString *encodedString = [@"resourcetype" urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
             urlPath = [NSString stringWithFormat:@"/%@?%@",encodedString, @"format=json"];
             
@@ -212,9 +212,9 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         
         RKMapping *mapping = nil;
         
-        if (type == MITMobiusRequestTypeResourceType) {
+        if (type == MITMobiusQuickSearchResourceType) {
             mapping = [MITMobiusResourceType objectMapping];
-        } else if (type == MITMobiusRequestTypeResourceRoomset) {
+        } else if (type == MITMobiusQuickSearchRoomSet) {
             mapping = [MITMobiusRoomSet objectMapping];
         }
         RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];

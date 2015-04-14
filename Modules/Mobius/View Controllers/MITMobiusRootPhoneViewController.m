@@ -911,8 +911,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (indexPath.row == MITMobiusMachineTypes ||
-        indexPath.row == MITMobiusShopsAndLabs) {
+    if (indexPath.row == MITMobiusQuickSearchResourceType ||
+        indexPath.row == MITMobiusQuickSearchRoomSet) {
         return MITMobiusQuickSearchTableViewCellIdentifier;
     }
     return nil;
@@ -921,18 +921,18 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.row == MITMobiusMachineTypes) {
+    if (indexPath.row == MITMobiusQuickSearchResourceType) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
-        quickSearchVC.typeOfObjects = MITMobiusMachineTypes;
+        quickSearchVC.typeOfObjects = MITMobiusQuickSearchResourceType;
         quickSearchVC.delegate = self;
         quickSearchVC.title = @"Machine Types";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
 
-    } else if (indexPath.row == MITMobiusShopsAndLabs) {
+    } else if (indexPath.row == MITMobiusQuickSearchRoomSet) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
-        quickSearchVC.typeOfObjects = MITMobiusShopsAndLabs;
+        quickSearchVC.typeOfObjects = MITMobiusQuickSearchRoomSet;
         quickSearchVC.delegate = self;
         quickSearchVC.title = @"Shops & Labs";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
@@ -947,10 +947,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
         return;
     }
-    if (indexPath.row == MITMobiusShopsAndLabs) {
+    if (indexPath.row == MITMobiusQuickSearchRoomSet) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Shops & Labs";
-    } else if (indexPath.row == MITMobiusMachineTypes) {
+    } else if (indexPath.row == MITMobiusQuickSearchResourceType) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Machine Types";
     }
