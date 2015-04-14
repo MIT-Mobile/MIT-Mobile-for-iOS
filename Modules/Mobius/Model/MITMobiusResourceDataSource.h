@@ -5,6 +5,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRequestType) {
     MITMobiusRequestTypeResourceRoomset
 };
 
+typedef NS_ENUM(NSInteger, MITMobiuQuickSearchType) {
+    MITMobiusShopsAndLabs = 0,
+    MITMobiusMachineTypes,
+};
+
 @interface MITMobiusResourceDataSource : NSObject
 @property (nonatomic,strong) NSDate *lastFetched;
 @property (nonatomic,readonly,copy) NSString *queryString;
@@ -13,7 +18,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRequestType) {
 + (NSURL*)defaultServerURL;
 - (instancetype)init;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
-- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* dataSource, NSError *error))block;
+- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* objects, NSError *error))block;
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context;
 
 - (NSInteger)numberOfRecentSearchItemsWithFilterString:(NSString *)filterString;

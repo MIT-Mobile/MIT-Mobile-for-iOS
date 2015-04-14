@@ -36,7 +36,6 @@ Shop + machine type: ‘Edgerton lathe’</string>
                     </constraints>
                 </view>
             </subviews>
-            <color key="backgroundColor" red="0.1148945524" green="1" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
             <constraints>
                 <constraint firstAttribute="bottom" secondItem="bAU-x0-lEu" secondAttribute="bottom" id="7Un-Yg-FYT"/>
                 <constraint firstAttribute="trailing" secondItem="bAU-x0-lEu" secondAttribute="trailing" id="AKF-Rn-9NQ"/>

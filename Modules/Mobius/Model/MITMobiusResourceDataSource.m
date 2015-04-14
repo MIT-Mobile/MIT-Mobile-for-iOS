@@ -179,7 +179,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     }
 }
 
-- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* dataSource, NSError *error))block
+- (void)getObjectsForRoute:(MITMobiusRequestType)type completion:(void(^)(NSArray* objects, NSError *error))block
 {
     if (type != MITMobiusRequestTypeResourceRoomset &&
         type != MITMobiusRequestTypeResourceType) {

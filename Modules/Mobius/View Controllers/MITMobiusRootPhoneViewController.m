@@ -16,6 +16,7 @@
 #import "MITMobiusRootHeader.h"
 #import "MITMobiusQuickSearchTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
+#import "MITMobiusQuickSearchTableViewController.h"
 
 static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiusQuickSearchTableViewCellIdentifier";
 
@@ -26,11 +27,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateSearch,
     MITMobiusRootViewControllerStateNoResults,
     MITMobiusRootViewControllerStateResults,
-};
-
-typedef NS_ENUM(NSInteger, MITMobiusRootTableRows) {
-    MITMobiusRootTableRowShopsAndLabs = 0,
-    MITMobiusRootTableRowMachineTypes,
 };
 
 @interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing>
@@ -890,8 +886,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootTableRows) {
 
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (indexPath.row == MITMobiusRootTableRowMachineTypes ||
-        indexPath.row == MITMobiusRootTableRowShopsAndLabs) {
+    if (indexPath.row == MITMobiusMachineTypes ||
+        indexPath.row == MITMobiusShopsAndLabs) {
         return MITMobiusQuickSearchTableViewCellIdentifier;
     }
     return nil;
@@ -899,8 +895,23 @@ typedef NS_ENUM(NSInteger, MITMobiusRootTableRows) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    
+    [tableView deselectRowAtIndexPath:indexPath animated:YES];
+    if (indexPath.row == MITMobiusMachineTypes) {
+        MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
+        quickSearchVC.dataSource = self.dataSource;
+        quickSearchVC.typeOfObjects = MITMobiusMachineTypes;
+        quickSearchVC.title = @"Machine Types";
+        [self.navigationController pushViewController:quickSearchVC animated:YES];
+
+    } else if (indexPath.row == MITMobiusShopsAndLabs) {
+        MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
+        quickSearchVC.dataSource = self.dataSource;
+        quickSearchVC.typeOfObjects = MITMobiusShopsAndLabs;
+        quickSearchVC.title = @"Shops & Labels";
+        [self.navigationController pushViewController:quickSearchVC animated:YES];
+    }
 }
+
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
@@ -909,10 +920,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootTableRows) {
     if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
         return;
     }
-    if (indexPath.row == MITMobiusRootTableRowShopsAndLabs) {
+    if (indexPath.row == MITMobiusShopsAndLabs) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Shops & Labels";
-    } else if (indexPath.row == MITMobiusRootTableRowMachineTypes) {
+    } else if (indexPath.row == MITMobiusMachineTypes) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Machine Types";
     }
