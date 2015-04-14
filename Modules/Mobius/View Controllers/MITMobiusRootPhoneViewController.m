@@ -931,7 +931,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         quickSearchVC.dataSource = self.dataSource;
         quickSearchVC.typeOfObjects = MITMobiusShopsAndLabs;
         quickSearchVC.delegate = self;
-        quickSearchVC.title = @"Shops & Labels";
+        quickSearchVC.title = @"Shops & Labs";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
     }
 }
@@ -946,7 +946,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
     if (indexPath.row == MITMobiusShopsAndLabs) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Shops & Labels";
+        quickSearch.label.text = @"Shops & Labs";
     } else if (indexPath.row == MITMobiusMachineTypes) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Machine Types";
