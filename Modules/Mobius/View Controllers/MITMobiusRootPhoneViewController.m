@@ -17,6 +17,9 @@
 #import "MITMobiusQuickSearchTableViewCell.h"
 #import "UITableView+DynamicSizing.h"
 #import "MITMobiusQuickSearchTableViewController.h"
+#import "MITMobiusRoomSet.h"
+#import "MITMobiusResourceType.h"
+
 
 static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiusQuickSearchTableViewCellIdentifier";
 
@@ -29,7 +32,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing, MITDiningFilterDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -900,6 +903,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
         quickSearchVC.typeOfObjects = MITMobiusMachineTypes;
+        quickSearchVC.delegate = self;
         quickSearchVC.title = @"Machine Types";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
 
@@ -907,6 +911,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
         quickSearchVC.typeOfObjects = MITMobiusShopsAndLabs;
+        quickSearchVC.delegate = self;
         quickSearchVC.title = @"Shops & Labels";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
     }
@@ -926,6 +931,30 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     } else if (indexPath.row == MITMobiusMachineTypes) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Machine Types";
+    }
+}
+
+- (void)applyQuickParams:(id)object
+{
+    NSString *searchTerm = nil;
+    
+        if ([object isKindOfClass:[MITMobiusRoomSet class]]) {
+            
+            MITMobiusRoomSet *type = object;
+            searchTerm = [NSString stringWithFormat:@"%@:\"%@\"}]}",@"params={\"where\":[{\"field\":\"roomset\",\"value\"",type.identifier];
+        }
+        else if ([object isKindOfClass:[MITMobiusResourceType class]]) {
+            
+            MITMobiusResourceType *type = object;
+            searchTerm = [NSString stringWithFormat:@"params={\"where\":[{\"value\":\"%@\",\"field\":\"_type\"}]}",type.identifier];
+        }
+    if (searchTerm) {
+        [self reloadDataSourceForSearch:searchTerm completion:^{
+            
+            self.rooms = nil;
+            [self.resourcesTableViewController.tableView reloadData];
+            [self.mapViewController reloadMapAnimated:YES];
+        }];
     }
 }
 

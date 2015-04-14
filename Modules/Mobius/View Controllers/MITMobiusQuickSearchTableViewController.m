@@ -94,6 +94,15 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
     return nil;
 }
 
+- (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(applyQuickParams:)]) {
+        [self.delegate applyQuickParams:self.objects[indexPath.row]];
+    }
+    
+    [self.navigationController popViewControllerAnimated:YES];
+}
+
 #pragma mark UITableViewDataSourceDynamicSizing
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
@@ -119,4 +128,5 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
         }
     }
 }
+
 @end
