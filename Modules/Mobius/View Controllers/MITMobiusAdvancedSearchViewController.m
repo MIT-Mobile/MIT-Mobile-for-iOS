@@ -126,7 +126,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     }];
 
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    [self.tableView deleteRowsAtIndexPaths:deletionIndexPaths withRowAnimation:UITableViewRowAnimationTop];
+    [self.tableView deleteRowsAtIndexPaths:deletionIndexPaths withRowAnimation:UITableViewRowAnimationBottom];
 }
 
 - (void)_expandItemAtIndexPath:(NSIndexPath*)indexPath
@@ -351,6 +351,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 {
     MITMobiusAdvancedSearchSection sectionType = [self _typeForSection:indexPath.section];
     if (sectionType == MITMobiusAdvancedSearchAttributes) {
+        [tableView beginUpdates];
+
         if ([self isAttributeValueAtIndexPath:indexPath]) {
             MITMobiusAttributeValue *attributeValue = [self valueForIndexPath:indexPath];
 
@@ -360,8 +362,6 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
                 [self unsetAttributeValue:attributeValue];
             }
         } else {
-            [tableView beginUpdates];
-
             // To account for -[NSIndexPath isEqual:] not always returning true, even if it is
             indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
             MITMobiusAttribute *newAttribute = [self attributeForIndexPath:indexPath];
@@ -378,9 +378,9 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
                 self.currentExpandedIndexPath = newIndexPath;
                 [self _expandItemAtIndexPath:newIndexPath];
             }
-
-            [tableView endUpdates];
         }
+
+        [tableView endUpdates];
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -409,15 +409,20 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     // ordered, to-many relationships are bugged and will crash with an error since the
     // generated methods do not create the proper set objects.
     NSMutableOrderedSet *values = [searchOption mutableOrderedSetValueForKey:@"values"];
-    [values removeObject:attributeValue];
+    if (values.count <= 1) {
+        NSMutableOrderedSet *options = [self.query mutableOrderedSetValueForKey:@"options"];
+        [options removeObject:searchOption];
+        [self.managedObjectContext deleteObject:searchOption];
+    } else {
+        [values removeObject:attributeValue];
+    }
 
     NSIndexPath *indexPath = [self indexPathForAttribute:attributeValue.attribute];
     NSInteger index = [attributeValue.attribute.values indexOfObject:attributeValue] + 1; // Add one to account for attribute row
     indexPath = [NSIndexPath indexPathForRow:(index + indexPath.row) inSection:indexPath.section];
-    [self.tableView beginUpdates];
+
     [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITMobiusAdvancedSearchSelectedAttributes] withRowAnimation:UITableViewRowAnimationAutomatic];
-    [self.tableView endUpdates];
 }
 
 - (void)setAttributeValue:(MITMobiusAttributeValue*)attributeValue
@@ -453,10 +458,25 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
     [values addObject:attributeValue];
 
-    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
-    [indexSet addIndex:0];
-    [indexSet addIndex:1];
-    [self.tableView reloadSections:indexSet withRowAnimation:UITableViewRowAnimationNone];
+    NSInteger index = [self.query.options indexOfObject:searchOption];
+
+    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:MITMobiusAdvancedSearchSelectedAttributes];
+    if (index >= [self.tableView numberOfRowsInSection:MITMobiusAdvancedSearchSelectedAttributes]) {
+        [self.tableView insertRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationFade];
+    } else {
+        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
+    }
+
+    NSIndexPath *attributeIndexPath = [self indexPathForAttribute:attributeValue.attribute];
+    if ([self.currentExpandedIndexPath isEqual:attributeIndexPath]) {
+        NSMutableArray *updatedIndexPaths = [[NSMutableArray alloc] init];
+        for (int idx = 1; idx < attributeValue.attribute.values.count; ++idx) {
+            NSIndexPath *indexPath = [NSIndexPath indexPathForRow:(attributeIndexPath.row + idx) inSection:attributeIndexPath.section];
+            [updatedIndexPaths addObject:indexPath];
+        }
+
+        [self.tableView reloadRowsAtIndexPaths:updatedIndexPaths withRowAnimation:UITableViewRowAnimationNone];
+    }
 }
 
 - (BOOL)isAttributeValueSelected:(MITMobiusAttributeValue*)value
