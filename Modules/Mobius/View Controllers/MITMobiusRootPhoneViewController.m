@@ -99,6 +99,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
     
     [self setupTableView:self.quickLookupTableView];
+    
+    self.recentSearchViewController.view.hidden = YES;
+    self.recentSearchViewController.view.alpha = 0.;
 }
 
 - (void)viewDidAppear:(BOOL)animated
