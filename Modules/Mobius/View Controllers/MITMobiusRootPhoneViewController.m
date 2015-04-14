@@ -224,7 +224,10 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
                     
                     if (block) {
                         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                        [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
+#warning FIX THIS: we do not want params string to be stored in recents.  We want title.
+                        if (![queryString containsString:@"params"]) {
+                            [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
+                        }
                     }
                 }];
             }
