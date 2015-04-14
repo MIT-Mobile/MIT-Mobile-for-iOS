@@ -40,9 +40,11 @@
         } else if ([self.fieldType isEqualToString:@"text"]) {
             return MITMobiusAttributeTypeString;
         }
-    } else if ([self.widgetType isEqualToString:@"autocompletion"]) {
+    } else if ([self.widgetType isEqualToString:@"autocomplete"]) {
         return MITMobiusAttributeTypeAutocompletion;
     } else if ([self.widgetType isEqualToString:@"checkbox"]) {
+        return MITMobiusAttributeTypeOptionSingle;
+    } else if ([self.widgetType isEqualToString:@"select"]) {
         return MITMobiusAttributeTypeOptionSingle;
     } else if ([self.widgetType isEqualToString:@"radio"]) {
         return MITMobiusAttributeTypeOptionMultiple;
