@@ -56,11 +56,11 @@
         } break;
             
         case MITMobiusResourceStatusOnline: {
-            self.machineStatus = nil;
+            self.machineStatus.image = nil;
         } break;
             
         case MITMobiusResourceStatusUnknown: {
-            self.machineStatus = nil;
+            self.machineStatus.image = nil;
         } break;
     }
     
