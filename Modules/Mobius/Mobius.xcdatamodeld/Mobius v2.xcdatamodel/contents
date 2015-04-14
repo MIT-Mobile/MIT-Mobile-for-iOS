@@ -26,7 +26,7 @@
     <entity name="MobiusRecentSearchQuery" representedClassName="MITMobiusRecentSearchQuery" syncable="YES">
         <attribute name="date" optional="YES" attributeType="Date" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
-        <relationship name="options" optional="YES" toMany="YES" deletionRule="Nullify" destinationEntity="MobiusSearchOption" inverseName="query" inverseEntity="MobiusSearchOption" syncable="YES"/>
+        <relationship name="options" optional="YES" toMany="YES" deletionRule="Nullify" ordered="YES" destinationEntity="MobiusSearchOption" inverseName="query" inverseEntity="MobiusSearchOption" syncable="YES"/>
         <relationship name="search" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusRecentSearchList" inverseName="recentQueries" inverseEntity="MobiusRecentSearchList" syncable="YES"/>
     </entity>
     <entity name="MobiusResource" representedClassName="MITMobiusResource" syncable="YES">
