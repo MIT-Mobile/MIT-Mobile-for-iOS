@@ -23,7 +23,6 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 - (void)setupTableView:(UITableView *)tableView
 {
     [tableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
-    
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -54,38 +53,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
         self.objects = [objects copy];
         
         [self.tableView reloadData];
-        
-        // [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
-        //    MITMobiusRootPhoneViewController *blockSelf = weakSelf;
-        
-        
-        
-        /* if (!blockSelf) {
-         return;
-         } else if (error) {
-         DDLogWarn(@"Error: %@",error);
-         
-         if (block) {
-         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-         }
-         } else {
-         [blockSelf.managedObjectContext performBlockAndWait:^{
-         [blockSelf.managedObjectContext reset];
-         blockSelf.rooms = nil;
-         
-         if (block) {
-         [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-         [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
-         }
-         }];
-         }
-         }];*/
-        //    } else {
-        //        self.contentContainerView.hidden = YES;
-        //        self.quickLookupTableView.hidden = NO;
-        //   }
     }];
-
 }
 
 - (void)didReceiveMemoryWarning
@@ -135,18 +103,20 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
         return;
     }
     if (self.typeOfObjects == MITMobiusShopsAndLabs) {
-        
-        MITMobiusRoomSet *type = self.objects[indexPath.row];
-        
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = type.name;
+        if ([self.objects[indexPath.row] isKindOfClass:[MITMobiusRoomSet class]]) {
+
+            MITMobiusRoomSet *type = self.objects[indexPath.row];
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = type.name;
+        }
         
     } else if (self.typeOfObjects == MITMobiusMachineTypes) {
-        
-        MITMobiusResourceType *type = self.objects[indexPath.row];
-        
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = type.type;
+        if ([self.objects[indexPath.row] isKindOfClass:[MITMobiusResourceType class]]) {
+            
+            MITMobiusResourceType *type = self.objects[indexPath.row];
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = type.type;
+        }
     }
 }
 @end
