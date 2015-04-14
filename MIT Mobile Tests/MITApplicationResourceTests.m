@@ -113,6 +113,10 @@
     MITCheckAsset(MITImageMapCategoryRooms);
     MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
+    MITCheckAsset(MITImageMobiusAccordionOpened);
+    MITCheckAsset(MITImageMobiusAccordionClosed);
+    MITCheckAsset(MITImageMobiusBarButtonAdvancedSearch);
+
 
 #pragma mark - Scanner
     MITCheckAsset(MITImageScannerCameraUnsupported);

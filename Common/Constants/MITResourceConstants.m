@@ -87,13 +87,16 @@ NSString * const MITImageMapCategoryResidences           = @"map-category-reside
 NSString * const MITImageMapCategoryRooms                = @"map-category-room";
 NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
 
+#pragma mark - Mobius
+NSString * const MITImageMobiusAccordionOpened = @"mobius-accordion-open";
+NSString * const MITImageMobiusAccordionClosed = @"mobius-accordion-closed";
+NSString * const MITImageMobiusBarButtonAdvancedSearch = @"mobius-bar-advanced-search";
 
 #pragma mark - Scanner
 NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";
 NSString * const MITImageScannerSampleBarcode = @"scanner-sample-barcode";
 NSString * const MITImageScannerSampleQRCode = @"scanner-sample-qr";
 NSString * const MITImageScannerMissingImage = @"scanner-missing-image";
-
 
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesInService         = @"shuttles-in-service";
