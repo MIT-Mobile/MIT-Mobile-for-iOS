@@ -1,9 +1,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreData/CoreData.h>
+#import "MITManagedObject.h"
 
 @class MITMobiusAttribute, MITMobiusAttributeValue, MITMobiusRecentSearchQuery;
 
-@interface MITMobiusSearchOption : NSManagedObject
+@interface MITMobiusSearchOption : MITManagedObject
 
 @property (nonatomic, retain) NSString * value;
 @property (nonatomic, retain) NSOrderedSet *values;
