@@ -113,6 +113,7 @@
     MITCheckAsset(MITImageMapCategoryRooms);
     MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
+#pragma mark - Mobius
     MITCheckAsset(MITImageMobiusAccordionOpened);
     MITCheckAsset(MITImageMobiusAccordionClosed);
     MITCheckAsset(MITImageMobiusBarButtonAdvancedSearch);
