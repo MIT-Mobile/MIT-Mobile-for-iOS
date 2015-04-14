@@ -401,7 +401,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     
     switch (self.currentState) {
         case MITMobiusRootViewControllerStateInitial: {
-            return (newState == MITMobiusRootViewControllerStateSearch);
+            return ((newState == MITMobiusRootViewControllerStateSearch) ||
+                    (newState == MITMobiusRootViewControllerStateNoResults) ||
+                    (newState == MITMobiusRootViewControllerStateResults));
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
@@ -411,7 +413,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateNoResults: {
-            return (newState == MITMobiusRootViewControllerStateSearch);
+            return (newState == MITMobiusRootViewControllerStateSearch) ||
+            (newState == MITMobiusRootViewControllerStateNoResults) ||
+            (newState == MITMobiusRootViewControllerStateResults);
         } break;
             
         case MITMobiusRootViewControllerStateResults: {
@@ -475,13 +479,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     switch (oldState) {
         case MITMobiusRootViewControllerStateNoResults:
         case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.hidden = NO;
-            self.quickLookupTableView.alpha = 1;
+            self.quickLookupTableView.hidden = YES;
+            self.quickLookupTableView.alpha = 0;
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.hidden = NO;
-            self.recentSearchViewController.view.alpha = 1.;
+            self.recentSearchViewController.view.hidden = YES;
+            self.recentSearchViewController.view.alpha = 0.;
         } break;
             
         case MITMobiusRootViewControllerStateResults: {
@@ -715,7 +719,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             [self transitionToState:newState animated:YES completion:nil];
         }
     } else {
-        [self transitionToState:MITMobiusRootViewControllerStateNoResults animated:YES completion:nil];
+        [self transitionToState:MITMobiusRootViewControllerStateInitial animated:YES completion:nil];
     }
 }
 
@@ -938,22 +942,31 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSString *searchTerm = nil;
     
-        if ([object isKindOfClass:[MITMobiusRoomSet class]]) {
-            
-            MITMobiusRoomSet *type = object;
-            searchTerm = [NSString stringWithFormat:@"%@:\"%@\"}]}",@"params={\"where\":[{\"field\":\"roomset\",\"value\"",type.identifier];
-        }
-        else if ([object isKindOfClass:[MITMobiusResourceType class]]) {
-            
-            MITMobiusResourceType *type = object;
-            searchTerm = [NSString stringWithFormat:@"params={\"where\":[{\"value\":\"%@\",\"field\":\"_type\"}]}",type.identifier];
-        }
+    if ([object isKindOfClass:[MITMobiusRoomSet class]]) {
+        
+        MITMobiusRoomSet *type = object;
+        searchTerm = [NSString stringWithFormat:@"%@:\"%@\"}]}",@"params={\"where\":[{\"field\":\"roomset\",\"value\"",type.identifier];
+        
+    } else if ([object isKindOfClass:[MITMobiusResourceType class]]) {
+        
+        MITMobiusResourceType *type = object;
+        searchTerm = [NSString stringWithFormat:@"params={\"where\":[{\"value\":\"%@\",\"field\":\"_type\"}]}",type.identifier];
+
+    }
     if (searchTerm) {
         [self reloadDataSourceForSearch:searchTerm completion:^{
+            MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
             
-            self.rooms = nil;
-            [self.resourcesTableViewController.tableView reloadData];
-            [self.mapViewController reloadMapAnimated:YES];
+            if ([self.resources count]) {
+                newState = MITMobiusRootViewControllerStateResults;
+                self.mapFullScreen = NO;
+            }
+            
+            [self transitionToState:newState animated:YES completion:^{
+                self.rooms = nil;
+                [self.resourcesTableViewController.tableView reloadData];
+                [self.mapViewController reloadMapAnimated:YES];
+            }];
         }];
     }
 }

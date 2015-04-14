@@ -121,8 +121,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     } else {
         NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
         NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
+#warning temporary fix
+        if ([queryString rangeOfString:@"params"].location != NSNotFound) {
+            NSString *encodedString = [queryString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
+            [urlPath appendFormat:@"/?%@&%@",@"format=json",encodedString];
+        } else if (queryString) {
 
-        if (queryString) {
             NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
             [urlPath appendFormat:@"?%@&q=%@",@"format=json",encodedString];
         }
