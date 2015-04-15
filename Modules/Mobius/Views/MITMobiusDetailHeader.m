@@ -45,7 +45,7 @@
             CGSize idealImageSize = CGSizeZero;
             idealImageSize = self.resourceImageView.frame.size;
             MITMobiusImage *image = [self.resource.images firstObject];
-            imageURL = [image URLForImageWithSize:MITMobiusImageSmall];
+            imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
         }];
         
         if (imageURL) {
