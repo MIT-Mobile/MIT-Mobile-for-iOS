@@ -20,7 +20,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 };
 
 @interface MITMobiusAdvancedSearchViewController ()
-@property (nonatomic,strong) NSIndexPath *currentExpandedIndexPath;
+@property (nonatomic,readonly,strong) NSIndexPath *currentExpandedIndexPath;
+@property (nonatomic,weak) MITMobiusAttribute *currentSelectedAttribute;
 @end
 
 @implementation MITMobiusAdvancedSearchViewController {
@@ -118,6 +119,11 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     [self.delegate didDismissAdvancedSearchViewController:self];
 }
 
+- (NSIndexPath*)currentExpandedIndexPath
+{
+    return [self indexPathForAttribute:self.currentSelectedAttribute];
+}
+
 #pragma mark Data Updating
 - (void)_collapseItemAtIndexPath:(NSIndexPath*)indexPath
 {
@@ -138,8 +144,13 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 {
     MITMobiusAttribute *attribute = [self attributeForIndexPath:indexPath];
 
+    NSInteger rowOffset = 0;
+    if (indexPath.row > self.currentExpandedIndexPath.row) {
+        rowOffset = self.currentSelectedAttribute.values.count;
+    }
+
     NSMutableArray *insertionIndexPaths = [[NSMutableArray alloc] init];
-    NSRange insertionRange = NSMakeRange(indexPath.row + 1, attribute.values.count);
+    NSRange insertionRange = NSMakeRange(indexPath.row - rowOffset + 1, attribute.values.count);
     NSIndexSet *insertionIndexSet = [NSIndexSet indexSetWithIndexesInRange:insertionRange];
     [insertionIndexSet enumerateIndexesUsingBlock:^(NSUInteger idx, BOOL *stop) {
         [insertionIndexPaths addObject:[NSIndexPath indexPathForRow:idx inSection:indexPath.section]];
@@ -152,16 +163,21 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 #pragma mark table helper methods
 - (NSIndexPath*)indexPathForAttribute:(MITMobiusAttribute*)attribute
 {
+    if (!attribute) {
+        return nil;
+    }
+    
     NSUInteger attributesSection = 1;
     NSUInteger indexOfAttribute = [[self attributes] indexOfObject:attribute];
+    NSAssert(indexOfAttribute != NSNotFound,@"attribute %@ was not found",attribute.label);
 
-    if (self.currentExpandedIndexPath) {
-        if (indexOfAttribute > self.currentExpandedIndexPath.row) {
-            MITMobiusAttribute *expandedAttribute = [self attributeForIndexPath:self.currentExpandedIndexPath];
-            NSUInteger row = indexOfAttribute - expandedAttribute.values.count;
+    if (self.currentSelectedAttribute) {
+        NSInteger expandedAttributeIndex = [[self attributes] indexOfObject:self.currentSelectedAttribute];
+
+        if (expandedAttributeIndex < indexOfAttribute) {
+            NSUInteger row = indexOfAttribute + self.currentSelectedAttribute.values.count;
             return [NSIndexPath indexPathForRow:row inSection:attributesSection];
         }
-
     }
 
     return [NSIndexPath indexPathForRow:indexOfAttribute inSection:attributesSection];
@@ -186,14 +202,15 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     NSArray *attributes = [self attributes];
     NSUInteger targetRow = indexPath.row;
 
-    if (self.currentExpandedIndexPath) {
-        MITMobiusAttribute *expandedAttribute = attributes[self.currentExpandedIndexPath.row];
-        NSRange attributeValueRange = NSMakeRange(self.currentExpandedIndexPath.row + 1, expandedAttribute.values.count);
-
-        if (NSLocationInRange(targetRow, attributeValueRange)) {
-            targetRow = self.currentExpandedIndexPath.row;
-        } else if (targetRow > self.currentExpandedIndexPath.row) {
-            targetRow -= expandedAttribute.values.count;
+    if (self.currentSelectedAttribute) {
+        NSInteger index = [[self attributes] indexOfObject:self.currentSelectedAttribute];
+        if (index < targetRow) {
+            NSInteger numberOfValues = self.currentSelectedAttribute.values.count;
+            if (targetRow <= (index + numberOfValues)) {
+                return self.currentSelectedAttribute;
+            } else {
+                targetRow -= numberOfValues;
+            }
         }
     }
 
@@ -266,23 +283,26 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 #pragma mark Actions
 - (IBAction)attributeClearButtonWasTapped:(UIButton*)sender
 {
-    NSIndexPath *indexPath = [_buttonToSearchOptionTable objectForKey:sender];
-    if (indexPath) {
-        NSUInteger row = indexPath.row;
-        BOOL hasQueryText = (self.query.text.length > 0);
+    UITableViewCell *cell = [_buttonToSearchOptionTable objectForKey:sender];
+    if (!cell) {
+        return;
+    }
 
-        if (hasQueryText && (row == 0)) {
-            self.query.text = nil;
-        } else {
-            if (hasQueryText) {
-                --row;
-            }
+    NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
+    if (!indexPath) {
+        return;
+    }
 
-            MITMobiusSearchOption *searchOption = self.query.options[row];
-            [self.tableView beginUpdates];
-            [self unsetAttributeValues:[searchOption.values array]];
-            [self.tableView endUpdates];
-        }
+    NSUInteger row = indexPath.row;
+    if ([self hasFreeText] && (row == 0)) {
+        self.query.text = nil;
+        [self.tableView deleteRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:MITMobiusAdvancedSearchSelectedAttributes]] withRowAnimation:UITableViewRowAnimationAutomatic];
+    } else {
+        MITMobiusSearchOption *searchOption = [self searchOptionAtIndexPath:indexPath];
+
+        [self.tableView beginUpdates];
+        [self unsetAttributeValues:[searchOption.values array]];
+        [self.tableView endUpdates];
     }
 }
 
@@ -293,7 +313,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
 - (NSArray*)searchOptions
 {
-    return [self.query.options array];
+    return [[self.query.options array] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"values.@count > 0"]];
 }
 
 - (NSInteger)numberOfSearchOptions
@@ -328,12 +348,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     if (section == 0) {
         return [self numberOfSearchOptions];
     } else if (section == 1) {
-        if (self.currentExpandedIndexPath) {
-            MITMobiusAttribute *expandedAttribute = [self attributeForIndexPath:self.currentExpandedIndexPath];
-            return [self numberOfAttributes] + expandedAttribute.values.count;
-        } else {
-            return [self numberOfAttributes];
-        }
+        return [self numberOfAttributes] + self.currentSelectedAttribute.values.count;
     }
 
     return 0;
@@ -374,10 +389,10 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         [button setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(attributeClearButtonWasTapped:) forControlEvents:UIControlEventTouchUpInside];
         [button sizeToFit];
-        [_buttonToSearchOptionTable setObject:indexPath forKey:button];
         cell.accessoryView = button;
         cell.accessoryType = UITableViewCellAccessoryNone;
         cell.selectionStyle = UITableViewCellSelectionStyleNone;
+        [_buttonToSearchOptionTable setObject:cell forKey:button];
     } else if ([cell.reuseIdentifier isEqualToString:MITMobiusAdvancedSearchAttributeCellIdentifier]) {
         MITMobiusAttribute *attribute = [self attributeForIndexPath:indexPath];
         cell.textLabel.text = attribute.label;
@@ -428,17 +443,16 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
                 indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section];
                 MITMobiusAttribute *newAttribute = [self attributeForIndexPath:indexPath];
 
-                if ([indexPath isEqual:self.currentExpandedIndexPath]) {
-                    self.currentExpandedIndexPath = nil;
+                if ([newAttribute isEqual:self.currentSelectedAttribute]) {
                     [self _collapseItemAtIndexPath:indexPath];
+                    self.currentSelectedAttribute = nil;
                 } else {
-                    if (self.currentExpandedIndexPath) {
+                    if (self.currentSelectedAttribute) {
                         [self _collapseItemAtIndexPath:self.currentExpandedIndexPath];
                     }
 
-                    NSIndexPath *newIndexPath = [self indexPathForAttribute:newAttribute];
-                    self.currentExpandedIndexPath = newIndexPath;
-                    [self _expandItemAtIndexPath:newIndexPath];
+                    [self _expandItemAtIndexPath:indexPath];
+                    self.currentSelectedAttribute = newAttribute;
                 }
             }
             
@@ -478,7 +492,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     }
 
     NSMutableArray *updatedIndexPaths = [[NSMutableArray alloc] init];
-    NSOrderedSet *queryOptions = [NSOrderedSet orderedSetWithOrderedSet:self.query.options];
+    NSArray *queryOptions = [self searchOptions];
 
     [attributeValues enumerateObjectsUsingBlock:^(MITMobiusAttributeValue *value, NSUInteger idx, BOOL *stop) {
         MITMobiusAttributeType type = value.attribute.type;
@@ -496,14 +510,9 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
             }
         }];
 
-        if (searchOption.values.count <= 1) {
-            NSMutableOrderedSet *options = [self.query mutableOrderedSetValueForKey:@"options"];
-            [options removeObject:searchOption];
-            [self.managedObjectContext deleteObject:searchOption];
-        } else {
-            NSMutableOrderedSet *values = [searchOption mutableOrderedSetValueForKey:@"values"];
-            [values removeObject:value];
-        }
+
+        NSMutableOrderedSet *values = [searchOption mutableOrderedSetValueForKey:@"values"];
+        [values removeObject:value];
 
         NSIndexPath *attributeIndexPath = [self indexPathForAttribute:value.attribute];
         NSInteger valueIndex = [value.attribute.values indexOfObject:value] + attributeIndexPath.row + 1;
@@ -555,14 +564,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     NSMutableOrderedSet *values = [searchOption mutableOrderedSetValueForKey:@"values"];
     [values addObject:attributeValue];
 
-    NSInteger index = [self.query.options indexOfObject:searchOption];
-
-    NSIndexPath *indexPath = [NSIndexPath indexPathForRow:index inSection:MITMobiusAdvancedSearchSelectedAttributes];
-    if (index >= [self.tableView numberOfRowsInSection:MITMobiusAdvancedSearchSelectedAttributes]) {
-        [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:indexPath.section] withRowAnimation:UITableViewRowAnimationAutomatic];
-    } else {
-        [self.tableView reloadRowsAtIndexPaths:@[indexPath] withRowAnimation:UITableViewRowAnimationNone];
-    }
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITMobiusAdvancedSearchSelectedAttributes] withRowAnimation:UITableViewRowAnimationAutomatic];
 
     NSIndexPath *attributeIndexPath = [self indexPathForAttribute:attributeValue.attribute];
     if ([self.currentExpandedIndexPath isEqual:attributeIndexPath]) {
