@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0B1E9A5E1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1E9A5C1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.m */; };
+		0B1E9A5F1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B1E9A5D1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.xib */; };
 		0B22CAB21A95277500A171A4 /* MITMobiusMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B22CAB11A95277500A171A4 /* MITMobiusMapViewController.m */; };
 		0B22CAC41A952D9500A171A4 /* MITMobiusMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 0B22CAC21A952D9500A171A4 /* MITMobiusMapViewController.xib */; };
 		0B34E4281A081EC1002CF7F1 /* MITNewsViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 0B1689D01937D1EB001EB3B1 /* MITNewsViewController.m */; };
@@ -740,6 +742,9 @@
 /* Begin PBXFileReference section */
 		0B1689CF1937D1EB001EB3B1 /* MITNewsViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsViewController.h; sourceTree = "<group>"; };
 		0B1689D01937D1EB001EB3B1 /* MITNewsViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsViewController.m; sourceTree = "<group>"; };
+		0B1E9A5B1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusQuickSearchHeaderTableViewCell.h; path = Views/MITMobiusQuickSearchHeaderTableViewCell.h; sourceTree = "<group>"; };
+		0B1E9A5C1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusQuickSearchHeaderTableViewCell.m; path = Views/MITMobiusQuickSearchHeaderTableViewCell.m; sourceTree = "<group>"; };
+		0B1E9A5D1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MITMobiusQuickSearchHeaderTableViewCell.xib; path = Views/MITMobiusQuickSearchHeaderTableViewCell.xib; sourceTree = "<group>"; };
 		0B22CAB01A95277500A171A4 /* MITMobiusMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusMapViewController.h; sourceTree = "<group>"; };
 		0B22CAB11A95277500A171A4 /* MITMobiusMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusMapViewController.m; sourceTree = "<group>"; };
 		0B22CAC21A952D9500A171A4 /* MITMobiusMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = MITMobiusMapViewController.xib; sourceTree = "<group>"; };
@@ -3199,6 +3204,9 @@
 				0BAE71891ADC3D15008B0CAF /* MITMobiusRootHeader.h */,
 				0BAE718A1ADC3D15008B0CAF /* MITMobiusRootHeader.m */,
 				0BAE718C1ADC3D30008B0CAF /* MITMobiusRootHeader.xib */,
+				0B1E9A5B1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.h */,
+				0B1E9A5C1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.m */,
+				0B1E9A5D1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.xib */,
 				0BAE718F1ADC4439008B0CAF /* MITMobiusQuickSearchTableViewCell.h */,
 				0BAE71901ADC4439008B0CAF /* MITMobiusQuickSearchTableViewCell.m */,
 				0BAE718E1ADC4439008B0CAF /* MITMobiusQuickSearchTableViewCell.xib */,
@@ -5149,6 +5157,7 @@
 				277A583019FD70BA00BE134E /* MITFacilities_iphone.storyboard in Resources */,
 				0BE0C4131975B95900961025 /* MITNewsSearchController.xib in Resources */,
 				22E6BCC119E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.xib in Resources */,
+				0B1E9A5F1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.xib in Resources */,
 				2C95A1D9137DB24D0025B28D /* FacilitiesSummaryViewController.xib in Resources */,
 				A544EF0C19647FA30046823E /* MITMapPlaceDetailViewController.xib in Resources */,
 				2CB5E8581A700E240012F034 /* Mobius_phone.storyboard in Resources */,
@@ -5774,6 +5783,7 @@
 				22D9032E199BFEC100AEBC7D /* MITDiningHouseVenueListViewController.m in Sources */,
 				80598DC01A0A81780095CEAA /* MITLibrariesFormSheetCellMultiLineTextEntry.m in Sources */,
 				80C5D9E31A111BB300E63FDD /* MITLibrariesFormSheetElementTimeframe.m in Sources */,
+				0B1E9A5E1ADEF67900B4212F /* MITMobiusQuickSearchHeaderTableViewCell.m in Sources */,
 				806205741A7AAF1A004BD08A /* ModuleVersions.m in Sources */,
 				22D90308199BA90E00AEBC7D /* MITDiningHouseVenue.m in Sources */,
 				0BCC90C71963188A00440544 /* MITNewsRecentSearchQuery.m in Sources */,
