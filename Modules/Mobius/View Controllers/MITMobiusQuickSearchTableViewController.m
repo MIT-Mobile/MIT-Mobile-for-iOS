@@ -28,10 +28,10 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    [self retrieveBlah];
+    [self downloadObjectsForQuickSearch];
 }
 
-- (void)retrieveBlah
+- (void)downloadObjectsForQuickSearch
 {
     __weak MITMobiusQuickSearchTableViewController *weakSelf = self;
     

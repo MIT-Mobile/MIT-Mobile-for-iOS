@@ -32,7 +32,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing, MITDiningFilterDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing, MITResourceFilterDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and

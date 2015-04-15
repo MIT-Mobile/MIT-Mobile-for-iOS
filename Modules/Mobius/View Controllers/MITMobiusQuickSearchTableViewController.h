@@ -1,7 +1,7 @@
 #import <UIKit/UIKit.h>
 #import "MITMobiusResourceDataSource.h"
 
-@protocol MITDiningFilterDelegate <NSObject>
+@protocol MITResourceFilterDelegate <NSObject>
 
 - (void)applyQuickParams:(id)object;
 
@@ -10,7 +10,7 @@
 
 @interface MITMobiusQuickSearchTableViewController : UITableViewController
 
-@property (nonatomic) id<MITDiningFilterDelegate> delegate;
+@property (nonatomic) id<MITResourceFilterDelegate> delegate;
 @property (nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 @property (nonatomic) MITMobiusQuickSearchType typeOfObjects;
 
