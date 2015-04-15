@@ -454,7 +454,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 #pragma mark - Private
 - (IBAction)_didTapShowFilterButton:(UIBarButtonItem*)sender
 {
-    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithString:self.searchBar.text];
+    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithQuery:self.dataSource.query];
     viewController.delegate = self;
 
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
@@ -1052,9 +1052,15 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
     if (query) {
         [self reloadDataSourceForQuery:query completion:^{
-            self.rooms = nil;
-            [self.resourcesTableViewController.tableView reloadData];
-            [self.mapViewController reloadMapAnimated:YES];
+            MITMobiusRootViewControllerState state = MITMobiusRootViewControllerStateNoResults;
+            if (self.rooms.count > 0) {
+                state = MITMobiusRootViewControllerStateResults;
+            }
+
+            [self transitionToState:MITMobiusRootViewControllerStateResults animated:state completion:^{
+                [self.resourcesTableViewController.tableView reloadData];
+                [self.mapViewController reloadMapAnimated:YES];
+            }];
         }];
     }
     

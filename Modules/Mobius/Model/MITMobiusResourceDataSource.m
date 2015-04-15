@@ -89,7 +89,6 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     if (!_query) {
         [self.managedObjectContext performBlockAndWait:^{
             _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName]];
-            [self.managedObjectContext saveToPersistentStore:nil];
         }];
 
     }
@@ -171,6 +170,9 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             if (success) {
                 blockSelf.lastFetched = [NSDate date];
                 blockSelf.query = queryObject;
+                [blockSelf.query.managedObjectContext performBlockAndWait:^{
+                    [blockSelf.query.managedObjectContext saveToPersistentStore:nil];
+                }];
             }
 
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -225,6 +227,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
                 blockSelf.lastFetched = [NSDate date];
                 [blockSelf.managedObjectContext performBlockAndWait:^{
                     blockSelf.query.text = queryString;
+                    [blockSelf.query.managedObjectContext saveToPersistentStore:nil];
                 }];
             }
 

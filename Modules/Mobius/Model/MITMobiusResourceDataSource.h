@@ -9,6 +9,7 @@ typedef NS_ENUM(NSInteger, MITMobiusQuickSearchType) {
 
 @interface MITMobiusResourceDataSource : NSObject
 @property (nonatomic,strong) NSDate *lastFetched;
+@property (nonatomic,readonly,strong) MITMobiusRecentSearchQuery *query;
 @property (nonatomic,readonly,copy) NSString *queryString;
 @property (nonatomic,readonly,copy) NSArray *resources;
 
