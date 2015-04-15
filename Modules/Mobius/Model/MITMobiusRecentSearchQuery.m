@@ -3,20 +3,6 @@
 #import "MITMobiusModel.h"
 #import "MITAdditions.h"
 
-/*
-
- Sort resources by room	https://kairos-dev.mit.edu:3001/resource?params={"sort":[{"field":"room"}]}
- Find all resources in the 'Machine Tool' category	https://kairos-dev.mit.edu:3001/resource?params={"where":[{"field":"_category","value":"5470becd28d18f5782f2efc1"}]}
- Find all resources of type 'Drill Press'	https://kairos-dev.mit.edu:3001/resource?params={"where":[{"field":"_type","value":"5470c10128d18f5782f2efd5"}]}
- Find all resources in building 35	https://kairos-dev.mit.edu:3001/resource?params={"where":[{"field":"room","operator":"like","value":"35-"}]}
- Find all resources that have any attribute relating to 'steel'	https://kairos-dev.mit.edu:3001/resource?params={"where":[{"field":"attribute_values.value","operator":"like","value":"steel"}]}
- Find all resources that have the attribute 'Machine Capabilities' with a value of 'straight cuts' or 'angled cuts'	https://kairos-dev.mit.edu:3001/resource?params={"where":[{"field":"attribute_values._attribute","value":"5475e4979147112657976a4d"},{"field":"attribute_values.value","operator":"in","value":["straight cuts","angled cuts"]}]}
- */
-
-/*
- {"or":true,"where":[{"field":"dlc","operator":"like","value":"cnc"},{"field":"status","operator":"like","value":"cnc"},{"field":"attribute_values.value","operator":"like","value":"cnc"}]}
- */
-
 @implementation MITMobiusRecentSearchQuery
 
 @dynamic date;
