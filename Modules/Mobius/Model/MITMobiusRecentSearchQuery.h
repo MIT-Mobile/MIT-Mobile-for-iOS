@@ -10,6 +10,8 @@
 @property (nonatomic, retain) NSString * text;
 @property (nonatomic, retain) MITMobiusRecentSearchList *search;
 @property (nonatomic, retain) NSOrderedSet *options;
+
+- (NSString*)URLParameterString;
 @end
 
 @interface MITMobiusRecentSearchQuery (CoreDataGeneratedAccessors)
