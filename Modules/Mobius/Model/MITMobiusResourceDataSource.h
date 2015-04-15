@@ -5,12 +5,15 @@ typedef NS_ENUM(NSInteger, MITMobiusQuickSearchType) {
     MITMobiusQuickSearchResourceType,
 };
 
+@class MITMobiusRecentSearchQuery;
+
 @interface MITMobiusResourceDataSource : NSObject
 @property (nonatomic,strong) NSDate *lastFetched;
 @property (nonatomic,readonly,copy) NSString *queryString;
 @property (nonatomic,readonly,copy) NSArray *resources;
 
 - (instancetype)init;
+- (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)getObjectsForRoute:(MITMobiusQuickSearchType)type completion:(void(^)(NSArray* objects, NSError *error))block;
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context;
