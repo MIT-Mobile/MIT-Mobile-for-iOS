@@ -294,6 +294,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
             MITMobiusSegmentedHeader *segmentedHeaderView = (MITMobiusSegmentedHeader*)headerView;
             segmentedHeaderView.delegate = self;
             segmentedHeaderView.segmentedControl.selectedSegmentIndex = self.currentSegementedSection;
+            segmentedHeaderView.segmentedControl.tintColor = [UIColor colorWithRed:132.0/255.0 green:132.0/255.0 blue:132.0/255.0 alpha:1.0];
         }
         
         return headerView;
