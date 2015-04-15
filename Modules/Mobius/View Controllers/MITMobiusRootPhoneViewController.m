@@ -201,6 +201,34 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     // Dispose of any resources that can be recreated.
 }
 
+- (void)reloadDataSourceForQuery:(MITMobiusRecentSearchQuery*)query completion:(void(^)(void))block
+{
+    NSParameterAssert(query);
+    __weak MITMobiusRootPhoneViewController *weakSelf = self;
+    [self.dataSource resourcesWithQueryObject:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
+        MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            DDLogWarn(@"Error: %@",error);
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+            }
+        } else {
+            [blockSelf.managedObjectContext performBlockAndWait:^{
+                [blockSelf.managedObjectContext reset];
+                blockSelf.rooms = nil;
+
+                if (block) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+                }
+            }];
+        }
+    }];
+}
+
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
 {
     if ([queryString length]) {
@@ -1019,16 +1047,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 #pragma mark MITMobiusAdvancedSearchDelegate
 - (void)didDismissAdvancedSearchViewController:(MITMobiusAdvancedSearchViewController *)viewController
 {
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+
+    if (query) {
+        [self reloadDataSourceForQuery:query completion:^{
+            self.rooms = nil;
+            [self.resourcesTableViewController.tableView reloadData];
+            [self.mapViewController reloadMapAnimated:YES];
+        }];
+    }
+    
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
 - (void)advancedSearchViewControllerDidCancelSearch:(MITMobiusAdvancedSearchViewController *)viewController
 {
-    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
-    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
-
-    if (query) {
-    }
     [self dismissViewControllerAnimated:YES completion:nil];
 }
 
