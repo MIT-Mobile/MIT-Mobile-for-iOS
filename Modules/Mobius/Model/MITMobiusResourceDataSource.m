@@ -181,7 +181,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             }
         }];
     } else {
-        NSURL *resourceReservations = [MITMobiusResourceDataSource defaultServerURL];
+        NSURL *resourceReservations = [MITMobiusDataSource mobiusServerURL];
         NSString *urlPath = nil;
         if (type == MITMobiusQuickSearchRoomSet) {
             NSString *encodedString = [@"resourceroomset" urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
