@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6751" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6736"/>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -31,27 +31,30 @@
                         <viewControllerLayoutGuide type="bottom" id="IC8-GW-1cV"/>
                     </layoutGuides>
                     <view key="view" contentMode="scaleToFill" id="9Jw-qO-vKS">
-                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
+                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use this tool to find machines and machine shops at MIT" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Sy-mP-TMp">
-                                        <rect key="frame" x="32" y="40" width="536" height="20"/>
-                                        <fontDescription key="fontDescription" style="UICTFontTextStyleBody"/>
-                                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
-                                        <nil key="highlightedColor"/>
-                                    </label>
+                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="YhE-qf-K7N">
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <connections>
+                                            <outlet property="dataSource" destination="3Ed-Jg-Y7M" id="KLw-SP-CXn"/>
+                                            <outlet property="delegate" destination="3Ed-Jg-Y7M" id="rX4-pB-F59"/>
+                                        </connections>
+                                    </tableView>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
-                                    <constraint firstAttribute="trailing" secondItem="1Sy-mP-TMp" secondAttribute="trailing" constant="32" id="0Hg-oR-3II"/>
-                                    <constraint firstItem="1Sy-mP-TMp" firstAttribute="leading" secondItem="Gc0-hW-Xee" secondAttribute="leading" constant="32" id="JU0-ee-Lue"/>
-                                    <constraint firstItem="1Sy-mP-TMp" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="topMargin" constant="32" id="QsI-WA-Nft"/>
+                                    <constraint firstAttribute="bottom" secondItem="YhE-qf-K7N" secondAttribute="bottom" id="Jr0-Xo-jHa"/>
+                                    <constraint firstItem="YhE-qf-K7N" firstAttribute="leading" secondItem="Gc0-hW-Xee" secondAttribute="leading" id="fax-fU-IIa"/>
+                                    <constraint firstAttribute="trailing" secondItem="YhE-qf-K7N" secondAttribute="trailing" id="ipo-iL-mri"/>
+                                    <constraint firstItem="YhE-qf-K7N" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="top" id="j9S-JQ-N9A"/>
                                 </constraints>
                             </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
+                            <view hidden="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
                                 <rect key="frame" x="0.0" y="64" width="600" height="536"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
@@ -88,15 +91,16 @@
                             <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="xFH-fi-60c"/>
                         </constraints>
                     </view>
+                    <extendedEdge key="edgesForExtendedLayout"/>
                     <navigationItem key="navigationItem" id="cSb-3Z-2e2">
                         <nil key="title"/>
                     </navigationItem>
                     <connections>
                         <outlet property="contentContainerView" destination="Hx1-pQ-i3W" id="EPe-h4-c1G"/>
                         <outlet property="defaultMapHeightConstraint" destination="FQx-zw-qKg" id="oU9-Kj-VEt"/>
-                        <outlet property="helpTextView" destination="Gc0-hW-Xee" id="Shl-ad-Fy2"/>
                         <outlet property="mapHeightConstraint" destination="6xb-VA-nM2" id="FfP-vB-reD"/>
                         <outlet property="mapViewContainer" destination="RFz-L3-5Vl" id="WrW-JI-8XS"/>
+                        <outlet property="quickLookupTableView" destination="YhE-qf-K7N" id="IaZ-SA-Hri"/>
                         <outlet property="tableViewContainer" destination="hye-Ag-mVg" id="k4i-iR-3BE"/>
                         <outlet property="view" destination="9Jw-qO-vKS" id="ztL-Zy-ImC"/>
                     </connections>

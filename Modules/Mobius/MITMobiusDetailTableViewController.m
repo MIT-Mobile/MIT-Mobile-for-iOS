@@ -159,7 +159,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
     CGRect tableHeaderViewFrame = detailHeader.frame;
     tableHeaderViewFrame.size.height = height;
     detailHeader.frame = tableHeaderViewFrame;
-    self.tableView.tableHeaderView = detailHeader;
+    tableView.tableHeaderView = detailHeader;
 }
 
 - (NSArray *)hours
