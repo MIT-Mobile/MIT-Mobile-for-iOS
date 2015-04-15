@@ -1,56 +1,34 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7531" systemVersion="14D131" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7520"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
         <placeholder placeholderIdentifier="IBFirstResponder" id="-2" customClass="UIResponder"/>
-        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" rowHeight="83" id="4eP-Jm-quY" customClass="MITMobiusAdvancedSearchSelectedAttributeCell">
+        <tableViewCell contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" textLabel="puc-SI-87D" detailTextLabel="o7P-Pm-GXU" rowHeight="83" style="IBUITableViewCellStyleSubtitle" id="E5i-AS-J37" customClass="MITMobiusAdvancedSearchSelectedAttributeCell">
             <rect key="frame" x="0.0" y="0.0" width="306" height="83"/>
             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4eP-Jm-quY" id="CxB-mY-PXk">
+            <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="E5i-AS-J37" id="adW-ef-PN1">
                 <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Plastic" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="POX-6F-Fbg">
-                        <rect key="frame" x="15" y="36.5" width="276" height="20"/>
-                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="17"/>
+                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Title" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="puc-SI-87D">
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleSubhead"/>
+                        <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                        <nil key="highlightedColor"/>
+                    </label>
+                    <label opaque="NO" multipleTouchEnabled="YES" contentMode="left" text="Subtitle" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" id="o7P-Pm-GXU">
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                        <fontDescription key="fontDescription" style="UICTFontTextStyleHeadline"/>
                         <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
                         <nil key="highlightedColor"/>
                     </label>
-                    <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Materials" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="qVh-pP-4e4">
-                        <rect key="frame" x="15" y="18" width="276" height="17.5"/>
-                        <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="15"/>
-                        <color key="textColor" red="0.56470588239999997" green="0.56470588239999997" blue="0.58039215690000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                        <nil key="highlightedColor"/>
-                    </label>
                 </subviews>
-                <constraints>
-                    <constraint firstAttribute="trailing" secondItem="POX-6F-Fbg" secondAttribute="trailing" constant="15" id="5WG-Iw-C1B"/>
-                    <constraint firstItem="qVh-pP-4e4" firstAttribute="top" secondItem="CxB-mY-PXk" secondAttribute="topMargin" constant="10" id="OJW-0X-OQQ"/>
-                    <constraint firstItem="POX-6F-Fbg" firstAttribute="top" secondItem="qVh-pP-4e4" secondAttribute="bottom" constant="1" id="S4P-ZL-Pm0"/>
-                    <constraint firstAttribute="centerX" secondItem="POX-6F-Fbg" secondAttribute="centerX" constant="-182" id="fyX-fq-1Bk"/>
-                    <constraint firstAttribute="bottomMargin" secondItem="qVh-pP-4e4" secondAttribute="bottom" constant="6" id="guc-ah-WGx"/>
-                    <constraint firstItem="POX-6F-Fbg" firstAttribute="leading" secondItem="CxB-mY-PXk" secondAttribute="leading" constant="15" id="n8y-Bi-9IY"/>
-                    <constraint firstItem="qVh-pP-4e4" firstAttribute="leading" secondItem="CxB-mY-PXk" secondAttribute="leading" constant="15" id="s4s-6n-6cW"/>
-                    <constraint firstAttribute="trailing" secondItem="qVh-pP-4e4" secondAttribute="trailing" constant="15" id="udf-sa-sPP"/>
-                    <constraint firstAttribute="bottomMargin" relation="greaterThanOrEqual" secondItem="POX-6F-Fbg" secondAttribute="bottom" constant="7" id="yTc-1F-pV5"/>
-                </constraints>
-                <variation key="default">
-                    <mask key="constraints">
-                        <exclude reference="guc-ah-WGx"/>
-                        <exclude reference="fyX-fq-1Bk"/>
-                    </mask>
-                </variation>
             </tableViewCellContentView>
-            <connections>
-                <outlet property="subtitleLabel" destination="POX-6F-Fbg" id="eMf-3s-wGd"/>
-                <outlet property="titleLabel" destination="qVh-pP-4e4" id="kwX-Py-n2v"/>
-            </connections>
-            <point key="canvasLocation" x="25" y="201.5"/>
+            <point key="canvasLocation" x="20" y="392.5"/>
         </tableViewCell>
     </objects>
 </document>
