@@ -88,6 +88,7 @@ NSString * const MITImageMapCategoryRooms                = @"map-category-room";
 NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
 
 #pragma mark - Mobius
+NSString * const MITImageMobiusResourceOffline = @"mobius-resource-offline";
 NSString * const MITImageMobiusAccordionOpened = @"mobius-accordion-opened";
 NSString * const MITImageMobiusAccordionClosed = @"mobius-accordion-closed";
 NSString * const MITImageMobiusBarButtonAdvancedSearch = @"mobius-bar-advanced-search";

@@ -1,6 +1,6 @@
 #import "MITMobiusResourceHours.h"
 #import "MITMobiusResource.h"
-
+#import "Foundation+MITAdditions.h"
 
 @implementation MITMobiusResourceHours
 

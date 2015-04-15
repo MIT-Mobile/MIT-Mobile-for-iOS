@@ -109,6 +109,12 @@
             self.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewEmail];
             break;
         }
+        case MITActionRowTypeHours: {
+            [self setTitle:@"hours"];
+            [self setDetailText:detailText];
+            self.accessoryView = nil;
+            break;
+        }
     }
     
     [self setNeedsUpdateConstraints];

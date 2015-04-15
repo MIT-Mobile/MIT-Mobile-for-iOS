@@ -10,7 +10,8 @@ typedef NS_ENUM(NSInteger, MITActionRowType) {
     MITActionRowTypeOpenTo,
     MITActionRowTypeCost,
     MITActionRowTypeSponsors,
-    MITActionRowTypeContact
+    MITActionRowTypeContact,
+    MITActionRowTypeHours
 };
 
 @interface MITActionCell : UITableViewCell

@@ -70,6 +70,10 @@
         <attribute name="name" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="resource" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="MobiusResource" inverseName="owners" inverseEntity="MobiusResource" syncable="YES"/>
     </entity>
+    <entity name="MobiusResourceType" representedClassName="MITMobiusResourceType" syncable="YES">
+        <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
+        <attribute name="type" optional="YES" attributeType="String" syncable="YES"/>
+    </entity>
     <entity name="MobiusRoomSet" representedClassName="MITMobiusRoomSet" syncable="YES">
         <attribute name="code" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="identifier" optional="YES" attributeType="String" syncable="YES"/>
@@ -96,5 +100,6 @@
         <element name="MobiusResourceOwner" positionX="0" positionY="0" width="128" height="75"/>
         <element name="MobiusRoomSet" positionX="0" positionY="0" width="128" height="105"/>
         <element name="MobiusSearchOption" positionX="9" positionY="117" width="128" height="105"/>
+        <element name="MobiusResourceType" positionX="9" positionY="117" width="128" height="73"/>
     </elements>
 </model>
