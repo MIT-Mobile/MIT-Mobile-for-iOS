@@ -22,7 +22,7 @@
             [values addObject:attributeValue.text];
         }];
 
-        value = [values componentsJoinedByString:@","];
+        value = [values componentsJoinedByString:@", "];
     }
 
     return value;
