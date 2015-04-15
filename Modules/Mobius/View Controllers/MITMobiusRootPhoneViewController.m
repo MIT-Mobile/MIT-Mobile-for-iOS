@@ -33,7 +33,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing, MITResourceFilterDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusAdvancedSearchDelegate, UITableViewDataSourceDynamicSizing, MITResourceFilterDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -188,8 +188,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [super viewWillAppear:animated];
 
     [self transitionToState:self.currentState animated:animated completion:nil];
-    
-    [self setupNavigationBar];
 
     if (self.isMapFullScreen) {
         [self.navigationController setToolbarHidden:NO animated:animated];
@@ -289,7 +287,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         self.searchBarContainer = searchBarContainer;
     }
 
-    [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+    switch (self.currentState) {
+        case MITMobiusRootViewControllerStateInitial:
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateResults: {
+            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
+
+            UIImage *image = [UIImage imageNamed:MITImageMobiusBarButtonAdvancedSearch];
+            UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
+            [self.navigationItem setRightBarButtonItem:filterBarButton animated:YES];
+        } break;
+
+        case MITMobiusRootViewControllerStateSearch: {
+            [self.navigationItem setLeftBarButtonItem:nil animated:YES];
+            [self.navigationItem setRightBarButtonItem:nil animated:YES];
+        } break;
+    }
 }
 
 #pragma mark Public Properties
@@ -413,8 +426,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 #pragma mark - Private
 - (IBAction)_didTapShowFilterButton:(UIBarButtonItem*)sender
 {
-    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] init];
-    viewController.query.text = self.searchBar.text;
+    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithString:self.searchBar.text];
+    viewController.delegate = self;
 
     viewController.modalPresentationStyle = UIModalPresentationFullScreen;
     viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
@@ -459,6 +472,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
+        [self setupNavigationBar];
         return;
     }
     
@@ -537,10 +551,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             
         case MITMobiusRootViewControllerStateSearch: {
             self.recentSearchViewController.view.alpha = 1;
-
-            UIImage *image = [UIImage imageNamed:MITImageBarButtonFilter];
-            UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
-            [self.navigationItem setLeftBarButtonItem:filterBarButton animated:animated];
             [self.searchBar setShowsCancelButton:YES animated:animated];
         } break;
             
@@ -582,7 +592,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
             self.recentSearchViewController.view.hidden = YES;
         } break;
             
@@ -590,6 +599,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             self.contentContainerView.hidden = YES;
         } break;
     }
+
+    [self setupNavigationBar];
 }
 
 - (void)searchSuggestionsTimerFired:(NSTimer*)timer
@@ -1004,5 +1015,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         }];
     }
 }
+
+#pragma mark MITMobiusAdvancedSearchDelegate
+- (void)didDismissAdvancedSearchViewController:(MITMobiusAdvancedSearchViewController *)viewController
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)advancedSearchViewControllerDidCancelSearch:(MITMobiusAdvancedSearchViewController *)viewController
+{
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+
+    if (query) {
+    }
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 @end
