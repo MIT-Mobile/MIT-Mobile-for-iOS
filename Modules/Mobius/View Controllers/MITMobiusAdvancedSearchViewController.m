@@ -2,6 +2,7 @@
 #import "MITMobiusAttributesDataSource.h"
 #import "MITMobiusModel.h"
 #import "MITAdditions.h"
+#import "MITMobiusAdvancedSearchSelectedAttributeCell.h"
 
 @interface MITMobiusAdvancedSearchViewController ()
 @property (nonatomic,strong) MITMobiusAttributesDataSource *dataSource;
@@ -74,8 +75,10 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     [super viewDidLoad];
 
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchAttributeCellIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchSelectedAttributeCellIdentifier];
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusAdvancedSearchAttributeValueCellIdentifier];
+
+    UINib *nib = [UINib nibWithNibName:NSStringFromClass([MITMobiusAdvancedSearchSelectedAttributeCell class]) bundle:nil];
+    [self.tableView registerNib:nib forCellReuseIdentifier:MITMobiusAdvancedSearchSelectedAttributeCellIdentifier];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -318,16 +321,16 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         NSUInteger index = indexPath.row;
 
         if (index == 0 && self.query.text.length) {
-            cell.textLabel.text = [NSString stringWithFormat:@"\"%@\"",self.query.text];
-            cell.detailTextLabel.text = @"Text";
+            cell.textLabel.text = @"Text";
+            cell.detailTextLabel.text = [NSString stringWithFormat:@"\"%@\"",self.query.text];
         } else {
             if (self.query.text.length) {
                 --index;
             }
 
             MITMobiusSearchOption *option = self.query.options[index];
-            cell.textLabel.text = option.value;
-            cell.detailTextLabel.text = option.attribute.label;
+            cell.textLabel.text = option.attribute.label;
+            cell.detailTextLabel.text = option.value;
         }
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
