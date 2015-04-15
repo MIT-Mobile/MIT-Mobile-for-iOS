@@ -68,7 +68,9 @@
         [whereClause addObjectsFromArray:@[attributeClause,valueClause]];
     }];
 
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:whereClause options:0 error:nil];
+    parameters[@"where"] = whereClause;
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:nil];
     if (jsonData) {
         return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
     } else {
