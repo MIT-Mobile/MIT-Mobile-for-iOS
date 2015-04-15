@@ -43,11 +43,11 @@
     } else if ([self.widgetType isEqualToString:@"autocomplete"]) {
         return MITMobiusAttributeTypeAutocompletion;
     } else if ([self.widgetType isEqualToString:@"checkbox"]) {
-        return MITMobiusAttributeTypeOptionSingle;
+        return MITMobiusAttributeTypeOptionMultiple;
     } else if ([self.widgetType isEqualToString:@"select"]) {
         return MITMobiusAttributeTypeOptionSingle;
     } else if ([self.widgetType isEqualToString:@"radio"]) {
-        return MITMobiusAttributeTypeOptionMultiple;
+        return MITMobiusAttributeTypeOptionSingle;
     }
 
     NSString *reason = [NSString stringWithFormat:@"{%@:%@}",self.widgetType,self.fieldType];
