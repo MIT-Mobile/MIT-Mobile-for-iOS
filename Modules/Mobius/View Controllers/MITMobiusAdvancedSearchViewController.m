@@ -92,6 +92,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
         [self.navigationItem setLeftBarButtonItem:cancelBarButtonItem animated:animated];
         [self.navigationItem setRightBarButtonItem:doneBarButtonItem animated:animated];
+
+        self.navigationItem.title = @"Advanced Search";
     }
 
     if (!self.query) {
