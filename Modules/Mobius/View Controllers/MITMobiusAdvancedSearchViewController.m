@@ -104,6 +104,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         [self.tableView reloadData];
     }];
 
+
+    [self _updateNavigationBarState:animated];
 }
 
 #pragma mark Interface Actions
@@ -127,6 +129,17 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 }
 
 #pragma mark Data Updating
+- (void)_updateNavigationBarState:(BOOL)animated
+{
+    if (self.query.text.length > 0) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+    } else if ([self numberOfSearchOptions] > 0) {
+        self.navigationItem.rightBarButtonItem.enabled = YES;
+    } else {
+        self.navigationItem.rightBarButtonItem.enabled = NO;
+    }
+}
+
 - (void)_collapseItemAtIndexPath:(NSIndexPath*)indexPath
 {
     MITMobiusAttribute *attribute = [self attributeForIndexPath:indexPath];
@@ -312,6 +325,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         [self unsetAttributeValues:[searchOption.values array]];
         [self.tableView endUpdates];
     }
+
+    [self _updateNavigationBarState:YES];
 }
 
 - (BOOL)hasFreeText
@@ -543,6 +558,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:MITMobiusAdvancedSearchSelectedAttributes] withRowAnimation:UITableViewRowAnimationAutomatic];
     [self.tableView reloadRowsAtIndexPaths:updatedIndexPaths withRowAnimation:UITableViewRowAnimationAutomatic];
+
+    [self _updateNavigationBarState:NO];
 }
 
 - (void)setAttributeValue:(MITMobiusAttributeValue*)attributeValue
@@ -594,6 +611,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
         [self.tableView reloadRowsAtIndexPaths:updatedIndexPaths withRowAnimation:UITableViewRowAnimationNone];
     }
+
+    [self _updateNavigationBarState:NO];
 }
 
 - (BOOL)isAttributeValueSelected:(MITMobiusAttributeValue*)value
