@@ -387,7 +387,7 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         }
 
         UIButton *button = [UIButton buttonWithType:UIButtonTypeSystem];
-        [button setTitle:@"clear" forState:UIControlStateNormal];
+        [button setTitle:@"Clear" forState:UIControlStateNormal];
         [button setTitleColor:[UIColor mit_tintColor] forState:UIControlStateNormal];
         [button addTarget:self action:@selector(attributeClearButtonWasTapped:) forControlEvents:UIControlEventTouchUpInside];
         [button sizeToFit];
