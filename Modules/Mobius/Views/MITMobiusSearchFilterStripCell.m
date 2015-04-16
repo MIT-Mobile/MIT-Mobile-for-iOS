@@ -10,7 +10,10 @@
 
 - (void)awakeFromNib
 {
-    // Initialization code
+    UIView *backgroundView = [[UIView alloc] initWithFrame:self.bounds];
+    backgroundView.backgroundColor = [UIColor colorWithWhite:0.4 alpha:0.6];
+    backgroundView.layer.cornerRadius = 2;
+    self.selectedBackgroundView = backgroundView;
 }
 
 - (void)setText:(NSString *)text

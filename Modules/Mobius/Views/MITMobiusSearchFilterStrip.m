@@ -74,6 +74,7 @@ static NSString * const MITMobiusSearchFilterStripCellIdentifier = @"MITMobiusSe
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:[rightGraident(==16)]-0-|" options:0 metrics:nil views:@{@"rightGraident": rightGradientImageView}]];
     [self addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-0-[rightGraident]-0-|" options:0 metrics:nil views:@{@"rightGraident": rightGradientImageView}]];
     
+    // Flip the image 180 degrees to make a left endcap
     CGSize imageSize = rightGradientImage.size;
     UIGraphicsBeginImageContext(imageSize);
     CGContextRef context = UIGraphicsGetCurrentContext();
@@ -158,6 +159,8 @@ static NSString * const MITMobiusSearchFilterStripCellIdentifier = @"MITMobiusSe
 
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
+    [self.collectionView deselectItemAtIndexPath:indexPath animated:YES];
+    
     if ([self.delegate respondsToSelector:@selector(searchFilterStrip:didSelectFilterAtIndex:)]) {
         [self.delegate searchFilterStrip:self didSelectFilterAtIndex:indexPath.row];
     }

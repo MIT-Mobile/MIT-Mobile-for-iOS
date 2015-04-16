@@ -14,13 +14,13 @@
                 <rect key="frame" x="0.0" y="0.0" width="295" height="34"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NVK-cO-Ps3">
-                        <rect key="frame" x="0.0" y="10" width="272" height="14"/>
+                        <rect key="frame" x="5" y="10" width="272" height="14"/>
                         <fontDescription key="fontDescription" type="system" pointSize="13"/>
                         <color key="textColor" red="0.32941176470588235" green="0.32941176470588235" blue="0.32941176470588235" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <imageView userInteractionEnabled="NO" contentMode="scaleToFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="mobius-filter-strip-disclosure-indicator" translatesAutoresizingMaskIntoConstraints="NO" id="Kt8-Zp-2kd">
-                        <rect key="frame" x="277" y="11" width="8" height="12"/>
+                        <rect key="frame" x="282" y="11" width="8" height="12"/>
                         <constraints>
                             <constraint firstAttribute="height" constant="12" id="8BC-N7-mtg"/>
                             <constraint firstAttribute="width" constant="8" id="PZp-Qc-M7E"/>
@@ -30,9 +30,9 @@
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
             </view>
             <constraints>
-                <constraint firstItem="NVK-cO-Ps3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" id="4as-lH-8ET"/>
+                <constraint firstItem="NVK-cO-Ps3" firstAttribute="leading" secondItem="gTV-IL-0wX" secondAttribute="leading" constant="5" id="4as-lH-8ET"/>
                 <constraint firstItem="NVK-cO-Ps3" firstAttribute="top" secondItem="gTV-IL-0wX" secondAttribute="top" constant="10" id="DQP-lo-jVh"/>
-                <constraint firstAttribute="trailing" secondItem="Kt8-Zp-2kd" secondAttribute="trailing" constant="10" id="SjA-h6-e7g"/>
+                <constraint firstAttribute="trailing" secondItem="Kt8-Zp-2kd" secondAttribute="trailing" constant="5" id="SjA-h6-e7g"/>
                 <constraint firstAttribute="bottom" secondItem="NVK-cO-Ps3" secondAttribute="bottom" constant="10" id="YUv-5b-L0s"/>
                 <constraint firstItem="Kt8-Zp-2kd" firstAttribute="leading" secondItem="NVK-cO-Ps3" secondAttribute="trailing" constant="5" id="caO-8f-FLQ"/>
                 <constraint firstAttribute="centerY" secondItem="Kt8-Zp-2kd" secondAttribute="centerY" id="e5n-QS-faI"/>
