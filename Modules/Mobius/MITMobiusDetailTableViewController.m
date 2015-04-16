@@ -4,11 +4,13 @@
 #import "MITTitleDescriptionCell.h"
 #import "MITMobiusSpecificationsHeader.h"
 #import "MITMobiusDetailHeader.h"
+#import "MITMobiusImage.h"
 #import "MITMobiusModel.h"
 #import "MITMapModelController.h"
 #import "MITMobiusSegmentedHeader.h"
 #import "MITMobiusDailyHoursObject.h"
 #import "MITMobiusTitleValueObject.h"
+#import "MITImageGalleryViewController.h"
 
 static NSString * const MITActionCellIdentifier = @"MITActionCellIdentifier";
 static NSString * const MITTitleDescriptionCellIdentifier = @"MITTitleDescriptionCellIdentifier";
@@ -32,7 +34,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
     MITMobiusTableViewSectionSpecs
 };
 
-@interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing, MITMobiusSegmentedHeaderDelegate>
+@interface MITMobiusDetailTableViewController() <UITableViewDataSourceDynamicSizing, MITMobiusSegmentedHeaderDelegate, MITImageGalleryDataSource>
 
 @property(nonatomic,strong) NSMutableArray *titleValueObjects;
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
@@ -149,6 +151,12 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
                      owner:self options:nil]
                     firstObject];
     detailHeader.resource = self.resource;
+    detailHeader.galleryHandler = ^{
+        MITImageGalleryViewController *galleryVC = [[MITImageGalleryViewController alloc] init];
+        galleryVC.dataSource = self;
+        [self presentViewController:galleryVC animated:YES completion:^{
+        }];
+    };
     
     tableView.tableHeaderView = detailHeader;
     [detailHeader setNeedsLayout];
@@ -330,6 +338,23 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 {
     self.currentSegementedSection = segmentedControl.selectedSegmentIndex;
     [self refreshEventRows];
+}
+
+#pragma mark MITImageGalleryDataSource
+
+- (NSInteger)numberOfImagesInGallery:(MITImageGalleryViewController *)galleryViewController {
+    return self.resource.images.count;
+}
+
+- (NSURL *)gallery:(MITImageGalleryViewController *)gallery imageURLAtIndex:(NSInteger)index {
+    __block NSURL *imageURL = nil;
+    [self.resource.managedObjectContext performBlockAndWait:^{
+        CGSize idealImageSize = CGSizeZero;
+        idealImageSize = self.view.bounds.size;
+        MITMobiusImage *image = self.resource.images[index];
+        imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
+    }];
+    return imageURL;
 }
 
 @end
