@@ -20,9 +20,16 @@
 #import "MITMobiusQuickSearchTableViewController.h"
 #import "MITMobiusRoomSet.h"
 #import "MITMobiusResourceType.h"
+#import "MITMobiusQuickSearchHeaderTableViewCell.h"
 
+typedef NS_ENUM(NSInteger, MITMobiusQuickSearchTableViewRows) {
+    MITMobiusQuickSearchHeaderTableRow = 0,
+    MITMobiusQuickSearchRoomSetTableRow,
+    MITMobiusQuickSearchResourceTypeTableRow,
+};
 
 static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiusQuickSearchTableViewCellIdentifier";
+static NSString * const MITMobiusQuickSearchHeaderTableViewCellIdentifier = @"MITMobiusQuickSearchHeaderTableViewCellIdentifier";
 
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
@@ -105,40 +112,14 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.recentSearchViewController.view.alpha = 0.;
 }
 
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-    [self setupTableViewHeader:self.quickLookupTableView];
-}
-
 - (void)setupTableView:(UITableView *)tableView
 {
     [self.quickLookupTableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
+    
+    [self.quickLookupTableView registerNib:[MITMobiusQuickSearchHeaderTableViewCell quickSearchHeaderCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchHeaderTableViewCellIdentifier];
 
     tableView.tableFooterView = [UIView new];
     tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1];
-}
-
-- (void)setupTableViewHeader:(UITableView *)tableView
-{
-    if (tableView.tableHeaderView) {
-        return;
-    }
-    MITMobiusRootHeader *quickSearchHeader = [[[NSBundle mainBundle]
-                                            loadNibNamed:@"MITMobiusRootHeader"
-                                            owner:self options:nil]
-                                           firstObject];
-    tableView.tableHeaderView = quickSearchHeader;
-    
-    [quickSearchHeader setNeedsLayout];
-    [quickSearchHeader layoutIfNeeded];
-    CGFloat height = [quickSearchHeader systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    
-    //update the header's frame and set it again
-    CGRect tableHeaderViewFrame = quickSearchHeader.frame;
-    tableHeaderViewFrame.size.height = height;
-    quickSearchHeader.frame = tableHeaderViewFrame;
-    tableView.tableHeaderView = quickSearchHeader;
 }
 
 - (void)viewDidLayoutSubviews
@@ -943,7 +924,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return 2;
+    return 3;
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
@@ -966,9 +947,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (NSString*)reuseIdentifierForRowAtIndexPath:(NSIndexPath*)indexPath
 {
-    if (indexPath.row == MITMobiusQuickSearchResourceType ||
-        indexPath.row == MITMobiusQuickSearchRoomSet) {
+    if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow ||
+        indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
         return MITMobiusQuickSearchTableViewCellIdentifier;
+    } else if (indexPath.row == MITMobiusQuickSearchHeaderTableRow) {
+        return MITMobiusQuickSearchHeaderTableViewCellIdentifier;
     }
     return nil;
 }
@@ -976,7 +959,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    if (indexPath.row == MITMobiusQuickSearchResourceType) {
+    if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
         quickSearchVC.typeOfObjects = MITMobiusQuickSearchResourceType;
@@ -984,7 +967,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         quickSearchVC.title = @"Machine Types";
         [self.navigationController pushViewController:quickSearchVC animated:YES];
 
-    } else if (indexPath.row == MITMobiusQuickSearchRoomSet) {
+    } else if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
         MITMobiusQuickSearchTableViewController *quickSearchVC = [[MITMobiusQuickSearchTableViewController alloc] init];
         quickSearchVC.dataSource = self.dataSource;
         quickSearchVC.typeOfObjects = MITMobiusQuickSearchRoomSet;
@@ -998,14 +981,19 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-
+    if (reuseIdentifier == MITMobiusQuickSearchHeaderTableViewCellIdentifier) {
+        MITMobiusQuickSearchHeaderTableViewCell *quickSearch = (MITMobiusQuickSearchHeaderTableViewCell*)cell;
+        quickSearch.label.text = @"Sample searches:\nMaterials + machine capability: ‘plastic steel hole’\nShop + machine type: ‘Edgerton lathe’";
+        quickSearch.backgroundColor = [UIColor clearColor];
+        quickSearch.selectionStyle = UITableViewCellSelectionStyleNone;
+    }
     if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
         return;
     }
-    if (indexPath.row == MITMobiusQuickSearchRoomSet) {
+    if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Shops & Labs";
-    } else if (indexPath.row == MITMobiusQuickSearchResourceType) {
+    } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
         MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
         quickSearch.label.text = @"Machine Types";
     }
