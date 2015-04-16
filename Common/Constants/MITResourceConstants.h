@@ -88,7 +88,7 @@ extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
 extern NSString * const MITImageMobiusAccordionOpened;
 extern NSString * const MITImageMobiusAccordionClosed;
 extern NSString * const MITImageMobiusBarButtonAdvancedSearch;
-
+extern NSString * const MITImageMobiusFilterStripEndcapRight;
 
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;

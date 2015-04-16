@@ -91,6 +91,7 @@ NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landma
 NSString * const MITImageMobiusAccordionOpened = @"mobius-accordion-opened";
 NSString * const MITImageMobiusAccordionClosed = @"mobius-accordion-closed";
 NSString * const MITImageMobiusBarButtonAdvancedSearch = @"mobius-bar-advanced-search";
+NSString * const MITImageMobiusFilterStripEndcapRight = @"mobius-filter-strip-endcap-right";
 
 #pragma mark - Scanner
 NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";

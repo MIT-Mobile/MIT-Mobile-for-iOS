@@ -15,6 +15,8 @@
 #import "MITAdditions.h"
 #import "MITMobiusRoomObject.h"
 
+#import "MITMobiusSearchFilterStrip.h"
+
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
@@ -24,7 +26,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -53,6 +55,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 @property (nonatomic, copy) NSDictionary *rooms;
 @property (nonatomic, readonly, copy) NSArray *allResources;
+
+@property (nonatomic, strong) MITMobiusSearchFilterStrip *strip;
 
 @end
 
@@ -88,6 +92,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+    
+    [self setupFilterStrip];
 }
 
 - (void)viewDidLayoutSubviews
@@ -102,6 +108,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     if (!self.isMapFullScreen) {
         _standardMapHeight = CGRectGetHeight(self.mapViewContainer.frame);
     }
+}
+
+- (void)viewDidAppear:(BOOL)animated
+{
+    [super viewDidAppear:animated];
+    [self.strip reloadData];
 }
 
 - (void)updateViewConstraints
@@ -241,6 +253,17 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 
     [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+}
+
+- (void)setupFilterStrip
+{
+    self.strip = [[MITMobiusSearchFilterStrip alloc] init];
+    self.strip.translatesAutoresizingMaskIntoConstraints = NO;
+    self.strip.delegate = self;
+    self.strip.dataSource = self;
+    [self.view addSubview:self.strip];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[strip]-0-|" options:0 metrics:nil views:@{@"strip": self.strip}]];
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-navBarBottomY-[strip(==34)]" options:0 metrics:@{@"navBarBottomY": @(CGRectGetMaxY(self.navigationController.navigationBar.frame))} views:@{@"strip": self.strip}]];
 }
 
 #pragma mark Public Properties
@@ -845,6 +868,36 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     NSString *key = buildingsArray[roomIndex];
     MITMobiusRoomObject *room = self.rooms[key];
     return room.resources[resourceIndex];
+}
+
+#pragma mark MITMobiusSearchFilterStrip Delegate/DataSource
+
+- (NSInteger)numberOfFiltersForStrip:(MITMobiusSearchFilterStrip *)filterStrip
+{
+    return 3;
+}
+
+- (NSString *)searchFilterStrip:(MITMobiusSearchFilterStrip *)filterStrip textForFilterAtIndex:(NSInteger)index
+{
+    switch (index) {
+        case 0: {
+            return @"thing1";
+        }
+        case 1: {
+            return @"Another thing I am totally testing for now";
+        }
+        case 2: {
+            return @"But: for real - I need some more testing, and this should scroll now";
+        }
+        default: {
+            return @"should not happen";
+        }
+    }
+}
+
+- (void)searchFilterStrip:(MITMobiusSearchFilterStrip *)filterStrip didSelectFilterAtIndex:(NSInteger)index
+{
+    NSLog(@"filter selected at index: %li", (long)index);
 }
 
 @end
