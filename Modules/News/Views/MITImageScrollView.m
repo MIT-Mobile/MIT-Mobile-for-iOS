@@ -75,7 +75,11 @@
 
 - (void)resetZoom
 {
-    [self setZoomScale:self.minimumZoomScale animated:YES];
+    CGFloat newScale = self.minimumZoomScale;
+    if (self.zoomScale == self.minimumZoomScale) {
+        newScale = 2.0;
+    }
+    [self setZoomScale:newScale animated:YES];
 }
 
 

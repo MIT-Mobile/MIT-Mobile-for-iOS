@@ -30,6 +30,12 @@
     return @"MITMobiusDetailHeader";
 }
 
+- (IBAction)didTapImage:(id)sender {
+    if (self.galleryHandler) {
+        self.galleryHandler();
+    }
+}
+
 - (void)setResource:(MITMobiusResource *)resource
 {
     _resource = resource;
