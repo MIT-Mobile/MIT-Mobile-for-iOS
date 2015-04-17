@@ -9,6 +9,7 @@
 #import "UIKit+MITAdditions.h"
 #import "MITShuttleStopsPageViewControllerDataSource.h"
 #import "MITShuttleStopViewController.h"
+#import "MITPullToRefresh.h"
 
 typedef NS_ENUM(NSUInteger, MITShuttleRouteStopMapContainerState) {
     MITShuttleRouteStopMapContainerStateRoute = 0,
@@ -101,6 +102,10 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     if (!self.isRotating) {
         [self configureLayoutForState:self.state animated:NO];
     }
+    
+    [self.scrollView mit_addPullToRefreshWithActionHandler:^{
+        [self.routeViewController refresh];
+    }];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -225,6 +230,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 {
     self.routeViewController = [[MITShuttleRouteViewController alloc] initWithRoute:self.route];
     self.routeViewController.delegate = self;
+    self.routeViewController.shouldShowRefreshControl = NO;
     
     self.routeViewController.tableView.scrollsToTop = NO;
     self.routeViewController.view.translatesAutoresizingMaskIntoConstraints = NO;
@@ -392,6 +398,11 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     [self setState:MITShuttleRouteStopMapContainerStateStop animated:YES];
 }
 
+- (void)routeViewControllerDidFinishRefreshing:(MITShuttleRouteViewController *)routeViewController
+{
+    [self.scrollView mit_stopAnimating];
+}
+
 #pragma mark - Map Tap Gesture Recognizer
 
 - (void)mapContainerViewTapped
@@ -438,6 +449,8 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 {
     [self setTitleForRoute:self.route];
     [self setRouteViewHidden:NO];
+    
+    self.scrollView.mit_showsPullToRefresh = YES;
     
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self.scrollView removeConstraint:self.mapContainerViewPortraitHeightConstraint];
@@ -496,6 +509,8 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     [self setTitleForRoute:self.route stop:self.stop animated:animated];
     [self setStopViewHidden:NO];
     
+    self.scrollView.mit_showsPullToRefresh = NO;
+    
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self.scrollView removeConstraint:self.mapContainerViewPortraitHeightConstraint];
         self.mapContainerViewPortraitHeightConstraint = [NSLayoutConstraint constraintWithItem:self.mapContainerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kMapContainerViewEmbeddedHeightPortrait];
@@ -548,6 +563,8 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 - (void)configureLayoutForMapStateAnimated:(BOOL)animated
 {
     self.routeViewController.shouldSuppressPredictionRefreshReloads = YES;
+    
+    self.scrollView.mit_showsPullToRefresh = NO;
     
     if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
         [self.scrollView removeConstraint:self.routeStopContainerViewHeightConstraint];

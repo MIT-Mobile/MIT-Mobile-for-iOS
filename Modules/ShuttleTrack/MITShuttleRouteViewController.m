@@ -25,9 +25,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 @property (strong, nonatomic) MITShuttleRouteStatusCell *routeStatusCell;
 @property (strong, nonatomic) NSTimer *routeRefreshTimer;
 
-@property (nonatomic) BOOL isUpdating;
-
-
 @end
 
 @implementation MITShuttleRouteViewController
@@ -39,6 +36,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     self = [super initWithStyle:UITableViewStylePlain];
     if (self) {
         _route = route;
+        _shouldShowRefreshControl = YES;
     }
     return self;
 }
@@ -66,7 +64,6 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [super viewWillAppear:animated];
     
     [[MITShuttlePredictionLoader sharedLoader] addPredictionDependencyForRoute:self.route];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsWillUpdate) name:kMITShuttlePredictionLoaderWillUpdateNotification object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(predictionsDidUpdate) name:kMITShuttlePredictionLoaderDidUpdateNotification object:nil];
 }
 
@@ -101,33 +98,61 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
     [self.tableView registerNib:[UINib nibWithNibName:kMITShuttleStopCellNibName bundle:nil] forCellReuseIdentifier:kMITShuttleStopCellIdentifier];
     self.tableView.separatorInset = UIEdgeInsetsMake(0, self.tableView.frame.size.width, 0, 0);
     
-    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
-    [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
-    self.refreshControl = refreshControl;
+    if (self.shouldShowRefreshControl) {
+        [self addRefreshControl];
+    }
 }
 
 #pragma mark - Update Data
 
-- (void)predictionsWillUpdate
-{
-    self.isUpdating = YES;
-}
-
 - (void)predictionsDidUpdate
 {
-    self.isUpdating = NO;
     if (!self.shouldSuppressPredictionRefreshReloads) {
         [self.tableView reloadDataAndMaintainSelection];
     }
 }
 
+- (void)refresh
+{
+    [[MITShuttleController sharedController] getPredictionsForRoute:self.route completion:^(NSArray *predictionLists, NSError *error) {
+        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidFinishRefreshing:)]) {
+            [self.delegate routeViewControllerDidFinishRefreshing:self];
+        }
+        [self predictionsDidUpdate];
+    }];
+}
+
 #pragma mark - Refresh Control
+
+- (void)setShouldShowRefreshControl:(BOOL)shouldShowRefreshControl
+{
+    if (_shouldShowRefreshControl == shouldShowRefreshControl) {
+        return;
+    }
+    
+    _shouldShowRefreshControl = shouldShowRefreshControl;
+    
+    if (shouldShowRefreshControl) {
+        [self addRefreshControl];
+    } else {
+        self.refreshControl = nil;
+    }
+}
+
+- (void)addRefreshControl
+{
+    UIRefreshControl *refreshControl = [[UIRefreshControl alloc] init];
+    [refreshControl addTarget:self action:@selector(refreshControlActivated:) forControlEvents:UIControlEventValueChanged];
+    self.refreshControl = refreshControl;
+}
 
 - (void)refreshControlActivated:(id)sender
 {
-    [self predictionsWillUpdate];
     [[MITShuttleController sharedController] getPredictionsForRoute:self.route completion:^(NSArray *predictionLists, NSError *error) {
         [self.refreshControl endRefreshing];
+        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidFinishRefreshing:)]) {
+            [self.delegate routeViewControllerDidFinishRefreshing:self];
+        }
         [self predictionsDidUpdate];
     }];
 }
