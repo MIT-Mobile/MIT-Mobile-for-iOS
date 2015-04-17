@@ -36,7 +36,7 @@
     
     RKRelationshipMapping* categoryRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"category"
                                                                                               toKeyPath:@"category"
-                                                                                            withMapping:[MITNewsCategory objectMapping]];
+                                                                                            withMapping:[MITNewsCategory storyObjectMapping]];
     [storyMapping addPropertyMapping:categoryRelationship];
     
     RKRelationshipMapping* coverImageRelationship = [RKRelationshipMapping relationshipMappingFromKeyPath:@"cover_image"

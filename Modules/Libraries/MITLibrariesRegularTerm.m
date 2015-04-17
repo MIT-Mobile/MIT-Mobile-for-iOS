@@ -61,41 +61,38 @@ static NSString * const MITLibrariesRegularTermCodingKeyHours = @"MITLibrariesRe
 
 - (NSString *)termsDayRangeString
 {
-    NSString *dayRangesString = @"";
-    NSNumber *startOfRange = nil;
-    NSNumber *endOfRange = nil;
-    for (NSNumber *dateCodeNumber in self.sortedDateCodesArray) {
-        if (!endOfRange) {
-            startOfRange = endOfRange = dateCodeNumber;
-        }
-        else if ([dateCodeNumber integerValue] == [endOfRange integerValue] + 1) {
-            endOfRange = dateCodeNumber;
-        }
-        else {
-            dayRangesString = [self dayRangeStringWithBaseString:dayRangesString startOfRange:startOfRange endOfRange:endOfRange];
-            startOfRange = endOfRange = dateCodeNumber;
-        }
-    }
-    if (startOfRange && endOfRange) {
-        dayRangesString = [self dayRangeStringWithBaseString:dayRangesString startOfRange:startOfRange endOfRange:endOfRange];
-    }
-    return dayRangesString;
+    NSMutableArray *dayRanges = [[NSMutableArray alloc] init];
+    NSMutableIndexSet *indexSet = [[NSMutableIndexSet alloc] init];
 
+    [self.sortedDateCodesArray enumerateObjectsUsingBlock:^(NSNumber *number, NSUInteger idx, BOOL *stop) {
+        [indexSet addIndex:[number unsignedIntegerValue]];
+    }];
+
+    [indexSet enumerateRangesUsingBlock:^(NSRange range, BOOL *stop) {
+        NSInteger startWeekdaySymbolIndex = range.location;
+        NSInteger endWeekdaySymbolIndex = range.location + (range.length - 1); // Decrement length by 1 to account for 0 indexing
+
+        NSString *rangeString = [self dayRangeStringFromWeekdaySymbolIndex:startWeekdaySymbolIndex toWeekdaySymbolIndex:endWeekdaySymbolIndex];
+        [dayRanges addObject:rangeString];
+    }];
+
+    return [dayRanges componentsJoinedByString:@", "];
 }
 
-- (NSString *)dayRangeStringWithBaseString:(NSString *)baseString startOfRange:(NSNumber *)startOfRange endOfRange:(NSNumber *)endOfRange
+- (NSString *)dayRangeStringFromWeekdaySymbolIndex:(NSInteger)startWeekdaySymbol toWeekdaySymbolIndex:(NSInteger)endWeekdaySymbol
 {
-    if (baseString.length > 0) {
-        baseString = [baseString stringByAppendingString:@", "];
+    NSAssert(startWeekdaySymbol <= endWeekdaySymbol, @"The week cannot start before it ends!");
+    
+    NSMutableString *rangeString = [[NSMutableString alloc] init];
+    NSArray *weekdaySymbols = self.dateFormatter.weekdaySymbols;
+    
+    if (startWeekdaySymbol == endWeekdaySymbol) {
+        [rangeString appendString:weekdaySymbols[startWeekdaySymbol]];
+    } else {
+        [rangeString appendFormat:@"%@-%@",weekdaySymbols[startWeekdaySymbol],weekdaySymbols[endWeekdaySymbol]];
     }
     
-    NSString *startingString = self.dateFormatter.weekdaySymbols[[startOfRange integerValue]];
-    NSString *endingString = self.dateFormatter.weekdaySymbols[[endOfRange integerValue]];
-    
-    NSString *rangesString = [startOfRange isEqualToNumber:endOfRange] ? startingString : [NSString stringWithFormat:@"%@-%@", startingString, endingString];
-    baseString = [baseString stringByAppendingString:rangesString];
-    
-    return baseString;
+    return rangeString;
 }
 
 - (NSArray *)sortedDateCodesArray

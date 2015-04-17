@@ -211,6 +211,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     callout.delegate = self;
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
         callout.shouldHighlightOnTouch = NO;
+    } else {
+        callout.permittedArrowDirections = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom;
     }
     self.calloutView = callout;
     self.tiledMapView.mapView.mitCalloutView = self.calloutView;
