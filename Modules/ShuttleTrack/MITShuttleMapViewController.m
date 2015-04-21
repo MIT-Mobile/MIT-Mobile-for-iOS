@@ -22,6 +22,8 @@
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
 
+static CGFloat ToolbarHeight = 44.0;
+
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
 static const CGFloat kMapAnnotationAlphaDefault = 1.0;
@@ -425,7 +427,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)setMapToolBarHidden:(BOOL)hidden
 {
     if (hidden) {
-        self.toolbarBottomConstraint.constant = self.toolbar.bounds.size.height;
+        self.toolbarBottomConstraint.constant = ToolbarHeight;
     } else {
         self.toolbarBottomConstraint.constant = 0;
     }
@@ -549,7 +551,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     NSArray *horizontalToolbarConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}];
     [self.view addConstraints:horizontalToolbarConstraints];
     
-    NSLayoutConstraint *toolbarHeightConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:44];
+    NSLayoutConstraint *toolbarHeightConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:ToolbarHeight];
     [self.view addConstraint:toolbarHeightConstraint];
     
     [self.view removeConstraint:self.mapBottomConstraint];
