@@ -67,6 +67,9 @@ typedef NS_ENUM(NSInteger, MITLibraryDetailCell) {
 {
     UINib *cellNib = [UINib nibWithNibName:kMITHoursCell bundle:nil];
     [self.tableView registerNib:cellNib forCellReuseIdentifier:kMITHoursCell];
+    
+    // This will remove extra separators from unused cells at the bottom
+    self.tableView.tableFooterView = [[UIView alloc] initWithFrame:CGRectZero];
 }
 
 // We're not getting a coordinate back for the library, so this function isn't currently called
