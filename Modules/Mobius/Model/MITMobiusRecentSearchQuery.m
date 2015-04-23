@@ -10,23 +10,8 @@
 @dynamic search;
 @dynamic options;
 
-- (NSString*)URLParameterString {
-    NSMutableDictionary *parameters = [[NSMutableDictionary alloc] init];
-
-    parameters[@"or"] = @"true";
-
-    NSMutableArray *whereClause = [[NSMutableArray alloc] init];
-
-    if (self.text) {
-        NSArray *fields = @[@"dlc",@"status",@"attributes_values.value"];
-        [fields enumerateObjectsUsingBlock:^(NSString *fieldName, NSUInteger idx, BOOL *stop) {
-            NSDictionary *likeClause = @{@"field" : fieldName,
-                                            @"operator" : @"like",
-                                            @"value" : self.text};
-            [whereClause addObject:likeClause];
-        }];
-    }
-
+- (NSDictionary*)URLParameters {
+    NSMutableArray *andConditional = [[NSMutableArray alloc] init];
     [self.options enumerateObjectsUsingBlock:^(MITMobiusSearchOption *searchOption, NSUInteger idx, BOOL *stop) {
         MITMobiusAttribute *attribute = searchOption.attribute;
         NSAssert(attribute, @"search option %@ is missing an associated attribute", searchOption);
@@ -35,7 +20,6 @@
         attributeClause[@"field"] = @"attribute_values._attribute";
         attributeClause[@"value"] = attribute.identifier;
 
-        /* [{"field":"attribute_values._attribute","value":"5475e4979147112657976a4d"},{"field":"attribute_values.value","operator":"in","value":["straight cuts","angled cuts"]}]}*/
         NSMutableDictionary *valueClause = [[NSMutableDictionary alloc] init];
         valueClause[@"field"] = @"attribute_values.value";
 
@@ -60,22 +44,42 @@
                 }];
             } break;
 
-                
             default:
                 break;
         }
 
-        [whereClause addObjectsFromArray:@[attributeClause,valueClause]];
+        [andConditional addObject:valueClause];
     }];
 
-    parameters[@"where"] = whereClause;
 
-    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:nil];
-    if (jsonData) {
-        return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+    NSMutableDictionary *urlParameters = [[NSMutableDictionary alloc] init];
+
+    NSDictionary *whereClause = nil;
+    if (self.text) {
+        NSMutableArray *orConditions = [[NSMutableArray alloc] init];
+        [@[@"name",@"room",@"dlc",@"status",@"attribute_values.value"] enumerateObjectsUsingBlock:^(NSString *field, NSUInteger idx, BOOL *stop) {
+            [orConditions addObject:@{@"field" : field,
+                                      @"operator" : @"like",
+                                      @"value" : self.text}];
+        }];
+
+        whereClause = @{@"1" : @{ @"type" : @"or",
+                                  @"conditions" : orConditions },
+                        @"2" : @{ @"type" : @"and",
+                                  @"conditions" : andConditional }};
     } else {
-        return nil;
+        whereClause = @{@"1" : @{ @"type" : @"and",
+                                  @"conditions" : andConditional }};
     }
+
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"where" : whereClause} options:0 error:nil];
+
+    if (jsonData) {
+        NSString *jsonString = [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
+        urlParameters[@"params"] = jsonString;
+    }
+
+    return urlParameters;
 }
 
 @end

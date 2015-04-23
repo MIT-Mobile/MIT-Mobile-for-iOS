@@ -152,8 +152,16 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
 
         if (queryObject) {
-            NSString *encodedString = [queryObject.URLParameterString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
-            [urlPath appendFormat:@"?params=%@&format=json",encodedString];
+            NSMutableArray *parameters = [[NSMutableArray alloc] init];
+            [[queryObject URLParameters] enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+                NSString *parameterString = [NSString stringWithFormat:@"%@=%@",key,[value urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
+                [parameters addObject:parameterString];
+            }];
+
+            [parameters addObject:@"format=json"];
+
+            NSString *parameterString = [parameters componentsJoinedByString:@"&"];
+            [urlPath appendFormat:@"?%@",parameterString];
         }
 
         NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];

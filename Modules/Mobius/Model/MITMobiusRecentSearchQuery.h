@@ -11,7 +11,7 @@
 @property (nonatomic, retain) MITMobiusRecentSearchList *search;
 @property (nonatomic, retain) NSOrderedSet *options;
 
-- (NSString*)URLParameterString;
+- (NSDictionary*)URLParameters;
 @end
 
 @interface MITMobiusRecentSearchQuery (CoreDataGeneratedAccessors)
