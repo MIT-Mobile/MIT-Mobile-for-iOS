@@ -194,7 +194,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
-    if (![queryString length]) {
+    if (queryString.length == 0) {
         self.query = nil;
         self.lastFetched = [NSDate date];
         self.resourceObjectIdentifiers = nil;
@@ -220,9 +220,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
         NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
-        request.HTTPShouldHandleCookies = NO;
-        request.HTTPMethod = @"GET";
         [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+
+        [self.managedObjectContext performBlockAndWait:^{
+            self.query.text = queryString;
+            [self.query.managedObjectContext saveToPersistentStore:nil];
+        }];
 
         __weak MITMobiusResourceDataSource *weakSelf = self;
         [self _performRequest:request completion:^(BOOL success, NSError *error) {
@@ -233,10 +236,6 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
             if (success) {
                 blockSelf.lastFetched = [NSDate date];
-                [blockSelf.managedObjectContext performBlockAndWait:^{
-                    blockSelf.query.text = queryString;
-                    [blockSelf.query.managedObjectContext saveToPersistentStore:nil];
-                }];
             }
 
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
