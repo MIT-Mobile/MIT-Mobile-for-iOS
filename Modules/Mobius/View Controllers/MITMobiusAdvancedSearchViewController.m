@@ -188,7 +188,13 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 - (NSArray*)attributes
 {
     NSArray *attributes = self.dataSource.attributes;
-    NSArray *filteredAttributes = [attributes filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"values.@count > 0"]];
+
+    NSPredicate *hasOneOrMoreValuesPredicate = [NSPredicate predicateWithFormat:@"values.@count > 0"];
+    NSArray *attributeIdentifierWhitelist = @[@"5475e4979147112657976a4d",@"5475e4979147112657976a4e"];
+    NSPredicate *whitelistedAttributes = [NSPredicate predicateWithFormat:@"identifier IN %@",attributeIdentifierWhitelist];
+
+    NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[whitelistedAttributes,hasOneOrMoreValuesPredicate]];
+    NSArray *filteredAttributes = [attributes filteredArrayUsingPredicate:predicate];
     return filteredAttributes;
 }
 
