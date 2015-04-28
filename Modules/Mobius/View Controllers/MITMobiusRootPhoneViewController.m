@@ -986,21 +986,15 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    if (reuseIdentifier == MITMobiusQuickSearchHeaderTableViewCellIdentifier) {
-        MITMobiusQuickSearchHeaderTableViewCell *quickSearch = (MITMobiusQuickSearchHeaderTableViewCell*)cell;
-        quickSearch.label.text = @"Sample searches:\nMaterials + machine capability: ‘plastic steel hole’\nShop + machine type: ‘Edgerton lathe’";
-        quickSearch.backgroundColor = [UIColor clearColor];
-        quickSearch.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
-        return;
-    }
-    if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Shops & Labs";
-    } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Machine Types";
+
+    if ([reuseIdentifier isEqualToString:MITMobiusQuickSearchTableViewCellIdentifier]) {
+        if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Shops & Labs";
+        } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Machine Types";
+        }
     }
 }
 
