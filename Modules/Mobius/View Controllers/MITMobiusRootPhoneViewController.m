@@ -482,6 +482,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
         [self setupNavigationBar];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block();
+            }
+        }];
         return;
     }
     
