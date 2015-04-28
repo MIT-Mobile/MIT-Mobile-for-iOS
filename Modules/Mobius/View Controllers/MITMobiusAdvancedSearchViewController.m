@@ -527,9 +527,11 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         [values removeObject:value];
 
         NSIndexPath *attributeIndexPath = [self indexPathForAttribute:value.attribute];
-        NSInteger valueIndex = [value.attribute.values indexOfObject:value] + attributeIndexPath.row + 1;
-        NSIndexPath *valueIndexPath = [NSIndexPath indexPathForRow:valueIndex inSection:attributeIndexPath.section];
-        [updatedIndexPaths addObject:valueIndexPath];
+        if ([self.currentExpandedIndexPath isEqual:attributeIndexPath]) {
+            NSInteger valueIndex = [value.attribute.values indexOfObject:value] + attributeIndexPath.row + 1;
+            NSIndexPath *valueIndexPath = [NSIndexPath indexPathForRow:valueIndex inSection:attributeIndexPath.section];
+            [updatedIndexPaths addObject:valueIndexPath];
+        }
     }];
 
 
