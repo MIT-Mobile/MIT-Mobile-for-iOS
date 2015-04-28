@@ -1036,6 +1036,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
     MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+    [managedObjectContext refreshObject:query mergeChanges:NO];
 
     if (query) {
         [self reloadDataSourceForQuery:query completion:^{
