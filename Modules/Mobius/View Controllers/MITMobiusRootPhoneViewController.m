@@ -21,6 +21,7 @@
 #import "MITMobiusRoomSet.h"
 #import "MITMobiusResourceType.h"
 #import "MITMobiusQuickSearchHeaderTableViewCell.h"
+#import "MITMobiusSearchFilterStrip.h"
 
 typedef NS_ENUM(NSInteger, MITMobiusQuickSearchTableViewRows) {
     MITMobiusQuickSearchHeaderTableRow = 0,
@@ -30,9 +31,6 @@ typedef NS_ENUM(NSInteger, MITMobiusQuickSearchTableViewRows) {
 
 static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiusQuickSearchTableViewCellIdentifier";
 static NSString * const MITMobiusQuickSearchHeaderTableViewCellIdentifier = @"MITMobiusQuickSearchHeaderTableViewCellIdentifier";
-
-#import "MITMobiusSearchFilterStrip.h"
-
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
@@ -52,6 +50,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 // (bskinner 2015.02.25)
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
+@property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
+@property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
 
 @property(nonatomic) MITMobiusRootViewControllerState currentState;
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
@@ -71,8 +71,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 @property (nonatomic, copy) NSDictionary *rooms;
 @property (nonatomic, readonly, copy) NSArray *allResources;
-
-@property (nonatomic, strong) MITMobiusSearchFilterStrip *strip;
 
 @end
 
@@ -327,13 +325,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (void)setupFilterStrip
 {
-    self.strip = [[MITMobiusSearchFilterStrip alloc] init];
     self.strip.translatesAutoresizingMaskIntoConstraints = NO;
     self.strip.delegate = self;
     self.strip.dataSource = self;
-    [self.view addSubview:self.strip];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[strip]-0-|" options:0 metrics:nil views:@{@"strip": self.strip}]];
-    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-navBarBottomY-[strip(==34)]" options:0 metrics:@{@"navBarBottomY": @(CGRectGetMaxY(self.navigationController.navigationBar.frame))} views:@{@"strip": self.strip}]];
 }
 
 #pragma mark Public Properties

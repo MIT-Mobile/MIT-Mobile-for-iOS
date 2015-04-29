@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="miL-hi-nd8">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
         <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
@@ -34,8 +34,8 @@
                         <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
-                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Gc0-hW-Xee" userLabel="Help Text">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
                                 <subviews>
                                     <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="22" sectionFooterHeight="22" translatesAutoresizingMaskIntoConstraints="NO" id="YhE-qf-K7N">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
@@ -54,8 +54,15 @@
                                     <constraint firstItem="YhE-qf-K7N" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="top" id="j9S-JQ-N9A"/>
                                 </constraints>
                             </view>
-                            <view hidden="YES" contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
-                                <rect key="frame" x="0.0" y="64" width="600" height="536"/>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Oyg-FB-cQg" userLabel="Filter Strip" customClass="MITMobiusSearchFilterStrip">
+                                <rect key="frame" x="0.0" y="0.0" width="600" height="34"/>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="34" id="yiQ-QT-l4c"/>
+                                </constraints>
+                            </view>
+                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
+                                <rect key="frame" x="0.0" y="34" width="600" height="502"/>
                                 <subviews>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
@@ -65,7 +72,7 @@
                                         </constraints>
                                     </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="536"/>
+                                        <rect key="frame" x="0.0" y="0.0" width="600" height="502"/>
                                     </view>
                                 </subviews>
                                 <constraints>
@@ -81,14 +88,17 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
+                            <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Oyg-FB-cQg" secondAttribute="bottom" id="1Dw-mn-AFl"/>
                             <constraint firstAttribute="trailing" secondItem="Gc0-hW-Xee" secondAttribute="trailing" id="C3r-6D-8JA"/>
                             <constraint firstItem="IC8-GW-1cV" firstAttribute="top" secondItem="Gc0-hW-Xee" secondAttribute="bottom" id="LbG-of-Acp"/>
                             <constraint firstItem="Hx1-pQ-i3W" firstAttribute="leading" secondItem="9Jw-qO-vKS" secondAttribute="leading" id="a37-uX-OX6"/>
                             <constraint firstAttribute="trailing" secondItem="Hx1-pQ-i3W" secondAttribute="trailing" id="jO8-tY-H5J"/>
                             <constraint firstItem="Gc0-hW-Xee" firstAttribute="leading" secondItem="9Jw-qO-vKS" secondAttribute="leading" id="nqE-oC-LwH"/>
+                            <constraint firstItem="Oyg-FB-cQg" firstAttribute="leading" secondItem="9Jw-qO-vKS" secondAttribute="leading" id="sDo-lE-XfD"/>
+                            <constraint firstAttribute="trailing" secondItem="Oyg-FB-cQg" secondAttribute="trailing" id="uqS-9U-9LC"/>
                             <constraint firstItem="Gc0-hW-Xee" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="vY8-4Y-MLg"/>
                             <constraint firstItem="IC8-GW-1cV" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="bottom" id="vvR-QZ-P3a"/>
-                            <constraint firstItem="Hx1-pQ-i3W" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="xFH-fi-60c"/>
+                            <constraint firstItem="Oyg-FB-cQg" firstAttribute="top" secondItem="Kfz-sO-XOH" secondAttribute="bottom" id="yzn-Sg-b17"/>
                         </constraints>
                     </view>
                     <extendedEdge key="edgesForExtendedLayout"/>
@@ -98,16 +108,18 @@
                     <connections>
                         <outlet property="contentContainerView" destination="Hx1-pQ-i3W" id="EPe-h4-c1G"/>
                         <outlet property="defaultMapHeightConstraint" destination="FQx-zw-qKg" id="oU9-Kj-VEt"/>
+                        <outlet property="filterStripHeightConstraint" destination="yiQ-QT-l4c" id="UQg-9u-00c"/>
                         <outlet property="mapHeightConstraint" destination="6xb-VA-nM2" id="FfP-vB-reD"/>
                         <outlet property="mapViewContainer" destination="RFz-L3-5Vl" id="WrW-JI-8XS"/>
                         <outlet property="quickLookupTableView" destination="YhE-qf-K7N" id="IaZ-SA-Hri"/>
+                        <outlet property="strip" destination="Oyg-FB-cQg" id="pu5-1u-J0T"/>
                         <outlet property="tableViewContainer" destination="hye-Ag-mVg" id="k4i-iR-3BE"/>
                         <outlet property="view" destination="9Jw-qO-vKS" id="ztL-Zy-ImC"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="9Q4-uh-O28" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="598.5" y="297.75"/>
+            <point key="canvasLocation" x="598" y="297"/>
         </scene>
     </scenes>
 </document>
