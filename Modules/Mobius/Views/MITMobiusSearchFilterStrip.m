@@ -157,6 +157,15 @@ static NSString * const MITMobiusSearchFilterStripCellIdentifier = @"MITMobiusSe
     return UIEdgeInsetsMake(0, 16, 0, 16);
 }
 
+- (BOOL)collectionView:(UICollectionView *)collectionView shouldHighlightItemAtIndexPath:(NSIndexPath *)indexPath
+{
+    if ([self.delegate respondsToSelector:@selector(searchFilterStrip:didSelectFilterAtIndex:)]) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (void)collectionView:(UICollectionView *)collectionView didSelectItemAtIndexPath:(NSIndexPath *)indexPath
 {
     [self.collectionView deselectItemAtIndexPath:indexPath animated:YES];
