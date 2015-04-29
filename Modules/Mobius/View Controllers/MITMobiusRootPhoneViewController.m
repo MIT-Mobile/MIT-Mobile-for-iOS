@@ -117,10 +117,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (void)setupTableView:(UITableView *)tableView
 {
-    [self.quickLookupTableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
+    [tableView registerNib:[MITMobiusQuickSearchTableViewCell quickSearchCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchTableViewCellIdentifier];
     
-    [self.quickLookupTableView registerNib:[MITMobiusQuickSearchHeaderTableViewCell quickSearchHeaderCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchHeaderTableViewCellIdentifier];
+    [tableView registerNib:[MITMobiusQuickSearchHeaderTableViewCell quickSearchHeaderCellNib] forDynamicCellReuseIdentifier:MITMobiusQuickSearchHeaderTableViewCellIdentifier];
 
+    tableView.dataSource = self;
     tableView.tableFooterView = [UIView new];
     tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1];
 }
