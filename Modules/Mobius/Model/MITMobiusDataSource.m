@@ -10,10 +10,12 @@ static NSString* const MITMobiusDevelopmentServer = @"https://kairos-dev.mit.edu
     MITMobileWebServerType serverType = MITMobileWebGetCurrentServerType();
 
     switch (serverType) {
-        case MITMobileWebDevelopment:
-            return [NSURL URLWithString:MITMobiusDevelopmentServer];
         case MITMobileWebStaging:
         case MITMobileWebProduction:
+        case MITMobileWebDevelopment:
+            return [NSURL URLWithString:MITMobiusDevelopmentServer];
+
+        default:
             return [NSURL URLWithString:MITMobiusStableServer];
     }
 }

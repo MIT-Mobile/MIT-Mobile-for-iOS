@@ -16,6 +16,10 @@
         MITMobiusAttribute *attribute = searchOption.attribute;
         NSAssert(attribute, @"search option %@ is missing an associated attribute", searchOption);
 
+        if (searchOption.value.length == 0) {
+            return;
+        }
+
         NSMutableDictionary *attributeClause = [[NSMutableDictionary alloc] init];
         attributeClause[@"field"] = @"attribute_values._attribute";
         attributeClause[@"value"] = attribute.identifier;
@@ -54,7 +58,7 @@
 
     NSMutableDictionary *urlParameters = [[NSMutableDictionary alloc] init];
 
-    NSDictionary *whereClause = nil;
+    NSMutableDictionary *whereClause = [[NSMutableDictionary alloc] init];
     if (self.text) {
         NSMutableArray *orConditions = [[NSMutableArray alloc] init];
         [@[@"name",@"room",@"dlc",@"status",@"attribute_values.value"] enumerateObjectsUsingBlock:^(NSString *field, NSUInteger idx, BOOL *stop) {
@@ -63,13 +67,13 @@
                                       @"value" : self.text}];
         }];
 
-        whereClause = @{@"1" : @{ @"type" : @"or",
-                                  @"conditions" : orConditions },
-                        @"2" : @{ @"type" : @"and",
-                                  @"conditions" : andConditional }};
-    } else {
-        whereClause = @{@"1" : @{ @"type" : @"and",
-                                  @"conditions" : andConditional }};
+        whereClause[@"1"] = @{ @"type" : @"or",
+                               @"conditions" : orConditions };
+    }
+
+    if (andConditional.count > 0) {
+        whereClause[@"2"] =  @{ @"type" : @"and",
+                                @"conditions" : andConditional };
     }
 
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:@{@"where" : whereClause} options:0 error:nil];

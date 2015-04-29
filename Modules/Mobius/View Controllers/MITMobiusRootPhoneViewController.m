@@ -504,6 +504,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
         [self setupNavigationBar];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block();
+            }
+        }];
         return;
     }
     
@@ -1033,21 +1038,15 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    if (reuseIdentifier == MITMobiusQuickSearchHeaderTableViewCellIdentifier) {
-        MITMobiusQuickSearchHeaderTableViewCell *quickSearch = (MITMobiusQuickSearchHeaderTableViewCell*)cell;
-        quickSearch.label.text = @"Sample searches:\nMaterials + machine capability: ‘plastic steel hole’\nShop + machine type: ‘Edgerton lathe’";
-        quickSearch.backgroundColor = [UIColor clearColor];
-        quickSearch.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
-        return;
-    }
-    if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Shops & Labs";
-    } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Machine Types";
+
+    if ([reuseIdentifier isEqualToString:MITMobiusQuickSearchTableViewCellIdentifier]) {
+        if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Shops & Labs";
+        } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Machine Types";
+        }
     }
 }
 
@@ -1089,6 +1088,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
     MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+    [managedObjectContext refreshObject:query mergeChanges:NO];
 
     if (query) {
         [self reloadDataSourceForQuery:query completion:^{
