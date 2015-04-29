@@ -28,7 +28,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
