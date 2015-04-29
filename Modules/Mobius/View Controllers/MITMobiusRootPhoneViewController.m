@@ -505,7 +505,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
         [self.navigationItem setRightBarButtonItem:nil animated:animated];
     } else {
         if ([self didPerformSearch]) {
-            UIImage *image = [UIImage imageNamed:@"mobius-back-arrow"];
+            UIImage *image = [UIImage imageNamed:MITImageMobiusBackArrow];
             UIBarButtonItem *resetSearchButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(resetSearchQuery:)];
             [self.navigationItem setLeftBarButtonItem:resetSearchButtonItem animated:animated];
         } else {
