@@ -20,7 +20,7 @@
 @end
 
 @protocol MITMobiusSearchFilterStripDelegate <NSObject>
-
+@optional
 - (void)searchFilterStrip:(MITMobiusSearchFilterStrip *)filterStrip didSelectFilterAtIndex:(NSInteger)index;
 
 @end
