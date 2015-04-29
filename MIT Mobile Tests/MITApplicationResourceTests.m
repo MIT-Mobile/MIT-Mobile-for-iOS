@@ -118,6 +118,9 @@
     MITCheckAsset(MITImageMobiusAccordionOpened);
     MITCheckAsset(MITImageMobiusAccordionClosed);
     MITCheckAsset(MITImageMobiusBarButtonAdvancedSearch);
+    MITCheckAsset(MITImageMobiusFilterStripEndcapRight);
+    MITCheckAsset(MITImageMobiusBackArrow);
+    MITCheckAsset(MITImageMobiusResourceOffline);
 
 
 #pragma mark - Scanner
