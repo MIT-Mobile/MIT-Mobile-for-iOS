@@ -215,8 +215,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
     
     
-    NSDictionary *predicate = @{@"where" : @{ @"1" : @{ @"field" : field,
-                                                        @"value" : value }}};
+    NSDictionary *predicate = @{@"where" : @[@{ @"field" : field,
+                                                @"value" : value }]};
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:predicate options:0 error:nil];
     NSString *jsonString = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
     [urlPath appendFormat:@"?params=%@&format=json",jsonString];
