@@ -172,6 +172,16 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             self.defaultMapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
         }
     }
+
+    if ([self didPerformSearch]) {
+        if (self.dataSource.query.options.count > 0) {
+            self.filterStripHeightConstraint.constant = 34.;
+        } else {
+            self.filterStripHeightConstraint.constant = 0.;
+        }
+    } else {
+        self.filterStripHeightConstraint.constant = 0.;
+    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -192,6 +202,11 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     // Dispose of any resources that can be recreated.
 }
 
+#pragma mark Data Loading/Updating
+- (BOOL)didPerformSearch
+{
+    return (self.dataSource.query || self.dataSource.queryString);
+}
 - (void)reloadDataSourceForQuery:(MITMobiusRecentSearchQuery*)query completion:(void(^)(void))block
 {
     NSParameterAssert(query);
