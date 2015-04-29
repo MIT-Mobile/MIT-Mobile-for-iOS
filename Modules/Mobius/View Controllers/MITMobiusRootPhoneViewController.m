@@ -125,7 +125,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.strip reloadData];
 }
 
 - (void)updateViewConstraints
@@ -521,6 +520,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (void)reloadData:(BOOL)animated
 {
+    [self.strip reloadData];
     [self.resourcesTableViewController.tableView reloadData];
     [self.mapViewController reloadMapAnimated:animated];
 }
@@ -879,25 +879,15 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (NSInteger)numberOfFiltersForStrip:(MITMobiusSearchFilterStrip *)filterStrip
 {
-    return 3;
+    return self.dataSource.query.options.count;
 }
 
 - (NSString *)searchFilterStrip:(MITMobiusSearchFilterStrip *)filterStrip textForFilterAtIndex:(NSInteger)index
 {
-    switch (index) {
-        case 0: {
-            return @"thing1";
-        }
-        case 1: {
-            return @"Another thing I am totally testing for now";
-        }
-        case 2: {
-            return @"But: for real - I need some more testing, and this should scroll now";
-        }
-        default: {
-            return @"should not happen";
-        }
-    }
+    MITMobiusSearchOption *option = self.dataSource.query.options[index];
+    NSString *string = [NSString stringWithFormat:@"%@: %@",option.attribute.label,option.value];
+    
+    return string;
 }
 
 #pragma mark UITableView Methods
