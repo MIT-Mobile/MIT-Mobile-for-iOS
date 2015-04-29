@@ -33,29 +33,14 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 static NSString * const MITMobiusQuickSearchHeaderTableViewCellIdentifier = @"MITMobiusQuickSearchHeaderTableViewCellIdentifier";
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
-typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
-    MITMobiusRootViewControllerStateInitial = 0,
-    MITMobiusRootViewControllerStateSearch,
-    MITMobiusRootViewControllerStateNoResults,
-    MITMobiusRootViewControllerStateResults,
-};
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate>
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate>
-
-// These are currently strong since, if they are weak,
-// they are being released during the various animations and
-// wreaking havoc. Guessing it's either in the updateViewConstraints
-// or the toggle animation.
-// TODO: Figure out exactly where the 'weak' semantics go off the rails
-// (bskinner 2015.02.25)
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
 @property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
 @property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
 
-@property(nonatomic) MITMobiusRootViewControllerState currentState;
 @property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
-
 
 @property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
@@ -107,7 +92,9 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
+    [self.view bringSubviewToFront:self.strip];
 
+    [self setupNavigationBar];
     [self setupFilterStrip];
     [self setupTableView:self.quickLookupTableView];
     
@@ -187,8 +174,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-
-    [self transitionToState:self.currentState animated:animated completion:nil];
+    [self updateViewState:animated];
 
     if (self.isMapFullScreen) {
         [self.navigationController setToolbarHidden:NO animated:animated];
@@ -207,68 +193,94 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     return (self.dataSource.query || self.dataSource.queryString);
 }
+
+- (void)reloadDataSourceWithField:(NSString*)field value:(NSString*)value completion:(void(^)(void))block
+{
+    NSParameterAssert(field);
+    NSParameterAssert(value);
+
+    __weak MITMobiusRootPhoneViewController *weakSelf = self;
+    [self.dataSource resourcesWithField:field value:value completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
+        MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        }
+        
+        if (error == nil) {
+            [self didCompleteDataSourceLoad];
+        } else {
+            [self didCompleteDataSourceLoadWithError:error];
+        }
+        
+        if (block) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+        }
+    }];
+}
+
 - (void)reloadDataSourceForQuery:(MITMobiusRecentSearchQuery*)query completion:(void(^)(void))block
 {
     NSParameterAssert(query);
+    
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource resourcesWithQueryObject:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
         MITMobiusRootPhoneViewController *blockSelf = weakSelf;
 
         if (!blockSelf) {
             return;
-        } else if (error) {
-            DDLogWarn(@"Error: %@",error);
-
-            if (block) {
-                [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-            }
+        }
+        
+        if (error == nil) {
+            [self didCompleteDataSourceLoad];
         } else {
-            [blockSelf.managedObjectContext performBlockAndWait:^{
-                [blockSelf.managedObjectContext reset];
-                blockSelf.rooms = nil;
-
-                if (block) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                }
-            }];
+            [self didCompleteDataSourceLoadWithError:error];
+        }
+        
+        if (block) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:block];
         }
     }];
 }
 
-- (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
+- (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block {
+    NSParameterAssert(queryString);
+
+    __weak MITMobiusRootPhoneViewController *weakSelf = self;
+    [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
+        MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+        
+        if (!blockSelf) {
+            return;
+        }
+
+        if (error == nil) {
+            [self didCompleteDataSourceLoad];
+        } else {
+            [self didCompleteDataSourceLoadWithError:error];
+        }
+        
+        if (block) {
+            [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+        }
+    }];
+}
+
+- (void)didCompleteDataSourceLoadWithError:(NSError*)error
 {
-    if ([queryString length]) {
-        __weak MITMobiusRootPhoneViewController *weakSelf = self;
-        [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
-            MITMobiusRootPhoneViewController *blockSelf = weakSelf;
-            
-            if (!blockSelf) {
-                return;
-            } else if (error) {
-                DDLogWarn(@"Error: %@",error);
-                
-                if (block) {
-                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-                }
-            } else {
-                [blockSelf.managedObjectContext performBlockAndWait:^{
-                    [blockSelf.managedObjectContext reset];
-                    blockSelf.rooms = nil;
-                    
-                    if (block) {
-                        [[NSOperationQueue mainQueue] addOperationWithBlock:block];
-#warning FIX THIS: we do not want params string to be stored in recents.  We want title.
-                        if (![queryString containsString:@"params"]) {
-                            [blockSelf.recentSearchViewController addRecentSearchTerm:queryString];
-                        }
-                    }
-                }];
-            }
-        }];
-    } else {
-        self.contentContainerView.hidden = YES;
-        self.quickLookupTableView.hidden = NO;
-    }
+    DDLogWarn(@"Error: %@",error);
+    [self updateViewState:YES];
+}
+
+- (void)didCompleteDataSourceLoad
+{
+    [self.managedObjectContext performBlockAndWait:^{
+        [self.managedObjectContext reset];
+        self.rooms = nil;
+        
+        [self reloadData:NO];
+    }];
+    
+    [self updateViewState:YES];
 }
 
 - (MITMobiusResourceDataSource*)dataSource
@@ -281,6 +293,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     return _dataSource;
 }
 
+#pragma mark UI setup
 - (void)setupNavigationBar
 {
     if (!_searchBarContainer) {
@@ -320,23 +333,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         self.navigationItem.titleView = searchBarContainer;
         self.searchBarContainer = searchBarContainer;
     }
-
-    switch (self.currentState) {
-        case MITMobiusRootViewControllerStateInitial:
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateResults: {
-            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
-
-            UIImage *image = [UIImage imageNamed:MITImageMobiusBarButtonAdvancedSearch];
-            UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
-            [self.navigationItem setRightBarButtonItem:filterBarButton animated:YES];
-        } break;
-
-        case MITMobiusRootViewControllerStateSearch: {
-            [self.navigationItem setLeftBarButtonItem:nil animated:YES];
-            [self.navigationItem setRightBarButtonItem:nil animated:YES];
-        } break;
-    }
 }
 
 - (void)setupFilterStrip
@@ -345,6 +341,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     self.strip.delegate = self;
     self.strip.dataSource = self;
 }
+
+#pragma mark UI Updating
 
 #pragma mark Public Properties
 - (void)setMapFullScreen:(BOOL)mapFullScreen
@@ -395,6 +393,138 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         }
     }
 }
+
+#pragma mark UI Update Methods
+- (void)updateViewState:(BOOL)animated
+{
+    void (^setupBlock)(void) = nil;
+    void (^animationBlock)(void) = nil;
+    void (^completionBlock)(BOOL finished) = nil;
+
+    if (self.isSearching) {
+        // The UISearchBar may or may not be the first responder.
+        // Navigation bar has a full-width UISearchBar with the cancel
+        //  button visible.
+        // recentSearchViewController is visible
+        setupBlock = ^{
+            self.recentSearchViewController.view.hidden = NO;
+        };
+
+        animationBlock = ^{
+            self.quickLookupTableView.alpha = 0.;
+            self.contentContainerView.alpha = 0.;
+            self.recentSearchViewController.view.alpha = 1.;
+
+            [self.searchBar setShowsCancelButton:YES animated:animated];
+        };
+
+        completionBlock = ^(BOOL finished) {
+            self.quickLookupTableView.hidden = YES;
+            self.contentContainerView.hidden = YES;
+        };
+    } else {
+        if ([self didPerformSearch]) {
+            setupBlock = ^{
+                self.contentContainerView.hidden = NO;
+                self.strip.hidden = NO;
+                [self.searchBar setShowsCancelButton:NO animated:animated];
+            };
+
+            animationBlock = ^{
+                self.contentContainerView.alpha = 1.;
+                self.strip.alpha = 1.;
+
+                if (self.isMapFullScreen) {
+                    [self.navigationController setToolbarHidden:NO animated:animated];
+                } else {
+                    [self.navigationController setToolbarHidden:YES animated:animated];
+                }
+
+                self.recentSearchViewController.view.alpha = 0.;
+                self.quickLookupTableView.alpha = 0.;
+            };
+
+            completionBlock = ^(BOOL finished) {
+                self.recentSearchViewController.view.hidden = YES;
+                self.quickLookupTableView.hidden = YES;
+            };
+        } else {
+            setupBlock = ^{
+                self.quickLookupTableView.hidden = NO;
+                [self.searchBar setShowsCancelButton:NO animated:animated];
+            };
+
+            animationBlock = ^{
+                self.contentContainerView.alpha = 0.;
+                self.recentSearchViewController.view.alpha = 0.;
+                self.quickLookupTableView.alpha = 1.;
+            };
+
+            completionBlock = ^(BOOL finished) {
+                self.contentContainerView.hidden = YES;
+                self.recentSearchViewController.view.hidden = YES;
+            };
+        }
+    }
+
+    
+    [self updateNavigationItem:animated];
+    if (setupBlock) {
+        setupBlock();
+    }
+
+    [UIView animateWithDuration:MITMobiusRootPhoneDefaultAnimationDuration
+                          delay:0.
+                        options:(UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionCurveLinear)
+                     animations:^{
+                         [self updateFilterStrip:animated];
+                         
+                         if (animationBlock) {
+                             animationBlock();
+                         }
+                     } completion:^(BOOL finished) {
+                        if (completionBlock) {
+                            completionBlock(finished);
+                        }
+            }];
+}
+
+- (void)updateFilterStrip:(BOOL)animated
+{
+    if (self.dataSource.query.options.count > 0) {
+        self.filterStripHeightConstraint.constant = 34.;
+    } else {
+        self.filterStripHeightConstraint.constant = 0.;
+    }
+}
+
+- (void)updateNavigationItem:(BOOL)animated
+{
+    if (self.isSearching) {
+        [self.navigationItem setLeftBarButtonItem:nil animated:animated];
+        [self.navigationItem setRightBarButtonItem:nil animated:animated];
+    } else {
+        if ([self didPerformSearch]) {
+            UIImage *image = [UIImage imageNamed:@"mobius-back-arrow"];
+            UIBarButtonItem *resetSearchButtonItem = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStyleDone target:self action:@selector(resetSearchQuery:)];
+            [self.navigationItem setLeftBarButtonItem:resetSearchButtonItem animated:animated];
+        } else {
+            UIBarButtonItem *drawerBarButtonItem = [MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem;
+            [self.navigationItem setLeftBarButtonItem:drawerBarButtonItem animated:animated];
+        }
+
+        UIImage *image = [UIImage imageNamed:MITImageMobiusBarButtonAdvancedSearch];
+        UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
+        [self.navigationItem setRightBarButtonItem:filterBarButton animated:animated];
+    }
+}
+
+- (void)reloadData:(BOOL)animated
+{
+    [self.resourcesTableViewController.tableView reloadData];
+    [self.mapViewController reloadMapAnimated:animated];
+}
+
 
 #pragma mark resourcesTableViewController
 - (void)loadResourcesTableViewController
@@ -477,178 +607,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [self presentViewController:navigationController animated:YES completion:nil];
 }
 
-#pragma mark State Management
-- (BOOL)canTransitionToState:(MITMobiusRootViewControllerState)newState
-{
-    if (self.currentState == newState) {
-        return YES;
-    }
-    
-    switch (self.currentState) {
-        case MITMobiusRootViewControllerStateInitial: {
-            return ((newState == MITMobiusRootViewControllerStateSearch) ||
-                    (newState == MITMobiusRootViewControllerStateNoResults) ||
-                    (newState == MITMobiusRootViewControllerStateResults));
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            return ((newState == MITMobiusRootViewControllerStateInitial) ||
-                    (newState == MITMobiusRootViewControllerStateNoResults) ||
-                    (newState == MITMobiusRootViewControllerStateResults));
-        } break;
-            
-        case MITMobiusRootViewControllerStateNoResults: {
-            return (newState == MITMobiusRootViewControllerStateSearch) ||
-            (newState == MITMobiusRootViewControllerStateNoResults) ||
-            (newState == MITMobiusRootViewControllerStateResults);
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            return (newState == MITMobiusRootViewControllerStateSearch);
-        } break;
-    }
-}
-
-- (void)transitionToState:(MITMobiusRootViewControllerState)newState animated:(BOOL)animate completion:(void(^)(void))block
-{
-    NSAssert([self canTransitionToState:newState], @"illegal state transition");
-    if (self.currentState == newState) {
-        [self setupNavigationBar];
-        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            if (block) {
-                block();
-            }
-        }];
-        return;
-    }
-    
-    MITMobiusRootViewControllerState oldState = self.currentState;
-    
-    [self willTransitionToState:newState fromState:oldState];
-    self.currentState = newState;
-    
-    [self.view setNeedsUpdateConstraints];
-    [self.view setNeedsLayout];
-    
-    NSTimeInterval animationDuration = (animate ? MITMobiusRootPhoneDefaultAnimationDuration : 0);
-    [UIView animateWithDuration:animationDuration
-                          delay:0
-                        options:0
-                     animations:^{
-                         [self animateTransitionToState:newState fromState:oldState animated:animate];
-                     } completion:^(BOOL finished) {
-                         [self didTransitionToState:newState fromState:oldState];
-                         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                             if (block) {
-                                 block();
-                             }
-                         }];
-                     }];
-}
-
-- (void)willTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
-{
-    switch (newState) {
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.hidden = NO;
-            self.quickLookupTableView.alpha = 0.;
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.hidden = NO;
-            self.recentSearchViewController.view.alpha = 0.;
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            self.contentContainerView.hidden = NO;
-            self.contentContainerView.alpha = 0;
-            [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
-        } break;
-    }
-    
-    switch (oldState) {
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.hidden = YES;
-            self.quickLookupTableView.alpha = 0;
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.hidden = YES;
-            self.recentSearchViewController.view.alpha = 0.;
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            self.contentContainerView.hidden = NO;
-            self.contentContainerView.alpha = 1;
-            [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
-        } break;
-    }
-}
-
-- (void)animateTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState animated:(BOOL)animated
-{
-    switch (newState) {
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.alpha = 1;
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.alpha = 1;
-            [self.searchBar setShowsCancelButton:YES animated:animated];
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            self.contentContainerView.alpha = 1;
-            
-            if (self.isMapFullScreen) {
-                [self.navigationController setToolbarHidden:NO animated:animated];
-            } else {
-                [self.mapViewController.mapView selectAnnotation:nil animated:animated];
-            }
-        } break;
-    }
-    
-    switch (oldState) {
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.alpha = 0;
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.alpha = 0;
-            [self.searchBar setShowsCancelButton:NO animated:animated];
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            self.contentContainerView.alpha = 0;
-            [self.navigationController setToolbarHidden:YES animated:animated];
-        } break;
-    }
-}
-
-- (void)didTransitionToState:(MITMobiusRootViewControllerState)newState fromState:(MITMobiusRootViewControllerState)oldState
-{
-    switch (oldState) {
-        case MITMobiusRootViewControllerStateNoResults:
-        case MITMobiusRootViewControllerStateInitial: {
-            self.quickLookupTableView.hidden = YES;
-        } break;
-            
-        case MITMobiusRootViewControllerStateSearch: {
-            self.recentSearchViewController.view.hidden = YES;
-        } break;
-            
-        case MITMobiusRootViewControllerStateResults: {
-            self.contentContainerView.hidden = YES;
-        } break;
-    }
-
-    [self setupNavigationBar];
-}
-
 - (void)searchSuggestionsTimerFired:(NSTimer*)timer
 {
     [self.recentSearchViewController filterResultsUsingString:self.searchBar.text];
@@ -656,20 +614,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 
 - (IBAction)dismissFullScreenMap:(UIBarButtonItem*)sender
 {
-    if (self.currentState != MITMobiusRootViewControllerStateResults) {
-        return;
-    }
-    
     [self setMapFullScreen:NO animated:YES];
 }
 
 - (IBAction)handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
 {
     if (gestureRecognizer == self.fullScreenMapGesture) {
-        if (self.currentState != MITMobiusRootViewControllerStateResults) {
-            return;
-        }
-        
         if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
             CGPoint location = [gestureRecognizer locationInView:self.contentContainerView];
 
@@ -678,6 +628,13 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             }
         }
     }
+}
+
+- (IBAction)resetSearchQuery:(id)sender
+{
+    self.dataSource.query = nil;
+    self.searchBar.text = nil;
+    [self updateViewState:YES];
 }
 
 - (void)addChildViewController:(UIViewController*)viewController toView:(UIView*)superview
@@ -773,57 +730,43 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark UISearchBarDelegate
+- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+{
+    [self.searchSuggestionsTimer invalidate];
+    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
+                                                                   target:self
+                                                                 selector:@selector(searchSuggestionsTimerFired:)
+                                                                 userInfo:nil
+                                                                  repeats:NO];
+}
+
 - (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
 {
     self.searching = YES;
-    [self transitionToState:MITMobiusRootViewControllerStateSearch animated:YES completion:nil];
+    [self updateViewState:YES];
+}
+
+- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
+{
+    [searchBar resignFirstResponder];
+    
+    if ([self didPerformSearch]) {
+        searchBar.text = self.dataSource.queryString;
+    } else {
+        searchBar.text = nil;
+    }
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
     self.searching = NO;
-    
-    if ([self.searchBar.text length]) {
-        NSString *queryString = [[searchBar.text lowercaseString] stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceAndNewlineCharacterSet]];
-        if ([queryString caseInsensitiveCompare:self.dataSource.queryString] != NSOrderedSame) {
-            
-            [self reloadDataSourceForSearch:queryString completion:^{
-                MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
-                
-                if ([self.resources count]) {
-                    newState = MITMobiusRootViewControllerStateResults;
-                    self.mapFullScreen = NO;
-                }
-                
-                [self transitionToState:newState animated:YES completion:^{
-                    self.rooms = nil;
-                    [self.resourcesTableViewController.tableView reloadData];
-                    [self.mapViewController reloadMapAnimated:YES];
-                }];
-            }];
-        } else {
-            MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
-            if ([self.dataSource.resources count]) {
-                newState = MITMobiusRootViewControllerStateResults;
-            }
-            
-            [self transitionToState:newState animated:YES completion:nil];
-        }
-    } else {
-        [self transitionToState:MITMobiusRootViewControllerStateInitial animated:YES completion:nil];
-    }
+    [self updateViewState:YES];
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
     [searchBar resignFirstResponder];
-
-    [self reloadDataSourceForSearch:searchBar.text completion:^{
-      
-        self.rooms = nil;
-        [self.resourcesTableViewController.tableView reloadData];
-        [self.mapViewController reloadMapAnimated:YES];
-    }];
+    [self reloadDataSourceForSearch:searchBar.text completion:nil];
 }
 
 - (NSDictionary*)rooms
@@ -864,31 +807,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }];
 
     return resources;
-}
-
-- (BOOL)searchBar:(UISearchBar *)searchBar shouldChangeTextInRange:(NSRange)range replacementText:(NSString *)text
-{
-    return YES;
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    [self.searchSuggestionsTimer invalidate];
-    self.searchSuggestionsTimer = [NSTimer scheduledTimerWithTimeInterval:0.1
-                                                                   target:self
-                                                                 selector:@selector(searchSuggestionsTimerFired:)
-                                                                 userInfo:nil
-                                                                  repeats:NO];
-}
-
-- (BOOL)searchBarShouldBeginEditing:(UISearchBar *)searchBar
-{
-    return YES;
-}
-
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
-{
-    [searchBar resignFirstResponder];
 }
 
 #pragma mark MITMobiusDetailPagingDelegate
@@ -982,11 +900,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)searchFilterStrip:(MITMobiusSearchFilterStrip *)filterStrip didSelectFilterAtIndex:(NSInteger)index
-{
-    NSLog(@"filter selected at index: %li", (long)index);
-}
-
 #pragma mark UITableView Methods
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
@@ -1060,36 +973,27 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     }
 }
 
-- (void)applyQuickParams:(id)object
+- (void)applyQuickParams:(id)roomSetOrResourceType
 {
-    NSString *searchTerm = nil;
-    
-    if ([object isKindOfClass:[MITMobiusRoomSet class]]) {
-        
-        MITMobiusRoomSet *type = object;
-        searchTerm = [NSString stringWithFormat:@"%@:\"%@\"}]}",@"params={\"where\":[{\"field\":\"roomset\",\"value\"",type.identifier];
-        
-    } else if ([object isKindOfClass:[MITMobiusResourceType class]]) {
-        
-        MITMobiusResourceType *type = object;
-        searchTerm = [NSString stringWithFormat:@"params={\"where\":[{\"value\":\"%@\",\"field\":\"_type\"}]}",type.identifier];
+    NSParameterAssert(roomSetOrResourceType);
 
-    }
-    if (searchTerm) {
-        [self reloadDataSourceForSearch:searchTerm completion:^{
-            MITMobiusRootViewControllerState newState = MITMobiusRootViewControllerStateNoResults;
-            
-            if ([self.resources count]) {
-                newState = MITMobiusRootViewControllerStateResults;
-                self.mapFullScreen = NO;
-            }
-            
-            [self transitionToState:newState animated:YES completion:^{
-                self.rooms = nil;
-                [self.resourcesTableViewController.tableView reloadData];
-                [self.mapViewController reloadMapAnimated:YES];
-            }];
-        }];
+    void (^completionBlock)(void) = ^{
+        if ([self.resources count]) {
+            self.mapFullScreen = NO;
+            self.rooms = nil;
+            [self.resourcesTableViewController.tableView reloadData];
+            [self.mapViewController reloadMapAnimated:YES];
+        }
+
+        [self updateViewState:YES];
+    };
+
+    if ([roomSetOrResourceType isKindOfClass:[MITMobiusRoomSet class]]) {
+        MITMobiusRoomSet *roomSet = (MITMobiusRoomSet*)roomSetOrResourceType;
+        [self reloadDataSourceWithField:@"roomset" value:roomSet.identifier completion:completionBlock];
+    } else if ([roomSetOrResourceType isKindOfClass:[MITMobiusResourceType class]]) {
+        MITMobiusResourceType *resourceType = (MITMobiusResourceType*)roomSetOrResourceType;
+        [self reloadDataSourceWithField:@"_type" value:resourceType.identifier completion:completionBlock];
     }
 }
 
@@ -1101,17 +1005,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [managedObjectContext refreshObject:query mergeChanges:NO];
 
     if (query) {
-        [self reloadDataSourceForQuery:query completion:^{
-            MITMobiusRootViewControllerState state = MITMobiusRootViewControllerStateNoResults;
-            if (self.rooms.count > 0) {
-                state = MITMobiusRootViewControllerStateResults;
-            }
-
-            [self transitionToState:MITMobiusRootViewControllerStateResults animated:state completion:^{
-                [self.resourcesTableViewController.tableView reloadData];
-                [self.mapViewController reloadMapAnimated:YES];
-            }];
-        }];
+        [self reloadDataSourceForQuery:query completion:nil];
     }
     
     [self dismissViewControllerAnimated:YES completion:nil];
@@ -1121,6 +1015,5 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     [self dismissViewControllerAnimated:YES completion:nil];
 }
-
 
 @end
