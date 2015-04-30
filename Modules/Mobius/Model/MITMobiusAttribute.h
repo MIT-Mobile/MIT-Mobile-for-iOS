@@ -4,25 +4,31 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusAttributeValueSet, MITMobiusResource, MITMobiusAttributeValue;
+@class MITMobiusAttributeValueSet, MITMobiusResource, MITMobiusAttributeValue, MITMobiusSearchOption;
+
+typedef NS_ENUM(NSInteger, MITMobiusAttributeType) {
+    MITMobiusAttributeTypeString,
+    MITMobiusAttributeTypeNumeric,
+    MITMobiusAttributeTypeAutocompletion,
+    MITMobiusAttributeTypeText,
+    MITMobiusAttributeTypeOptionSingle,
+    MITMobiusAttributeTypeOptionMultiple
+};
 
 @interface MITMobiusAttribute : MITManagedObject <MITMappedObject>
 
 @property (nonatomic, retain) NSString * fieldType;
 @property (nonatomic, retain) NSString * identifier;
 @property (nonatomic, retain) NSString * label;
+@property (nonatomic, retain) NSString * valueSetName;
 @property (nonatomic, retain) NSString * widgetType;
-@property (nonatomic, retain) NSSet *resources;
-@property (nonatomic, retain) NSString *valueSetName;
 @property (nonatomic, retain) NSOrderedSet *values;
+@property (nonatomic, retain) NSSet *searchOptions;
+
+@property (nonatomic) MITMobiusAttributeType type;
 @end
 
 @interface MITMobiusAttribute (CoreDataGeneratedAccessors)
-
-- (void)addResourcesObject:(MITMobiusResource *)value;
-- (void)removeResourcesObject:(MITMobiusResource *)value;
-- (void)addResources:(NSSet *)values;
-- (void)removeResources:(NSSet *)values;
 
 - (void)insertObject:(MITMobiusAttributeValue *)value inValuesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromValuesAtIndex:(NSUInteger)idx;
@@ -34,5 +40,10 @@
 - (void)removeValuesObject:(MITMobiusAttributeValue *)value;
 - (void)addValues:(NSOrderedSet *)values;
 - (void)removeValues:(NSOrderedSet *)values;
+- (void)addSearchOptionsObject:(MITMobiusSearchOption *)value;
+- (void)removeSearchOptionsObject:(MITMobiusSearchOption *)value;
+- (void)addSearchOptions:(NSSet *)values;
+- (void)removeSearchOptions:(NSSet *)values;
 
 @end
+

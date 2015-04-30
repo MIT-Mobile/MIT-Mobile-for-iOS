@@ -8,6 +8,7 @@
 
 #import "MITMobiusMapViewController.h"
 #import "MITMobiusRecentSearchController.h"
+#import "MITMobiusAdvancedSearchViewController.h"
 #import "MITMapPlaceSelector.h"
 
 #import "DDLog.h"
@@ -39,7 +40,7 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     MITMobiusRootViewControllerStateResults,
 };
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, UITableViewDataSourceDynamicSizing, MITResourceFilterDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusAdvancedSearchDelegate, UITableViewDataSourceDynamicSizing, MITResourceFilterDelegate>
 
 // These are currently strong since, if they are weak,
 // they are being released during the various animations and
@@ -168,8 +169,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
     [super viewWillAppear:animated];
 
     [self transitionToState:self.currentState animated:animated completion:nil];
-    
-    [self setupNavigationBar];
 
     if (self.isMapFullScreen) {
         [self.navigationController setToolbarHidden:NO animated:animated];
@@ -181,6 +180,34 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)reloadDataSourceForQuery:(MITMobiusRecentSearchQuery*)query completion:(void(^)(void))block
+{
+    NSParameterAssert(query);
+    __weak MITMobiusRootPhoneViewController *weakSelf = self;
+    [self.dataSource resourcesWithQueryObject:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
+        MITMobiusRootPhoneViewController *blockSelf = weakSelf;
+
+        if (!blockSelf) {
+            return;
+        } else if (error) {
+            DDLogWarn(@"Error: %@",error);
+
+            if (block) {
+                [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+            }
+        } else {
+            [blockSelf.managedObjectContext performBlockAndWait:^{
+                [blockSelf.managedObjectContext reset];
+                blockSelf.rooms = nil;
+
+                if (block) {
+                    [[NSOperationQueue mainQueue] addOperationWithBlock:block];
+                }
+            }];
+        }
+    }];
 }
 
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block
@@ -269,7 +296,22 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         self.searchBarContainer = searchBarContainer;
     }
 
-    [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem];
+    switch (self.currentState) {
+        case MITMobiusRootViewControllerStateInitial:
+        case MITMobiusRootViewControllerStateNoResults:
+        case MITMobiusRootViewControllerStateResults: {
+            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
+
+            UIImage *image = [UIImage imageNamed:MITImageMobiusBarButtonAdvancedSearch];
+            UIBarButtonItem *filterBarButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(_didTapShowFilterButton:)];
+            [self.navigationItem setRightBarButtonItem:filterBarButton animated:YES];
+        } break;
+
+        case MITMobiusRootViewControllerStateSearch: {
+            [self.navigationItem setLeftBarButtonItem:nil animated:YES];
+            [self.navigationItem setRightBarButtonItem:nil animated:YES];
+        } break;
+    }
 }
 
 #pragma mark Public Properties
@@ -391,6 +433,18 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 }
 
 #pragma mark - Private
+- (IBAction)_didTapShowFilterButton:(UIBarButtonItem*)sender
+{
+    MITMobiusAdvancedSearchViewController *viewController = [[MITMobiusAdvancedSearchViewController alloc] initWithQuery:self.dataSource.query];
+    viewController.delegate = self;
+
+    viewController.modalPresentationStyle = UIModalPresentationFullScreen;
+    viewController.modalTransitionStyle = UIModalTransitionStyleCoverVertical;
+
+    UINavigationController *navigationController = [[UINavigationController alloc] initWithRootViewController:viewController];
+    [self presentViewController:navigationController animated:YES completion:nil];
+}
+
 #pragma mark State Management
 - (BOOL)canTransitionToState:(MITMobiusRootViewControllerState)newState
 {
@@ -427,6 +481,12 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 {
     NSAssert([self canTransitionToState:newState], @"illegal state transition");
     if (self.currentState == newState) {
+        [self setupNavigationBar];
+        [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+            if (block) {
+                block();
+            }
+        }];
         return;
     }
     
@@ -505,7 +565,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             
         case MITMobiusRootViewControllerStateSearch: {
             self.recentSearchViewController.view.alpha = 1;
-            [self.navigationItem setLeftBarButtonItem:nil animated:animated];
             [self.searchBar setShowsCancelButton:YES animated:animated];
         } break;
             
@@ -547,7 +606,6 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         } break;
             
         case MITMobiusRootViewControllerStateSearch: {
-            [self.navigationItem setLeftBarButtonItem:[MIT_MobileAppDelegate applicationDelegate].rootViewController.leftBarButtonItem animated:YES];
             self.recentSearchViewController.view.hidden = YES;
         } break;
             
@@ -555,6 +613,8 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
             self.contentContainerView.hidden = YES;
         } break;
     }
+
+    [self setupNavigationBar];
 }
 
 - (void)searchSuggestionsTimerFired:(NSTimer*)timer
@@ -926,21 +986,15 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
 - (void)tableView:(UITableView*)tableView configureCell:(UITableViewCell*)cell forRowAtIndexPath:(NSIndexPath*)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    if (reuseIdentifier == MITMobiusQuickSearchHeaderTableViewCellIdentifier) {
-        MITMobiusQuickSearchHeaderTableViewCell *quickSearch = (MITMobiusQuickSearchHeaderTableViewCell*)cell;
-        quickSearch.label.text = @"Sample searches:\nMaterials + machine capability: ‘plastic steel hole’\nShop + machine type: ‘Edgerton lathe’";
-        quickSearch.backgroundColor = [UIColor clearColor];
-        quickSearch.selectionStyle = UITableViewCellSelectionStyleNone;
-    }
-    if (reuseIdentifier != MITMobiusQuickSearchTableViewCellIdentifier) {
-        return;
-    }
-    if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Shops & Labs";
-    } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
-        MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
-        quickSearch.label.text = @"Machine Types";
+
+    if ([reuseIdentifier isEqualToString:MITMobiusQuickSearchTableViewCellIdentifier]) {
+        if (indexPath.row == MITMobiusQuickSearchRoomSetTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Shops & Labs";
+        } else if (indexPath.row == MITMobiusQuickSearchResourceTypeTableRow) {
+            MITMobiusQuickSearchTableViewCell *quickSearch = (MITMobiusQuickSearchTableViewCell*)cell;
+            quickSearch.label.text = @"Machine Types";
+        }
     }
 }
 
@@ -976,5 +1030,35 @@ typedef NS_ENUM(NSInteger, MITMobiusRootViewControllerState) {
         }];
     }
 }
+
+#pragma mark MITMobiusAdvancedSearchDelegate
+- (void)didDismissAdvancedSearchViewController:(MITMobiusAdvancedSearchViewController *)viewController
+{
+    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+    [managedObjectContext refreshObject:query mergeChanges:NO];
+
+    if (query) {
+        [self reloadDataSourceForQuery:query completion:^{
+            MITMobiusRootViewControllerState state = MITMobiusRootViewControllerStateNoResults;
+            if (self.rooms.count > 0) {
+                state = MITMobiusRootViewControllerStateResults;
+            }
+
+            [self transitionToState:MITMobiusRootViewControllerStateResults animated:state completion:^{
+                [self.resourcesTableViewController.tableView reloadData];
+                [self.mapViewController reloadMapAnimated:YES];
+            }];
+        }];
+    }
+    
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)advancedSearchViewControllerDidCancelSearch:(MITMobiusAdvancedSearchViewController *)viewController
+{
+    [self dismissViewControllerAnimated:YES completion:nil];
+}
+
 
 @end

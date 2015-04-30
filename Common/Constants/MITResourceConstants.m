@@ -87,15 +87,17 @@ NSString * const MITImageMapCategoryResidences           = @"map-category-reside
 NSString * const MITImageMapCategoryRooms                = @"map-category-room";
 NSString * const MITImageMapCategoryStreetsAndLandmarks  = @"map-category-landmark";
 
-#pragma mark Möbius
+#pragma mark - Mobius
 NSString * const MITImageMobiusResourceOffline = @"mobius-resource-offline";
+NSString * const MITImageMobiusAccordionOpened = @"mobius-accordion-opened";
+NSString * const MITImageMobiusAccordionClosed = @"mobius-accordion-closed";
+NSString * const MITImageMobiusBarButtonAdvancedSearch = @"mobius-bar-advanced-search";
 
 #pragma mark - Scanner
 NSString * const MITImageScannerCameraUnsupported = @"scanner-camera-unsupported";
 NSString * const MITImageScannerSampleBarcode = @"scanner-sample-barcode";
 NSString * const MITImageScannerSampleQRCode = @"scanner-sample-qr";
 NSString * const MITImageScannerMissingImage = @"scanner-missing-image";
-
 
 #pragma mark - Shuttles
 NSString * const MITImageShuttlesInService         = @"shuttles-in-service";
@@ -167,6 +169,7 @@ NSString * const MITImageBarButtonLocation = @"global-barbutton-location";
 NSString * const MITImageBarButtonGrid = @"global-barbutton-grid";
 NSString * const MITImageBarButtonList = @"global-barbutton-list";
 NSString * const MITImageBarButtonListSelected = @"global-barbutton-list-selected";
+NSString * const MITImageBarButtonFilter = @"global-barbutton-filter";
 
 // TODO: See if we really need both these icons
 NSString * const MITImageBarButtonSearch = @"global-search";

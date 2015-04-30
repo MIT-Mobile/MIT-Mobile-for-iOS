@@ -84,8 +84,12 @@ extern NSString * const MITImageMapCategoryResidences;
 extern NSString * const MITImageMapCategoryRooms;
 extern NSString * const MITImageMapCategoryStreetsAndLandmarks;
 
-#pragma mark Möbius
+#pragma mark - Mobius
 extern NSString * const MITImageMobiusResourceOffline;
+extern NSString * const MITImageMobiusAccordionOpened;
+extern NSString * const MITImageMobiusAccordionClosed;
+extern NSString * const MITImageMobiusBarButtonAdvancedSearch;
+
 
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;
@@ -160,6 +164,7 @@ extern NSString * const MITImageBarButtonLocation;
 extern NSString * const MITImageBarButtonGrid;
 extern NSString * const MITImageBarButtonList;
 extern NSString * const MITImageBarButtonListSelected;
+extern NSString * const MITImageBarButtonFilter;
 
 // TODO: See if we really need both these icons
 extern NSString * const MITImageBarButtonSearch;

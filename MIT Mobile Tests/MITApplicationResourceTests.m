@@ -113,8 +113,12 @@
     MITCheckAsset(MITImageMapCategoryRooms);
     MITCheckAsset(MITImageMapCategoryStreetsAndLandmarks);
 
-#pragma mark Möbius
+#pragma mark - Mobius
     MITCheckAsset(MITImageMobiusResourceOffline);
+    MITCheckAsset(MITImageMobiusAccordionOpened);
+    MITCheckAsset(MITImageMobiusAccordionClosed);
+    MITCheckAsset(MITImageMobiusBarButtonAdvancedSearch);
+
 
 #pragma mark - Scanner
     MITCheckAsset(MITImageScannerCameraUnsupported);
@@ -183,6 +187,7 @@
     MITCheckAsset(MITImageBarButtonGrid);
     MITCheckAsset(MITImageBarButtonList);
     MITCheckAsset(MITImageBarButtonListSelected);
+    MITCheckAsset(MITImageBarButtonFilter);
     
     MITCheckAsset(MITImageBarButtonSearch);
     MITCheckAsset(MITImageBarButtonSearchMagnifier);
