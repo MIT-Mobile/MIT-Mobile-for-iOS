@@ -15,19 +15,11 @@
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Use this app to discover maker spaces, shops and labs, and to find machine tools on campus." lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="319" translatesAutoresizingMaskIntoConstraints="NO" id="GcH-Qy-82k" userLabel="Use this app " customClass="MultiLineLabel">
-                        <rect key="frame" x="15" y="30" width="753" height="67"/>
+                        <rect key="frame" x="15" y="30" width="738" height="67"/>
                         <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
-                        <constraints>
-                            <constraint firstAttribute="height" constant="66" id="Zsl-7x-Tr7"/>
-                        </constraints>
                         <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
-                        <variation key="default">
-                            <mask key="constraints">
-                                <exclude reference="Zsl-7x-Tr7"/>
-                            </mask>
-                        </variation>
                     </label>
                 </subviews>
                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
@@ -35,7 +27,7 @@
                     <constraint firstItem="GcH-Qy-82k" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="30" id="6lg-jJ-5Qs"/>
                     <constraint firstItem="GcH-Qy-82k" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="oqz-fk-V2y"/>
                     <constraint firstAttribute="bottom" secondItem="GcH-Qy-82k" secondAttribute="bottom" constant="30" id="vHR-eG-wTy"/>
-                    <constraint firstAttribute="trailing" secondItem="GcH-Qy-82k" secondAttribute="trailing" id="xzo-aW-c9M"/>
+                    <constraint firstAttribute="trailing" secondItem="GcH-Qy-82k" secondAttribute="trailing" constant="15" id="xzo-aW-c9M"/>
                 </constraints>
             </tableViewCellContentView>
             <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
