@@ -58,10 +58,8 @@
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
-    
-    if (self.fetchedResultsController.fetchedObjects == nil) {
-        [self.fetchedResultsController performFetch:nil];
-    }
+
+    [self.fetchedResultsController performFetch:nil];
     
     if (self.fetchedResultsController.fetchedObjects.count == 0) {
         self.clearButtonItem.enabled = NO;
