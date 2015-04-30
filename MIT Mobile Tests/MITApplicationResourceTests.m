@@ -178,6 +178,7 @@
 
     MITCheckAsset(MITImageNameSearch);
     MITCheckAsset(MITImageDisclosureRight);
+    MITCheckAsset(MITImageCalloutDisclosureRight);
     MITCheckAsset(MITImageTransparentPixel);
 
     MITCheckAsset(MITImageLogoDarkContent);

@@ -10,7 +10,7 @@
 #import "NSDateFormatter+RelativeString.h"
 #import "MITShuttleStopNotificationManager.h"
 #import "MITShuttleRouteCell.h"
-#import "MITShuttleRouteContainerViewController.h"
+#import "MITShuttleRouteStopMapContainerViewController.h"
 #import "MITShuttlePredictionLoader.h"
 #import "MITCoreDataController.h"
 
@@ -356,7 +356,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleStopViewControllerSectionType) {
             [self.delegate shuttleStopViewController:self didSelectRoute:route withStop:self.stop];
         } else {
             // Default behavior
-            MITShuttleRouteContainerViewController *routeVC = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:nil];
+            MITShuttleRouteStopMapContainerViewController *routeVC = [[MITShuttleRouteStopMapContainerViewController alloc] initWithRoute:route stop:nil];
             [self.navigationController pushViewController:routeVC animated:YES];
         }
     } else if (sectionType == MITShuttleStopViewControllerSectionTypePredictions) {

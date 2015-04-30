@@ -14,10 +14,6 @@
 #import "MITShuttleVehicleList.h"
 #import "MITShuttleVehicle.h"
 
-
-static const NSInteger kEmbeddedMapPlaceholderCellRow = 0;
-
-static const CGFloat kEmbeddedMapPlaceholderCellEstimatedHeight = 190.0;
 static const CGFloat kRouteStatusCellEstimatedHeight = 80.0;
 static const CGFloat kStopCellHeight = 45.0;
 
@@ -182,12 +178,12 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (NSInteger)headerCellCount
 {
-    return [self.dataSource isMapEmbeddedInRouteViewController:self] ? 2 : 1;
+    return 1;
 }
 
 - (NSInteger)rowIndexForRouteStatusCell
 {
-    return [self.dataSource isMapEmbeddedInRouteViewController:self] ? 1 : 0;
+    return 0;
 }
 
 - (NSIndexPath *)indexPathForStop:(MITShuttleStop *)stop
@@ -210,9 +206,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
-        return self.embeddedMapPlaceholderCell;
-    } else if (indexPath.row == [self rowIndexForRouteStatusCell]) {
+    if (indexPath.row == [self rowIndexForRouteStatusCell]) {
         return self.routeStatusCell;
     } else {
         MITShuttleStopCell *cell = [tableView dequeueReusableCellWithIdentifier:kMITShuttleStopCellIdentifier forIndexPath:indexPath];
@@ -236,9 +230,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
-        return [self.dataSource embeddedMapHeightForRouteViewController:self];
-    } else if (indexPath.row == [self rowIndexForRouteStatusCell]) {
+    if (indexPath.row == [self rowIndexForRouteStatusCell]) {
         CGFloat height = [self.routeStatusCell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
         ++height;   // add pt for cell separator;
         return height;
@@ -249,9 +241,7 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
 
 - (CGFloat)tableView:(UITableView *)tableView estimatedHeightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
-        return kEmbeddedMapPlaceholderCellEstimatedHeight;
-    } else if (indexPath.row == [self rowIndexForRouteStatusCell]) {
+    if (indexPath.row == [self rowIndexForRouteStatusCell]) {
         return kRouteStatusCellEstimatedHeight;
     } else {
         return kStopCellHeight;
@@ -269,24 +259,25 @@ static NSString * const kMITShuttleRouteStatusCellNibName = @"MITShuttleRouteSta
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
     }
     
-    if ([self.dataSource isMapEmbeddedInRouteViewController:self] && indexPath.row == kEmbeddedMapPlaceholderCellRow) {
-        if ([self.delegate respondsToSelector:@selector(routeViewControllerDidSelectMapPlaceholderCell:)]) {
-            [self.delegate routeViewControllerDidSelectMapPlaceholderCell:self];
-        }
-    } else if ([self.delegate respondsToSelector:@selector(routeViewController:didSelectStop:)]) {
+    if ([self.delegate respondsToSelector:@selector(routeViewController:didSelectStop:)]) {
         NSInteger stopIndex = indexPath.row - [self headerCellCount];
         MITShuttleStop *stop = self.route.stops[stopIndex];
         [self.delegate routeViewController:self didSelectStop:stop];
     }
 }
 
-#pragma mark - UIScrollViewDelegate
+#pragma mark - TableView Height
 
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+- (CGFloat)targetTableViewHeight
 {
-    if ([self.delegate respondsToSelector:@selector(routeViewController:didScrollToContentOffset:)]) {
-        [self.delegate routeViewController:self didScrollToContentOffset:scrollView.contentOffset];
+    CGFloat tableHeight= 0.0;
+    for (NSInteger section = 0; section < [self numberOfSectionsInTableView:self.tableView]; section++) {
+        for (NSInteger row = 0; row < [self tableView:self.tableView numberOfRowsInSection:section]; row++) {
+            tableHeight += [self tableView:self.tableView heightForRowAtIndexPath:[NSIndexPath indexPathForRow:row inSection:section]];
+        }
     }
+    
+    return tableHeight;
 }
 
 @end

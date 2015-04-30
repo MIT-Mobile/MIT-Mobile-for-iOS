@@ -150,6 +150,7 @@ extern NSString * const MITImageActionArrowRight;
 
 extern NSString * const MITImageNameSearch;
 extern NSString * const MITImageDisclosureRight;
+extern NSString * const MITImageCalloutDisclosureRight;
 extern NSString * const MITImageTransparentPixel;
 
 extern NSString * const MITImageLogoDarkContent;

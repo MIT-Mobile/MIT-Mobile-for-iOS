@@ -116,6 +116,7 @@ NSDictionary* MITPagingMetadataFromResponse(NSHTTPURLResponse* response);
 - (NSDateComponents *)timeComponents;
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date;
 - (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate;
+- (BOOL)dateFallsBetweenStartDate:(NSDate *)startDate endDate:(NSDate *)endDate components:(NSCalendarUnit)components;
 - (NSString *)ISO8601String;
 - (NSString *)MITDateCode;
 + (NSNumber *)numberForDateCode:(NSString *)dateCode;

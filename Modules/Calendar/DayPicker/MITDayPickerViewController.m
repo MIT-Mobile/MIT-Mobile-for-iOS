@@ -225,10 +225,12 @@ static NSString * const MITDayPickerControllerCellIdentifier = @"MITDayPickerCon
 - (void)setCurrentlyDisplayedDate:(NSDate *)currentlyDisplayedDate
 {
     if (!_currentlyDisplayedDate || !currentlyDisplayedDate || ![currentlyDisplayedDate isEqualToDateIgnoringTime:_currentlyDisplayedDate]) {
-        if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
-            [self animateDayPickerCollectionViewBackwards];
-        } else if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
-            [self animateDayPickerCollectionViewForward];
+        if (self.datesArray.count >= 21) {
+            if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[0] endDate:self.datesArray[6]]) {
+                [self animateDayPickerCollectionViewBackwards];
+            } else if ([currentlyDisplayedDate dateFallsBetweenStartDate:self.datesArray[14] endDate:self.datesArray[20]]) {
+                [self animateDayPickerCollectionViewForward];
+            }
         }
         NSDate *oldDate = _currentlyDisplayedDate;
         NSDate *newDate = currentlyDisplayedDate;
