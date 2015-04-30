@@ -526,6 +526,10 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
         NSMutableOrderedSet *values = [searchOption mutableOrderedSetValueForKey:@"values"];
         [values removeObject:value];
 
+        if (values.count == 0) {
+            [self.managedObjectContext deleteObject:searchOption];
+        }
+
         NSIndexPath *attributeIndexPath = [self indexPathForAttribute:value.attribute];
         if ([self.currentExpandedIndexPath isEqual:attributeIndexPath]) {
             NSInteger valueIndex = [value.attribute.values indexOfObject:value] + attributeIndexPath.row + 1;
