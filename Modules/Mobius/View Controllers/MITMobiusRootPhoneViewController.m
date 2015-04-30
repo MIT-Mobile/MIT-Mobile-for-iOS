@@ -690,6 +690,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 {
     self.searchBar.text = query;
     [self.searchBar resignFirstResponder];
+    [self reloadDataSourceForSearch:query completion:nil];
 }
 
 #pragma mark MITMobiusResourcesTableViewControllerDelegate
