@@ -9,6 +9,5 @@
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
 
 - (void)filterResultsUsingString:(NSString *)filterString;
-- (void)addRecentSearchTerm:(NSString *)searchTerm;
 
 @end
