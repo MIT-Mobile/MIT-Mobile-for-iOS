@@ -7,10 +7,10 @@
 @interface MITMobiusRecentSearchController () <UIActionSheetDelegate>
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
 @property (nonatomic,copy) NSString *filterString;
-@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
 
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic,strong) UIBarButtonItem *clearButtonItem;
 
 @end
 
@@ -29,12 +29,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
-    UIBarButtonItem *clearButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:self action:@selector(clearRecentsButtonClicked:)];
-    
-    self.navigationItem.title = @"Recents";
-    self.navigationItem.leftBarButtonItem = clearButtonItem;
-    self.clearButtonItem = clearButtonItem;
+
+    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(clearRecentsButtonClicked:)];
+    self.clearButtonItem = clearItem;
     
     self.navigationController.navigationBar.tintColor = [UIColor mit_tintColor];
     self.view.tintColor = [UIColor mit_tintColor];
