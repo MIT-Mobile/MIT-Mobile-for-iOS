@@ -420,6 +420,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
         completionBlock = ^(BOOL finished) {
             self.quickLookupTableView.hidden = YES;
             self.contentContainerView.hidden = YES;
+            self.navigationItem.leftBarButtonItem = self.recentSearchViewController.clearButtonItem;
         };
     } else {
         if ([self didPerformSearch]) {
