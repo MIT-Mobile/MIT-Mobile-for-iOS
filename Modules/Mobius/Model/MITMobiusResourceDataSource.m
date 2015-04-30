@@ -197,9 +197,17 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         query = self.query;
     } else {
         [self.managedObjectContext performBlockAndWait:^{
-            query = [NSEntityDescription insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName] inManagedObjectContext:self.managedObjectContext];
-            query.text = queryString;
-            [self.managedObjectContext saveToPersistentStore:nil];
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",queryString];
+            
+            MITMobiusRecentSearchQuery *fetchedQuery = [[self.managedObjectContext executeFetchRequest:fetchRequest error:nil] firstObject];
+            if (fetchedQuery) {
+                query = fetchedQuery;
+            } else {
+                query = [NSEntityDescription insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName] inManagedObjectContext:self.managedObjectContext];
+                query.text = queryString;
+                [self.managedObjectContext saveToPersistentStore:nil];
+            }
         }];
     }
     
