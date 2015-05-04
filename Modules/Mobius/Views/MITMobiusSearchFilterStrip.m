@@ -12,24 +12,12 @@ static NSString * const MITMobiusSearchFilterStripCellIdentifier = @"MITMobiusSe
 @end
 
 @implementation MITMobiusSearchFilterStrip
-
-- (id)init
-{
-    self = [super init];
-    
-    if (self) {
-        [self initialize];
-    }
-    
-    return self;
-}
-
 - (id)initWithCoder:(NSCoder *)aDecoder
 {
     self = [super initWithCoder:aDecoder];
     
     if (self) {
-        [self initialize];
+        [self setup];
     }
     
     return self;
@@ -40,13 +28,13 @@ static NSString * const MITMobiusSearchFilterStripCellIdentifier = @"MITMobiusSe
     self = [super initWithFrame:frame];
     
     if (self) {
-        [self initialize];
+        [self setup];
     }
     
     return self;
 }
 
-- (void)initialize
+- (void)setup
 {
     UICollectionViewFlowLayout *flowLayout = [[UICollectionViewFlowLayout alloc] init];
     flowLayout.scrollDirection = UICollectionViewScrollDirectionHorizontal;
