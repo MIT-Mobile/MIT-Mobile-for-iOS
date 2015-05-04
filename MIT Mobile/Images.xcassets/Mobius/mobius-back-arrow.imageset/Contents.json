@@ -3,17 +3,17 @@
     {
       "idiom" : "universal",
       "scale" : "1x",
-      "filename" : "Back Arrow.png"
+      "filename" : "Standalone Back Button.png"
     },
     {
       "idiom" : "universal",
       "scale" : "2x",
-      "filename" : "Back Arrow@2x.png"
+      "filename" : "Standalone Back Button@2x.png"
     },
     {
       "idiom" : "universal",
       "scale" : "3x",
-      "filename" : "Back Arrow@3x.png"
+      "filename" : "Standalone Back Button@3x.png"
     }
   ],
   "info" : {
