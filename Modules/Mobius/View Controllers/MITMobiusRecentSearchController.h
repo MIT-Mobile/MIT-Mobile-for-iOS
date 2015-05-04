@@ -5,10 +5,10 @@
 @class MITMapCategory;
 
 @interface MITMobiusRecentSearchController : UITableViewController <MITMapPlaceSelector>
-@property(nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
+@property (nonatomic,weak) id<MITMapPlaceSelectionDelegate> delegate;
 @property (nonatomic,weak,readonly) UIActionSheet *confirmSheet;
+@property (nonatomic,readonly,strong) UIBarButtonItem *clearButtonItem;
 
 - (void)filterResultsUsingString:(NSString *)filterString;
-- (void)addRecentSearchTerm:(NSString *)searchTerm;
 
 @end

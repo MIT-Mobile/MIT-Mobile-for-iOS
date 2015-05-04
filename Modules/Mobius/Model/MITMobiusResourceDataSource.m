@@ -19,18 +19,16 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
-@property (nonatomic,copy) NSString *queryString;
-@property (nonatomic,strong) MITMobiusRecentSearchQuery *query;
 @end
 
 @implementation MITMobiusResourceDataSource
 @dynamic resources;
-@dynamic queryString;
+@synthesize queryString = _queryString;
 @synthesize query = _query;
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:YES];
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
@@ -70,30 +68,18 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 - (NSString*)queryString
 {
     __block NSString *result = nil;
-    [self.query.managedObjectContext performBlockAndWait:^{
-        if (self.query.text) {
-            result = [NSString stringWithString:self.query.text];
-        }
-    }];
-
-    return result;
-}
-
-- (BOOL)hasQuery
-{
-    return (_query != nil);
-}
-
-- (MITMobiusRecentSearchQuery*)query
-{
-    if (!_query) {
-        [self.managedObjectContext performBlockAndWait:^{
-            _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName]];
+    
+    if (_query) {
+        [self.query.managedObjectContext performBlockAndWait:^{
+            if (self.query.text) {
+                result = [NSString stringWithString:self.query.text];
+            }
         }];
-
+    } else {
+        result = _queryString;
     }
 
-    return _query;
+    return result;
 }
 
 - (void)setQuery:(MITMobiusRecentSearchQuery *)query
@@ -103,6 +89,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     } else {
         _query = nil;
     }
+    
+    _queryString = nil;
 }
 
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context
@@ -153,7 +141,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
         if (queryObject) {
             NSMutableArray *parameters = [[NSMutableArray alloc] init];
-            [[queryObject URLParameters] enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
+            __block NSDictionary *URLParameters = nil;
+            [queryObject.managedObjectContext performBlockAndWait:^{
+                URLParameters = [[queryObject URLParameters] copy];
+            }];
+            
+            [URLParameters enumerateKeysAndObjectsUsingBlock:^(NSString *key, NSString *value, BOOL *stop) {
                 NSString *parameterString = [NSString stringWithFormat:@"%@=%@",key,[value urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES]];
                 [parameters addObject:parameterString];
             }];
@@ -194,57 +187,70 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
-    if (queryString.length == 0) {
-        self.query = nil;
-        self.lastFetched = [NSDate date];
-        self.resourceObjectIdentifiers = nil;
-        [self.managedObjectContext reset];
+    __block NSString *currentQueryString = nil;
+    [self.query.managedObjectContext performBlockAndWait:^{
+        currentQueryString = self.query.text;
+    }];
+    
+    __block MITMobiusRecentSearchQuery *query = nil;
+    if ([currentQueryString isEqualToString:queryString]) {
+        query = self.query;
+    } else {
+        [self.managedObjectContext performBlockAndWait:^{
+            NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",queryString];
+            
+            MITMobiusRecentSearchQuery *fetchedQuery = [[self.managedObjectContext executeFetchRequest:fetchRequest error:nil] firstObject];
+            if (fetchedQuery) {
+                query = fetchedQuery;
+            } else {
+                query = [NSEntityDescription insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName] inManagedObjectContext:self.managedObjectContext];
+                query.text = queryString;
+                [self.managedObjectContext saveToPersistentStore:nil];
+            }
+        }];
+    }
+    
+    [self resourcesWithQueryObject:query completion:block];
+}
+
+- (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
+{
+    NSParameterAssert(field);
+    NSParameterAssert(value);
+
+    NSURL *resourceReservations = [MITMobiusDataSource mobiusServerURL];
+    NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
+    
+    
+    NSDictionary *predicate = @{@"where" : @[@{ @"field" : field,
+                                                @"value" : value }]};
+    NSData *jsonData = [NSJSONSerialization dataWithJSONObject:predicate options:0 error:nil];
+    NSString *jsonString = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
+    [urlPath appendFormat:@"?params=%@&format=json",jsonString];
+    
+    NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
+    [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+    
+    __weak MITMobiusResourceDataSource *weakSelf = self;
+    [self _performRequest:request completion:^(BOOL success, NSError *error) {
+        MITMobiusResourceDataSource *blockSelf = weakSelf;
+        if (!blockSelf) {
+            return;
+        }
+        
+        if (success) {
+            blockSelf.lastFetched = [NSDate date];
+            blockSelf->_queryString = [NSString stringWithFormat:@"%@=%@",[field capitalizedString],value];
+        }
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
-                block(self,nil);
+                block(blockSelf,error);
             }
         }];
-    } else {
-        NSURL *resourceReservations = [MITMobiusDataSource mobiusServerURL];
-        NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
-#warning temporary fix
-        if ([queryString rangeOfString:@"params"].location != NSNotFound) {
-            NSString *encodedString = [queryString stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding];
-            [urlPath appendFormat:@"/?%@&%@",@"format=json",encodedString];
-        } else if (queryString) {
-
-            NSString *encodedString = [queryString urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
-            [urlPath appendFormat:@"?%@&q=%@",@"format=json",encodedString];
-        }
-
-        NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
-        NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
-        [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-
-        [self.managedObjectContext performBlockAndWait:^{
-            self.query.text = queryString;
-            [self.query.managedObjectContext saveToPersistentStore:nil];
-        }];
-
-        __weak MITMobiusResourceDataSource *weakSelf = self;
-        [self _performRequest:request completion:^(BOOL success, NSError *error) {
-            MITMobiusResourceDataSource *blockSelf = weakSelf;
-            if (!blockSelf) {
-                return;
-            }
-
-            if (success) {
-                blockSelf.lastFetched = [NSDate date];
-            }
-
-            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                if (block) {
-                    block(blockSelf,error);
-                }
-            }];
-        }];
-    }
+    }];
 }
 
 - (void)_performRequest:(NSURLRequest*)request completion:(void(^)(BOOL success, NSError *error))block

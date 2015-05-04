@@ -1,29 +1,20 @@
 #import "MITMobiusRecentSearchController.h"
 #import "MITMobiusResourceDataSource.h"
-#import "MITNewsRecentSearchQuery.h"
+#import "MITMobiusRecentSearchQuery.h"
 #import "UIKit+MITAdditions.h"
+#import "MITCoreData.h"
 
 @interface MITMobiusRecentSearchController () <UIActionSheetDelegate>
-@property (nonatomic,strong) MITMobiusResourceDataSource *modelController;
 @property (nonatomic,weak) UIActionSheet *confirmSheet;
 @property (nonatomic,copy) NSString *filterString;
-@property (nonatomic,copy) NSArray *recentResults;
-@property (nonatomic,weak) UIBarButtonItem *clearButtonItem;
+
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+@property (nonatomic,strong) NSFetchedResultsController *fetchedResultsController;
+@property (nonatomic,strong) UIBarButtonItem *clearButtonItem;
 
 @end
 
 @implementation MITMobiusRecentSearchController
-
-#pragma mark - properties
-- (MITMobiusResourceDataSource *)modelController
-{
-    if(!_modelController) {
-        MITMobiusResourceDataSource *modelController = [[MITMobiusResourceDataSource alloc] init];
-        _modelController = modelController;
-    }
-    return _modelController;
-}
-
 #pragma mark - View lifecycle
 - (id)initWithNibName:(NSString *)nibNameOrNil bundle:(NSBundle *)nibBundleOrNil
 {
@@ -31,40 +22,51 @@
     if (self) {
         
     }
+    
     return self;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:self.filterString];
-    
-    UIBarButtonItem *clearButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:self action:@selector(clearRecentsButtonClicked:)];
-    
-    if ([self.recentResults count] == 0) {
-        clearButtonItem.enabled = NO;
-    }
-    
-    self.navigationItem.title = @"Recents";
-    self.navigationItem.leftBarButtonItem = clearButtonItem;
-    self.clearButtonItem = clearButtonItem;
+
+    UIBarButtonItem *clearItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemTrash target:self action:@selector(clearRecentsButtonClicked:)];
+    self.clearButtonItem = clearItem;
     
     self.navigationController.navigationBar.tintColor = [UIColor mit_tintColor];
     self.view.tintColor = [UIColor mit_tintColor];
+    
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
+    
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.parentContext = [MITCoreDataController defaultController].mainQueueContext;
+    self.managedObjectContext = managedObjectContext;
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
+    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                               managedObjectContext:managedObjectContext
+                                                                                                 sectionNameKeyPath:nil
+                                                                                                          cacheName:nil];
+    self.fetchedResultsController = fetchedResultsController;
+
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+
+    [self.fetchedResultsController performFetch:nil];
+    
+    if (self.fetchedResultsController.fetchedObjects.count == 0) {
+        self.clearButtonItem.enabled = NO;
+    }
 }
 
 - (void)viewWillDisappear:(BOOL)animated
 {
     [super viewWillDisappear:animated];
-    
-    if (self.confirmSheet) {
-        [self.confirmSheet dismissWithClickedButtonIndex:self.confirmSheet.cancelButtonIndex animated:animated];
-    }
+    [self.confirmSheet dismissWithClickedButtonIndex:self.confirmSheet.cancelButtonIndex animated:animated];
 }
 
 - (void)didReceiveMemoryWarning
@@ -86,15 +88,31 @@
 
 - (void)filterResultsUsingString:(NSString *)filterString
 {
-    self.recentResults = [self.modelController recentSearchItemswithFilterString:filterString];
-    
-    NSInteger numberOfRecentResults = [self.modelController numberOfRecentSearchItemsWithFilterString:filterString];
-    
-    if (numberOfRecentResults > 0) {
-        self.clearButtonItem.enabled = YES;
+    if (![self.filterString isEqualToString:filterString]) {
+        self.filterString = filterString;
+        
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
+        
+        if (filterString) {
+            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",filterString];
+        }
+        
+        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                                   managedObjectContext:self.managedObjectContext
+                                                                                                     sectionNameKeyPath:nil
+                                                                                                              cacheName:nil];
+        self.fetchedResultsController = fetchedResultsController;
+        [self.fetchedResultsController performFetch:nil];
+        
+        if (self.fetchedResultsController.fetchedObjects.count > 0) {
+            self.clearButtonItem.enabled = YES;
+        } else {
+            self.clearButtonItem.enabled = NO;
+        }
+        
+        [self.tableView reloadData];
     }
-    self.filterString = filterString;
-    [self.tableView reloadData];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -108,11 +126,24 @@
 
 - (void)clearRecents
 {
-    [self.modelController clearRecentSearches];
-    self.recentResults = nil;
-    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-        [self.tableView reloadData];
-    }];
+    [[MITCoreDataController defaultController] performBackgroundUpdateAndWait:^BOOL(NSManagedObjectContext *context, NSError *__autoreleasing *error) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+        NSArray *objects = [context executeFetchRequest:fetchRequest error:error];
+        
+        if (!objects) {
+            return NO;
+        }
+        
+        [objects enumerateObjectsUsingBlock:^(NSManagedObject *obj, NSUInteger idx, BOOL *stop) {
+            [context deleteObject:obj];
+        }];
+        
+        return YES;
+    } error:nil];
+    
+    [self.managedObjectContext reset];
+    [self.fetchedResultsController performFetch:nil];
+    [self.tableView reloadData];
     self.clearButtonItem.enabled = NO;
 }
 
@@ -120,14 +151,11 @@
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     static NSString *CellIdentifier = @"Cell";
+    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier forIndexPath:indexPath];
     
-    UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:CellIdentifier];
-    if (cell == nil) {
-        cell = [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleDefault reuseIdentifier:CellIdentifier];
-    }
     cell.textLabel.textAlignment = NSTextAlignmentLeft;
     
-    MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
+    MITMobiusRecentSearchQuery *query = self.fetchedResultsController.fetchedObjects[indexPath.row];
     cell.textLabel.text = query.text;
     
     return cell;
@@ -135,26 +163,20 @@
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-    return [self.recentResults count];
+    return self.fetchedResultsController.fetchedObjects.count;
 }
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
     
-    MITNewsRecentSearchQuery *query = self.recentResults[indexPath.row];
-    [self.modelController addRecentSearchItem:query.text error:nil];
+    MITMobiusRecentSearchQuery *query = self.fetchedResultsController.fetchedObjects[indexPath.row];
     
     if ([self.delegate respondsToSelector:@selector(placeSelectionViewController:didSelectQuery:)]) {
         [self.delegate placeSelectionViewController:self didSelectQuery:query.text];
     }
     
     [self filterResultsUsingString:query.text];
-}
-
-- (void)addRecentSearchTerm:(NSString *)searchTerm
-{
-    [self.modelController addRecentSearchItem:searchTerm error:nil];
 }
 
 @end

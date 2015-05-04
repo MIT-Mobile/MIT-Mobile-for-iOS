@@ -89,7 +89,8 @@ extern NSString * const MITImageMobiusResourceOffline;
 extern NSString * const MITImageMobiusAccordionOpened;
 extern NSString * const MITImageMobiusAccordionClosed;
 extern NSString * const MITImageMobiusBarButtonAdvancedSearch;
-
+extern NSString * const MITImageMobiusFilterStripEndcapRight;
+extern NSString * const MITImageMobiusBackArrow;
 
 #pragma mark - Scanner
 extern NSString * const MITImageScannerCameraUnsupported;
