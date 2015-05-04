@@ -282,6 +282,7 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
+		2C249C1D1AF7F928004D7A70 /* MITMobiusResourcesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */; };
 		2C249BE21AF2BF8E004D7A70 /* MITShuttleStopsPageViewControllerDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A56A57571ABBD2D700C4918A /* MITShuttleStopsPageViewControllerDataSource.m */; };
 		2C249BE31AF2BFE3004D7A70 /* MITMobiusSearchFilterStrip.m in Sources */ = {isa = PBXBuildFile; fileRef = A56D729B1ADDA654008948D7 /* MITMobiusSearchFilterStrip.m */; };
 		2C249BE41AF2C029004D7A70 /* MITMobiusSearchFilterStripCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A56D729E1ADDA737008948D7 /* MITMobiusSearchFilterStripCell.m */; };
@@ -1230,6 +1231,8 @@
 		2C20332C135F64C00033E80A /* FacilitiesRootViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesRootViewController.h; sourceTree = "<group>"; };
 		2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesRootViewController.m; sourceTree = "<group>"; };
 		2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = FacilitiesRootViewController.xib; sourceTree = "<group>"; };
+		2C249C1B1AF7F928004D7A70 /* MITMobiusResourcesViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResourcesViewController.h; sourceTree = "<group>"; };
+		2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITMobiusResourcesViewController.m; sourceTree = "<group>"; };
 		2C282A611A5317BC001D4D0E /* MITShuttleRoutesDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITShuttleRoutesDataSource.h; sourceTree = "<group>"; };
 		2C282A621A5317BC001D4D0E /* MITShuttleRoutesDataSource.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITShuttleRoutesDataSource.m; sourceTree = "<group>"; };
 		2C2CC2121A72E0E4008E3CA5 /* MITMobiusResourceDataSource.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITMobiusResourceDataSource.h; sourceTree = "<group>"; };
@@ -3406,6 +3409,8 @@
 				DEC478CD1ADEFAC0001AD912 /* MITImageGalleryViewController.xib */,
 				DEC478D51ADF7A6A001AD912 /* MITImageScrollViewController.h */,
 				DEC478D61ADF7A6A001AD912 /* MITImageScrollViewController.m */,
+				2C249C1B1AF7F928004D7A70 /* MITMobiusResourcesViewController.h */,
+				2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -5784,6 +5789,7 @@
 				22D830A71A092C4B00B780E0 /* MITToursStopDirectionsViewController.m in Sources */,
 				22D9BBA219D1CC380065A2E7 /* MITLibrariesHolding.m in Sources */,
 				229FFAC1198FFBEF00ABF029 /* MITAcademicCalendarViewController.m in Sources */,
+				2C249C1D1AF7F928004D7A70 /* MITMobiusResourcesViewController.m in Sources */,
 				22D90327199BF0E000AEBC7D /* MITDiningHomeViewController.m in Sources */,
 				22E6BCC019E472D8003E278C /* MITLibrariesYourAccountViewControllerPad.m in Sources */,
 				806205441A7AAF1A004BD08A /* UINavigationBar+ExtensionPrep.m in Sources */,
