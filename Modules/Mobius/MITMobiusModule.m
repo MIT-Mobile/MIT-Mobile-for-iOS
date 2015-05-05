@@ -11,7 +11,7 @@
 
 - (BOOL)supportsCurrentUserInterfaceIdiom
 {
-    return YES;
+    return ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone);
 }
 
 - (void)loadViewController
@@ -20,7 +20,7 @@
 
     UIStoryboard *storyboard = nil;
     if (userInterfaceIdiom == UIUserInterfaceIdiomPad) {
-        storyboard = [UIStoryboard storyboardWithName:@"Mobius_pad" bundle:nil];
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"UIUserInterfaceIdiomPad is not supported" userInfo:nil];
     } else if (userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         storyboard = [UIStoryboard storyboardWithName:@"Mobius_phone" bundle:nil];
     } else {
