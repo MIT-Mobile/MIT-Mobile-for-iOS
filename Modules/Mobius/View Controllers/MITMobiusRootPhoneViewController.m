@@ -458,6 +458,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                 self.contentContainerView.alpha = 0.;
                 self.recentSearchViewController.view.alpha = 0.;
                 self.quickLookupTableView.alpha = 1.;
+                [self.navigationController setToolbarHidden:YES animated:animated];
             };
 
             completionBlock = ^(BOOL finished) {
