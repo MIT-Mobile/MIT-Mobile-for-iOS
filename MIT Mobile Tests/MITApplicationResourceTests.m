@@ -63,6 +63,7 @@
     MITCheckAsset(MITImageSettingsModuleIcon);
     MITCheckAsset(MITImageShuttlesModuleIcon);
     MITCheckAsset(MITImageToursModuleIcon);
+    MITCheckAsset(MITImageMobiusModuleIcon);
 
 #pragma mark - Dining
     MITCheckAsset(MITImageDiningRotateDevice);
