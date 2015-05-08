@@ -208,7 +208,8 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
 
     NSPredicate *predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[whitelistedAttributes,hasOneOrMoreValuesPredicate]];
     NSArray *filteredAttributes = [attributes filteredArrayUsingPredicate:predicate];
-    return filteredAttributes;
+
+    return [filteredAttributes sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"label" ascending:YES]]];
 }
 
 - (NSInteger)numberOfAttributes
