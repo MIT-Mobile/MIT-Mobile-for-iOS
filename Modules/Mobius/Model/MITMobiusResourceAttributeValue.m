@@ -1,12 +1,15 @@
 #import "MITMobiusResourceAttributeValue.h"
+#import "MITMobiusResourceAttributeValueSet.h"
 #import "MITMobiusAttribute.h"
-#import "MITMobiusResource.h"
+#import "MITMobiusAttributeValue.h"
 
 
 @implementation MITMobiusResourceAttributeValue
 
 @dynamic value;
-@dynamic attribute;
-@dynamic resource;
+@dynamic valueSet;
+
+
+}
 
 @end
