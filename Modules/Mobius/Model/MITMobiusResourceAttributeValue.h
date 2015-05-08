@@ -9,6 +9,7 @@
 
 @interface MITMobiusResourceAttributeValue : MITManagedObject
 
+@property (nonatomic, readonly, strong) NSString * name;
 @property (nonatomic, retain) NSString * value;
 @property (nonatomic, retain) MITMobiusResourceAttributeValueSet *valueSet;
 
