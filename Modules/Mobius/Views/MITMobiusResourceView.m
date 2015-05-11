@@ -53,14 +53,17 @@
     switch (status) {
         case MITMobiusResourceStatusOffline: {
             self.machineStatus.image = [UIImage imageNamed:MITImageMobiusResourceOffline];
+            self.machineNameLabel.enabled = NO;
         } break;
             
         case MITMobiusResourceStatusOnline: {
             self.machineStatus.image = nil;
+            self.machineNameLabel.enabled = YES;
         } break;
             
         case MITMobiusResourceStatusUnknown: {
             self.machineStatus.image = nil;
+            self.machineNameLabel.enabled = NO;
         } break;
     }
     
