@@ -10,8 +10,10 @@
 @dynamic label;
 @dynamic valueSetName;
 @dynamic widgetType;
-@dynamic values;
+@dynamic resourceValues;
 @dynamic searchOptions;
+@dynamic values;
+@dynamic type;
 
 + (RKMapping*)objectMapping
 {

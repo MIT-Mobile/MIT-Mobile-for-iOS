@@ -4,7 +4,7 @@
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
 
-@class MITMobiusAttributeValueSet, MITMobiusResource, MITMobiusAttributeValue, MITMobiusSearchOption;
+@class MITMobiusAttributeValueSet, MITMobiusResource, MITMobiusAttributeValue, MITMobiusSearchOption, MITMobiusResourceAttributeValueSet;
 
 typedef NS_ENUM(NSInteger, MITMobiusAttributeType) {
     MITMobiusAttributeTypeString,
@@ -22,13 +22,24 @@ typedef NS_ENUM(NSInteger, MITMobiusAttributeType) {
 @property (nonatomic, retain) NSString * label;
 @property (nonatomic, retain) NSString * valueSetName;
 @property (nonatomic, retain) NSString * widgetType;
-@property (nonatomic, retain) NSOrderedSet *values;
+@property (nonatomic, retain) NSSet *resourceValues;
 @property (nonatomic, retain) NSSet *searchOptions;
+@property (nonatomic, retain) NSOrderedSet *values;
 
-@property (nonatomic) MITMobiusAttributeType type;
+@property (nonatomic, readonly) MITMobiusAttributeType type;
 @end
 
 @interface MITMobiusAttribute (CoreDataGeneratedAccessors)
+
+- (void)addResourceValuesObject:(MITMobiusResourceAttributeValueSet *)value;
+- (void)removeResourceValuesObject:(MITMobiusResourceAttributeValueSet *)value;
+- (void)addResourceValues:(NSSet *)values;
+- (void)removeResourceValues:(NSSet *)values;
+
+- (void)addSearchOptionsObject:(MITMobiusSearchOption *)value;
+- (void)removeSearchOptionsObject:(MITMobiusSearchOption *)value;
+- (void)addSearchOptions:(NSSet *)values;
+- (void)removeSearchOptions:(NSSet *)values;
 
 - (void)insertObject:(MITMobiusAttributeValue *)value inValuesAtIndex:(NSUInteger)idx;
 - (void)removeObjectFromValuesAtIndex:(NSUInteger)idx;
@@ -40,10 +51,5 @@ typedef NS_ENUM(NSInteger, MITMobiusAttributeType) {
 - (void)removeValuesObject:(MITMobiusAttributeValue *)value;
 - (void)addValues:(NSOrderedSet *)values;
 - (void)removeValues:(NSOrderedSet *)values;
-- (void)addSearchOptionsObject:(MITMobiusSearchOption *)value;
-- (void)removeSearchOptionsObject:(MITMobiusSearchOption *)value;
-- (void)addSearchOptions:(NSSet *)values;
-- (void)removeSearchOptions:(NSSet *)values;
-
 @end
 

@@ -3,13 +3,14 @@
 
 #import "MITManagedObject.h"
 #import "MITMappedObject.h"
+#import "MITMobiusAttributeValue.h"
 
-@class MITMobiusAttribute, MITMobiusResource;
+@class MITMobiusResourceAttributeValueSet;
 
 @interface MITMobiusResourceAttributeValue : MITManagedObject
 
+@property (nonatomic, readonly, strong) NSString * name;
 @property (nonatomic, retain) NSString * value;
-@property (nonatomic, retain) MITMobiusAttribute *attribute;
-@property (nonatomic, retain) MITMobiusResource *resource;
+@property (nonatomic, retain) MITMobiusResourceAttributeValueSet *valueSet;
 
 @end

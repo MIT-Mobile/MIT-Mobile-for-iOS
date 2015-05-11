@@ -85,7 +85,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
                     [valueString appendString:@"\n"];
                 }
 
-                [valueString appendString:value.value];
+                [valueString appendString:value.name];
             }
         }
 
