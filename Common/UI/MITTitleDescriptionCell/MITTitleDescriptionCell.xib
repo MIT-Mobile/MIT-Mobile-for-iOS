@@ -1,9 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="6254" systemVersion="14C109" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.XIB" version="3.0" toolsVersion="7702" systemVersion="14D136" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES">
     <dependencies>
         <deployment identifier="iOS"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="6247"/>
-        <capability name="Constraints to layout margins" minToolsVersion="6.0"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
     </dependencies>
     <objects>
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner"/>
@@ -15,35 +14,35 @@
                 <rect key="frame" x="0.0" y="0.0" width="768" height="43"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="right" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="lfF-58-8as">
-                        <rect key="frame" x="15" y="2" width="364" height="17"/>
+                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Title" textAlignment="right" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="lfF-58-8as">
+                        <rect key="frame" x="15" y="0.0" width="364" height="19"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" id="Nbk-QU-6cu"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
                         <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
                         <nil key="highlightedColor"/>
                     </label>
                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Description" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="0.0" translatesAutoresizingMaskIntoConstraints="NO" id="NKI-Fx-Rt7">
-                        <rect key="frame" x="389" y="2" width="364" height="15"/>
+                        <rect key="frame" x="389" y="0.0" width="364" height="19"/>
+                        <constraints>
+                            <constraint firstAttribute="height" relation="greaterThanOrEqual" id="cXW-9Z-BUg"/>
+                        </constraints>
                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
-                        <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                        <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                         <nil key="highlightedColor"/>
                     </label>
                 </subviews>
                 <constraints>
-                    <constraint firstAttribute="bottom" secondItem="NKI-Fx-Rt7" secondAttribute="bottom" constant="2" id="CS9-wP-ol1"/>
+                    <constraint firstAttribute="bottom" secondItem="NKI-Fx-Rt7" secondAttribute="bottom" id="CS9-wP-ol1"/>
                     <constraint firstAttribute="trailing" secondItem="NKI-Fx-Rt7" secondAttribute="trailing" constant="15" id="GyH-7m-Bcb"/>
                     <constraint firstItem="NKI-Fx-Rt7" firstAttribute="leading" secondItem="lfF-58-8as" secondAttribute="trailing" constant="10" id="Ml6-4J-RoB"/>
                     <constraint firstItem="NKI-Fx-Rt7" firstAttribute="top" secondItem="lfF-58-8as" secondAttribute="top" id="ZsU-pE-Mz7"/>
-                    <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="lfF-58-8as" secondAttribute="bottom" id="blO-BE-MnN"/>
+                    <constraint firstAttribute="bottom" secondItem="lfF-58-8as" secondAttribute="bottom" id="blO-BE-MnN"/>
                     <constraint firstItem="lfF-58-8as" firstAttribute="width" secondItem="NKI-Fx-Rt7" secondAttribute="width" id="dRR-gw-o2T"/>
                     <constraint firstItem="lfF-58-8as" firstAttribute="leading" secondItem="H2p-sc-9uM" secondAttribute="leading" constant="15" id="k52-YI-ngo"/>
-                    <constraint firstItem="NKI-Fx-Rt7" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="topMargin" id="lJm-1n-h6m"/>
-                    <constraint firstItem="lfF-58-8as" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" constant="2" id="way-a7-XIR"/>
+                    <constraint firstItem="lfF-58-8as" firstAttribute="top" secondItem="H2p-sc-9uM" secondAttribute="top" id="way-a7-XIR"/>
                 </constraints>
-                <variation key="default">
-                    <mask key="constraints">
-                        <exclude reference="lJm-1n-h6m"/>
-                    </mask>
-                </variation>
             </tableViewCellContentView>
             <connections>
                 <outlet property="descriptionLabel" destination="NKI-Fx-Rt7" id="P1S-2N-dto"/>
