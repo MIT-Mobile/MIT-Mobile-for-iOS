@@ -136,6 +136,38 @@
     return NO;
 }
 
+// Returns something like "Make - Model", "Make", or "Model".
+// If multiple makes and models, "Make, Make - Model, Model".
+- (NSString *)makeAndModel {
+    NSMutableArray *components = [NSMutableArray arrayWithCapacity:2];
+    
+    for (MITMobiusResourceAttributeValueSet *set in self.attributeValues) {
+        if ([set.label caseInsensitiveCompare:@"make"] == NSOrderedSame) {
+            NSArray *values = [[set.values allObjects] valueForKey:@"value"];
+            NSString *joined = [values componentsJoinedByString:@", "];
+            if ([joined length] > 0) {
+                [components insertObject:joined atIndex:0];
+            }
+            continue;
+        }
+        if ([set.label caseInsensitiveCompare:@"model"] == NSOrderedSame) {
+            NSArray *values = [[set.values allObjects] valueForKey:@"value"];
+            NSString *joined = [values componentsJoinedByString:@", "];
+            if ([joined length] > 0) {
+                [components addObject:joined];
+            }
+            continue;
+        }
+        if ([components count] == 2) {
+            break;
+        }
+    }
+    
+    return [components componentsJoinedByString:@" - "];
+}
+
+
+
 #pragma mark MKAnnotation
 
 - (NSString*)title

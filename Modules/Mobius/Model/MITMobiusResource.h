@@ -24,6 +24,7 @@
 @property (nonatomic, retain) NSSet *hours;
 @property (nonatomic, retain) NSOrderedSet *owners;
 @property (nonatomic, retain) MITMobiusRoomSet *roomset;
+@property (nonatomic, readonly) NSString *makeAndModel;
 @property (nonatomic, readonly) CLLocationCoordinate2D coordinate;
 
 - (NSString *)getHoursStringForDate:(NSDate *)date;

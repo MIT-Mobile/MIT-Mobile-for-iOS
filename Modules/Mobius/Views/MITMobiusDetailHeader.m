@@ -2,10 +2,12 @@
 #import "UIKit+MITAdditions.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "MITMobiusImage.h"
+#import "MITMobiusResourceAttributeValueSet.h"
 
 @interface MITMobiusDetailHeader ()
 @property (weak, nonatomic) IBOutlet UILabel *resourceName;
 @property (weak, nonatomic) IBOutlet UILabel *resourceStatus;
+@property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *resourceImageView;
 @property (weak, nonatomic) IBOutlet UIImageView *statusImageView;
 @property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightConstraint;
@@ -50,10 +52,12 @@
     if (_resource) {
         __block NSString *name = nil;
         __block NSString *status = nil;
+        __block NSString *makeAndModel = nil;
         __block NSURL *imageURL = nil;
         [_resource.managedObjectContext performBlockAndWait:^{
             name = resource.name;
             status = resource.status;
+            makeAndModel = resource.makeAndModel;
             
             CGSize idealImageSize = CGSizeZero;
             idealImageSize = self.resourceImageView.frame.size;
@@ -61,9 +65,8 @@
             imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
         }];
         
-        self.resourceImageViewHeightConstraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
-
         self.resourceName.text = name;
+        self.descriptionLabel.text = makeAndModel;
 
         if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
             self.resourceStatus.textColor = [UIColor mit_openGreenColor];
@@ -73,6 +76,8 @@
             self.resourceStatus.textColor = [UIColor mit_closedRedColor];
         }
         self.resourceStatus.text = [status capitalizedString];
+
+        self.resourceImageViewHeightConstraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
 
         if (imageURL) {
             MITMobiusResource *currentResource = self.resource;
