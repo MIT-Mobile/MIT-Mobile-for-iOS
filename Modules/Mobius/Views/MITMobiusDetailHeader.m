@@ -30,6 +30,11 @@
     return @"MITMobiusDetailHeader";
 }
 
+- (void)awakeFromNib
+{
+    self.resourceImageView.backgroundColor = [UIColor colorWithWhite:224.0 / 255.0 alpha:1.0];
+}
+
 - (IBAction)didTapImage:(id)sender {
     if (self.galleryHandler) {
         self.galleryHandler();
@@ -54,11 +59,7 @@
             imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
         }];
         
-        if (imageURL) {
-            self.resourceImageViewHeightContraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
-        } else {
-            self.resourceImageViewHeightContraint.constant = 0;
-        }
+        self.resourceImageViewHeightContraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
 
         self.resourceName.text = name;
 
@@ -79,6 +80,8 @@
                 if (blockSelf && (blockSelf.resource == currentResource)) {
                     if (error) {
                         blockSelf.resourceImageView.image = nil;
+                    } else {
+                        self.resourceImageView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
                     }
                 }
             }];
