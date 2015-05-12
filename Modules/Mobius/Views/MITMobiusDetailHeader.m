@@ -7,7 +7,9 @@
 @property (weak, nonatomic) IBOutlet UILabel *resourceName;
 @property (weak, nonatomic) IBOutlet UILabel *resourceStatus;
 @property (weak, nonatomic) IBOutlet UIImageView *resourceImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightContraint;
+@property (weak, nonatomic) IBOutlet UIImageView *statusImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *statusTextFieldLeftConstraint;
 
 @end
 
@@ -59,16 +61,18 @@
             imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
         }];
         
-        self.resourceImageViewHeightContraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
+        self.resourceImageViewHeightConstraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
 
         self.resourceName.text = name;
 
         if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
             self.resourceStatus.textColor = [UIColor mit_openGreenColor];
+            self.statusTextFieldLeftConstraint.constant = 15.0;
+            self.statusImageView.hidden = YES;
         } else if ([status caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
             self.resourceStatus.textColor = [UIColor mit_closedRedColor];
         }
-        self.resourceStatus.text = status;
+        self.resourceStatus.text = [status capitalizedString];
 
         if (imageURL) {
             MITMobiusResource *currentResource = self.resource;
