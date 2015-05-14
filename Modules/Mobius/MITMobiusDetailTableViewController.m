@@ -40,7 +40,6 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 
 @property(nonatomic,strong) NSMutableArray *titleValueObjects;
 @property(nonatomic,readonly,strong) NSManagedObjectContext *managedObjectContext;
-@property(nonatomic) NSInteger currentSegementedSection;
 @property(nonatomic,strong) NSArray *hours;
 @property(nonatomic,strong) NSArray *rowTypes;
 @property(nonatomic) NSInteger startingHoursRow;
@@ -54,7 +53,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 {
     self = [self initWithStyle:UITableViewStylePlain];
     if (self) {
-        self.currentSegementedSection = 0;
+        self.currentSegmentedSection = 0;
         self.resource = resource;
     }
 
@@ -72,6 +71,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    [self refreshEventRows];
 }
 
 - (void)combineDescriptionsForTitle
@@ -107,7 +107,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 {
     NSMutableArray *rowTypes = [NSMutableArray array];
     
-    if (self.currentSegementedSection == MITMobiusTableViewSectionShopDetails) {
+    if (self.currentSegmentedSection == MITMobiusTableViewSectionShopDetails) {
         [rowTypes addObject:@(MITMobiusTableViewRowShopName)];
         if (self.hours.count > 0) {
             [rowTypes addObject:@(MITMobiusTableViewRowHoursLabel)];
@@ -121,7 +121,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         if (self.resource.room) {
             [rowTypes addObject:@(MITMobiusTableViewRowLocation)];
         }
-    } else if (self.currentSegementedSection == MITMobiusTableViewSectionSpecs) {
+    } else if (self.currentSegmentedSection == MITMobiusTableViewSectionSpecs) {
         
         [self.titleValueObjects enumerateObjectsUsingBlock:^(id obj, NSUInteger idx, BOOL *stop) {
             [rowTypes addObject:@(MITMobiusTableViewRowDetails)];
@@ -300,7 +300,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 {
     NSInteger rowType = [self.rowTypes[indexPath.row] integerValue];
 
-    if (self.currentSegementedSection == MITMobiusTableViewSectionShopDetails) {
+    if (self.currentSegmentedSection == MITMobiusTableViewSectionShopDetails) {
         switch (rowType) {
             case MITMobiusTableViewRowShopName:
                 return MITDefaultCellIdentifier;
@@ -312,7 +312,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
             default:
                 return nil;
         }
-    } else if (self.currentSegementedSection == MITMobiusTableViewSectionSpecs) {
+    } else if (self.currentSegmentedSection == MITMobiusTableViewSectionSpecs) {
         return MITTitleDescriptionCellIdentifier;
     }
     return nil;
@@ -326,7 +326,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
         if ([headerView isKindOfClass:[MITMobiusSegmentedHeader class]]) {
             MITMobiusSegmentedHeader *segmentedHeaderView = (MITMobiusSegmentedHeader*)headerView;
             segmentedHeaderView.delegate = self;
-            segmentedHeaderView.segmentedControl.selectedSegmentIndex = self.currentSegementedSection;
+            segmentedHeaderView.segmentedControl.selectedSegmentIndex = self.currentSegmentedSection;
             segmentedHeaderView.segmentedControl.tintColor = [UIColor colorWithRed:132.0/255.0 green:132.0/255.0 blue:132.0/255.0 alpha:1.0];
         }
         
@@ -362,7 +362,7 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 #pragma mark MITMobiusSegmentedHeaderDelegate
 - (void)detailSegmentControlAction:(UISegmentedControl *)segmentedControl
 {
-    self.currentSegementedSection = segmentedControl.selectedSegmentIndex;
+    self.currentSegmentedSection = segmentedControl.selectedSegmentIndex;
     [self refreshEventRows];
 }
 
