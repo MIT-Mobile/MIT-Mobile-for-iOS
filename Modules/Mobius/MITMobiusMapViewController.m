@@ -218,6 +218,15 @@ static NSString * const kMITMapSearchSuggestionsTimerUserInfoKeySearchText = @"k
     }
 }
 
+- (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    if (mode == MKUserTrackingModeNone) {
+        self.mapView.showsUserLocation = NO;
+    } else {
+        self.mapView.showsUserLocation = YES;
+    }
+}
+
 #pragma mark - Custom Callout
 
 - (void)presentCalloutForMapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)annotationView

@@ -180,6 +180,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     } else {
         [self.navigationController setToolbarHidden:YES animated:animated];
     }
+
+    self.mapViewController.mapView.userTrackingMode = MKUserTrackingModeNone;
+    [self.mapViewController recenterOnVisibleResources:animated];
 }
 
 - (void)didReceiveMemoryWarning {
@@ -384,6 +387,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                              } completion:^(BOOL finished) {
                                  self.fullScreenMapGesture.enabled = YES;
                                  self.mapViewContainer.userInteractionEnabled = NO;
+                                 self.mapViewController.mapView.userTrackingMode = MKUserTrackingModeNone;
                                  
                                  [self.mapViewController recenterOnVisibleResources:animated];
                                  [self.navigationController setToolbarHidden:YES animated:animated];
