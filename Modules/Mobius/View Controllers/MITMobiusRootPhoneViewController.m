@@ -36,15 +36,12 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 @interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate>
 
-@property(nonatomic,strong) IBOutlet NSLayoutConstraint *mapHeightConstraint;
-@property(nonatomic,strong) IBOutlet NSLayoutConstraint *defaultMapHeightConstraint;
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
 @property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
 
 @property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
 @property (nonatomic,weak) IBOutlet MITMobiusResourcesViewController *resourcesViewController;
-@property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
 @property(nonatomic,weak) MITMobiusRecentSearchController *recentSearchViewController;
 @property(nonatomic,weak) UIView *searchBarContainer;
@@ -57,11 +54,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 @end
 
-@implementation MITMobiusRootPhoneViewController {
-    CGFloat _mapVerticalOffset;
-    CGFloat _standardMapHeight;
-    CGAffineTransform _previousMapTransform;
-}
+@implementation MITMobiusRootPhoneViewController
 
 @synthesize resourcesViewController = _resourcesViewController;
 @synthesize recentSearchViewController = _recentSearchViewController;
@@ -73,25 +66,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
     }
 
-    self.contentContainerView.hidden = YES;
-
-    _previousMapTransform = CGAffineTransformIdentity;
-    self.mapViewContainer.userInteractionEnabled = NO;
-
-    UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleFullScreenMapGesture:)];
-    gestureRecognizer.cancelsTouchesInView = NO;
-    [self.contentContainerView addGestureRecognizer:gestureRecognizer];
-    self.fullScreenMapGesture = gestureRecognizer;
-    
-    [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
-    [self.view bringSubviewToFront:self.strip];
-
     [self setupNavigationBar];
     [self setupFilterStrip];
     [self setupTableView:self.quickLookupTableView];
-    
-    self.recentSearchViewController.view.hidden = YES;
-    self.recentSearchViewController.view.alpha = 0.;
 }
 
 - (void)setupTableView:(UITableView *)tableView
@@ -113,21 +90,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-}
-
-- (void)updateViewConstraints
-{
-    [super updateViewConstraints];
-
-    if ([self didPerformSearch]) {
-        if (self.dataSource.query.options.count > 0) {
-            self.filterStripHeightConstraint.constant = 34.;
-        } else {
-            self.filterStripHeightConstraint.constant = 0.;
-        }
-    } else {
-        self.filterStripHeightConstraint.constant = 0.;
-    }
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -304,113 +266,98 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 #pragma mark UI Update Methods
 - (void)updateViewState:(BOOL)animated
 {
-    void (^setupBlock)(void) = nil;
-    void (^animationBlock)(void) = nil;
-    void (^completionBlock)(BOOL finished) = nil;
-
     if (self.isSearching) {
-        // The UISearchBar may or may not be the first responder.
-        // Navigation bar has a full-width UISearchBar with the cancel
-        //  button visible.
-        // recentSearchViewController is visible
-        setupBlock = ^{
-            self.recentSearchViewController.view.hidden = NO;
-        };
-
-        animationBlock = ^{
-            self.quickLookupTableView.alpha = 0.;
-            self.contentContainerView.alpha = 0.;
-            self.recentSearchViewController.view.alpha = 1.;
-
-            [self.searchBar setShowsCancelButton:YES animated:animated];
-        };
-
-        completionBlock = ^(BOOL finished) {
-            self.quickLookupTableView.hidden = YES;
-            self.contentContainerView.hidden = YES;
-            self.navigationItem.leftBarButtonItem = self.recentSearchViewController.clearButtonItem;
-        };
+        [self showSearchingView:animated];
+    } else if (self.dataSource.query) {
+        [self showResultsView:animated];
     } else {
-        if ([self didPerformSearch]) {
-            setupBlock = ^{
-                self.contentContainerView.hidden = NO;
-                self.strip.hidden = NO;
-                [self.searchBar setShowsCancelButton:NO animated:animated];
-            };
-
-            animationBlock = ^{
-                self.contentContainerView.alpha = 1.;
-                self.strip.alpha = 1.;
-
-                if (self.resourcesViewController.showsMapFullScreen) {
-                    [self.navigationController setToolbarHidden:NO animated:animated];
-                } else {
-                    [self.navigationController setToolbarHidden:YES animated:animated];
-                }
-
-                self.recentSearchViewController.view.alpha = 0.;
-                self.quickLookupTableView.alpha = 0.;
-            };
-
-            completionBlock = ^(BOOL finished) {
-                self.recentSearchViewController.view.hidden = YES;
-                self.quickLookupTableView.hidden = YES;
-            };
-        } else {
-            setupBlock = ^{
-                self.quickLookupTableView.hidden = NO;
-                [self.searchBar setShowsCancelButton:NO animated:animated];
-            };
-
-            animationBlock = ^{
-                self.contentContainerView.alpha = 0.;
-                self.recentSearchViewController.view.alpha = 0.;
-                self.quickLookupTableView.alpha = 1.;
-                [self.navigationController setToolbarHidden:YES animated:animated];
-            };
-
-            completionBlock = ^(BOOL finished) {
-                self.contentContainerView.hidden = YES;
-                self.recentSearchViewController.view.hidden = YES;
-            };
-        }
+        [self showInitialView:animated];
     }
-
-    
-    [self updateNavigationItem:animated];
-    if (setupBlock) {
-        setupBlock();
-    }
-
-    [UIView animateWithDuration:MITMobiusRootPhoneDefaultAnimationDuration
-                          delay:0.
-                        options:(UIViewAnimationOptionLayoutSubviews | UIViewAnimationOptionCurveLinear)
-                     animations:^{
-                         [self updateFilterStrip:animated];
-                         
-                         if (animationBlock) {
-                             animationBlock();
-                         }
-                     } completion:^(BOOL finished) {
-                        if (completionBlock) {
-                            completionBlock(finished);
-                        }
-            }];
 }
 
-- (void)updateFilterStrip:(BOOL)animated
+- (void)showInitialView:(BOOL)animated
 {
+    NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
+    [self updateNavigationItem:animated];
+    [self.searchBar setShowsCancelButton:NO animated:animated];
+
+    self.quickLookupTableView.hidden = NO;
+    [UIView transitionWithView:self.view
+                      duration:animationDuration
+                       options:0
+                    animations:^{
+                        self.quickLookupTableView.alpha = 1;
+                        self.contentContainerView.alpha = 0;
+                        self.recentSearchViewController.view.alpha = 0.;
+                        self.navigationController.toolbarHidden = NO;
+                    } completion:^(BOOL finished) {
+                        self.contentContainerView.hidden = YES;
+                        self.recentSearchViewController.view.hidden = YES;
+                    }];
+}
+
+- (void)showSearchingView:(BOOL)animated
+{
+    NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
+    [self updateNavigationItem:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
+
+    self.recentSearchViewController.view.hidden = NO;
+    [UIView transitionWithView:self.view
+                      duration:animationDuration
+                       options:0
+                    animations:^{
+                        self.recentSearchViewController.view.alpha = 1.;
+                        self.contentContainerView.alpha = 0.;
+                        self.quickLookupTableView.alpha = 0.;
+                    } completion:^(BOOL finished) {
+                        self.contentContainerView.hidden = YES;
+                        self.quickLookupTableView.hidden = YES;
+                        [self.searchBar setShowsCancelButton:YES animated:animated];
+                    }];
+}
+
+- (void)showResultsView:(BOOL)animated
+{
+    NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
+    [self updateNavigationItem:animated];
+    [self.searchBar setShowsCancelButton:NO animated:animated];
+    [self.view bringSubviewToFront:self.strip];
+
+    if (self.resourcesViewController.showsMapFullScreen) {
+        [self.navigationController setToolbarHidden:NO animated:animated];
+    } else {
+        [self.navigationController setToolbarHidden:YES animated:animated];
+    }
+    
     if (self.dataSource.query.options.count > 0) {
         self.filterStripHeightConstraint.constant = 34.;
     } else {
         self.filterStripHeightConstraint.constant = 0.;
+    }
+
+    [self.view setNeedsUpdateConstraints];
+
+    if (self.contentContainerView.hidden) {
+        self.contentContainerView.hidden = NO;
+        [UIView transitionWithView:self.view
+                          duration:animationDuration
+                           options:UIViewAnimationOptionLayoutSubviews
+                        animations:^{
+                            self.contentContainerView.alpha = 1.;
+                            self.quickLookupTableView.alpha = 0.;
+                            self.recentSearchViewController.view.alpha = 0.;
+                        } completion:^(BOOL finished) {
+                            self.quickLookupTableView.hidden = YES;
+                            self.recentSearchViewController.view.hidden = YES;
+                        }];
     }
 }
 
 - (void)updateNavigationItem:(BOOL)animated
 {
     if (self.isSearching) {
-        [self.navigationItem setLeftBarButtonItem:nil animated:animated];
+        [self.navigationItem setLeftBarButtonItem:self.recentSearchViewController.clearButtonItem animated:animated];
         [self.navigationItem setRightBarButtonItem:nil animated:animated];
     } else {
         if ([self didPerformSearch]) {
@@ -525,11 +472,12 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     
     
     [self addChildViewController:viewController];
-    [viewController beginAppearanceTransition:YES animated:NO];
-    
+
     viewController.view.frame = superview.bounds;
     viewController.view.translatesAutoresizingMaskIntoConstraints = YES;
     viewController.view.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+
+    [viewController beginAppearanceTransition:YES animated:NO];
     [superview addSubview:viewController.view];
     
     [viewController endAppearanceTransition];
@@ -581,34 +529,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     detailContainerViewController.delegate = self;
 
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
-}
-
-- (BOOL)shouldDisplayPlaceholderCellForResourcesTableViewController:(MITMobiusResourcesTableViewController*)tableViewController
-{
-    return YES;
-}
-
-- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didScrollToContentOffset:(CGPoint)contentOffset
-{
-    if (contentOffset.y > 0) {
-        CGAffineTransform transform = CGAffineTransformMakeTranslation(0, -contentOffset.y);
-        self.mapViewContainer.transform = transform;
-        
-        _previousMapTransform = transform;
-        _mapVerticalOffset = 0;
-    } else {
-        _mapVerticalOffset = contentOffset.y;
-        _previousMapTransform = CGAffineTransformIdentity;
-        self.mapViewContainer.transform = CGAffineTransformIdentity;
-    }
-    
-    [self.view setNeedsUpdateConstraints];
-    [self.view updateConstraintsIfNeeded];
-}
-
-- (CGFloat)heightOfPlaceholderCellForResourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController
-{
-    return _standardMapHeight;
 }
 
 #pragma mark UISearchBarDelegate
