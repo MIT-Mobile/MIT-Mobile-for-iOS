@@ -35,8 +35,6 @@ NSString* const MITMobiusResourceCellReuseIdentifier = @"MITMobiusResourceCell";
 @interface MITMobiusResourcesViewController () <UITableViewDataSourceDynamicSizing, MKMapViewDelegate>
 @property (nonatomic,readonly,weak) MITTiledMapView *mapView;
 @property (nonatomic,copy) NSArray *sections;
-@property (nonatomic) BOOL showsMap;
-@property (nonatomic) BOOL showsMapFullScreen;
 @end
 
 @implementation MITMobiusResourcesViewController {

@@ -12,8 +12,8 @@
 @property (nonatomic,weak) MITMobiusResource *selectedResource;
 @property (nonatomic,strong) NSArray *resources;
 
-@property (nonatomic,readonly) BOOL showsMap;
-@property (nonatomic,readonly) BOOL showsMapFullScreen;
+@property (nonatomic) BOOL showsMap;
+@property (nonatomic) BOOL showsMapFullScreen;
 @property (nonatomic,weak) id<MITMobiusResourcesDelegate> delegate;
 
 - (void)reloadData;
