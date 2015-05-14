@@ -441,6 +441,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     MITMobiusResourcesViewController *resourcesViewController = [[MITMobiusResourcesViewController alloc] init];
     resourcesViewController.showsMap = YES;
     resourcesViewController.showsMapFullScreen = NO;
+
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.parentContext = self.managedObjectContext;
+    resourcesViewController.managedObjectContext = managedObjectContext;
     
     [self addChildViewController:resourcesViewController toView:self.tableViewContainer];
     _resourcesViewController = resourcesViewController;
