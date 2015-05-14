@@ -113,9 +113,20 @@
 
         MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
 
-        NSDateFormatter *weekday = [[NSDateFormatter alloc] init];
-        [weekday setDateFormat: @"EEEE"];
-        dailyHoursObject.dayName = [weekday stringFromDate:hours.startDate];
+        NSDateFormatter *weekdayFormatter = [[NSDateFormatter alloc] init];
+        [weekdayFormatter setDateFormat: @"EEEE"];
+        
+        NSDateFormatter *shortDateFormatter = [[NSDateFormatter alloc] init];
+        shortDateFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"M/d" options:0 locale:[NSLocale currentLocale]];
+        
+        NSString *weekday = nil;
+        if ([hours.startDate isToday]) {
+            weekday = @"Today";
+        } else {
+            weekday = [weekdayFormatter stringFromDate:hours.startDate];
+        }
+        
+        dailyHoursObject.dayName = [NSString stringWithFormat:@"%@ %@", weekday, [shortDateFormatter stringFromDate:hours.startDate]];
         
         NSString *startTime = [hours.startDate MITShortTimeOfDayString];
         NSString *endTime = [hours.endDate MITShortTimeOfDayString];
