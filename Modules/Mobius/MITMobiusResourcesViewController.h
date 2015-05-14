@@ -2,12 +2,16 @@
 #import <CoreData/CoreData.h>
 #import "MITMobiusDetailContainerViewController.h"
 
+@class MITTiledMapView;
 @class MITMobiusResource;
 @protocol MITMobiusResourcesDataSource;
 @protocol MITMobiusResourcesDelegate;
 
-@interface MITMobiusResourcesViewController : UITableViewController <MITMobiusDetailPagingDelegate>
+@interface MITMobiusResourcesViewController : UIViewController <MITMobiusDetailPagingDelegate>
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
+
+@property (nonatomic,weak) IBOutlet MITTiledMapView *mapView;
+@property (nonatomic,weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic,weak) MITMobiusResource *selectedResource;
 @property (nonatomic,strong) NSArray *resources;
