@@ -5,6 +5,7 @@
 #import "MITMobiusDetailContainerViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
+#import "MITMobiusResourcesViewController.h"
 
 #import "MITMobiusMapViewController.h"
 #import "MITMobiusRecentSearchController.h"
@@ -40,12 +41,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
 @property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
 
-@property(nonatomic,getter=isMapFullScreen) BOOL mapFullScreen;
-
 @property(nonatomic,strong) MITMobiusResourceDataSource *dataSource;
 
-@property(nonatomic,weak) MITMobiusResourcesTableViewController *resourcesTableViewController;
-@property(nonatomic,weak) MITMobiusMapViewController *mapViewController;
+@property (nonatomic,weak) IBOutlet MITMobiusResourcesViewController *resourcesViewController;
 @property(nonatomic,weak) UITapGestureRecognizer *fullScreenMapGesture;
 
 @property(nonatomic,weak) MITMobiusRecentSearchController *recentSearchViewController;
@@ -65,8 +63,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     CGAffineTransform _previousMapTransform;
 }
 
-@synthesize resourcesTableViewController = _resourcesTableViewController;
-@synthesize mapViewController = _mapViewController;
+@synthesize resourcesViewController = _resourcesViewController;
 @synthesize recentSearchViewController = _recentSearchViewController;
 
 - (void)viewDidLoad
@@ -85,11 +82,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     gestureRecognizer.cancelsTouchesInView = NO;
     [self.contentContainerView addGestureRecognizer:gestureRecognizer];
     self.fullScreenMapGesture = gestureRecognizer;
-
-    UIBarButtonItem *currentLocationBarButton = self.mapViewController.userLocationButton;
-    UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
-    UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(dismissFullScreenMap:)];
-    self.toolbarItems = @[currentLocationBarButton, [UIBarButtonItem flexibleSpace], dismissMapButton];
     
     [self.contentContainerView bringSubviewToFront:self.mapViewContainer];
     [self.view bringSubviewToFront:self.strip];
@@ -116,10 +108,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)viewDidLayoutSubviews
 {
     [super viewDidLayoutSubviews];
-    
-    if (!self.isMapFullScreen) {
-        _standardMapHeight = CGRectGetHeight(self.mapViewContainer.frame);
-    }
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -130,34 +118,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)updateViewConstraints
 {
     [super updateViewConstraints];
-
-    if ([self isMapFullScreen]) {
-        self.mapHeightConstraint.constant = CGRectGetHeight(self.contentContainerView.bounds);
-
-        if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
-            self.mapHeightConstraint.active = YES;
-            self.defaultMapHeightConstraint.active = NO;
-        } else {
-            self.mapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-            self.defaultMapHeightConstraint.priority = UILayoutPriorityDefaultLow;
-        }
-    } else {
-        self.mapHeightConstraint.constant = 0;
-        
-        if (_mapVerticalOffset < 0) {
-            self.defaultMapHeightConstraint.constant = _mapVerticalOffset * self.defaultMapHeightConstraint.multiplier;
-        } else {
-            self.defaultMapHeightConstraint.constant = 0;
-        }
-
-        if ([self.mapHeightConstraint respondsToSelector:@selector(setActive:)]) {
-            self.mapHeightConstraint.active = NO;
-            self.defaultMapHeightConstraint.active = YES;
-        } else {
-            self.mapHeightConstraint.priority = UILayoutPriorityDefaultLow;
-            self.defaultMapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-        }
-    }
 
     if ([self didPerformSearch]) {
         if (self.dataSource.query.options.count > 0) {
@@ -175,7 +135,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     [super viewWillAppear:animated];
     [self updateViewState:animated];
 
-    if (self.isMapFullScreen) {
+    if (self.resourcesViewController.showsMapFullScreen) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     } else {
         [self.navigationController setToolbarHidden:YES animated:animated];
@@ -341,58 +301,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     self.strip.dataSource = self;
 }
 
-#pragma mark UI Updating
-
-#pragma mark Public Properties
-- (void)setMapFullScreen:(BOOL)mapFullScreen
-{
-    [self setMapFullScreen:mapFullScreen animated:NO];
-}
-
-- (void)setMapFullScreen:(BOOL)mapFullScreen animated:(BOOL)animated
-{
-    if (_mapFullScreen != mapFullScreen) {
-        _mapFullScreen = mapFullScreen;
-
-        NSTimeInterval duration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0);
-        if (_mapFullScreen) {
-            [UIView animateWithDuration:duration
-                                  delay:0
-                                options:UIViewAnimationOptionCurveEaseOut
-                             animations:^{
-                                 CGFloat tableContainerTranslation = CGRectGetMaxY(self.contentContainerView.bounds) - CGRectGetMinY(self.tableViewContainer.frame);
-                                 self.tableViewContainer.transform = CGAffineTransformMakeTranslation(0, tableContainerTranslation);
-                                 self.mapViewContainer.transform = CGAffineTransformIdentity;
-                                 
-                                 [self.view setNeedsUpdateConstraints];
-                                 [self.view layoutIfNeeded];
-                             } completion:^(BOOL finished) {
-                                 self.fullScreenMapGesture.enabled = NO;
-                                 self.mapViewContainer.userInteractionEnabled = YES;
-                                 [self.navigationController setToolbarHidden:NO animated:animated];
-                             }];
-        } else {
-            [UIView animateWithDuration:duration
-                                  delay:0
-                                options:UIViewAnimationOptionCurveEaseOut
-                             animations:^{
-                                 self.tableViewContainer.transform = CGAffineTransformIdentity;
-                                 self.mapViewContainer.transform = _previousMapTransform;
-                                 
-                                 [self.view setNeedsUpdateConstraints];
-                                 [self.view layoutIfNeeded];
-                             } completion:^(BOOL finished) {
-                                 self.fullScreenMapGesture.enabled = YES;
-                                 self.mapViewContainer.userInteractionEnabled = NO;
-                                 
-                                 [self.mapViewController recenterOnVisibleResources:animated];
-                                 [self.navigationController setToolbarHidden:YES animated:animated];
-                                 [self.mapViewController showCalloutForRoom:nil];
-                             }];
-        }
-    }
-}
-
 #pragma mark UI Update Methods
 - (void)updateViewState:(BOOL)animated
 {
@@ -434,7 +342,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                 self.contentContainerView.alpha = 1.;
                 self.strip.alpha = 1.;
 
-                if (self.isMapFullScreen) {
+                if (self.resourcesViewController.showsMapFullScreen) {
                     [self.navigationController setToolbarHidden:NO animated:animated];
                 } else {
                     [self.navigationController setToolbarHidden:YES animated:animated];
@@ -523,48 +431,28 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)reloadData:(BOOL)animated
 {
     [self.strip reloadData];
-    [self.resourcesTableViewController.tableView reloadData];
-    [self.mapViewController reloadMapAnimated:animated];
+    self.resourcesViewController.resources = self.dataSource.resources;
 }
 
 
 #pragma mark resourcesTableViewController
-- (void)loadResourcesTableViewController
+- (void)loadResourcesViewController
 {
-    MITMobiusResourcesTableViewController *resourcesTableViewController = [[MITMobiusResourcesTableViewController alloc] init];
-    resourcesTableViewController.delegate = self;
-    resourcesTableViewController.dataSource = self;
-
-    [self addChildViewController:resourcesTableViewController toView:self.tableViewContainer];
-    _resourcesTableViewController = resourcesTableViewController;
+    MITMobiusResourcesViewController *resourcesViewController = [[MITMobiusResourcesViewController alloc] init];
+    resourcesViewController.showsMap = YES;
+    resourcesViewController.showsMapFullScreen = NO;
+    
+    [self addChildViewController:resourcesViewController toView:self.tableViewContainer];
+    _resourcesViewController = resourcesViewController;
 }
 
-- (MITMobiusResourcesTableViewController*)resourcesTableViewController
+- (MITMobiusResourcesViewController*)resourcesViewController
 {
-    if (!_resourcesTableViewController) {
-        [self loadResourcesTableViewController];
+    if (!_resourcesViewController) {
+        [self loadResourcesViewController];
     }
     
-    return _resourcesTableViewController;
-}
-
-
-#pragma mark mapViewController
-- (MITMobiusMapViewController*)mapViewController
-{
-    if (!_mapViewController) {
-        [self loadMapViewController];
-    }
-
-    return _mapViewController;
-}
-
-- (void)loadMapViewController
-{
-    MITMobiusMapViewController *mapViewController = [[MITMobiusMapViewController alloc] init];
-    mapViewController.dataSource = self;
-    [self addChildViewController:mapViewController toView:self.mapViewContainer];
-    _mapViewController = mapViewController;
+    return _resourcesViewController;
 }
 
 
@@ -616,20 +504,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (IBAction)dismissFullScreenMap:(UIBarButtonItem*)sender
 {
-    [self setMapFullScreen:NO animated:YES];
-}
-
-- (IBAction)handleFullScreenMapGesture:(UITapGestureRecognizer*)gestureRecognizer
-{
-    if (gestureRecognizer == self.fullScreenMapGesture) {
-        if (gestureRecognizer.state == UIGestureRecognizerStateEnded) {
-            CGPoint location = [gestureRecognizer locationInView:self.contentContainerView];
-
-            if (CGRectContainsPoint(self.mapViewContainer.frame, location)) {
-                [self setMapFullScreen:YES animated:YES];
-            }
-        }
-    }
+    self.resourcesViewController.showsMapFullScreen = NO;
 }
 
 - (IBAction)resetSearchQuery:(id)sender
@@ -971,13 +846,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(roomSetOrResourceType);
 
     void (^completionBlock)(void) = ^{
-        if ([self.resources count]) {
-            self.mapFullScreen = NO;
-            self.rooms = nil;
-            [self.resourcesTableViewController.tableView reloadData];
-            [self.mapViewController reloadMapAnimated:YES];
-        }
-
+        [self reloadData:YES];
         [self updateViewState:YES];
     };
 
