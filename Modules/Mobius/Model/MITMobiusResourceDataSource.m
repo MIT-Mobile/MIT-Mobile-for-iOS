@@ -16,7 +16,6 @@
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
 @end
@@ -194,7 +193,13 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     
     __block MITMobiusRecentSearchQuery *query = nil;
     if ([currentQueryString isEqualToString:queryString]) {
-        query = self.query;
+        [self.query.managedObjectContext performBlockAndWait:^{
+            query = self.query;
+
+            NSMutableOrderedSet *options = [self.query mutableOrderedSetValueForKey:@"options"];
+            [options removeAllObjects];
+            [query.managedObjectContext saveToPersistentStore:nil];
+        }];
     } else {
         [self.managedObjectContext performBlockAndWait:^{
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
@@ -259,7 +264,9 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 
     RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
-    requestOperation.managedObjectContext = self.managedObjectContext;
+
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
+    requestOperation.managedObjectContext = managedObjectContext;
 
     RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
     requestOperation.managedObjectCache = cache;

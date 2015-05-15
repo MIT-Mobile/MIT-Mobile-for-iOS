@@ -8,12 +8,14 @@ typedef NS_ENUM(NSInteger, MITMobiusQuickSearchType) {
 @class MITMobiusRecentSearchQuery;
 
 @interface MITMobiusResourceDataSource : NSObject
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSDate *lastFetched;
 @property (nonatomic,strong) MITMobiusRecentSearchQuery *query;
 @property (nonatomic,readonly,copy) NSString *queryString;
 @property (nonatomic,readonly,copy) NSArray *resources;
 
-- (instancetype)init;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext NS_DESIGNATED_INITIALIZER;
+
 - (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
