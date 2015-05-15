@@ -14,6 +14,7 @@
 #import "MITMobiusResourceView.h"
 
 #import "MITTiledMapView.h"
+#import "MITLoadingActivityView.h"
 
 #pragma mark Helper class interfaces
 @interface MITMobiusResourcesTableSection : NSObject <MKAnnotation>
@@ -23,7 +24,7 @@
 @property (nonatomic,readonly) BOOL isOpen;
 
 - (instancetype)initWithName:(NSString*)name;
-- (void)addResource:(MITMobiusResource *)resource;
+- (void)addResource:(MITMobiusResource*)resource;
 - (BOOL)isOpenForDate:(NSDate*)date;
 @end
 
@@ -34,6 +35,7 @@ NSString* const MITMobiusResourceCellReuseIdentifier = @"MITMobiusResourceCell";
 #pragma mark - Main Implementation
 @interface MITMobiusResourcesViewController () <UITableViewDelegate, UITableViewDataSourceDynamicSizing, MKMapViewDelegate>
 @property (nonatomic,copy) NSArray *sections;
+@property (nonatomic,weak) MITLoadingActivityView *activityView;
 @end
 
 @implementation MITMobiusResourcesViewController {
@@ -252,14 +254,91 @@ NSString* const MITMobiusResourceCellReuseIdentifier = @"MITMobiusResourceCell";
     [self.tableView reloadData];
 }
 
-- (void)showMap:(BOOL)animated completion:(void(^)(void))completion
+- (void)setShowsMap:(BOOL)showsMap
 {
-
+    [self setShowsMap:showsMap animated:NO];
 }
 
-- (void)showFullScreenMap:(BOOL)animated completion:(void(^)(void))completion
+- (void)setShowsMap:(BOOL)showsMap animated:(BOOL)animated
 {
+    if (_showsMap != showsMap) {
+        _showsMap = showsMap;
 
+        if (!_showsMap) {
+            _showsMapFullScreen = NO;
+        }
+
+        [self updateMap:animated];
+    }
+}
+
+- (void)setShowsMapFullScreen:(BOOL)showsMapFullScreen
+{
+    [self setShowsMapFullScreen:showsMapFullScreen animated:NO];
+}
+
+- (void)setShowsMapFullScreen:(BOOL)showsMapFullScreen animated:(BOOL)animated
+{
+    if (_showsMapFullScreen != showsMapFullScreen) {
+        _showsMapFullScreen = showsMapFullScreen;
+
+        [self updateMap:animated];
+    }
+}
+
+- (void)updateMap:(BOOL)animated
+{
+    [UIView animateWithDuration:0.33
+                     animations:^{
+                         CGFloat mapHeight = CGRectGetHeight(self.mapView.frame) - _mapViewHeightConstraint.constant;
+                         if (self.showsMap) {
+                             if (self.showsMapFullScreen) {
+                                 CGFloat heightConstant = CGRectGetHeight(self.tableView.frame) - mapHeight;
+                                 _mapViewHeightConstraint.constant = heightConstant;
+                             } else {
+                                 [self updateMapWithContentOffset:self.tableView.contentOffset];
+                             }
+
+                             if ([self.tableView numberOfSections] > 1) {
+                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                             } else {
+                                 [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                             }
+                         } else {
+                             _mapViewHeightConstraint.constant = -mapHeight;
+                            [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                         }
+
+                         [self.view setNeedsLayout];
+                         [self.view layoutIfNeeded];
+                     }];
+}
+
+- (void)setLoading:(BOOL)loading
+{
+    [self setLoading:loading animated:NO];
+}
+
+- (void)setLoading:(BOOL)loading animated:(BOOL)animated
+{
+    if (_loading != loading) {
+        _loading = loading;
+
+        if (_loading) {
+            CGRect bounds = self.tableView.frame;
+            CGRect remainder = CGRectZero;
+            CGRect activityViewFrame = CGRectZero;
+
+            CGFloat activityViewHeight = CGRectGetHeight(bounds) - CGRectGetHeight(self.mapView.frame) - _mapViewHeightConstraint.constant;
+            CGRectDivide(bounds, &activityViewFrame, &remainder, activityViewHeight, CGRectMaxYEdge);
+            MITLoadingActivityView *activityView = [[MITLoadingActivityView alloc] initWithFrame:activityViewFrame];
+            activityView.backgroundColor = [UIColor whiteColor];
+            [self.view addSubview:activityView];
+            self.activityView = activityView;
+        } else {
+            [self.activityView removeFromSuperview];
+        }
+    }
 }
 
 #pragma mark Resources View Controller Delegate

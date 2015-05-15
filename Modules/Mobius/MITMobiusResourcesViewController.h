@@ -18,16 +18,17 @@
 
 @property (nonatomic) BOOL showsMap;
 @property (nonatomic) BOOL showsMapFullScreen;
+@property (nonatomic,getter=isLoading) BOOL loading;
+
 @property (nonatomic,weak) id<MITMobiusResourcesDelegate> delegate;
 
+- (void)setShowsMap:(BOOL)showsMap animated:(BOOL)animated;
+- (void)setShowsMapFullScreen:(BOOL)showsMapFullScreen animated:(BOOL)animated;
+- (void)setLoading:(BOOL)loading animated:(BOOL)animated;
 - (void)reloadData;
 @end
 
 @protocol MITMobiusResourcesDelegate <NSObject>
 @required
 - (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourceWithIdentifier:(NSString*)identifier;
-
-@optional
-- (BOOL)resourcesViewControllerShowsMapView:(MITMobiusResourcesViewController*)viewController;
-- (BOOL)resourcesViewControllerShowsMapFullScreen:(MITMobiusResourcesViewController*)viewController;
 @end
