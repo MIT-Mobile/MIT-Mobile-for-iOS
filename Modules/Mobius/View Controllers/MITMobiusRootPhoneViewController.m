@@ -47,6 +47,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
 @property(nonatomic,getter=isSearching) BOOL searching;
+@property(nonatomic,getter=isLoading) BOOL loading;
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
 @property (nonatomic, copy) NSDictionary *rooms;
@@ -120,12 +121,17 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(field);
     NSParameterAssert(value);
 
+    self.loading = YES;
+    [self updateViewState:YES];
+
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource resourcesWithField:field value:value completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
         MITMobiusRootPhoneViewController *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
         }
+
+        self.loading = NO;
         
         if (error == nil) {
             [self didCompleteDataSourceLoad];
@@ -142,6 +148,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)reloadDataSourceForQuery:(MITMobiusRecentSearchQuery*)query completion:(void(^)(void))block
 {
     NSParameterAssert(query);
+
+    self.loading = YES;
+    [self updateViewState:YES];
     
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource resourcesWithQueryObject:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
@@ -150,6 +159,8 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
         if (!blockSelf) {
             return;
         }
+
+        self.loading = NO;
         
         if (error == nil) {
             [self didCompleteDataSourceLoad];
@@ -166,6 +177,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)reloadDataSourceForSearch:(NSString*)queryString completion:(void(^)(void))block {
     NSParameterAssert(queryString);
 
+    self.loading = YES;
+    [self updateViewState:YES];
+
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource resourcesWithQuery:queryString completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
         MITMobiusRootPhoneViewController *blockSelf = weakSelf;
@@ -173,6 +187,8 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
         if (!blockSelf) {
             return;
         }
+
+        self.loading = NO;
 
         if (error == nil) {
             [self didCompleteDataSourceLoad];
@@ -194,6 +210,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (void)didCompleteDataSourceLoad
 {
+    self.resourcesViewController.loading = NO;
     [self.managedObjectContext performBlockAndWait:^{
         [self.managedObjectContext reset];
         self.rooms = nil;
@@ -207,7 +224,9 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (MITMobiusResourceDataSource*)dataSource
 {
     if (!_dataSource) {
-        MITMobiusResourceDataSource *dataSource = [[MITMobiusResourceDataSource alloc] init];
+        NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+        managedObjectContext.parentContext = self.managedObjectContext;
+        MITMobiusResourceDataSource *dataSource = [[MITMobiusResourceDataSource alloc] initWithManagedObjectContext:managedObjectContext];
         _dataSource = dataSource;
     }
 
@@ -268,7 +287,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 {
     if (self.isSearching) {
         [self showSearchingView:animated];
-    } else if (self.dataSource.query) {
+    } else if (self.isLoading || self.dataSource.query) {
         [self showResultsView:animated];
     } else {
         [self showInitialView:animated];
@@ -280,6 +299,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
     [self updateNavigationItem:animated];
     [self.searchBar setShowsCancelButton:NO animated:animated];
+    [self.navigationController setToolbarHidden:YES animated:animated];
 
     self.quickLookupTableView.hidden = NO;
     [UIView transitionWithView:self.view
@@ -289,9 +309,11 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                         self.quickLookupTableView.alpha = 1;
                         self.contentContainerView.alpha = 0;
                         self.recentSearchViewController.view.alpha = 0.;
+                        self.strip.alpha = 0.;
                         self.navigationController.toolbarHidden = NO;
                     } completion:^(BOOL finished) {
                         self.contentContainerView.hidden = YES;
+                        self.strip.hidden = YES;
                         self.recentSearchViewController.view.hidden = YES;
                     }];
 }
@@ -310,9 +332,11 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                         self.recentSearchViewController.view.alpha = 1.;
                         self.contentContainerView.alpha = 0.;
                         self.quickLookupTableView.alpha = 0.;
+                        self.strip.alpha = 0.;
                     } completion:^(BOOL finished) {
                         self.contentContainerView.hidden = YES;
                         self.quickLookupTableView.hidden = YES;
+                        self.strip.hidden = YES;
                         [self.searchBar setShowsCancelButton:YES animated:animated];
                     }];
 }
@@ -322,8 +346,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
     [self updateNavigationItem:animated];
     [self.searchBar setShowsCancelButton:NO animated:animated];
-    [self.view bringSubviewToFront:self.strip];
-
     if (self.resourcesViewController.showsMapFullScreen) {
         [self.navigationController setToolbarHidden:NO animated:animated];
     } else {
@@ -337,21 +359,28 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     }
 
     [self.view setNeedsUpdateConstraints];
+    [self.view setNeedsLayout];
 
-    if (self.contentContainerView.hidden) {
-        self.contentContainerView.hidden = NO;
-        [UIView transitionWithView:self.view
-                          duration:animationDuration
-                           options:UIViewAnimationOptionLayoutSubviews
-                        animations:^{
-                            self.contentContainerView.alpha = 1.;
-                            self.quickLookupTableView.alpha = 0.;
-                            self.recentSearchViewController.view.alpha = 0.;
-                        } completion:^(BOOL finished) {
-                            self.quickLookupTableView.hidden = YES;
-                            self.recentSearchViewController.view.hidden = YES;
-                        }];
-    }
+    self.contentContainerView.hidden = NO;
+    self.strip.hidden = NO;
+    self.strip.backgroundColor = [UIColor greenColor];
+    self.contentContainerView.backgroundColor = [UIColor blueColor];
+    [self.strip.superview bringSubviewToFront:self.strip];
+
+    [UIView transitionWithView:self.view
+                      duration:animationDuration
+                       options:UIViewAnimationOptionLayoutSubviews
+                    animations:^{
+                        self.strip.alpha = 1.;
+                        self.contentContainerView.alpha = 1.;
+                        self.quickLookupTableView.alpha = 0.;
+                        self.recentSearchViewController.view.alpha = 0.;
+
+                        [self.resourcesViewController setLoading:self.isLoading animated:animated];
+                    } completion:^(BOOL finished) {
+                        self.quickLookupTableView.hidden = YES;
+                        self.recentSearchViewController.view.hidden = YES;
+                    }];
 }
 
 - (void)updateNavigationItem:(BOOL)animated
@@ -517,6 +546,8 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 #pragma mark MITMobiusRecentSearchControllerDelegate
 - (void)placeSelectionViewController:(UIViewController<MITMapPlaceSelector>*)viewController didSelectQuery:(NSString*)query
 {
+    self.searching = NO;
+    
     self.searchBar.text = query;
     [self.searchBar resignFirstResponder];
     [self reloadDataSourceForSearch:query completion:nil];
@@ -561,8 +592,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    self.searching = NO;
-    [self updateViewState:YES];
+    if (self.isSearching) {
+        self.searching = NO;
+        [self updateViewState:YES];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
@@ -769,17 +802,12 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 {
     NSParameterAssert(roomSetOrResourceType);
 
-    void (^completionBlock)(void) = ^{
-        [self reloadData:YES];
-        [self updateViewState:YES];
-    };
-
     if ([roomSetOrResourceType isKindOfClass:[MITMobiusRoomSet class]]) {
         MITMobiusRoomSet *roomSet = (MITMobiusRoomSet*)roomSetOrResourceType;
-        [self reloadDataSourceWithField:@"roomset" value:roomSet.identifier completion:completionBlock];
+        [self reloadDataSourceWithField:@"roomset" value:roomSet.identifier completion:nil];
     } else if ([roomSetOrResourceType isKindOfClass:[MITMobiusResourceType class]]) {
         MITMobiusResourceType *resourceType = (MITMobiusResourceType*)roomSetOrResourceType;
-        [self reloadDataSourceWithField:@"_type" value:resourceType.identifier completion:completionBlock];
+        [self reloadDataSourceWithField:@"_type" value:resourceType.identifier completion:nil];
     }
 }
 
@@ -787,7 +815,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)didDismissAdvancedSearchViewController:(MITMobiusAdvancedSearchViewController *)viewController
 {
     NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
-    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext existingObjectWithID:viewController.query.objectID error:nil];
+    MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext objectWithID:viewController.query.objectID];
     [managedObjectContext refreshObject:query mergeChanges:NO];
 
     if (query) {
