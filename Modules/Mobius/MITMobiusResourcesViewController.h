@@ -14,7 +14,10 @@
 @property (nonatomic,weak) IBOutlet UITableView *tableView;
 
 @property (nonatomic,weak) MITMobiusResource *selectedResource;
+@property (nonatomic,copy) NSArray *selectedResources;
+
 @property (nonatomic,strong) NSArray *resources;
+@property (nonatomic,strong) UITapGestureRecognizer *mapFullScreenGesture;
 
 @property (nonatomic) BOOL showsMap;
 @property (nonatomic) BOOL showsMapFullScreen;
@@ -31,4 +34,10 @@
 @protocol MITMobiusResourcesDelegate <NSObject>
 @required
 - (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourceWithIdentifier:(NSString*)identifier;
+
+@optional
+- (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
+- (void)resourceViewControllerDidShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
+- (void)resourceViewControllerWillHideFullScreenMap:(MITMobiusResourcesViewController*)viewController;
+- (void)resourceViewControllerDidHideFullScreenMap:(MITMobiusResourcesViewController*)viewController;
 @end
