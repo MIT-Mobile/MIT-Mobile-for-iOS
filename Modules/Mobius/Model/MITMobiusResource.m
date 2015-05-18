@@ -109,21 +109,62 @@
     
     NSMutableArray *dailyHoursObjectsArray = [[NSMutableArray alloc] init];
     
+    __block NSDate *lastDate = [[NSDate date] dateWithoutTime];
+    
     [sortedResourceHours enumerateObjectsUsingBlock:^(MITMobiusResourceHours *hours, NSUInteger idx, BOOL *stop) {
+        // Fill in missing days as Closed
+        while ([lastDate isEqualToDateIgnoringTime:hours.startDate] == NO && [lastDate timeIntervalSinceDate:hours.startDate] < 0) {
+            MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
+            dailyHoursObject.dayName = [self dayNameForDate:lastDate];
+            dailyHoursObject.hours = @"Closed";
+            [dailyHoursObjectsArray addObject:dailyHoursObject];
 
-        MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
-
-        NSDateFormatter *weekday = [[NSDateFormatter alloc] init];
-        [weekday setDateFormat: @"EEEE"];
-        dailyHoursObject.dayName = [weekday stringFromDate:hours.startDate];
+            lastDate = [lastDate dateByAddingDay];
+        }
         
+        lastDate = [hours.startDate dateByAddingDay];
+        
+        MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
+        dailyHoursObject.dayName = [self dayNameForDate:hours.startDate];
         NSString *startTime = [hours.startDate MITShortTimeOfDayString];
         NSString *endTime = [hours.endDate MITShortTimeOfDayString];
         
         dailyHoursObject.hours = [NSString stringWithFormat:@"%@ - %@",startTime, endTime];
         [dailyHoursObjectsArray addObject:dailyHoursObject];
     }];
+    
+    // Add (7 - count) more closings on the end to round out the week.
+    // Note this means shops without hours show up as closed all week.
+    while ([dailyHoursObjectsArray count] < 7) {
+        MITMobiusDailyHoursObject *dailyHoursObject = [[MITMobiusDailyHoursObject alloc] init];
+        dailyHoursObject.dayName = [self dayNameForDate:lastDate];
+        dailyHoursObject.hours = @"Closed";
+        [dailyHoursObjectsArray addObject:dailyHoursObject];
+
+        lastDate = [lastDate dateByAddingDay];
+    }
+    
     return dailyHoursObjectsArray;
+}
+
+// Returns strings like "Today 5/14" for today, "Thursday 5/14" for other days.
+- (NSString *)dayNameForDate:(NSDate *)date
+{
+    NSDateFormatter *weekdayFormatter = [[NSDateFormatter alloc] init];
+    [weekdayFormatter setDateFormat: @"EEEE"];
+    
+    NSDateFormatter *shortDateFormatter = [[NSDateFormatter alloc] init];
+    shortDateFormatter.dateFormat = [NSDateFormatter dateFormatFromTemplate:@"M/d" options:0 locale:[NSLocale currentLocale]];
+    
+    NSString *weekdayString = nil;
+    if ([date isToday]) {
+        weekdayString = @"Today";
+    } else {
+        weekdayString = [weekdayFormatter stringFromDate:date];
+    }
+    NSString *dateString = [shortDateFormatter stringFromDate:date];
+    
+    return [NSString stringWithFormat:@"%@ %@", weekdayString, dateString];
 }
 
 - (BOOL)isOpenOnDate:(NSDate *)date
@@ -135,6 +176,38 @@
     }
     return NO;
 }
+
+// Returns something like "Make - Model", "Make", or "Model".
+// If multiple makes and models, "Make, Make - Model, Model".
+- (NSString *)makeAndModel {
+    NSMutableArray *components = [NSMutableArray arrayWithCapacity:2];
+    
+    for (MITMobiusResourceAttributeValueSet *set in self.attributeValues) {
+        if ([set.label caseInsensitiveCompare:@"make"] == NSOrderedSame) {
+            NSArray *values = [[set.values allObjects] valueForKey:@"value"];
+            NSString *joined = [values componentsJoinedByString:@", "];
+            if ([joined length] > 0) {
+                [components insertObject:joined atIndex:0];
+            }
+            continue;
+        }
+        if ([set.label caseInsensitiveCompare:@"model"] == NSOrderedSame) {
+            NSArray *values = [[set.values allObjects] valueForKey:@"value"];
+            NSString *joined = [values componentsJoinedByString:@", "];
+            if ([joined length] > 0) {
+                [components addObject:joined];
+            }
+            continue;
+        }
+        if ([components count] == 2) {
+            break;
+        }
+    }
+    
+    return [components componentsJoinedByString:@" - "];
+}
+
+
 
 #pragma mark MKAnnotation
 

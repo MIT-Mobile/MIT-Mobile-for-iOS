@@ -2,12 +2,16 @@
 #import "UIKit+MITAdditions.h"
 #import <SDWebImage/UIImageView+WebCache.h>
 #import "MITMobiusImage.h"
+#import "MITMobiusResourceAttributeValueSet.h"
 
 @interface MITMobiusDetailHeader ()
 @property (weak, nonatomic) IBOutlet UILabel *resourceName;
 @property (weak, nonatomic) IBOutlet UILabel *resourceStatus;
+@property (weak, nonatomic) IBOutlet UILabel *descriptionLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *resourceImageView;
-@property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightContraint;
+@property (weak, nonatomic) IBOutlet UIImageView *statusImageView;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *resourceImageViewHeightConstraint;
+@property (weak, nonatomic) IBOutlet NSLayoutConstraint *statusTextFieldLeftConstraint;
 
 @end
 
@@ -30,6 +34,11 @@
     return @"MITMobiusDetailHeader";
 }
 
+- (void)awakeFromNib
+{
+    self.resourceImageView.backgroundColor = [UIColor colorWithWhite:224.0 / 255.0 alpha:1.0];
+}
+
 - (IBAction)didTapImage:(id)sender {
     if (self.galleryHandler) {
         self.galleryHandler();
@@ -43,10 +52,12 @@
     if (_resource) {
         __block NSString *name = nil;
         __block NSString *status = nil;
+        __block NSString *makeAndModel = nil;
         __block NSURL *imageURL = nil;
         [_resource.managedObjectContext performBlockAndWait:^{
             name = resource.name;
             status = resource.status;
+            makeAndModel = resource.makeAndModel;
             
             CGSize idealImageSize = CGSizeZero;
             idealImageSize = self.resourceImageView.frame.size;
@@ -54,20 +65,19 @@
             imageURL = [image URLForImageWithSize:MITMobiusImageLarge];
         }];
         
-        if (imageURL) {
-            self.resourceImageViewHeightContraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
-        } else {
-            self.resourceImageViewHeightContraint.constant = 0;
-        }
-
         self.resourceName.text = name;
+        self.descriptionLabel.text = makeAndModel;
 
         if ([status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
             self.resourceStatus.textColor = [UIColor mit_openGreenColor];
+            self.statusTextFieldLeftConstraint.constant = 15.0;
+            self.statusImageView.hidden = YES;
         } else if ([status caseInsensitiveCompare:@"offline"] == NSOrderedSame) {
             self.resourceStatus.textColor = [UIColor mit_closedRedColor];
         }
-        self.resourceStatus.text = status;
+        self.resourceStatus.text = [status capitalizedString];
+
+        self.resourceImageViewHeightConstraint.constant = MIN(CGRectGetHeight(self.bounds), CGRectGetWidth(self.bounds));
 
         if (imageURL) {
             MITMobiusResource *currentResource = self.resource;
@@ -79,6 +89,8 @@
                 if (blockSelf && (blockSelf.resource == currentResource)) {
                     if (error) {
                         blockSelf.resourceImageView.image = nil;
+                    } else {
+                        self.resourceImageView.backgroundColor = [UIColor colorWithWhite:1.0 alpha:1.0];
                     }
                 }
             }];

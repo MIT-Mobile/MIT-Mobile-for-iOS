@@ -13,6 +13,7 @@
 #import "MITMobiusResourceDLC.h"
 #import "MITMobiusResourceHours.h"
 #import "MITMobiusResourceOwner.h"
+#import "MITMobiusRoomSet.h"
 
 #import "MITMobiusAttribute.h"
 #import "MITMobiusAttributeValue.h"

@@ -15,6 +15,7 @@
                     <rect key="frame" x="0.0" y="0.0" width="258" height="236"/>
                     <subviews>
                         <imageView clipsSubviews="YES" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="USA-ls-5hk">
+                            <rect key="frame" x="0.0" y="0.0" width="258" height="0.0"/>
                             <color key="backgroundColor" red="0.8784313725490196" green="0.8784313725490196" blue="0.8784313725490196" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             <gestureRecognizers/>
                             <constraints>
@@ -24,32 +25,46 @@
                                 <outletCollection property="gestureRecognizers" destination="c5L-Rq-Fdt" appends="YES" id="umN-fp-Exl"/>
                             </connections>
                         </imageView>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resource" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="228" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
-                            <rect key="frame" x="15" y="8" width="228" height="191.5"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Resource" lineBreakMode="wordWrap" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="las-NX-67L">
+                            <rect key="frame" x="15" y="8" width="228" height="21"/>
                             <fontDescription key="fontDescription" name="HelveticaNeue-Medium" family="Helvetica Neue" pointSize="17"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
-                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="228" translatesAutoresizingMaskIntoConstraints="NO" id="EHt-Yf-Qbd">
-                            <rect key="frame" x="15" y="209" width="228" height="16.5"/>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Make and Model" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="290" translatesAutoresizingMaskIntoConstraints="NO" id="3T6-EO-LMN">
+                            <rect key="frame" x="15" y="31" width="228" height="17"/>
+                            <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
+                            <color key="textColor" white="0.33333333333333331" alpha="1" colorSpace="calibratedWhite"/>
+                            <nil key="highlightedColor"/>
+                        </label>
+                        <label opaque="NO" clipsSubviews="YES" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Status" lineBreakMode="tailTruncation" numberOfLines="0" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" preferredMaxLayoutWidth="270" translatesAutoresizingMaskIntoConstraints="NO" id="EHt-Yf-Qbd">
+                            <rect key="frame" x="36" y="58" width="207" height="17"/>
                             <constraints>
                                 <constraint firstAttribute="height" constant="16.5" id="tTB-e5-9qn"/>
                             </constraints>
                             <fontDescription key="fontDescription" name="HelveticaNeue" family="Helvetica Neue" pointSize="14"/>
-                            <color key="textColor" cocoaTouchSystemColor="darkTextColor"/>
+                            <color key="textColor" red="0.0" green="0.0" blue="0.0" alpha="1" colorSpace="calibratedRGB"/>
                             <nil key="highlightedColor"/>
                         </label>
+                        <imageView opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" image="mobius-resource-offline" translatesAutoresizingMaskIntoConstraints="NO" id="WcZ-vk-BWj">
+                            <rect key="frame" x="13" y="58" width="18" height="18"/>
+                        </imageView>
                     </subviews>
                     <constraints>
                         <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="15" id="1a4-TI-VRD"/>
-                        <constraint firstItem="EHt-Yf-Qbd" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="10" id="Gzb-3t-Sbm"/>
+                        <constraint firstItem="3T6-EO-LMN" firstAttribute="top" secondItem="las-NX-67L" secondAttribute="bottom" constant="2" id="5MD-nh-F5l"/>
+                        <constraint firstItem="EHt-Yf-Qbd" firstAttribute="top" secondItem="3T6-EO-LMN" secondAttribute="bottom" constant="10" id="71u-sP-Nhe"/>
+                        <constraint firstItem="EHt-Yf-Qbd" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="36" id="7SJ-t4-DI4"/>
                         <constraint firstItem="USA-ls-5hk" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" id="Uwf-Lf-nEb"/>
+                        <constraint firstItem="WcZ-vk-BWj" firstAttribute="centerY" secondItem="EHt-Yf-Qbd" secondAttribute="centerY" id="b36-Rs-1DW"/>
                         <constraint firstItem="USA-ls-5hk" firstAttribute="top" secondItem="rq1-KP-oP6" secondAttribute="top" id="bGw-eP-frf"/>
-                        <constraint firstItem="EHt-Yf-Qbd" firstAttribute="leading" secondItem="las-NX-67L" secondAttribute="leading" id="csk-Wd-So9"/>
                         <constraint firstAttribute="trailing" secondItem="EHt-Yf-Qbd" secondAttribute="trailing" constant="15" id="ecd-hA-2tr"/>
                         <constraint firstAttribute="trailing" secondItem="USA-ls-5hk" secondAttribute="trailing" id="gqy-kg-CR8"/>
+                        <constraint firstItem="WcZ-vk-BWj" firstAttribute="leading" secondItem="rq1-KP-oP6" secondAttribute="leading" constant="13" id="jTa-xe-e06"/>
+                        <constraint firstAttribute="trailing" secondItem="3T6-EO-LMN" secondAttribute="trailing" constant="15" id="o0G-le-P6U"/>
                         <constraint firstItem="las-NX-67L" firstAttribute="top" secondItem="USA-ls-5hk" secondAttribute="bottom" constant="8" id="pL3-yK-5Zm"/>
-                        <constraint firstAttribute="bottom" secondItem="EHt-Yf-Qbd" secondAttribute="bottom" constant="10" id="tr3-KV-nBW"/>
+                        <constraint firstItem="las-NX-67L" firstAttribute="leading" secondItem="3T6-EO-LMN" secondAttribute="leading" id="tT9-ww-ds2"/>
+                        <constraint firstAttribute="bottom" relation="greaterThanOrEqual" secondItem="EHt-Yf-Qbd" secondAttribute="bottom" constant="10" id="tr3-KV-nBW"/>
                         <constraint firstAttribute="trailing" secondItem="las-NX-67L" secondAttribute="trailing" constant="15" id="xgk-ZI-bw1"/>
                     </constraints>
                 </view>
@@ -63,10 +78,13 @@
             <nil key="simulatedStatusBarMetrics"/>
             <freeformSimulatedSizeMetrics key="simulatedDestinationMetrics"/>
             <connections>
+                <outlet property="descriptionLabel" destination="3T6-EO-LMN" id="Qfx-s7-ZH8"/>
                 <outlet property="resourceImageView" destination="USA-ls-5hk" id="izZ-m0-APo"/>
-                <outlet property="resourceImageViewHeightContraint" destination="F7u-sa-HEs" id="mp5-Cx-JmT"/>
+                <outlet property="resourceImageViewHeightConstraint" destination="F7u-sa-HEs" id="9Wn-Ga-eDo"/>
                 <outlet property="resourceName" destination="las-NX-67L" id="NiE-ak-9x8"/>
                 <outlet property="resourceStatus" destination="EHt-Yf-Qbd" id="t8Q-5d-NOS"/>
+                <outlet property="statusImageView" destination="WcZ-vk-BWj" id="a0y-fr-7PR"/>
+                <outlet property="statusTextFieldLeftConstraint" destination="7SJ-t4-DI4" id="o0K-dU-jSf"/>
             </connections>
             <point key="canvasLocation" x="198" y="168"/>
         </view>
@@ -76,6 +94,9 @@
             </connections>
         </tapGestureRecognizer>
     </objects>
+    <resources>
+        <image name="mobius-resource-offline" width="18" height="18"/>
+    </resources>
     <simulatedMetricsContainer key="defaultSimulatedMetrics">
         <simulatedStatusBarMetrics key="statusBar"/>
         <simulatedOrientationMetrics key="orientation"/>

@@ -252,6 +252,13 @@
 - (void)pageViewController:(UIPageViewController *)pageViewController willTransitionToViewControllers:(NSArray *)pendingViewControllers
 {
     self.transitioning = YES;
+    
+    // Persist the currently selected segment across pages (done in two places in this class)
+    MITMobiusDetailTableViewController *tableViewController = (MITMobiusDetailTableViewController *)pageViewController.viewControllers[0];
+    NSInteger currentSegmentedSection = tableViewController.currentSegmentedSection;
+    [pendingViewControllers enumerateObjectsUsingBlock:^(MITMobiusDetailTableViewController *obj, NSUInteger idx, BOOL *stop) {
+        obj.currentSegmentedSection = currentSegmentedSection;
+    }];
 }
 
 - (void)pageViewController:(UIPageViewController *)pageViewController didFinishAnimating:(BOOL)finished previousViewControllers:(NSArray *)previousViewControllers transitionCompleted:(BOOL)completed
@@ -341,6 +348,10 @@
 
     MITMobiusResource *resource = [self resourceAtIndex:newIndex];
     MITMobiusDetailTableViewController *detailViewController = [self detailViewControllerForResource:resource];
+
+    // Persist the currently selected segment across pages (done in two places in this class)
+    NSInteger currentSegmentedSection = ((MITMobiusDetailTableViewController *)self.pageViewController.viewControllers[0]).currentSegmentedSection;
+    detailViewController.currentSegmentedSection = currentSegmentedSection;
 
     if (detailViewController) {
 

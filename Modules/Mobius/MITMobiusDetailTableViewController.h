@@ -4,6 +4,7 @@
 @interface MITMobiusDetailTableViewController : UITableViewController
 
 @property (nonatomic, weak) MITMobiusResource *resource;
+@property (nonatomic) NSInteger currentSegmentedSection;
 
 - (instancetype)initWithResource:(MITMobiusResource *)resource;
 
