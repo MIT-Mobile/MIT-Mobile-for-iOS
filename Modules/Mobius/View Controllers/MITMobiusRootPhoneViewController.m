@@ -369,7 +369,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
     [UIView transitionWithView:self.view
                       duration:animationDuration
-                       options:UIViewAnimationOptionLayoutSubviews
+                       options:0
                     animations:^{
                         self.strip.alpha = 1.;
                         self.contentContainerView.alpha = 1.;
@@ -377,6 +377,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                         self.recentSearchViewController.view.alpha = 0.;
 
                         [self.resourcesViewController setLoading:self.isLoading animated:animated];
+                        [self.view layoutIfNeeded];
                     } completion:^(BOOL finished) {
                         self.quickLookupTableView.hidden = YES;
                         self.recentSearchViewController.view.hidden = YES;
@@ -814,11 +815,11 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 #pragma mark MITMobiusAdvancedSearchDelegate
 - (void)didDismissAdvancedSearchViewController:(MITMobiusAdvancedSearchViewController *)viewController
 {
-    NSManagedObjectContext *managedObjectContext = [MITCoreDataController defaultController].mainQueueContext;
+    NSManagedObjectContext *managedObjectContext = self.managedObjectContext;
     MITMobiusRecentSearchQuery *query = (MITMobiusRecentSearchQuery*)[managedObjectContext objectWithID:viewController.query.objectID];
-    [managedObjectContext refreshObject:query mergeChanges:NO];
 
     if (query) {
+        [managedObjectContext refreshObject:query mergeChanges:NO];
         [self reloadDataSourceForQuery:query completion:nil];
     }
     
