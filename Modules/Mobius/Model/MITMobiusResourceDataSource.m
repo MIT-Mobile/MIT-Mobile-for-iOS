@@ -27,7 +27,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
@@ -84,12 +84,10 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 - (void)setQuery:(MITMobiusRecentSearchQuery *)query
 {
     if (query) {
-        _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext existingObjectWithID:query.objectID error:nil];
+        _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext objectWithID:query.objectID];
     } else {
         _query = nil;
     }
-    
-    _queryString = nil;
 }
 
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context
@@ -186,6 +184,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
+    NSParameterAssert(queryString);
+
     __block NSString *currentQueryString = nil;
     [self.query.managedObjectContext performBlockAndWait:^{
         currentQueryString = self.query.text;
@@ -194,12 +194,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     __block MITMobiusRecentSearchQuery *query = nil;
     if ([currentQueryString isEqualToString:queryString]) {
         [self.query.managedObjectContext performBlockAndWait:^{
-            query = self.query;
-
             NSMutableOrderedSet *options = [self.query mutableOrderedSetValueForKey:@"options"];
             [options removeAllObjects];
-            [query.managedObjectContext saveToPersistentStore:nil];
+            [self.query.managedObjectContext saveToPersistentStore:nil];
         }];
+
+        query = self.query;
     } else {
         [self.managedObjectContext performBlockAndWait:^{
             NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
@@ -211,6 +211,9 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             } else {
                 query = [NSEntityDescription insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName] inManagedObjectContext:self.managedObjectContext];
                 query.text = queryString;
+
+                NSMutableOrderedSet *options = [query mutableOrderedSetValueForKey:@"options"];
+                [options removeAllObjects];
                 [self.managedObjectContext saveToPersistentStore:nil];
             }
         }];
