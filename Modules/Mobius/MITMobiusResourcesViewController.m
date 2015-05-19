@@ -7,42 +7,39 @@
 #import "CoreData+MITAdditions.h"
 #import "MITMobiusRoomSet.h"
 #import "UITableView+DynamicSizing.h"
+#import "MITMobiusResourcesTableSection.h"
 
 // UITableView Headers/Cells
 #import "MITMobiusShopHeader.h"
 #import "MITMobiusResourceTableViewCell.h"
 #import "MITMobiusResourceView.h"
-
-#import "MITTiledMapView.h"
 #import "MITActivityTableViewCell.h"
 
-#pragma mark Helper class interfaces
-@interface MITMobiusResourcesTableSection : NSObject <MKAnnotation>
-@property (nonatomic,readonly,copy) NSString *name;
-@property (nonatomic,readonly,copy) NSString *hours;
-@property (nonatomic,readonly,copy) NSArray *resources;
-@property (nonatomic,readonly) BOOL isOpen;
-
-- (instancetype)initWithName:(NSString*)name;
-- (void)addResource:(MITMobiusResource*)resource;
-- (BOOL)isOpenForDate:(NSDate*)date;
-@end
+// Map-related classes
+#import "MITMapPlaceAnnotationView.h"
+#import "MITMobiusCalloutContentView.h"
+#import "MITTiledMapView.h"
+#import "MITCalloutView.h"
 
 #pragma mark - Static
 NSString* const MITMobiusResourceShopHeaderReuseIdentifier = @"MITMobiusResourceShopHeader";
 NSString* const MITMobiusResourceCellReuseIdentifier = @"MITMobiusResourceCell";
 NSString* const MITMobiusResourceLoadingCellReuseIdentifier = @"MITMobiusResourceLoadingCell";
 NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResourceNoResultsCell";
+NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusResourceRoomAnnotation";
 
 #pragma mark - Main Implementation
-@interface MITMobiusResourcesViewController () <UITableViewDelegate, UITableViewDataSourceDynamicSizing, MKMapViewDelegate>
+@interface MITMobiusResourcesViewController () <UITableViewDelegate, UITableViewDataSourceDynamicSizing, MKMapViewDelegate, MITCalloutViewDelegate>
 @property (nonatomic,copy) NSArray *sections;
 @property (nonatomic,weak) MITLoadingActivityView *activityView;
+@property (nonatomic,weak) MITCalloutView *calloutView;
 @end
 
 @implementation MITMobiusResourcesViewController {
     NSLayoutConstraint *_mapViewAspectHeightConstraint;
     NSLayoutConstraint *_mapViewFullScreenHeightConstraint;
+    NSMapTable *_sectionNumberByButton;
+    CGFloat _mapVerticalOffset;
 }
 
 @synthesize mapView = _mapView;
@@ -83,14 +80,15 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
     MITTiledMapView *mapView = [[MITTiledMapView alloc] init];
     mapView.translatesAutoresizingMaskIntoConstraints = NO;
     mapView.userInteractionEnabled = NO;
+    [mapView setMapDelegate:self];
     [view addSubview:mapView];
     self.mapView = mapView;
 
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[mapView]"
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[mapView]-(>=0)-|"
                                                                  options:0
                                                                  metrics:nil
                                                                    views:@{@"mapView" : mapView}]];
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[mapView]|"
+    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[mapView]-(0)-|"
                                                                  options:0
                                                                  metrics:nil
                                                                    views:@{@"mapView" : mapView}]];
@@ -124,9 +122,12 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 - (void)viewDidLoad {
     [super viewDidLoad];
 
+    _sectionNumberByButton = [NSMapTable weakToWeakObjectsMapTable];
+
     UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
     [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:MITMobiusResourceCellReuseIdentifier];
     [self.tableView registerClass:[MITActivityTableViewCell class] forCellReuseIdentifier:MITMobiusResourceLoadingCellReuseIdentifier];
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourceNoResultsCellReuseIdentifier];
     [self.tableView registerNib:[MITMobiusShopHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusResourceShopHeaderReuseIdentifier];
 }
 
@@ -134,29 +135,28 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 {
     NSAssert(self.managedObjectContext,@"a valid managed object context was not configured");
     [super viewWillAppear:animated];
-
     [self reloadData];
 }
 
-- (void)viewDidLayoutSubviews
+- (void)updateViewConstraints
 {
-    [super viewDidLayoutSubviews];
-    [self updateMapWithContentOffset:self.tableView.contentOffset];
-    [self.view layoutIfNeeded];
+    _mapViewAspectHeightConstraint.constant = _mapVerticalOffset;
+    [super updateViewConstraints];
 }
 
 - (void)updateMapWithContentOffset:(CGPoint)contentOffset
 {
     CGFloat yOffset = contentOffset.y;
     if (yOffset <= 0) {
-        if (!CATransform3DIsIdentity(self.mapView.layer.transform)) {
-            self.mapView.layer.transform = CATransform3DIdentity;
-        }
-
-        _mapViewAspectHeightConstraint.constant = -yOffset;
+        self.mapView.layer.transform = CATransform3DIdentity;
+        _mapVerticalOffset = -yOffset;
     } else {
         self.mapView.layer.transform = CATransform3DMakeTranslation(0, -yOffset, 0);
+        _mapVerticalOffset = 0.;
     }
+
+    [self.view setNeedsUpdateConstraints];
+    [self.view setNeedsLayout];
 }
 
 #pragma mark Property accessors/setters
@@ -194,11 +194,25 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
                 _resources = [self.managedObjectContext transferManagedObjects:resources];
             }];
         }
-
-        if ([self isViewLoaded]) {
-            [self reloadData];
-        }
     }
+
+    if ([self isViewLoaded]) {
+        [self reloadData];
+    }
+}
+
+- (void)setSelectedResource:(MITMobiusResource *)selectedResource
+{
+    if (selectedResource) {
+        self.selectedResources = @[selectedResource];
+    } else {
+        self.selectedResources = nil;
+    }
+}
+
+- (MITMobiusResource*)selectedResource
+{
+    return [self.selectedResources firstObject];
 }
 
 - (NSArray*)sections
@@ -245,19 +259,25 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 #pragma mark Data Helper Methods
 - (void)reloadData
 {
+    [self.tableView reloadData];
+
     MKMapView *mapView = self.mapView.mapView;
     mapView.showsUserLocation = NO;
     mapView.userTrackingMode = MKUserTrackingModeNone;
     [mapView removeAnnotations:mapView.annotations];
+    [mapView addAnnotations:self.sections];
 
+    [self recenterMapView];
+}
+
+- (void)recenterMapView
+{
+    MKMapView *mapView = self.mapView.mapView;
     if (self.isLoading || (self.sections.count == 0)) {
         [mapView setRegion:kMITShuttleDefaultMapRegion animated:YES];
     } else if (self.sections.count > 0) {
-        [mapView addAnnotations:self.sections];
         [mapView showAnnotations:self.sections animated:YES];
     }
-
-    [self.tableView reloadData];
 }
 
 - (void)setShowsMap:(BOOL)showsMap
@@ -278,12 +298,14 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 
                                      _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
                                      _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-                                     _mapViewFullScreenHeightConstraint.constant = 0;
+                                     _mapViewFullScreenHeightConstraint.constant = CGRectGetHeight(self.view.bounds);
 
+                                     [self.view setNeedsUpdateConstraints];
                                      [self.view setNeedsLayout];
                                      [self.view layoutIfNeeded];
 
-                                     [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                                     [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                                     [self recenterMapView];
                                  }];
             }
         } else {
@@ -293,10 +315,12 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
                                  _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultHigh;
                                  _mapViewAspectHeightConstraint.constant = 0;
 
+                                 [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
 
-                                 [self.tableView insertSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
+                                 [self recenterMapView];
                              }];
 
         }
@@ -315,6 +339,7 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 
 
         if (_showsMapFullScreen) {
+            [self willShowMapFullScreen:animated];
             [UIView animateWithDuration:0.33
                              animations:^{
                                  self.mapView.layer.transform = CATransform3DIdentity;
@@ -332,8 +357,11 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = NO;
                                  self.mapView.userInteractionEnabled = YES;
+
+                                 [self didShowMapFullScreen:animated];
                              }];
         } else {
+            [self willHideMapFullScreen:animated];
             [UIView animateWithDuration:0.33
                              animations:^{
                                  self.mapView.layer.transform = CATransform3DIdentity;
@@ -349,11 +377,57 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = YES;
                                  self.mapView.userInteractionEnabled = NO;
+
+                                 [self didHideMapFullScreen:animated];
                              }];
         }
     }
 }
 
+#pragma mark Delegate Pass-through
+- (void)willShowMapFullScreen:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(resourceViewControllerWillShowFullScreenMap:)]) {
+        [self.delegate resourceViewControllerWillShowFullScreenMap:self];
+    }
+}
+
+- (void)didShowMapFullScreen:(BOOL)animated
+{
+
+    if ([self.delegate respondsToSelector:@selector(resourceViewControllerDidShowFullScreenMap:)]) {
+        [self.delegate resourceViewControllerDidShowFullScreenMap:self];
+    }
+}
+
+- (void)willHideMapFullScreen:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(resourceViewControllerWillHideFullScreenMap:)]) {
+        [self.delegate resourceViewControllerWillHideFullScreenMap:self];
+    }
+}
+
+- (void)didHideMapFullScreen:(BOOL)animated
+{
+    if ([self.delegate respondsToSelector:@selector(resourceViewControllerDidHideFullScreenMap:)]) {
+        [self.delegate resourceViewControllerDidHideFullScreenMap:self];
+    }
+}
+
+- (void)didSelectResource:(MITMobiusResource*)resource
+{
+    [self didSelectResources:@[resource]];
+}
+
+- (void)didSelectResources:(NSArray*)resources
+{
+    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourcesWithFetchRequest:)]) {
+        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusResource entityName]];
+        NSArray *resourcesObjectIDs = [resources valueForKey:@"identifier"];
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier IN %@",resourcesObjectIDs];
+        [self.delegate resourcesViewController:self didSelectResourcesWithFetchRequest:fetchRequest];
+    }
+}
 
 #pragma mark UI updating & gesture handling
 - (IBAction)handleShowMapFullScreenGesture:(UITapGestureRecognizer*)tapGesture
@@ -382,7 +456,18 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
     }
 }
 
-#pragma mark Resources View Controller Delegate
+#pragma mark UI Actions
+- (IBAction)tableViewHandleSectionHeaderTap:(UIButton*)sender
+{
+    NSNumber *sectionIndex = [_sectionNumberByButton objectForKey:sender];
+    if (sectionIndex) {
+        NSUInteger section = [sectionIndex integerValue];
+        MITMobiusResourcesTableSection *tableSection = self.sections[section];
+
+        self.selectedResources = tableSection.resources;
+        [self didSelectResources:tableSection.resources];
+    }
+}
 
 #pragma mark - Table view data source
 - (BOOL)isMapSection:(NSInteger)section
@@ -393,7 +478,9 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSUInteger numberOfSections = 0;
     if (self.isLoading) {
-        numberOfSections = 1;
+        ++numberOfSections;
+    } else if (self.sections.count == 0) {
+        ++numberOfSections;
     } else {
         numberOfSections = self.sections.count;
     }
@@ -448,6 +535,7 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
         return headerFooterView;
     }
 }
+
 - (void)tableView:(UITableView *)tableView configureView:(UITableViewHeaderFooterView*)headerView forHeaderInSection:(NSInteger)section {
     if ([self isMapSection:section]) {
         return;
@@ -457,7 +545,18 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
         }
 
         if ([headerView isKindOfClass:[MITMobiusShopHeader class]]) {
+            static NSInteger shopButtonOverlayTag = 0xF00F;
             MITMobiusShopHeader *shopHeader = (MITMobiusShopHeader*)headerView;
+            UIButton *shopButtonOverlay = (UIButton*)[shopHeader viewWithTag:shopButtonOverlayTag];
+            if (!shopButtonOverlay) {
+                shopButtonOverlay = [[UIButton alloc] initWithFrame:shopHeader.frame];
+                shopButtonOverlay.translatesAutoresizingMaskIntoConstraints = YES;
+                shopButtonOverlay.autoresizingMask = (UIViewAutoresizingFlexibleHeight | UIViewAutoresizingFlexibleWidth);
+                [shopButtonOverlay addTarget:self action:@selector(tableViewHandleSectionHeaderTap:) forControlEvents:UIControlEventTouchUpInside];
+                [shopHeader addSubview:shopButtonOverlay];
+            }
+
+            [_sectionNumberByButton setObject:@(section) forKey:shopButtonOverlay];
 
             MITMobiusResourcesTableSection *tableSection = self.sections[section];
             shopHeader.shopHours = tableSection.hours;
@@ -487,7 +586,10 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
             [cell.activityView.activityIndicatorView startAnimating];
             return cell;
         } else if (self.sections.count == 0) {
-            return nil;
+            UITableViewCell *cell = (UITableViewCell*)[tableView dequeueReusableCellWithIdentifier:MITMobiusResourceLoadingCellReuseIdentifier forIndexPath:indexPath];
+            cell.textLabel.text = @"No results found";
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
+            return cell;
         } else {
             UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:MITMobiusResourceCellReuseIdentifier forIndexPath:indexPath];
             [self tableView:tableView configureCell:cell forRowAtIndexPath:indexPath];
@@ -500,6 +602,7 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self isMapSection:indexPath.section]) {
+        [self.view layoutIfNeeded];
         CGFloat mapHeight = CGRectGetHeight(self.mapView.frame);
         mapHeight -= _mapViewAspectHeightConstraint.constant;
         return mapHeight;
@@ -552,22 +655,14 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-
-    if ([self isMapSection:indexPath.section]) {
-
-    }
-
     if (!(self.isLoading || self.sections.count == 0)) {
-        [tableView deselectRowAtIndexPath:indexPath animated:YES];
-    }
-
-    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourceWithIdentifier:)]) {
         if (self.showsMap) {
             indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1];
         }
 
         MITMobiusResource *resource = self.sections[indexPath.section][indexPath.row];
-        [self.delegate resourcesViewController:self didSelectResourceWithIdentifier:resource.identifier];
+        self.selectedResource = resource;
+        [self didSelectResource:resource];
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
@@ -580,158 +675,92 @@ NSString* const MITMobiusResourceNoResultsCellReuseIdentifier = @"MITMobiusResou
     }
 }
 
+#pragma mark MITCalloutViewDelegate
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offset
+{
+    /* Do Nothing */
+}
+
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
+{
+    [self didSelectResources:self.selectedResources];
+}
+
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
+{
+    /* Do Nothing */
+}
+
 #pragma mark MKMapViewDelegate
+
+- (MKAnnotationView *)mapView:(MKMapView *)mapView viewForAnnotation:(id<MKAnnotation>)annotation
+{
+    if ([annotation isKindOfClass:[MITMobiusResourcesTableSection class]]) {
+        MITMapPlaceAnnotationView *annotationView = (MITMapPlaceAnnotationView *)[mapView dequeueReusableAnnotationViewWithIdentifier:MITMobiusResourceRoomAnnotationReuseIdentifier];
+        if (!annotationView) {
+            annotationView = [[MITMapPlaceAnnotationView alloc] initWithAnnotation:annotation reuseIdentifier:MITMobiusResourceRoomAnnotationReuseIdentifier];
+        }
+
+        MITMobiusResourcesTableSection *room = (MITMobiusResourcesTableSection *)annotation;
+        NSUInteger index = [self.sections indexOfObject:room] + 1;
+        [annotationView setNumber:index];
+
+        return annotationView;
+    }
+
+    return nil;
+}
+
 - (void)mapView:(MKMapView *)mapView didSelectAnnotationView:(MKAnnotationView *)view
 {
+    MITMobiusResourcesTableSection *mapObject = (MITMobiusResourcesTableSection*)(view.annotation);
+    self.selectedResources = mapObject.resources;
 
+    MITMobiusCalloutContentView *contentView = [[MITMobiusCalloutContentView alloc] init];
+    contentView.roomName = mapObject.title;
+    contentView.backgroundColor = [UIColor clearColor];
+
+    MITMobiusResource *resource = [mapObject.resources firstObject];
+    NSMutableString *machineList = [[NSMutableString alloc] initWithString:resource.name];
+    if (mapObject.resources.count > 1) {
+        [machineList appendFormat:@" + %ld more", (unsigned long)(mapObject.resources.count - 1)];
+    }
+
+    contentView.machineList = machineList;
+
+    if (!self.calloutView) {
+        MITCalloutView *calloutView = [[MITCalloutView alloc] init];
+        calloutView.delegate = self;
+        calloutView.permittedArrowDirections = MITCalloutPermittedArrowDirectionAny;
+
+        self.mapView.mapView.mitCalloutView = calloutView;
+        self.calloutView = calloutView;
+    }
+
+    self.calloutView.contentView = contentView;
+    self.calloutView.contentViewPreferredSize = [contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize];
+    [self.calloutView presentFromRect:view.bounds inView:view withConstrainingView:self.mapView];
+}
+
+- (void)mapView:(MKMapView *)mapView didChangeUserTrackingMode:(MKUserTrackingMode)mode animated:(BOOL)animated
+{
+    if (mode == MKUserTrackingModeNone) {
+        mapView.showsUserLocation = NO;
+        [self recenterMapView];
+    }
+}
+
+- (void)mapView:(MKMapView *)mapView didFailToLocateUserWithError:(NSError *)error
+{
+    mapView.userTrackingMode = MKUserTrackingModeNone;
+    mapView.showsUserLocation = NO;
+    [self recenterMapView];
 }
 
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
-
-}
-
-@end
-
-@implementation MITMobiusResourcesTableSection {
-    BOOL _coordinateNeedsUpdate;
-    CLLocationCoordinate2D _coordinate;
-}
-
-@synthesize hours = _hours;
-@synthesize resources = _resources;
-
-- (instancetype)initWithName:(NSString *)name
-{
-    self = [super init];
-    if (self) {
-        _name = [name copy];
-        _coordinateNeedsUpdate = YES;
-    }
-
-    return self;
-}
-
-- (void)addResource:(MITMobiusResource *)resource
-{
-    NSMutableArray *array = [[NSMutableArray alloc] init];
-    if (_resources) {
-        [array addObjectsFromArray:_resources];
-    }
-
-    [array addObject:resource];
-    _resources = [array copy];
-    _hours = nil;
-    _coordinateNeedsUpdate = YES;
-}
-
-- (NSString*)hours
-{
-    static NSDateFormatter *dateFormatter = nil;
-    static dispatch_once_t token;
-    dispatch_once(&token, ^{
-        dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"HH";
-    });
-
-    if (_hours == nil) {
-        NSDate *currentDate = [NSDate date];
-        NSMutableOrderedSet *dateRanges = [[NSMutableOrderedSet alloc] init];
-        [_resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-            [resource.hours enumerateObjectsUsingBlock:^(MITMobiusResourceHours *resourceHours, BOOL *stop) {
-                NSDate *startDay = [resourceHours.startDate startOfDay];
-                NSDate *endDay = [resourceHours.endDate endOfDay];
-
-                // Check to see if today's date is at least on the proper day (or lies between)
-                // the min/max values of each range of open hours
-                if ([currentDate dateFallsBetweenStartDate:startDay endDate:endDay]) {
-                    NSString *hourRange = [NSString stringWithFormat:@"%@ - %@",[dateFormatter stringFromDate:resourceHours.startDate], [dateFormatter stringFromDate:resourceHours.endDate]];
-                    [dateRanges addObject:hourRange];
-                }
-            }];
-        }];
-
-        _hours = [[dateRanges array] componentsJoinedByString:@", "];
-    }
-
-    return _hours;
-}
-
-- (BOOL)isOpen
-{
-    return [self isOpenForDate:[NSDate date]];
-}
-
-- (BOOL)isOpenForDate:(NSDate*)date
-{
-    NSParameterAssert(date);
-
-    __block BOOL isOpen = NO;
-    [_resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-        [resource.hours enumerateObjectsUsingBlock:^(MITMobiusResourceHours *resourceHours, BOOL *stop) {
-            isOpen = [date dateFallsBetweenStartDate:resourceHours.startDate endDate:resourceHours.endDate];
-
-            if (isOpen) {
-                (*stop) = YES;
-            }
-        }];
-
-        if (isOpen) {
-            (*stop) = YES;
-        }
-    }];
-
-    return isOpen;
-}
-
-- (MITMobiusResource*)objectAtIndexedSubscript:(NSUInteger)idx
-{
-    return self.resources[idx];
-}
-
-#pragma mark MKAnnotation
-- (CLLocationCoordinate2D)coordinate
-{
-    if (_coordinateNeedsUpdate) {
-        if (self.resources.count > 0) {
-            __block MKMapPoint centroidPoint = MKMapPointMake(0, 0);
-            __block NSUInteger pointCount = 0;
-
-            [self.resources enumerateObjectsUsingBlock:^(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
-                CLLocationCoordinate2D coordinate = resource.coordinate;
-                if (CLLocationCoordinate2DIsValid(coordinate)) {
-                    MKMapPoint mapCoordinate = MKMapPointForCoordinate(coordinate);
-                    centroidPoint.x += mapCoordinate.x;
-                    centroidPoint.y += mapCoordinate.y;
-                    ++pointCount;
-                }
-            }];
-
-            if (pointCount > 0) {
-                centroidPoint.x /= (double)(pointCount);
-                centroidPoint.y /= (double)(pointCount);
-                _coordinate = MKCoordinateForMapPoint(centroidPoint);
-            } else {
-                _coordinate = kCLLocationCoordinate2DInvalid;
-            }
-        } else {
-            _coordinate = kCLLocationCoordinate2DInvalid;
-        }
-
-        _coordinateNeedsUpdate = NO;
-    }
-
-    return _coordinate;
-}
-
-- (NSString*)title
-{
-    return self.name;
-}
-
-- (NSString*)subtitle
-{
-    return self.hours;
+    [self.calloutView dismissCallout];
+    self.selectedResources = nil;
 }
 
 @end

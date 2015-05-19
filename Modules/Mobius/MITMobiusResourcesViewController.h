@@ -1,13 +1,12 @@
 #import <UIKit/UIKit.h>
 #import <CoreData/CoreData.h>
 #import "MITMobiusDetailContainerViewController.h"
+#import "MITTiledMapView.h"
 
-@class MITTiledMapView;
 @class MITMobiusResource;
-@protocol MITMobiusResourcesDataSource;
 @protocol MITMobiusResourcesDelegate;
 
-@interface MITMobiusResourcesViewController : UIViewController <MITMobiusDetailPagingDelegate>
+@interface MITMobiusResourcesViewController : UIViewController
 @property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 
 @property (nonatomic,weak) IBOutlet MITTiledMapView *mapView;
@@ -33,9 +32,10 @@
 
 @protocol MITMobiusResourcesDelegate <NSObject>
 @required
-- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourceWithIdentifier:(NSString*)identifier;
+- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourceWithFetchRequest:(NSFetchRequest*)fetchRequest;
 
 @optional
+- (void)resourcesViewController:(MITMobiusResourcesViewController *)viewController didSelectResourcesWithFetchRequest:(NSFetchRequest*)fetchRequest;
 - (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
 - (void)resourceViewControllerDidShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
 - (void)resourceViewControllerWillHideFullScreenMap:(MITMobiusResourcesViewController*)viewController;

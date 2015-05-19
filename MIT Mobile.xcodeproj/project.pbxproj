@@ -282,11 +282,11 @@
 		2C1A45E9135DD146006A2EE4 /* FacilitiesModule.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C1A45E8135DD146006A2EE4 /* FacilitiesModule.m */; };
 		2C20332F135F64C00033E80A /* FacilitiesRootViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C20332D135F64C00033E80A /* FacilitiesRootViewController.m */; };
 		2C203330135F64C00033E80A /* FacilitiesRootViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2C20332E135F64C00033E80A /* FacilitiesRootViewController.xib */; };
-		2C249C1D1AF7F928004D7A70 /* MITMobiusResourcesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */; };
 		2C249BE21AF2BF8E004D7A70 /* MITShuttleStopsPageViewControllerDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = A56A57571ABBD2D700C4918A /* MITShuttleStopsPageViewControllerDataSource.m */; };
 		2C249BE31AF2BFE3004D7A70 /* MITMobiusSearchFilterStrip.m in Sources */ = {isa = PBXBuildFile; fileRef = A56D729B1ADDA654008948D7 /* MITMobiusSearchFilterStrip.m */; };
 		2C249BE41AF2C029004D7A70 /* MITMobiusSearchFilterStripCell.m in Sources */ = {isa = PBXBuildFile; fileRef = A56D729E1ADDA737008948D7 /* MITMobiusSearchFilterStripCell.m */; };
 		2C249BE51AF2C029004D7A70 /* MITMobiusSearchFilterStripCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A56D729F1ADDA737008948D7 /* MITMobiusSearchFilterStripCell.xib */; };
+		2C249C1D1AF7F928004D7A70 /* MITMobiusResourcesViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */; };
 		2C282A631A5317BC001D4D0E /* MITShuttleRoutesDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C282A621A5317BC001D4D0E /* MITShuttleRoutesDataSource.m */; };
 		2C2CC2141A72E0E4008E3CA5 /* MITMobiusResourceDataSource.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC2131A72E0E4008E3CA5 /* MITMobiusResourceDataSource.m */; };
 		2C2CC2621A72E466008E3CA5 /* MITMobiusResourceOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2C2CC2611A72E466008E3CA5 /* MITMobiusResourceOwner.m */; };
@@ -366,6 +366,7 @@
 		2CE1B55418B6FBC800C5750B /* NewsLoadMoreTableCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2CE1B55318B6FBC800C5750B /* NewsLoadMoreTableCell.xib */; };
 		2CE20DA418885F2C0010FA49 /* MITDisclosureHeaderView.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */; };
 		2CE355661959F673004011C5 /* MITNewsListViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE355651959F673004011C5 /* MITNewsListViewController.m */; };
+		2CE4CE1B1B0BB7ED00D7172E /* MITMobiusResourcesTableSection.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE4CE1A1B0BB7ED00D7172E /* MITMobiusResourcesTableSection.m */; };
 		2CE6AC6613BDFB2C0043CFBE /* FacilitiesPropertyOwner.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */; };
 		2CE6AC6913BE007C0043CFBE /* FacilitiesLeasedViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6AC6813BE007C0043CFBE /* FacilitiesLeasedViewController.m */; };
 		2CE6BE39182AE1D5005C5047 /* MITMapCategory.m in Sources */ = {isa = PBXBuildFile; fileRef = 2CE6BE38182AE1D5005C5047 /* MITMapCategory.m */; };
@@ -1379,6 +1380,8 @@
 		2CE20DA318885F2C0010FA49 /* MITDisclosureHeaderView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITDisclosureHeaderView.m; sourceTree = "<group>"; };
 		2CE355641959F673004011C5 /* MITNewsListViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MITNewsListViewController.h; sourceTree = "<group>"; };
 		2CE355651959F673004011C5 /* MITNewsListViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = MITNewsListViewController.m; sourceTree = "<group>"; };
+		2CE4CE191B0BB7ED00D7172E /* MITMobiusResourcesTableSection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MITMobiusResourcesTableSection.h; path = Model/MITMobiusResourcesTableSection.h; sourceTree = "<group>"; };
+		2CE4CE1A1B0BB7ED00D7172E /* MITMobiusResourcesTableSection.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = MITMobiusResourcesTableSection.m; path = Model/MITMobiusResourcesTableSection.m; sourceTree = "<group>"; };
 		2CE6AC6413BDFB2C0043CFBE /* FacilitiesPropertyOwner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesPropertyOwner.h; sourceTree = "<group>"; };
 		2CE6AC6513BDFB2C0043CFBE /* FacilitiesPropertyOwner.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = FacilitiesPropertyOwner.m; sourceTree = "<group>"; };
 		2CE6AC6713BE007C0043CFBE /* FacilitiesLeasedViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FacilitiesLeasedViewController.h; sourceTree = "<group>"; };
@@ -3414,8 +3417,7 @@
 				DEC478CD1ADEFAC0001AD912 /* MITImageGalleryViewController.xib */,
 				DEC478D51ADF7A6A001AD912 /* MITImageScrollViewController.h */,
 				DEC478D61ADF7A6A001AD912 /* MITImageScrollViewController.m */,
-				2C249C1B1AF7F928004D7A70 /* MITMobiusResourcesViewController.h */,
-				2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */,
+				2CE4CE171B0BB7AC00D7172E /* MITMobiusResourcesViewController */,
 			);
 			name = "View Controllers";
 			sourceTree = "<group>";
@@ -3526,6 +3528,17 @@
 				2C0A336A1355CEF300786493 /* QRReaderImageTransformer.m */,
 			);
 			path = Model;
+			sourceTree = "<group>";
+		};
+		2CE4CE171B0BB7AC00D7172E /* MITMobiusResourcesViewController */ = {
+			isa = PBXGroup;
+			children = (
+				2C249C1B1AF7F928004D7A70 /* MITMobiusResourcesViewController.h */,
+				2C249C1C1AF7F928004D7A70 /* MITMobiusResourcesViewController.m */,
+				2CE4CE191B0BB7ED00D7172E /* MITMobiusResourcesTableSection.h */,
+				2CE4CE1A1B0BB7ED00D7172E /* MITMobiusResourcesTableSection.m */,
+			);
+			name = MITMobiusResourcesViewController;
 			sourceTree = "<group>";
 		};
 		2CEC6A531A01461800867A66 /* dining */ = {
@@ -5837,6 +5850,7 @@
 				806205401A7AAF1A004BD08A /* NSTimer+MITBlockTimer.m in Sources */,
 				2CD1AE8319520E40003D7601 /* MITCollectionViewGridLayoutSection.m in Sources */,
 				A5FA037019D3124C0063FF2C /* MITLibrariesSearchController.m in Sources */,
+				2CE4CE1B1B0BB7ED00D7172E /* MITMobiusResourcesTableSection.m in Sources */,
 				806205EB1A7ACEC1004BD08A /* MITMobileRouteConstants.m in Sources */,
 				80C5D9E01A111A3E00E63FDD /* MITLibrariesFormSheetElementDepartment.m in Sources */,
 				48B8129A15E42B1700E791F9 /* LinksModule.m in Sources */,
