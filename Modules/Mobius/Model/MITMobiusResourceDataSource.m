@@ -28,6 +28,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 - (instancetype)init
 {
     NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.parentContext = [MITCoreDataController defaultController].mainQueueContext;
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
@@ -85,6 +86,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 {
     if (query) {
         _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext objectWithID:query.objectID];
+        [self.managedObjectContext refreshObject:_query mergeChanges:NO];
     } else {
         _query = nil;
     }
