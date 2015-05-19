@@ -34,7 +34,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 static NSString * const MITMobiusQuickSearchHeaderTableViewCellIdentifier = @"MITMobiusQuickSearchHeaderTableViewCellIdentifier";
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate, MITMobiusResourcesDelegate>
 
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
 @property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
@@ -83,31 +83,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     tableView.backgroundColor = [UIColor colorWithRed:239.0/255.0 green:239.0/255.0 blue:244.0/255.0 alpha:1];
 }
 
-- (void)viewDidLayoutSubviews
-{
-    [super viewDidLayoutSubviews];
-}
-
-- (void)viewDidAppear:(BOOL)animated
-{
-    [super viewDidAppear:animated];
-}
-
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
     [self updateViewState:animated];
-
-    if (self.resourcesViewController.showsMapFullScreen) {
-        [self.navigationController setToolbarHidden:NO animated:animated];
-    } else {
-        [self.navigationController setToolbarHidden:YES animated:animated];
-    }
-}
-
-- (void)didReceiveMemoryWarning {
-    [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 #pragma mark Data Loading/Updating
@@ -310,7 +289,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                         self.contentContainerView.alpha = 0;
                         self.recentSearchViewController.view.alpha = 0.;
                         self.strip.alpha = 0.;
-                        self.navigationController.toolbarHidden = NO;
                     } completion:^(BOOL finished) {
                         self.contentContainerView.hidden = YES;
                         self.strip.hidden = YES;
@@ -346,16 +324,17 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSTimeInterval animationDuration = (animated ? MITMobiusRootPhoneDefaultAnimationDuration : 0.);
     [self updateNavigationItem:animated];
     [self.searchBar setShowsCancelButton:NO animated:animated];
+
     if (self.resourcesViewController.showsMapFullScreen) {
+        UIImage *image = [UIImage imageNamed:MITImageBarButtonList];
+        UIBarButtonItem *dismissMapButton = [[UIBarButtonItem alloc] initWithImage:image style:UIBarButtonItemStylePlain target:self action:@selector(dismissFullScreenMap:)];
+
+        self.toolbarItems = @[self.resourcesViewController.mapView.userLocationButton,[UIBarButtonItem flexibleSpace],dismissMapButton];
+
         [self.navigationController setToolbarHidden:NO animated:animated];
     } else {
+        self.toolbarItems = nil;
         [self.navigationController setToolbarHidden:YES animated:animated];
-    }
-    
-    if (self.dataSource.query.options.count > 0) {
-        self.filterStripHeightConstraint.constant = 34.;
-    } else {
-        self.filterStripHeightConstraint.constant = 0.;
     }
 
     [self.view setNeedsUpdateConstraints];
@@ -363,9 +342,13 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
     self.contentContainerView.hidden = NO;
     self.strip.hidden = NO;
-    self.strip.backgroundColor = [UIColor greenColor];
-    self.contentContainerView.backgroundColor = [UIColor blueColor];
-    [self.strip.superview bringSubviewToFront:self.strip];
+    [self.view bringSubviewToFront:self.strip];
+
+    if (self.dataSource.query.options.count > 0) {
+        self.filterStripHeightConstraint.constant = 34.;
+    } else {
+        self.filterStripHeightConstraint.constant = 0.;
+    }
 
     [UIView transitionWithView:self.view
                       duration:animationDuration
@@ -381,6 +364,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                     } completion:^(BOOL finished) {
                         self.quickLookupTableView.hidden = YES;
                         self.recentSearchViewController.view.hidden = YES;
+                        [self.strip reloadData];
                     }];
 }
 
@@ -418,6 +402,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     MITMobiusResourcesViewController *resourcesViewController = [[MITMobiusResourcesViewController alloc] init];
     resourcesViewController.showsMap = YES;
     resourcesViewController.showsMapFullScreen = NO;
+    resourcesViewController.delegate = self;
 
     NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
     managedObjectContext.parentContext = self.managedObjectContext;
@@ -726,8 +711,31 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     return string;
 }
 
-#pragma mark UITableView Methods
+#pragma mark MITMobiusResourcesDelegate
+- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourcesWithFetchRequest:(NSFetchRequest*)fetchRequest
+{
+    if (fetchRequest) {
+        NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
 
+        if (fetchedObjects) {
+            MITMobiusDetailContainerViewController *detailsViewController = [[MITMobiusDetailContainerViewController alloc] init];
+            detailsViewController.resources = fetchedObjects;
+            [self.navigationController pushViewController:detailsViewController animated:YES];
+        }
+    }
+}
+
+- (void)resourceViewControllerWillHideFullScreenMap:(MITMobiusResourcesViewController *)viewController
+{
+    [self updateViewState:YES];
+}
+
+- (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController *)viewController
+{
+    [self updateViewState:YES];
+}
+
+#pragma mark UITableView Methods
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
     return 3;
