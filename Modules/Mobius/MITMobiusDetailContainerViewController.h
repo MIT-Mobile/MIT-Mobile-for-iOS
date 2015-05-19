@@ -4,8 +4,9 @@
 @protocol MITMobiusDetailPagingDelegate;
 
 @interface MITMobiusDetailContainerViewController : UIViewController
-@property(nonatomic,weak) id<MITMobiusDetailPagingDelegate> delegate;
-@property(nonatomic,strong) MITMobiusResource *currentResource;
+@property (nonatomic,weak) id<MITMobiusDetailPagingDelegate> delegate;
+@property (nonatomic,weak) MITMobiusResource *currentResource;
+@property (nonatomic,copy) NSArray *resources;
 
 - (instancetype)initWithResource:(MITMobiusResource *)resource;
 
