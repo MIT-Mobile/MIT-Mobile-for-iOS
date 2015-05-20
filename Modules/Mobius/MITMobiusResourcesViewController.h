@@ -32,10 +32,9 @@
 
 @protocol MITMobiusResourcesDelegate <NSObject>
 @required
-- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourceWithFetchRequest:(NSFetchRequest*)fetchRequest;
+- (void)resourcesViewController:(MITMobiusResourcesViewController *)viewController didSelectResourcesWithIdentifiers:(NSArray*)resources;
 
 @optional
-- (void)resourcesViewController:(MITMobiusResourcesViewController *)viewController didSelectResourcesWithFetchRequest:(NSFetchRequest*)fetchRequest;
 - (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
 - (void)resourceViewControllerDidShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;
 - (void)resourceViewControllerWillHideFullScreenMap:(MITMobiusResourcesViewController*)viewController;

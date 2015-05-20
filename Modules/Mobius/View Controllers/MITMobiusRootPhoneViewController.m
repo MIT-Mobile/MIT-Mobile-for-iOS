@@ -712,27 +712,32 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 }
 
 #pragma mark MITMobiusResourcesDelegate
-- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourcesWithFetchRequest:(NSFetchRequest*)fetchRequest
+- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourcesWithIdentifiers:(NSArray*)resourceIdentifiers
 {
-    if (fetchRequest) {
-        NSArray *fetchedObjects = [self.managedObjectContext executeFetchRequest:fetchRequest error:nil];
+    NSArray *resources = [self.dataSource.resources copy];
+    resources = [resources sortedArrayUsingComparator:^NSComparisonResult(MITMobiusResource *resource1, MITMobiusResource *resource2) {
+        NSUInteger index1 = [resourceIdentifiers indexOfObject:resource1.identifier];
+        NSUInteger index2 = [resourceIdentifiers indexOfObject:resource2.identifier];
+        return [@(index1) compare:@(index2)];
+    }];
 
-        if (fetchedObjects) {
-            MITMobiusDetailContainerViewController *detailsViewController = [[MITMobiusDetailContainerViewController alloc] init];
-            detailsViewController.resources = fetchedObjects;
-            [self.navigationController pushViewController:detailsViewController animated:YES];
-        }
+    resources = [resources filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"identifier IN %@", resourceIdentifiers]];
+
+    if (resources.count > 0) {
+        MITMobiusDetailContainerViewController *detailsViewController = [[MITMobiusDetailContainerViewController alloc] init];
+        detailsViewController.resources = resources;
+        [self.navigationController pushViewController:detailsViewController animated:YES];
     }
 }
 
 - (void)resourceViewControllerWillHideFullScreenMap:(MITMobiusResourcesViewController *)viewController
 {
-    [self updateViewState:YES];
+    [self.navigationController setToolbarHidden:YES animated:YES];
 }
 
 - (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController *)viewController
 {
-    [self updateViewState:YES];
+    [self.navigationController setToolbarHidden:NO animated:YES];
 }
 
 #pragma mark UITableView Methods

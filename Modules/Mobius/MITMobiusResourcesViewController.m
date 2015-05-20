@@ -444,11 +444,9 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
 - (void)didSelectResources:(NSArray*)resources
 {
-    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourcesWithFetchRequest:)]) {
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusResource entityName]];
-        NSArray *resourcesObjectIDs = [resources valueForKey:@"identifier"];
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"identifier IN %@",resourcesObjectIDs];
-        [self.delegate resourcesViewController:self didSelectResourcesWithFetchRequest:fetchRequest];
+    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourcesWithIdentifiers:)]) {
+        NSArray *identifiers = [[resources valueForKey:@"identifier"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != %@",[NSNull null]]];
+        [self.delegate resourcesViewController:self didSelectResourcesWithIdentifiers:identifiers];
     }
 }
 
