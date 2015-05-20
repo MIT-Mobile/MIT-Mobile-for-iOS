@@ -14,6 +14,7 @@
 #import "MITMobiusResourceTableViewCell.h"
 #import "MITMobiusResourceView.h"
 #import "MITActivityTableViewCell.h"
+#import "MITMobiusNoResultsCell.h"
 
 // Map-related classes
 #import "MITMapPlaceAnnotationView.h"
@@ -54,44 +55,71 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     return self;
 }
 
-- (void)loadView
-{
-    UIView *view = [[UIView alloc] init];
-    self.view = view;
+- (void)viewDidLoad {
+    [super viewDidLoad];
 
-    // Setup the table view
     UITableView *tableView = [[UITableView alloc] init];
     tableView.translatesAutoresizingMaskIntoConstraints = NO;
     tableView.dataSource = self;
     tableView.delegate = self;
-    [view addSubview:tableView];
+    [self.view addSubview:tableView];
     self.tableView = tableView;
 
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tableView]|"
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|[tableView]|"
                                                                  options:0
                                                                  metrics:nil
                                                                    views:@{@"tableView" : tableView}]];
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView]|"
+    [self.view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|[tableView]|"
                                                                  options:0
                                                                  metrics:nil
                                                                    views:@{@"tableView" : tableView}]];
+    [self setupMapView];
 
-    // Setup the map view
-    MITTiledMapView *mapView = [[MITTiledMapView alloc] init];
+    _sectionNumberByButton = [NSMapTable weakToWeakObjectsMapTable];
+
+    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
+    [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:MITMobiusResourceCellReuseIdentifier];
+
+    UINib *noResultsCellNib = [UINib nibWithNibName:@"MITMobiusNoResultsCell" bundle:nil];
+    [self.tableView registerNib:noResultsCellNib forCellReuseIdentifier:MITMobiusResourceNoResultsCellReuseIdentifier];
+    [self.tableView registerNib:[MITMobiusShopHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusResourceShopHeaderReuseIdentifier];
+
+    [self.tableView registerClass:[MITActivityTableViewCell class] forCellReuseIdentifier:MITMobiusResourceLoadingCellReuseIdentifier];
+}
+
+- (void)setupMapView
+{
+    MITTiledMapView *mapView = [[MITTiledMapView alloc] initWithFrame:CGRectMake(0, 0, CGRectGetWidth(self.tableView.frame), 0)];
     mapView.translatesAutoresizingMaskIntoConstraints = NO;
     mapView.userInteractionEnabled = NO;
     [mapView setMapDelegate:self];
-    [view addSubview:mapView];
+    [self.view addSubview:mapView];
     self.mapView = mapView;
 
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"V:|-(0)-[mapView]-(>=0)-|"
-                                                                 options:0
-                                                                 metrics:nil
-                                                                   views:@{@"mapView" : mapView}]];
-    [view addConstraints:[NSLayoutConstraint constraintsWithVisualFormat:@"H:|-(0)-[mapView]-(0)-|"
-                                                                 options:0
-                                                                 metrics:nil
-                                                                   views:@{@"mapView" : mapView}]];
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                          attribute:NSLayoutAttributeTop
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.view
+                                                          attribute:NSLayoutAttributeTop
+                                                         multiplier:1.
+                                                           constant:0.]];
+
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                          attribute:NSLayoutAttributeWidth
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.tableView
+                                                          attribute:NSLayoutAttributeWidth
+                                                         multiplier:1.
+                                                           constant:0.]];
+
+    [self.view addConstraint:[NSLayoutConstraint constraintWithItem:self.mapView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                          relatedBy:NSLayoutRelationEqual
+                                                             toItem:self.tableView
+                                                          attribute:NSLayoutAttributeCenterX
+                                                         multiplier:1.
+                                                           constant:0.]];
+
     NSLayoutConstraint *mapHeightConstraint = [NSLayoutConstraint constraintWithItem:mapView
                                                                            attribute:NSLayoutAttributeHeight
                                                                            relatedBy:NSLayoutRelationEqual
@@ -102,6 +130,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     mapHeightConstraint.priority = UILayoutPriorityDefaultHigh;
     [mapView addConstraint:mapHeightConstraint];
     _mapViewAspectHeightConstraint = mapHeightConstraint;
+
 
     NSLayoutConstraint *mapFixedHeightConstraint = [NSLayoutConstraint constraintWithItem:mapView
                                                                                 attribute:NSLayoutAttributeHeight
@@ -114,21 +143,15 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [mapView addConstraint:mapFixedHeightConstraint];
     _mapViewFullScreenHeightConstraint = mapFixedHeightConstraint;
 
+
     UITapGestureRecognizer *gestureRecognizer = [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleShowMapFullScreenGesture:)];
+    gestureRecognizer.cancelsTouchesInView = NO;
+    gestureRecognizer.delaysTouchesBegan = NO;
+    gestureRecognizer.delaysTouchesEnded = NO;
     self.mapFullScreenGesture = gestureRecognizer;
-    [view addGestureRecognizer:gestureRecognizer];
-}
+    [self.view addGestureRecognizer:gestureRecognizer];
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-
-    _sectionNumberByButton = [NSMapTable weakToWeakObjectsMapTable];
-
-    UINib *resourceTableViewCellNib = [UINib nibWithNibName:@"MITMobiusResourceTableViewCell" bundle:nil];
-    [self.tableView registerNib:resourceTableViewCellNib forDynamicCellReuseIdentifier:MITMobiusResourceCellReuseIdentifier];
-    [self.tableView registerClass:[MITActivityTableViewCell class] forCellReuseIdentifier:MITMobiusResourceLoadingCellReuseIdentifier];
-    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:MITMobiusResourceNoResultsCellReuseIdentifier];
-    [self.tableView registerNib:[MITMobiusShopHeader searchHeaderNib] forHeaderFooterViewReuseIdentifier:MITMobiusResourceShopHeaderReuseIdentifier];
+    [self.view setNeedsLayout];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -138,24 +161,18 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [self reloadData];
 }
 
-- (void)updateViewConstraints
-{
-    _mapViewAspectHeightConstraint.constant = _mapVerticalOffset;
-    [super updateViewConstraints];
-}
-
 - (void)updateMapWithContentOffset:(CGPoint)contentOffset
 {
     CGFloat yOffset = contentOffset.y;
+    
     if (yOffset <= 0) {
-        self.mapView.layer.transform = CATransform3DIdentity;
-        _mapVerticalOffset = -yOffset;
+        self.mapView.transform = CGAffineTransformMakeTranslation(0, 0);
+        _mapViewAspectHeightConstraint.constant = -yOffset;
     } else {
-        self.mapView.layer.transform = CATransform3DMakeTranslation(0, -yOffset, 0);
-        _mapVerticalOffset = 0.;
+        self.mapView.transform = CGAffineTransformMakeTranslation(0, -yOffset);
+        _mapViewAspectHeightConstraint.constant = 0.;
     }
 
-    [self.view setNeedsUpdateConstraints];
     [self.view setNeedsLayout];
 }
 
@@ -194,6 +211,12 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                 _resources = [self.managedObjectContext transferManagedObjects:resources];
             }];
         }
+    }
+
+    if (_resources.count == 0) {
+        self.tableView.scrollEnabled = NO;
+    } else {
+        self.tableView.scrollEnabled = YES;
     }
 
     if ([self isViewLoaded]) {
@@ -452,6 +475,12 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     if (_loading != loading) {
         _loading = loading;
 
+        if (_loading) {
+            self.tableView.scrollEnabled = NO;
+        } else {
+            self.tableView.scrollEnabled = YES;
+        }
+
         [self.tableView reloadData];
     }
 }
@@ -470,6 +499,38 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 }
 
 #pragma mark - Table view data source
+- (BOOL)isLoadingCellAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSInteger section = 0;
+    if (self.showsMap) {
+        ++section;
+    }
+
+    if (!self.isLoading) {
+        return NO;
+    } else if (indexPath.row == 0 && indexPath.section == section) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
+- (BOOL)isNoResultsCellAtIndexPath:(NSIndexPath*)indexPath
+{
+    NSInteger section = 0;
+    if (self.showsMap) {
+        ++section;
+    }
+
+    if (self.resources.count != 0) {
+        return NO;
+    } else if (indexPath.row == 0 && indexPath.section == section) {
+        return YES;
+    } else {
+        return NO;
+    }
+}
+
 - (BOOL)isMapSection:(NSInteger)section
 {
     return (self.showsMap && (section == 0));
@@ -477,6 +538,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
     NSUInteger numberOfSections = 0;
+
     if (self.isLoading) {
         ++numberOfSections;
     } else if (self.sections.count == 0) {
@@ -581,12 +643,13 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
         cell.contentView.backgroundColor = [UIColor clearColor];
         return cell;
     } else {
-        if (self.isLoading) {
+        if ([self isLoadingCellAtIndexPath:indexPath]) {
             MITActivityTableViewCell *cell = (MITActivityTableViewCell*)[tableView dequeueReusableCellWithIdentifier:MITMobiusResourceLoadingCellReuseIdentifier forIndexPath:indexPath];
+            cell.selectionStyle = UITableViewCellSelectionStyleNone;
             [cell.activityView.activityIndicatorView startAnimating];
             return cell;
-        } else if (self.sections.count == 0) {
-            UITableViewCell *cell = (UITableViewCell*)[tableView dequeueReusableCellWithIdentifier:MITMobiusResourceLoadingCellReuseIdentifier forIndexPath:indexPath];
+        } else if ([self isNoResultsCellAtIndexPath:indexPath]) {
+            MITMobiusNoResultsCell *cell = (MITMobiusNoResultsCell*)[tableView dequeueReusableCellWithIdentifier:MITMobiusResourceNoResultsCellReuseIdentifier forIndexPath:indexPath];
             cell.textLabel.text = @"No results found";
             cell.selectionStyle = UITableViewCellSelectionStyleNone;
             return cell;
@@ -602,14 +665,10 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if ([self isMapSection:indexPath.section]) {
-        [self.view layoutIfNeeded];
         CGFloat mapHeight = CGRectGetHeight(self.mapView.frame);
-        mapHeight -= _mapViewAspectHeightConstraint.constant;
-        return mapHeight;
-    } else if (self.isLoading) {
-        return 44.;
-    } else if (self.sections.count == 0) {
-        return 44.;
+        return mapHeight - _mapViewAspectHeightConstraint.constant;
+    } else if ([self isLoadingCellAtIndexPath:indexPath] || [self isNoResultsCellAtIndexPath:indexPath]) {
+        return CGRectGetHeight(self.tableView.frame) - CGRectGetHeight(self.mapView.frame);
     } else {
         return [tableView minimumHeightForCellWithReuseIdentifier:MITMobiusResourceCellReuseIdentifier atIndexPath:indexPath];
     }
@@ -639,6 +698,8 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             } else {
                 [resourceTableViewCell.resourceView setStatus:MITMobiusResourceStatusUnknown];
             }
+
+            resourceTableViewCell.selectionStyle = UITableViewCellSelectionStyleDefault;
         }
     }
 }
