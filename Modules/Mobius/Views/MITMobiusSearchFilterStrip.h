@@ -7,6 +7,7 @@
 
 @property (nonatomic, weak) id<MITMobiusSearchFilterStripDataSource> dataSource;
 @property (nonatomic, weak) id<MITMobiusSearchFilterStripDelegate> delegate;
+@property (nonatomic, readonly, assign) NSInteger numberOfFilters;
 
 - (void)reloadData;
 
