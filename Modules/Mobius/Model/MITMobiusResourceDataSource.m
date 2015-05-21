@@ -21,6 +21,10 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @property (nonatomic,copy) NSString *customField;
 @property (nonatomic,copy) NSString *customValue;
+
+- (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 @end
 
 @implementation MITMobiusResourceDataSource
