@@ -58,7 +58,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
 
     [mainQueueContext performBlockAndWait:^{
-        if ([self.resourceObjectIdentifiers count]) {
+        if (self.resourceObjectIdentifiers) {
             NSMutableArray *mutableResources = [[NSMutableArray alloc] init];
             [self.resourceObjectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
                 NSManagedObject *object = [mainQueueContext objectWithID:objectID];
