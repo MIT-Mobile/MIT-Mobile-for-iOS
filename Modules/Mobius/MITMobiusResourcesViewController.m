@@ -377,6 +377,8 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
+                                 
+                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = NO;
                                  self.mapView.userInteractionEnabled = YES;
@@ -397,6 +399,8 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
+                                 
+                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = YES;
                                  self.mapView.userInteractionEnabled = NO;
