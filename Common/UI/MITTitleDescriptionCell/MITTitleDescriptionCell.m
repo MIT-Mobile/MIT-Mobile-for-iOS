@@ -36,7 +36,7 @@
     self.titleLabel.text = title;
     self.descriptionLabel.text = description;
     [self setNeedsUpdateConstraints];
-    [self updateConstraintsIfNeeded];
+    [self setNeedsLayout];
 }
 
 - (void)layoutSubviews
