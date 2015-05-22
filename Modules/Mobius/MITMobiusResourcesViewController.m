@@ -486,14 +486,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 #pragma mark UI Actions
 - (IBAction)tableViewHandleSectionHeaderTap:(UIButton*)sender
 {
-    NSNumber *sectionIndex = [_sectionNumberByButton objectForKey:sender];
-    if (sectionIndex) {
-        NSUInteger section = [sectionIndex integerValue];
-        MITMobiusResourcesTableSection *tableSection = self.sections[section];
-
-        self.selectedResources = tableSection.resources;
-        [self didSelectResources:tableSection.resources];
-    }
+    /* Do Nothing */
 }
 
 #pragma mark - Table view data source
