@@ -46,8 +46,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 @property(nonatomic,weak) MITMobiusRecentSearchController *recentSearchViewController;
 @property(nonatomic,weak) UIView *searchBarContainer;
 @property(nonatomic,weak) UISearchBar *searchBar;
+
 @property(nonatomic,getter=isSearching) BOOL searching;
 @property(nonatomic,getter=isLoading) BOOL loading;
+
 @property(nonatomic,strong) NSTimer *searchSuggestionsTimer;
 
 @property (nonatomic, copy) NSDictionary *rooms;
@@ -571,24 +573,44 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar
 {
-    if ([self didPerformSearch]) {
-        searchBar.text = self.dataSource.queryString;
-        [self showResultsView:YES];
-    } else {
-        searchBar.text = nil;
-        [self showInitialView:YES];
+    if (self.isSearching) {
+        self.searching = NO;
+        [searchBar resignFirstResponder];
+        
+        if ([self didPerformSearch]) {
+            switch (self.dataSource.queryType) {
+                case MITMobiusResourceSearchTypeComplexQuery:
+                case MITMobiusResourceSearchTypeQuery:
+                    searchBar.text = self.dataSource.queryString;
+                    break;
+                    
+                default:
+                    searchBar.text = nil;
+            }
+            
+            [self showResultsView:YES];
+        } else {
+            searchBar.text = nil;
+            [self showInitialView:YES];
+        }
     }
 }
 
 - (void)searchBarTextDidEndEditing:(UISearchBar *)searchBar
 {
-    self.searching = NO;
+    if (self.isSearching) {
+        self.searching = NO;
+        [self showResultsView:YES];
+    }
 }
 
 - (void)searchBarSearchButtonClicked:(UISearchBar *)searchBar
 {
-    [searchBar resignFirstResponder];
-    [self reloadDataSourceForSearch:searchBar.text completion:nil];
+    if (self.isSearching) {
+        self.searching = NO;
+        [searchBar resignFirstResponder];
+        [self reloadDataSourceForSearch:searchBar.text completion:nil];
+    }
 }
 
 - (NSDictionary*)rooms
