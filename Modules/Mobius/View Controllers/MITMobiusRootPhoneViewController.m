@@ -746,7 +746,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 }
 
 #pragma mark MITMobiusResourcesDelegate
-- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourcesWithIdentifiers:(NSArray*)resourceIdentifiers
+- (void)resourcesViewController:(MITMobiusResourcesViewController*)viewController didSelectResourcesWithIdentifiers:(NSArray*)resourceIdentifiers selectedResource:(NSString *)selectedResourceIdentifier
 {
     NSArray *resources = [self.dataSource.resources copy];
     resources = [resources sortedArrayUsingComparator:^NSComparisonResult(MITMobiusResource *resource1, MITMobiusResource *resource2) {
@@ -758,8 +758,19 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     resources = [resources filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"identifier IN %@", resourceIdentifiers]];
 
     if (resources.count > 0) {
+        NSInteger selectedIndex = [resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *resource, NSUInteger idx, BOOL *stop) {
+            return [resource.identifier isEqualToString:selectedResourceIdentifier];
+        }];
+        
+        MITMobiusResource *selectedResource = nil;
+        if (selectedIndex != NSNotFound) {
+            selectedResource = resources[selectedIndex];
+        }
+        
         MITMobiusDetailContainerViewController *detailsViewController = [[MITMobiusDetailContainerViewController alloc] init];
         detailsViewController.resources = resources;
+        detailsViewController.currentResource = selectedResource;
+        
         [self.navigationController pushViewController:detailsViewController animated:YES];
     }
 }

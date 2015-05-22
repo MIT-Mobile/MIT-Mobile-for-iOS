@@ -32,7 +32,7 @@
 
 @protocol MITMobiusResourcesDelegate <NSObject>
 @required
-- (void)resourcesViewController:(MITMobiusResourcesViewController *)viewController didSelectResourcesWithIdentifiers:(NSArray*)resources;
+- (void)resourcesViewController:(MITMobiusResourcesViewController *)viewController didSelectResourcesWithIdentifiers:(NSArray*)resourceIdentifiers selectedResource:(NSString*)selectedResourceIdentifier;
 
 @optional
 - (void)resourceViewControllerWillShowFullScreenMap:(MITMobiusResourcesViewController*)viewController;

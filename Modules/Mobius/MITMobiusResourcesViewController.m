@@ -439,14 +439,19 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
 - (void)didSelectResource:(MITMobiusResource*)resource
 {
-    [self didSelectResources:@[resource]];
+    [self didSelectResource:resource inResources:@[resource]];
 }
 
-- (void)didSelectResources:(NSArray*)resources
+- (void)didSelectResources:(NSArray*)array
 {
-    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourcesWithIdentifiers:)]) {
+    [self didSelectResource:[array firstObject] inResources:array];
+}
+
+- (void)didSelectResource:(MITMobiusResource*)resource inResources:(NSArray*)resources
+{
+    if ([self.delegate respondsToSelector:@selector(resourcesViewController:didSelectResourcesWithIdentifiers:selectedResource:)]) {
         NSArray *identifiers = [[resources valueForKey:@"identifier"] filteredArrayUsingPredicate:[NSPredicate predicateWithFormat:@"SELF != %@",[NSNull null]]];
-        [self.delegate resourcesViewController:self didSelectResourcesWithIdentifiers:identifiers];
+        [self.delegate resourcesViewController:self didSelectResourcesWithIdentifiers:identifiers selectedResource:resource.identifier];
     }
 }
 
@@ -712,9 +717,9 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             indexPath = [NSIndexPath indexPathForRow:indexPath.row inSection:indexPath.section - 1];
         }
 
-        MITMobiusResource *resource = self.sections[indexPath.section][indexPath.row];
-        self.selectedResource = resource;
-        [self didSelectResource:resource];
+        MITMobiusResourcesTableSection *tableSection = self.sections[indexPath.section];
+        self.selectedResources = tableSection.resources;
+        [self didSelectResource:tableSection.resources[indexPath.row] inResources:tableSection.resources];
     }
 
     [tableView deselectRowAtIndexPath:indexPath animated:YES];
