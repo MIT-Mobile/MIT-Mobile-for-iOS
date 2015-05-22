@@ -87,6 +87,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
+    
+    if ([self didPerformSearch]) {
+        [self showResultsView:animated];
+    }
 }
 
 #pragma mark Data Loading/Updating
