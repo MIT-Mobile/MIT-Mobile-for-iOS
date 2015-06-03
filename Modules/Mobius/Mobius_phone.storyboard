@@ -3,7 +3,6 @@
     <dependencies>
         <deployment identifier="iOS"/>
         <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="7701"/>
-        <capability name="Aspect ratio constraints" minToolsVersion="5.1"/>
     </dependencies>
     <scenes>
         <!--Navigation Controller-->
@@ -64,13 +63,6 @@
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Hx1-pQ-i3W" userLabel="Content Container">
                                 <rect key="frame" x="0.0" y="34" width="600" height="502"/>
                                 <subviews>
-                                    <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="RFz-L3-5Vl" userLabel="Map View Container">
-                                        <rect key="frame" x="0.0" y="0.0" width="600" height="360"/>
-                                        <constraints>
-                                            <constraint firstAttribute="height" priority="250" id="6xb-VA-nM2"/>
-                                            <constraint firstAttribute="width" secondItem="RFz-L3-5Vl" secondAttribute="height" multiplier="5:3" priority="750" id="FQx-zw-qKg"/>
-                                        </constraints>
-                                    </view>
                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="hye-Ag-mVg" userLabel="Table View Container">
                                         <rect key="frame" x="0.0" y="0.0" width="600" height="502"/>
                                     </view>
@@ -78,10 +70,7 @@
                                 <constraints>
                                     <constraint firstItem="hye-Ag-mVg" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="3yU-d3-Akd"/>
                                     <constraint firstItem="hye-Ag-mVg" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="F1t-EU-zWW"/>
-                                    <constraint firstAttribute="trailing" secondItem="RFz-L3-5Vl" secondAttribute="trailing" id="FCo-3V-JBy"/>
                                     <constraint firstAttribute="bottom" secondItem="hye-Ag-mVg" secondAttribute="bottom" id="Gi0-r2-40h"/>
-                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="leading" secondItem="Hx1-pQ-i3W" secondAttribute="leading" id="PNW-7b-8YF"/>
-                                    <constraint firstItem="RFz-L3-5Vl" firstAttribute="top" secondItem="Hx1-pQ-i3W" secondAttribute="top" id="PhU-lg-qld"/>
                                     <constraint firstAttribute="trailing" secondItem="hye-Ag-mVg" secondAttribute="trailing" id="dRp-2e-h5e"/>
                                 </constraints>
                             </view>
@@ -107,10 +96,7 @@
                     </navigationItem>
                     <connections>
                         <outlet property="contentContainerView" destination="Hx1-pQ-i3W" id="EPe-h4-c1G"/>
-                        <outlet property="defaultMapHeightConstraint" destination="FQx-zw-qKg" id="oU9-Kj-VEt"/>
                         <outlet property="filterStripHeightConstraint" destination="yiQ-QT-l4c" id="UQg-9u-00c"/>
-                        <outlet property="mapHeightConstraint" destination="6xb-VA-nM2" id="FfP-vB-reD"/>
-                        <outlet property="mapViewContainer" destination="RFz-L3-5Vl" id="WrW-JI-8XS"/>
                         <outlet property="quickLookupTableView" destination="YhE-qf-K7N" id="IaZ-SA-Hri"/>
                         <outlet property="strip" destination="Oyg-FB-cQg" id="pu5-1u-J0T"/>
                         <outlet property="tableViewContainer" destination="hye-Ag-mVg" id="k4i-iR-3BE"/>

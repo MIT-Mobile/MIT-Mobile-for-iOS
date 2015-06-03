@@ -16,9 +16,15 @@
 static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 @interface MITMobiusResourceDataSource ()
-@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
+
+@property (nonatomic,copy) NSString *customField;
+@property (nonatomic,copy) NSString *customValue;
+
+- (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 @end
 
 @implementation MITMobiusResourceDataSource
@@ -28,7 +34,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (instancetype)init
 {
-    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:YES];
+    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
+    managedObjectContext.parentContext = [MITCoreDataController defaultController].mainQueueContext;
     return [self initWithManagedObjectContext:managedObjectContext];
 }
 
@@ -51,7 +58,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     NSManagedObjectContext *mainQueueContext = [[MITCoreDataController defaultController] mainQueueContext];
 
     [mainQueueContext performBlockAndWait:^{
-        if ([self.resourceObjectIdentifiers count]) {
+        if (self.resourceObjectIdentifiers) {
             NSMutableArray *mutableResources = [[NSMutableArray alloc] init];
             [self.resourceObjectIdentifiers enumerateObjectsUsingBlock:^(NSManagedObjectID *objectID, NSUInteger idx, BOOL *stop) {
                 NSManagedObject *object = [mainQueueContext objectWithID:objectID];
@@ -65,32 +72,85 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     return resources;
 }
 
+- (void)setCustomField:(NSString*)field withValue:(NSString*)value
+{
+    NSParameterAssert(field);
+    NSParameterAssert(value);
+    
+    self.customField = field;
+    self.customValue = value;
+    
+    _queryString = nil;
+    _query = nil;
+    _lastFetched = nil;
+    _resourceObjectIdentifiers = nil;
+}
+
+- (void)clearCustomField
+{
+    self.customField = nil;
+    self.customValue = nil;
+    _lastFetched = nil;
+    _resourceObjectIdentifiers = nil;
+}
+
 - (NSString*)queryString
 {
     __block NSString *result = nil;
     
-    if (_query) {
+    if (_queryString) {
+        result = _queryString;
+    } else if (self.query) {
         [self.query.managedObjectContext performBlockAndWait:^{
             if (self.query.text) {
                 result = [NSString stringWithString:self.query.text];
             }
         }];
-    } else {
-        result = _queryString;
+    } else if (self.customField) {
+        result = [NSString stringWithFormat:@"%@: %@",self.customField,self.customValue];
     }
 
     return result;
 }
 
+- (void)setQueryString:(NSString*)string
+{
+    _queryString = [string copy];
+    
+    _query = nil;
+    _lastFetched = nil;
+    _resourceObjectIdentifiers = nil;
+    [self clearCustomField];
+}
+
 - (void)setQuery:(MITMobiusRecentSearchQuery *)query
 {
     if (query) {
-        _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext existingObjectWithID:query.objectID error:nil];
+        _query = (MITMobiusRecentSearchQuery*)[self.managedObjectContext objectWithID:query.objectID];
+        [self.managedObjectContext refreshObject:_query mergeChanges:NO];
     } else {
         _query = nil;
     }
-    
+
     _queryString = nil;
+    _lastFetched = nil;
+    _resourceObjectIdentifiers = nil;
+    [self clearCustomField];
+}
+
+- (MITMobiusResourceSearchType)queryType
+{
+    if (self.customField) {
+        return MITMobiusResourceSearchTypeCustomField;
+    } else if (self.query.options.count > 0) {
+        return MITMobiusResourceSearchTypeComplexQuery;
+    } else if (self.query) {
+        return MITMobiusResourceSearchTypeQuery;
+    } else if (_queryString) {
+        return MITMobiusResourceSearchTypeQuery;
+    } else {
+        return MITMobiusResourceSearchTypeAll;
+    }
 }
 
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context
@@ -122,13 +182,39 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     }
 }
 
+- (void)getResources:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))completion
+{
+    self.lastFetched = [NSDate date];
+    self.resourceObjectIdentifiers = nil;
+    
+    switch (self.queryType) {
+        case MITMobiusResourceSearchTypeComplexQuery:
+            [self resourcesWithQueryObject:self.query completion:completion];
+            break;
+            
+        case MITMobiusResourceSearchTypeCustomField:
+            [self resourcesWithField:self.customField value:self.customValue completion:completion];
+            break;
+            
+        case MITMobiusResourceSearchTypeQuery:
+            [self resourcesWithQuery:self.queryString completion:completion];
+            break;
+            
+        default:
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                if (completion) {
+                    completion(self,nil);
+                }
+            }];
+            break;
+    }
+}
+
 - (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
     if (!queryObject) {
-        self.query = nil;
         self.lastFetched = [NSDate date];
         self.resourceObjectIdentifiers = nil;
-        [self.managedObjectContext reset];
 
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
             if (block) {
@@ -160,20 +246,15 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
         NSURL *resourcesURL = [NSURL URLWithString:urlPath relativeToURL:resourceReservations];
         NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
         [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
+        
+        self.lastFetched = [NSDate date];
+        self.resourceObjectIdentifiers = nil;
 
         __weak MITMobiusResourceDataSource *weakSelf = self;
         [self _performRequest:request completion:^(BOOL success, NSError *error) {
             MITMobiusResourceDataSource *blockSelf = weakSelf;
             if (!blockSelf) {
                 return;
-            }
-
-            if (success) {
-                blockSelf.lastFetched = [NSDate date];
-                blockSelf.query = queryObject;
-                [blockSelf.query.managedObjectContext performBlockAndWait:^{
-                    [blockSelf.query.managedObjectContext saveToPersistentStore:nil];
-                }];
             }
 
             [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -187,6 +268,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
+    NSParameterAssert(queryString);
+
     __block NSString *currentQueryString = nil;
     [self.query.managedObjectContext performBlockAndWait:^{
         currentQueryString = self.query.text;
@@ -194,6 +277,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     
     __block MITMobiusRecentSearchQuery *query = nil;
     if ([currentQueryString isEqualToString:queryString]) {
+        [self.managedObjectContext performBlockAndWait:^{
+            NSMutableOrderedSet *options = [self.query mutableOrderedSetValueForKey:@"options"];
+            [options removeAllObjects];
+            [self.managedObjectContext saveToPersistentStore:nil];
+        }];
+
         query = self.query;
     } else {
         [self.managedObjectContext performBlockAndWait:^{
@@ -203,12 +292,18 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             MITMobiusRecentSearchQuery *fetchedQuery = [[self.managedObjectContext executeFetchRequest:fetchRequest error:nil] firstObject];
             if (fetchedQuery) {
                 query = fetchedQuery;
+                
+                NSMutableOrderedSet *options = [query mutableOrderedSetValueForKey:@"options"];
+                [options removeAllObjects];
             } else {
                 query = [NSEntityDescription insertNewObjectForEntityForName:[MITMobiusRecentSearchQuery entityName] inManagedObjectContext:self.managedObjectContext];
                 query.text = queryString;
-                [self.managedObjectContext saveToPersistentStore:nil];
             }
+            
+            [self.managedObjectContext saveToPersistentStore:nil];
         }];
+        
+        self.query = query;
     }
     
     [self resourcesWithQueryObject:query completion:block];
@@ -233,16 +328,15 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:resourcesURL];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
     
+    
+    self.lastFetched = [NSDate date];
+    self.resourceObjectIdentifiers = nil;
+    
     __weak MITMobiusResourceDataSource *weakSelf = self;
     [self _performRequest:request completion:^(BOOL success, NSError *error) {
         MITMobiusResourceDataSource *blockSelf = weakSelf;
         if (!blockSelf) {
             return;
-        }
-        
-        if (success) {
-            blockSelf.lastFetched = [NSDate date];
-            blockSelf->_queryString = [NSString stringWithFormat:@"%@=%@",[field capitalizedString],value];
         }
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
@@ -259,7 +353,9 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     RKResponseDescriptor *responseDescriptor = [RKResponseDescriptor responseDescriptorWithMapping:mapping method:RKRequestMethodAny pathPattern:nil keyPath:nil statusCodes:RKStatusCodeIndexSetForClass(RKStatusCodeClassSuccessful)];
 
     RKManagedObjectRequestOperation *requestOperation = [[RKManagedObjectRequestOperation alloc] initWithRequest:request responseDescriptors:@[responseDescriptor]];
-    requestOperation.managedObjectContext = self.managedObjectContext;
+
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSPrivateQueueConcurrencyType trackChanges:NO];
+    requestOperation.managedObjectContext = managedObjectContext;
 
     RKFetchRequestManagedObjectCache *cache = [[RKFetchRequestManagedObjectCache alloc] init];
     requestOperation.managedObjectCache = cache;

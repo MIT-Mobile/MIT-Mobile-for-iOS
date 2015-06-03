@@ -5,18 +5,28 @@ typedef NS_ENUM(NSInteger, MITMobiusQuickSearchType) {
     MITMobiusQuickSearchResourceType,
 };
 
+typedef NS_ENUM(NSInteger, MITMobiusResourceSearchType) {
+    MITMobiusResourceSearchTypeAll = 0,
+    MITMobiusResourceSearchTypeQuery,
+    MITMobiusResourceSearchTypeComplexQuery,
+    MITMobiusResourceSearchTypeCustomField
+};
+
 @class MITMobiusRecentSearchQuery;
 
 @interface MITMobiusResourceDataSource : NSObject
+@property (nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (nonatomic,strong) NSDate *lastFetched;
+@property (nonatomic,readonly) MITMobiusResourceSearchType queryType;
 @property (nonatomic,strong) MITMobiusRecentSearchQuery *query;
-@property (nonatomic,readonly,copy) NSString *queryString;
+@property (nonatomic,copy) NSString *queryString;
 @property (nonatomic,readonly,copy) NSArray *resources;
 
-- (instancetype)init;
-- (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
-- (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
-- (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
+- (instancetype)initWithManagedObjectContext:(NSManagedObjectContext*)managedObjectContext NS_DESIGNATED_INITIALIZER;
+
+- (void)setCustomField:(NSString*)field withValue:(NSString*)value;
+- (void)clearCustomField;
+- (void)getResources:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))completion;
 
 - (void)getObjectsForRoute:(MITMobiusQuickSearchType)type completion:(void(^)(NSArray* objects, NSError *error))block;
 - (NSDictionary*)resourcesGroupedByKey:(NSString*)key withManagedObjectContext:(NSManagedObjectContext*)context;

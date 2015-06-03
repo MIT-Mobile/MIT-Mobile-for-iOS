@@ -46,6 +46,10 @@
 {
     [super viewDidLoad];
 
+    if (self.resources && (self.currentResource == nil)) {
+        self.currentResource = [self.resources firstObject];
+    }
+
     [self createPageViewController];
     [self setupMainLoopCycleButtons];
 }
@@ -191,7 +195,7 @@
 #pragma mark Properties
 - (BOOL)isPagingEnabled
 {
-    return (_pagingEnabled && (self.delegate != nil) && ([self numberOfResources] > 1));
+    return (_pagingEnabled && ([self numberOfResources] > 1));
 }
 
 #pragma mark - Configuration for Resource
@@ -367,22 +371,33 @@
 #pragma mark - Main Loop Index Math
 - (NSUInteger)numberOfResources
 {
-    return [self.delegate numberOfResourcesInDetailViewController:self];
+    if (self.resources) {
+        return self.resources.count;
+    } else {
+        return [self.delegate numberOfResourcesInDetailViewController:self];
+    }
 }
 
 - (MITMobiusResource*)resourceAtIndex:(NSUInteger)index
 {
-    if (index == NSNotFound) {
-        return self.currentResource;
+    if (self.resources) {
+        return self.resources[index];
     } else {
         return [self.delegate detailViewController:self resourceAtIndex:index];
     }
-
 }
 
 - (NSUInteger)indexForResource:(MITMobiusResource*)resource
 {
-    if (resource) {
+    NSParameterAssert(resource);
+
+    if (self.resources) {
+        NSUInteger index = [self.resources indexOfObjectPassingTest:^BOOL(MITMobiusResource *otherResource, NSUInteger idx, BOOL *stop) {
+            return [resource.identifier isEqualToString:otherResource.identifier];
+        }];
+
+        return index;
+    } if (resource) {
         return [self.delegate detailViewController:self indexForResourceWithIdentifier:resource.identifier];
     } else {
         return NSNotFound;
@@ -391,7 +406,11 @@
 
 - (NSUInteger)indexAfterIndex:(NSUInteger)index
 {
-    if (self.delegate) {
+    NSAssert(index != NSNotFound, @"There is no index after NSNotFound");
+
+    if (self.resources) {
+        return ((index + 1) % self.resources.count);
+    } else if (self.delegate) {
         return [self.delegate detailViewController:self indexAfterIndex:index];
     } else {
         return NSNotFound;
@@ -400,7 +419,11 @@
 
 - (NSInteger)indexBeforeIndex:(NSInteger)index
 {
-    if (self.delegate) {
+    NSAssert(index != NSNotFound, @"There is no index before NSNotFound");
+
+    if (self.resources) {
+        return ((index + self.resources.count - 1) % self.resources.count);
+    } else if (self.delegate) {
         return [self.delegate detailViewController:self indexBeforeIndex:index];
     } else {
         return NSNotFound;

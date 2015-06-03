@@ -329,8 +329,8 @@
 {
     if ([query length]) {
         self.searchQuery = query;
-        
-        [self.dataSource resourcesWithQuery:query completion:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
+        self.dataSource.queryString = query;
+        [self.dataSource getResources:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
             [dataSource addRecentSearchItem:query error:nil];
             
             if (error) {

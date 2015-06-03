@@ -7,7 +7,6 @@
 @property(nonatomic,strong) NSManagedObjectContext *managedObjectContext;
 @property (weak, nonatomic) IBOutlet UITableView *quickLookupTableView;
 @property(nonatomic,weak) IBOutlet UIView *contentContainerView;
-@property(nonatomic,weak) IBOutlet UIView *mapViewContainer;
 @property(nonatomic,weak) IBOutlet UIView *tableViewContainer;
 
 @end

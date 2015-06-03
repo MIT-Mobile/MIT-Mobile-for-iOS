@@ -28,6 +28,7 @@ extern NSInteger const MITCalloutPermittedArrowDirectionAny;
  */
 - (void)calloutViewTapped:(MITCalloutView *)calloutView;
 
+@optional
 /**
  *  Called when the callout is removed from the view hierarchy.
  *
