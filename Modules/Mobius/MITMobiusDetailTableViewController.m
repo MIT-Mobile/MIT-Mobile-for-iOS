@@ -235,10 +235,17 @@ typedef NS_ENUM(NSInteger, MITMobiusSegmentedSections) {
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     NSString *reuseIdentifier = [self reuseIdentifierForRowAtIndexPath:indexPath];
-    CGFloat cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath];
-    if (indexPath.section == 0 && indexPath.row == 0) {
+    CGFloat cellHeight = UITableViewAutomaticDimension;
+
+
+    if ([reuseIdentifier isEqualToString:MITDefaultCellIdentifier] && indexPath.section == 0 && indexPath.row == 0) {
         cellHeight = 44.0;
+    } else {
+        cellHeight = [tableView minimumHeightForCellWithReuseIdentifier:reuseIdentifier atIndexPath:indexPath] + 1.;
     }
+
+
+
     return cellHeight;
 }
 
