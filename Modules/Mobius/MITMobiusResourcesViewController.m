@@ -41,6 +41,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     NSLayoutConstraint *_mapViewFullScreenHeightConstraint;
     NSMapTable *_sectionNumberByButton;
     CGFloat _mapVerticalOffset;
+    CGAffineTransform _mapSavedTransform;
 }
 
 @synthesize mapView = _mapView;
@@ -154,6 +155,27 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [self.view setNeedsLayout];
 }
 
+- (void)updateViewConstraints
+{
+    if (self.showsMap) {
+        if (self.showsMapFullScreen) {
+            _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
+            _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+            _mapViewFullScreenHeightConstraint.constant = CGRectGetHeight(self.view.bounds);
+        } else {
+            _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultLow;
+            _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+            _mapViewAspectHeightConstraint.constant = _mapVerticalOffset;
+        }
+    } else {
+        _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
+        _mapViewFullScreenHeightConstraint.constant = 0;
+        _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
+    }
+
+    [super updateViewConstraints];
+}
+
 - (void)viewWillAppear:(BOOL)animated
 {
     NSAssert(self.managedObjectContext,@"a valid managed object context was not configured");
@@ -167,12 +189,14 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     
     if (yOffset <= 0) {
         self.mapView.transform = CGAffineTransformMakeTranslation(0, 0);
-        _mapViewAspectHeightConstraint.constant = -yOffset;
+        _mapVerticalOffset = -yOffset;
+
     } else {
         self.mapView.transform = CGAffineTransformMakeTranslation(0, -yOffset);
-        _mapViewAspectHeightConstraint.constant = 0.;
+        _mapVerticalOffset = 0.;
     }
 
+    [self.view setNeedsUpdateConstraints];
     [self.view setNeedsLayout];
 }
 
@@ -319,10 +343,6 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                                  animations:^{
                                      [self setShowsMapFullScreen:NO animated:NO];
 
-                                     _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
-                                     _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-                                     _mapViewFullScreenHeightConstraint.constant = CGRectGetHeight(self.view.bounds);
-
                                      [self.view setNeedsUpdateConstraints];
                                      [self.view setNeedsLayout];
                                      [self.view layoutIfNeeded];
@@ -334,10 +354,6 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
         } else {
             [UIView animateWithDuration:0.33
                              animations:^{
-                                 _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultLow;
-                                 _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-                                 _mapViewAspectHeightConstraint.constant = 0;
-
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
@@ -360,25 +376,21 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     if (_showsMapFullScreen != showsMapFullScreen) {
         _showsMapFullScreen = showsMapFullScreen;
 
+        NSTimeInterval duration = (animated ? 0.33 : 0.);
 
         if (_showsMapFullScreen) {
             [self willShowMapFullScreen:animated];
-            [UIView animateWithDuration:0.33
-                             animations:^{
-                                 self.mapView.layer.transform = CATransform3DIdentity;
-                                 _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
-                                 _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-                                 _mapViewFullScreenHeightConstraint.constant = CGRectGetHeight(self.tableView.frame);
 
-                                 CGFloat mapHeight = CGRectGetHeight(self.mapView.frame);
-                                 CGFloat tableViewHeight = CGRectGetHeight(self.tableView.frame);
-                                 self.tableView.layer.transform = CATransform3DMakeTranslation(0., (tableViewHeight - mapHeight), 0);
+            _mapSavedTransform = self.mapView.transform;
+            [UIView animateWithDuration:duration
+                                  delay:0.
+                                options:(UIViewAnimationOptionCurveEaseOut)
+                             animations:^{
+                                 self.mapView.transform = CGAffineTransformIdentity;
 
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
-                                 
-                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = NO;
                                  self.mapView.userInteractionEnabled = YES;
@@ -387,20 +399,15 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                              }];
         } else {
             [self willHideMapFullScreen:animated];
-            [UIView animateWithDuration:0.33
+            [UIView animateWithDuration:duration
+                                  delay:0.
+                                options:(UIViewAnimationOptionCurveEaseOut)
                              animations:^{
-                                 self.mapView.layer.transform = CATransform3DIdentity;
-                                 self.tableView.layer.transform = CATransform3DIdentity;
-
-                                 _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultLow;
-                                 _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-                                 _mapViewAspectHeightConstraint.constant = 0;
-
+                                 self.mapView.transform = _mapSavedTransform;
+                                 
                                  [self.view setNeedsUpdateConstraints];
                                  [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
-                                 
-                                 [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:0] withRowAnimation:UITableViewRowAnimationTop];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = YES;
                                  self.mapView.userInteractionEnabled = NO;
@@ -666,7 +673,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 {
     if ([self isMapSection:indexPath.section]) {
         CGFloat mapHeight = CGRectGetHeight(self.mapView.frame);
-        return mapHeight - _mapViewAspectHeightConstraint.constant;
+        return mapHeight;
     } else if ([self isLoadingCellAtIndexPath:indexPath] || [self isNoResultsCellAtIndexPath:indexPath]) {
         return CGRectGetHeight(self.tableView.frame) - CGRectGetHeight(self.mapView.frame);
     } else {
