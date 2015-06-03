@@ -476,7 +476,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
 - (IBAction)dismissFullScreenMap:(UIBarButtonItem*)sender
 {
-    self.resourcesViewController.showsMapFullScreen = NO;
+    [self.resourcesViewController setShowsMapFullScreen:NO animated:YES];
 }
 
 - (IBAction)resetSearchQuery:(id)sender
