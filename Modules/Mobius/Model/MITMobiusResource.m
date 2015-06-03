@@ -203,8 +203,12 @@
             break;
         }
     }
-    
-    return [components componentsJoinedByString:@" - "];
+
+    if (components.count > 0) {
+        return [components componentsJoinedByString:@" - "];
+    } else {
+        return nil;
+    }
 }
 
 
