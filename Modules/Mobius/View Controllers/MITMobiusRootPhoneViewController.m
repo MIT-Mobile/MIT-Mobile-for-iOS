@@ -107,10 +107,8 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(value);
 
     [self.dataSource setCustomField:field withValue:value];
-    
-    self.loading = YES;
-    [self showResultsView:YES];
-    
+    [self willStartDataSourceLoad];
+
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource getResources:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
         MITMobiusRootPhoneViewController *blockSelf = weakSelf;
@@ -137,9 +135,8 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(query);
     
     self.dataSource.query = query;
-    
-    self.loading = YES;
-    [self showResultsView:YES];
+
+    [self willStartDataSourceLoad];
     
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource getResources:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
@@ -168,9 +165,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(queryString);
     
     self.dataSource.queryString = queryString;
-    
-    self.loading = YES;
-    [self showResultsView:YES];
+    [self willStartDataSourceLoad];
 
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource getResources:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
@@ -194,6 +189,15 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     }];
 }
 
+- (void)willStartDataSourceLoad
+{
+    self.loading = YES;
+    [self showResultsView:YES];
+
+    self.resourcesViewController.resources = nil;
+    [self.resourcesViewController setShowsMapFullScreen:NO animated:YES];
+}
+
 - (void)didCompleteDataSourceLoadWithError:(NSError*)error
 {
     DDLogWarn(@"Error: %@",error);
@@ -206,7 +210,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     [self.managedObjectContext performBlockAndWait:^{
         [self.managedObjectContext reset];
         self.rooms = nil;
-        
+
         [self reloadData:NO];
     }];
 }
