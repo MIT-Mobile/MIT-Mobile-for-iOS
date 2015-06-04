@@ -40,7 +40,8 @@
     static dispatch_once_t token;
     dispatch_once(&token, ^{
         dateFormatter = [[NSDateFormatter alloc] init];
-        dateFormatter.dateFormat = @"HH";
+        dateFormatter.timeStyle = NSDateFormatterShortStyle;
+        dateFormatter.dateStyle = NSDateFormatterNoStyle;
     });
 
     if (_hours == nil) {
