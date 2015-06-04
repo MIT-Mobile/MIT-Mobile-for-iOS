@@ -336,19 +336,17 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     if (_showsMap != showsMap) {
         _showsMap = showsMap;
 
-        if (_showsMap) {
-            [UIView animateWithDuration:0.33
-                             animations:^{
-                                 [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-                                 [self recenterMapView];
-                             }];
-        } else {
-            [UIView animateWithDuration:0.33
-                             animations:^{
-                                 [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
-                                 [self recenterMapView];
-                             }];
-        }
+        NSTimeInterval duration = (animated ? 0.33 : 0.);
+
+        [UIView animateWithDuration:duration
+                              delay:0.
+                            options:(UIViewAnimationOptionCurveEaseInOut |
+                                     UIViewAnimationOptionAllowAnimatedContent |
+                                     UIViewAnimationOptionLayoutSubviews)
+                         animations:^{
+                             [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
+                             [self recenterMapView];
+                         } completion:nil];
     }
 }
 
@@ -364,18 +362,20 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
         NSTimeInterval duration = (animated ? 0.33 : 0.);
 
-        [self.view setNeedsUpdateConstraints];
-        [self.view setNeedsLayout];
-
         if (_showsMapFullScreen) {
             [self willShowMapFullScreen:animated];
 
             _mapSavedTransform = self.mapView.transform;
             [UIView animateWithDuration:duration
                                   delay:0.
-                                options:(UIViewAnimationOptionCurveEaseOut)
+                                options:(UIViewAnimationOptionCurveEaseInOut |
+                                         UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionLayoutSubviews)
                              animations:^{
                                  self.mapView.transform = CGAffineTransformIdentity;
+
+                                 [self.view setNeedsUpdateConstraints];
+                                 [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = NO;
@@ -387,10 +387,16 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             [self willHideMapFullScreen:animated];
             [UIView animateWithDuration:duration
                                   delay:0.
-                                options:(UIViewAnimationOptionCurveEaseOut)
+                                options:(UIViewAnimationOptionCurveEaseInOut |
+                                         UIViewAnimationOptionAllowAnimatedContent |
+                                         UIViewAnimationOptionLayoutSubviews)
                              animations:^{
                                  self.mapView.transform = _mapSavedTransform;
+
+                                 [self.view setNeedsUpdateConstraints];
+                                 [self.view setNeedsLayout];
                                  [self.view layoutIfNeeded];
+
                                  [self.tableView reloadRowsAtIndexPaths:@[[NSIndexPath indexPathForRow:0 inSection:0]] withRowAnimation:UITableViewRowAnimationNone];
                              } completion:^(BOOL finished) {
                                  self.tableView.userInteractionEnabled = YES;
