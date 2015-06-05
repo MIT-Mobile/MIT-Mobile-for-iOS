@@ -602,7 +602,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             MITMobiusShopHeader *shopHeader = (MITMobiusShopHeader*)headerView;
             MITMobiusResourcesTableSection *tableSection = self.sections[sectionIndex];
             shopHeader.shopHours = tableSection.hours;
-            shopHeader.shopName = tableSection.name;
+            shopHeader.shopName = [NSString stringWithFormat:@"%ld. %@",sectionIndex + 1,tableSection.name]; // Add 1 to the index to make it 1-indexed instead of 0-indexed
 
             if (tableSection.isOpen) {
                 shopHeader.status = MITMobiusShopStatusOpen;
