@@ -290,14 +290,17 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                     animations:^{
                         self.quickLookupTableView.alpha = 1;
                         self.contentContainerView.alpha = 0;
-                        self.recentSearchViewController.view.alpha = 0.;
+                        _recentSearchViewController.view.alpha = 0.;
                         self.strip.alpha = 0.;
                         
                         [self.navigationController setToolbarHidden:YES animated:animated];
                     } completion:^(BOOL finished) {
                         self.contentContainerView.hidden = YES;
                         self.strip.hidden = YES;
-                        self.recentSearchViewController.view.hidden = YES;
+                        
+                        [self mobius_removeChildViewController:_recentSearchViewController];
+                        _recentSearchViewController = nil;
+                        
                     }];
 }
 
@@ -371,7 +374,10 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
                         }
                     } completion:^(BOOL finished) {
                         self.quickLookupTableView.hidden = YES;
-                        self.recentSearchViewController.view.hidden = YES;
+                        
+                        [self mobius_removeChildViewController:_recentSearchViewController];
+                        _recentSearchViewController = nil;
+                        
                         [self.strip reloadData];
                     }];
 }
@@ -509,15 +515,19 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     [viewController didMoveToParentViewController:self];
 }
 
-- (void)removeChildViewController:(UIViewController*)viewController
+- (void)mobius_removeChildViewController:(UIViewController*)viewController
 {
-    NSParameterAssert(viewController);
+    UIViewController *strongViewController = viewController;
     
-    [viewController willMoveToParentViewController:nil];
-    [viewController beginAppearanceTransition:NO animated:NO];
-    [viewController.view removeFromSuperview];
-    [viewController endAppearanceTransition];
-    [viewController removeFromParentViewController];
+    if (!viewController) {
+        return;
+    }
+    
+    [strongViewController willMoveToParentViewController:nil];
+    [strongViewController beginAppearanceTransition:NO animated:NO];
+    [strongViewController.view removeFromSuperview];
+    [strongViewController endAppearanceTransition];
+    [strongViewController removeFromParentViewController];
 }
 
 #pragma mark Search accessory methods
