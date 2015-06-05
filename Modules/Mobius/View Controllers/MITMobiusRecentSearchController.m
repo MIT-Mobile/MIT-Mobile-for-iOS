@@ -37,30 +37,13 @@
     self.view.tintColor = [UIColor mit_tintColor];
     
     [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"Cell"];
-    
-    NSManagedObjectContext *managedObjectContext = [[NSManagedObjectContext alloc] initWithConcurrencyType:NSMainQueueConcurrencyType];
-    managedObjectContext.parentContext = [MITCoreDataController defaultController].mainQueueContext;
-    self.managedObjectContext = managedObjectContext;
-    
-    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
-    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
-    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                                               managedObjectContext:managedObjectContext
-                                                                                                 sectionNameKeyPath:nil
-                                                                                                          cacheName:nil];
-    self.fetchedResultsController = fetchedResultsController;
-
 }
 
 - (void)viewWillAppear:(BOOL)animated
 {
     [super viewWillAppear:animated];
 
-    [self.fetchedResultsController performFetch:nil];
-    
-    if (self.fetchedResultsController.fetchedObjects.count == 0) {
-        self.clearButtonItem.enabled = NO;
-    }
+    [self filterResultsUsingString:self.filterString];
 }
 
 - (void)viewWillDisappear:(BOOL)animated
@@ -88,31 +71,27 @@
 
 - (void)filterResultsUsingString:(NSString *)filterString
 {
-    if (![self.filterString isEqualToString:filterString]) {
-        self.filterString = filterString;
-        
-        NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
-        fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
-        
-        if (filterString) {
-            fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",filterString];
-        }
-        
-        NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
-                                                                                                   managedObjectContext:self.managedObjectContext
-                                                                                                     sectionNameKeyPath:nil
-                                                                                                              cacheName:nil];
-        self.fetchedResultsController = fetchedResultsController;
-        [self.fetchedResultsController performFetch:nil];
-        
-        if (self.fetchedResultsController.fetchedObjects.count > 0) {
-            self.clearButtonItem.enabled = YES;
-        } else {
-            self.clearButtonItem.enabled = NO;
-        }
-        
-        [self.tableView reloadData];
+    self.filterString = filterString;
+    
+    NSManagedObjectContext *managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
+    self.managedObjectContext = managedObjectContext;
+    
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+    fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
+    
+    if (filterString.length > 0) {
+        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",filterString];
     }
+    
+    NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
+                                                                                               managedObjectContext:managedObjectContext
+                                                                                                 sectionNameKeyPath:nil
+                                                                                                          cacheName:nil];
+    self.fetchedResultsController = fetchedResultsController;
+    [self.fetchedResultsController performFetch:nil];
+    
+    [self.tableView reloadData];
+    [self updateClearButton];
 }
 
 - (void)actionSheet:(UIActionSheet *)actionSheet didDismissWithButtonIndex:(NSInteger)buttonIndex
@@ -122,6 +101,17 @@
     }
     
     self.confirmSheet = nil;
+}
+
+- (void)updateClearButton
+{
+    NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+    NSInteger numberOfObjects = [self.managedObjectContext countForFetchRequest:fetchRequest error:nil];
+    if (numberOfObjects != NSNotFound && numberOfObjects > 0) {
+        self.clearButtonItem.enabled = YES;
+    } else {
+        self.clearButtonItem.enabled = NO;
+    }
 }
 
 - (void)clearRecents
@@ -141,10 +131,7 @@
         return YES;
     } error:nil];
     
-    [self.managedObjectContext reset];
-    [self.fetchedResultsController performFetch:nil];
-    [self.tableView reloadData];
-    self.clearButtonItem.enabled = NO;
+    [self filterResultsUsingString:self.filterString];
 }
 
 #pragma mark - Table View methods
