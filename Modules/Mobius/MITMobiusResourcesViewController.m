@@ -672,6 +672,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
             resourceTableViewCell.resourceView.index = NSNotFound;
             resourceTableViewCell.resourceView.machineName = resource.name;
+            resourceTableViewCell.resourceView.model = [resource makeAndModel];
 
             if ([resource.status caseInsensitiveCompare:@"online"] == NSOrderedSame) {
                 [resourceTableViewCell.resourceView setStatus:MITMobiusResourceStatusOnline];
