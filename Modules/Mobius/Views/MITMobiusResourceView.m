@@ -5,6 +5,7 @@
 @interface MITMobiusResourceView ()
 
 @property(nonatomic,weak) IBOutlet UILabel *machineNameLabel;
+@property(nonatomic,weak) IBOutlet UILabel *modelLabel;
 @property (weak, nonatomic) IBOutlet UIImageView *machineStatus;
 
 @end
@@ -48,6 +49,14 @@
     }
 }
 
+- (void)setModel:(NSString *)model
+{
+    if (![_model isEqualToString:model]) {
+        _model = [model copy];
+        [self _refreshContent];
+    }
+}
+
 - (void)setStatus:(MITMobiusResourceStatus)status
 {
     switch (status) {
@@ -80,6 +89,7 @@
     }
     
     self.machineNameLabel.text = machineName;
+    self.modelLabel.text = self.model;
     
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];

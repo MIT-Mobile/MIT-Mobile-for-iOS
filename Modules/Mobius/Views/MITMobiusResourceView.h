@@ -10,6 +10,7 @@ typedef NS_ENUM(NSInteger, MITMobiusResourceStatus) {
 
 @property(nonatomic) NSUInteger index;
 @property(nonatomic,copy) NSString *machineName;
+@property(nonatomic,copy) NSString *model;
 
 - (void)setStatus:(MITMobiusResourceStatus)status;
 
