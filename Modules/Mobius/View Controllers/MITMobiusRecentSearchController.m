@@ -111,8 +111,6 @@
 - (void)updateClearButton
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
-    
-    NSMutableArray *subpredicates = [[NSMutableArray alloc] init];
     fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"text != NULL"],
                                                                                   [NSPredicate predicateWithFormat:@"text != ''"]]];
     
