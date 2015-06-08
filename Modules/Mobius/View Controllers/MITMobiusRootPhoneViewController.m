@@ -135,6 +135,7 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     NSParameterAssert(query);
     
     self.dataSource.query = query;
+    self.searchBar.text = self.dataSource.queryString;
 
     [self willStartDataSourceLoad];
     
@@ -892,7 +893,6 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
     if (query) {
         [managedObjectContext refreshObject:query mergeChanges:NO];
-        self.searchBar.text = query.text;
         [self reloadDataSourceForQuery:query completion:nil];
     }
     
