@@ -35,6 +35,7 @@
 {    
     self.titleLabel.text = title;
     self.descriptionLabel.text = description;
+    
     [self setNeedsUpdateConstraints];
     [self setNeedsLayout];
 }
@@ -42,8 +43,22 @@
 - (void)layoutSubviews
 {
     [super layoutSubviews];
-    self.titleLabel.preferredMaxLayoutWidth = self.titleLabel.bounds.size.width;
-    self.descriptionLabel.preferredMaxLayoutWidth = self.descriptionLabel.bounds.size.width;
+    
+    if (self.titleLabel.preferredMaxLayoutWidth < CGRectGetWidth(self.titleLabel.bounds)) {
+        self.titleLabel.preferredMaxLayoutWidth = self.titleLabel.bounds.size.width;
+        
+        [self setNeedsUpdateConstraints];
+        [self setNeedsLayout];
+    }
+    
+    if (self.descriptionLabel.preferredMaxLayoutWidth < CGRectGetWidth(self.descriptionLabel.bounds)) {
+        self.descriptionLabel.preferredMaxLayoutWidth = self.descriptionLabel.bounds.size.width;
+        
+        [self setNeedsUpdateConstraints];
+        [self setNeedsLayout];
+    }
+
+    [self layoutIfNeeded];
 }
 
 @end
