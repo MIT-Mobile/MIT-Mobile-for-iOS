@@ -79,10 +79,15 @@
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
     fetchRequest.sortDescriptors = @[[NSSortDescriptor sortDescriptorWithKey:@"date" ascending:NO]];
     
+    NSMutableArray *subpredicates = [[NSMutableArray alloc] init];
+    [subpredicates addObject:[NSPredicate predicateWithFormat:@"text != NULL"]];
+    [subpredicates addObject:[NSPredicate predicateWithFormat:@"text != ''"]];
+    
     if (filterString.length > 0) {
-        fetchRequest.predicate = [NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",filterString];
+        [subpredicates addObject:[NSPredicate predicateWithFormat:@"text BEGINSWITH[c] %@",filterString]];
     }
     
+    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:subpredicates];
     NSFetchedResultsController *fetchedResultsController = [[NSFetchedResultsController alloc] initWithFetchRequest:fetchRequest
                                                                                                managedObjectContext:managedObjectContext
                                                                                                  sectionNameKeyPath:nil
@@ -106,6 +111,11 @@
 - (void)updateClearButton
 {
     NSFetchRequest *fetchRequest = [NSFetchRequest fetchRequestWithEntityName:[MITMobiusRecentSearchQuery entityName]];
+    
+    NSMutableArray *subpredicates = [[NSMutableArray alloc] init];
+    fetchRequest.predicate = [NSCompoundPredicate andPredicateWithSubpredicates:@[[NSPredicate predicateWithFormat:@"text != NULL"],
+                                                                                  [NSPredicate predicateWithFormat:@"text != ''"]]];
+    
     NSInteger numberOfObjects = [self.managedObjectContext countForFetchRequest:fetchRequest error:nil];
     if (numberOfObjects != NSNotFound && numberOfObjects > 0) {
         self.clearButtonItem.enabled = YES;
