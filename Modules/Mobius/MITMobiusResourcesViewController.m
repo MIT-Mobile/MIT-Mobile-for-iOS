@@ -184,6 +184,13 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [self reloadData];
 }
 
+- (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
+{
+    [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
+
+    [self.tableView reloadData];
+}
+
 - (void)updateMapWithContentOffset:(CGPoint)contentOffset
 {
     CGFloat yOffset = contentOffset.y;
