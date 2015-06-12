@@ -1,13 +1,11 @@
 #import "MITMobiusRootPhoneViewController.h"
 #import "MITMobiusResourceDataSource.h"
 #import "MITMobiusModel.h"
-#import "MITMobiusResourcesTableViewController.h"
 #import "MITMobiusDetailContainerViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITCalloutMapView.h"
 #import "MITMobiusResourcesViewController.h"
 
-#import "MITMobiusMapViewController.h"
 #import "MITMobiusRecentSearchController.h"
 #import "MITMobiusAdvancedSearchViewController.h"
 #import "MITMapPlaceSelector.h"
@@ -34,7 +32,7 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
 static NSString * const MITMobiusQuickSearchHeaderTableViewCellIdentifier = @"MITMobiusQuickSearchHeaderTableViewCellIdentifier";
 static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 
-@interface MITMobiusRootPhoneViewController () <MITMobiusResourcesTableViewControllerDelegate,MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate, MITMobiusResourcesDelegate>
+@interface MITMobiusRootPhoneViewController () <MITMapPlaceSelectionDelegate,UISearchDisplayDelegate,UISearchBarDelegate,MITMobiusDetailPagingDelegate, MITMobiusRootViewRoomDataSource, MITMobiusSearchFilterStripDataSource, MITMobiusSearchFilterStripDelegate, UITableViewDataSourceDynamicSizing, MITMobiusAdvancedSearchDelegate, MITMobiusResourcesDelegate>
 
 @property (nonatomic,strong) IBOutlet NSLayoutConstraint *filterStripHeightConstraint;
 @property (nonatomic, strong) IBOutlet MITMobiusSearchFilterStrip *strip;
@@ -561,13 +559,13 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 }
 
 #pragma mark MITMobiusResourcesTableViewControllerDelegate
-- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
+/*- (void)resourcesTableViewController:(MITMobiusResourcesTableViewController *)tableViewController didSelectResource:(MITMobiusResource *)resource
 {
     MITMobiusDetailContainerViewController *detailContainerViewController = [[MITMobiusDetailContainerViewController alloc] initWithResource:resource];
     detailContainerViewController.delegate = self;
 
     [self.navigationController pushViewController:detailContainerViewController animated:YES];
-}
+}*/
 
 #pragma mark UISearchBarDelegate
 - (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
