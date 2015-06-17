@@ -130,14 +130,14 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
 
 
     NSLayoutConstraint *mapFixedHeightConstraint = [NSLayoutConstraint constraintWithItem:mapView
-                                                                                attribute:NSLayoutAttributeHeight
+                                                                                attribute:NSLayoutAttributeBottom
                                                                                 relatedBy:NSLayoutRelationEqual
-                                                                                   toItem:nil
-                                                                                attribute:NSLayoutAttributeNotAnAttribute
+                                                                                   toItem:self.bottomLayoutGuide
+                                                                                attribute:NSLayoutAttributeTop
                                                                                multiplier:1.
                                                                                  constant:0.];
     mapFixedHeightConstraint.priority = UILayoutPriorityDefaultLow;
-    [mapView addConstraint:mapFixedHeightConstraint];
+    [self.view addConstraint:mapFixedHeightConstraint];
     _mapViewFullScreenHeightConstraint = mapFixedHeightConstraint;
 
 
@@ -157,7 +157,6 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
         if (self.showsMapFullScreen) {
             _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
             _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-            _mapViewFullScreenHeightConstraint.constant = CGRectGetHeight(self.view.bounds);
         } else {
             _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultLow;
             _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultHigh;
@@ -170,7 +169,6 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
         }
     } else {
         _mapViewFullScreenHeightConstraint.priority = UILayoutPriorityDefaultHigh;
-        _mapViewFullScreenHeightConstraint.constant = 0;
         _mapViewAspectHeightConstraint.priority = UILayoutPriorityDefaultLow;
     }
 
@@ -184,11 +182,30 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [self reloadData];
 }
 
+- (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
+{
+    [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
+
+    [UIView animateWithDuration:duration
+                          delay:0.
+                        options:(UIViewAnimationCurveLinear |
+                                 UIViewAnimationOptionAllowAnimatedContent)
+                     animations:^{
+                         [self.view setNeedsUpdateConstraints];
+                         [self.view setNeedsLayout];
+                         [self.view layoutIfNeeded];
+                     } completion:nil];
+}
+
 - (void)didRotateFromInterfaceOrientation:(UIInterfaceOrientation)fromInterfaceOrientation
 {
     [super didRotateFromInterfaceOrientation:fromInterfaceOrientation];
 
-    [self.tableView reloadData];
+
+    [UIView performWithoutAnimation:^{
+        [self.tableView reloadData];
+        [self recenterMapView];
+    }];
 }
 
 - (void)updateMapWithContentOffset:(CGPoint)contentOffset
@@ -376,8 +393,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             [UIView animateWithDuration:duration
                                   delay:0.
                                 options:(UIViewAnimationOptionCurveEaseInOut |
-                                         UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionLayoutSubviews)
+                                         UIViewAnimationOptionAllowAnimatedContent)
                              animations:^{
                                  self.mapView.transform = CGAffineTransformIdentity;
 
@@ -388,6 +404,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                                  self.tableView.userInteractionEnabled = NO;
                                  self.mapView.userInteractionEnabled = YES;
 
+                                 [self recenterMapView];
                                  [self didShowMapFullScreen:animated];
                              }];
         } else {
@@ -395,8 +412,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
             [UIView animateWithDuration:duration
                                   delay:0.
                                 options:(UIViewAnimationOptionCurveEaseInOut |
-                                         UIViewAnimationOptionAllowAnimatedContent |
-                                         UIViewAnimationOptionLayoutSubviews)
+                                         UIViewAnimationOptionAllowAnimatedContent)
                              animations:^{
                                  self.mapView.transform = _mapSavedTransform;
 
@@ -409,6 +425,7 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
                                  self.tableView.userInteractionEnabled = YES;
                                  self.mapView.userInteractionEnabled = NO;
 
+                                 [self recenterMapView];
                                  [self didHideMapFullScreen:animated];
                              }];
         }
