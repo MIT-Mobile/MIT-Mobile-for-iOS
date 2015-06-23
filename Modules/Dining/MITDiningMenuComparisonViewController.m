@@ -217,6 +217,16 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
     scrollView.scrollEnabled = NO;      // [IPHONEAPP-663] needed to force touch response to inner scrollview on ComparisonView paging hasn't decelerated
 }
 
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    if ([self didReachEdgeInDirection:MITPageDirectionBackward] || [self didReachEdgeInDirection:MITPageDirectionForward]) {
+        // Trick from the WWDC 2014 sessions on UIScrollViews to get the pan gesture to release
+        // any touches it is currently tracking.
+        scrollView.panGestureRecognizer.enabled = NO;
+        scrollView.panGestureRecognizer.enabled = YES;
+    }
+}
+
 - (void) scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     scrollView.scrollEnabled = YES;
@@ -270,15 +280,17 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 - (void) pagePointersRight
 {
     self.previousComparisonView.aggregateMeal = self.currentComparisonView.aggregateMeal;
-
     self.currentComparisonView.aggregateMeal = self.nextComparisonView.aggregateMeal;
-        self.aggregatedMeal = self.currentComparisonView.aggregateMeal;
+
+    self.aggregatedMeal = self.currentComparisonView.aggregateMeal;
     
     [self.currentComparisonView setScrollOffset:self.nextComparisonView.contentOffset animated:NO];
     [self.nextComparisonView resetScrollOffset];
     [self.previousComparisonView setScrollOffsetAgainstRightEdge];
-  
-    self.indexOfCurrentAggregateMeal++;
+
+    if (self.indexOfCurrentAggregateMeal < (self.dataManager.aggregatedMeals.count - 1)) {
+        self.indexOfCurrentAggregateMeal++;
+    }
 
     self.nextComparisonView.aggregateMeal = [self aggregatedMealForMealInDirection:MITPageDirectionForward];
 
@@ -295,8 +307,10 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
     [self.currentComparisonView setScrollOffset:self.previousComparisonView.contentOffset animated:NO];
     [self.previousComparisonView setScrollOffsetAgainstRightEdge];
     [self.nextComparisonView resetScrollOffset];
-    
-    self.indexOfCurrentAggregateMeal--;
+
+    if (self.indexOfCurrentAggregateMeal > 0) {
+        self.indexOfCurrentAggregateMeal--;
+    }
 
     self.previousComparisonView.aggregateMeal = [self aggregatedMealForMealInDirection:MITPageDirectionBackward];
 
@@ -305,9 +319,15 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 
 - (void) reloadAllComparisonViews
 {
-    [self.previousComparisonView reloadData];
-    [self.currentComparisonView reloadData];
-    [self.nextComparisonView reloadData];
+    NSArray *views = @[self.previousComparisonView,self.currentComparisonView,self.nextComparisonView];
+    [views enumerateObjectsUsingBlock:^(MITDiningHallMenuComparisonView *view, NSUInteger idx, BOOL *stop) {
+        if (view.aggregateMeal) {
+            view.hidden = NO;
+            [view reloadData];
+        } else {
+            view.hidden = YES;
+        }
+    }];
 }
 #pragma mark - DiningCompareViewDelegate
 - (NSString *) titleForCompareView:(MITDiningHallMenuComparisonView *)compareView
