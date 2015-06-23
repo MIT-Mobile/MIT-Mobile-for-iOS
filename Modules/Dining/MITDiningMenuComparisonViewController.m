@@ -181,13 +181,10 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
 {
     NSInteger index = NSNotFound;
     NSArray *views = @[self.previousComparisonView, self.currentComparisonView, self.nextComparisonView];
-    
-    for (int i = 0; i < views.count; i++) {
-        if ([[views[i] aggregateMeal] isEqual:aggregateMeal]) {
-            index = i;
-            break;
-        }
-    }
+
+    index = [views indexOfObjectPassingTest:^BOOL(MITDiningHallMenuComparisonView *view, NSUInteger idx, BOOL *stop) {
+        return [view.aggregateMeal isEqual:aggregateMeal];
+    }];
     
     if (index != NSNotFound) {
         MITDiningHallMenuComparisonView *menuView = views[index];
@@ -200,8 +197,11 @@ typedef NS_ENUM(NSInteger, MITPageDirection) {
             MITDiningHallMenuComparisonView *previousView = views[index - 1];
             [previousView setScrollOffsetAgainstRightEdge];
         }
+
+        return true;
+    } else {
+        return false;
     }
-    return (index != NSNotFound);
 }
 
 - (void) loadData
