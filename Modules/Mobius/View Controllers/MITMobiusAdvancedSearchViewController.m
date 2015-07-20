@@ -108,6 +108,21 @@ typedef NS_ENUM(NSInteger, MITMobiusAdvancedSearchSection) {
     [self _updateNavigationBarState:animated];
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 #pragma mark Interface Actions
 - (IBAction)_cancelButtonWasTapped:(UIBarButtonItem*)sender
 {

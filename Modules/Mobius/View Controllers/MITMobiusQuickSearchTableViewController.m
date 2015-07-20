@@ -31,6 +31,21 @@ static NSString * const MITMobiusQuickSearchTableViewCellIdentifier = @"MITMobiu
     [self downloadObjectsForQuickSearch];
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 - (void)downloadObjectsForQuickSearch
 {
     __weak MITMobiusQuickSearchTableViewController *weakSelf = self;

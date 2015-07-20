@@ -93,6 +93,21 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     }
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 #pragma mark Data Loading/Updating
 - (BOOL)didPerformSearch
 {

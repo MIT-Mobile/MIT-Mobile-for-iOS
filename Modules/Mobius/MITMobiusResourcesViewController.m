@@ -182,6 +182,21 @@ NSString* const MITMobiusResourceRoomAnnotationReuseIdentifier = @"MITMobiusReso
     [self reloadData];
 }
 
+- (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation
+{
+    return UIInterfaceOrientationPortrait;
+}
+
+- (NSUInteger)supportedInterfaceOrientations
+{
+    return UIInterfaceOrientationMaskPortrait;
+}
+
+- (BOOL)shouldAutorotate
+{
+    return YES;
+}
+
 - (void)willRotateToInterfaceOrientation:(UIInterfaceOrientation)toInterfaceOrientation duration:(NSTimeInterval)duration
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
