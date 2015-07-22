@@ -114,14 +114,14 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
     return (self.isLoading || (self.dataSource.resources != nil));
 }
 
-- (void)reloadDataSourceWithField:(NSString*)field value:(NSString*)value completion:(void(^)(void))block
+- (void)reloadDataSourceForAttribute:(MITMobiusCustomQueryAttribute*)attribute completion:(void(^)(void))block
 {
-    NSParameterAssert(field);
-    NSParameterAssert(value);
-
-    [self.dataSource setCustomField:field withValue:value];
-    [self willStartDataSourceLoad];
-
+    NSParameterAssert(attribute);
+    self.dataSource.customAttribute = attribute;
+    
+    self.loading = YES;
+    [self showResultsView:YES];
+    
     __weak MITMobiusRootPhoneViewController *weakSelf = self;
     [self.dataSource getResources:^(MITMobiusResourceDataSource *dataSource, NSError *error) {
         MITMobiusRootPhoneViewController *blockSelf = weakSelf;
@@ -889,12 +889,19 @@ static NSTimeInterval MITMobiusRootPhoneDefaultAnimationDuration = 0.33;
 {
     NSParameterAssert(roomSetOrResourceType);
 
+    MITMobiusCustomQueryAttribute *attribute = [[MITMobiusCustomQueryAttribute alloc] init];
     if ([roomSetOrResourceType isKindOfClass:[MITMobiusRoomSet class]]) {
         MITMobiusRoomSet *roomSet = (MITMobiusRoomSet*)roomSetOrResourceType;
-        [self reloadDataSourceWithField:@"roomset" value:roomSet.identifier completion:nil];
+        [attribute setAttributeIdentifier:@"roomset" withName:@"Shops & Labs"];
+        [attribute setValueIdentifier:roomSet.identifier withName:roomSet.name];
     } else if ([roomSetOrResourceType isKindOfClass:[MITMobiusResourceType class]]) {
         MITMobiusResourceType *resourceType = (MITMobiusResourceType*)roomSetOrResourceType;
-        [self reloadDataSourceWithField:@"_type" value:resourceType.identifier completion:nil];
+        [attribute setAttributeIdentifier:@"_type" withName:@"Machine Type"];
+        [attribute setValueIdentifier:resourceType.identifier withName:resourceType.type];
+    }
+
+    if (attribute) {
+        [self reloadDataSourceForAttribute:attribute completion:nil];
     }
 }
 

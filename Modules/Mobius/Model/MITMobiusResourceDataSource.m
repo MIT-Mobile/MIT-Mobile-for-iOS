@@ -19,9 +19,6 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
 @property (nonatomic,strong) NSOperationQueue *mappingOperationQueue;
 @property (copy) NSArray *resourceObjectIdentifiers;
 
-@property (nonatomic,copy) NSString *customField;
-@property (nonatomic,copy) NSString *customValue;
-
 - (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)resourcesWithQueryObject:(MITMobiusRecentSearchQuery*)queryObject completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
 - (void)resourcesWithQuery:(NSString*)queryString completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block;
@@ -72,24 +69,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     return resources;
 }
 
-- (void)setCustomField:(NSString*)field withValue:(NSString*)value
+- (void)setCustomAttribute:(MITMobiusCustomQueryAttribute *)customAttribute
 {
-    NSParameterAssert(field);
-    NSParameterAssert(value);
-    
-    self.customField = field;
-    self.customValue = value;
-    
+    _customAttribute = customAttribute;
+
     _queryString = nil;
     _query = nil;
-    _lastFetched = nil;
-    _resourceObjectIdentifiers = nil;
-}
-
-- (void)clearCustomField
-{
-    self.customField = nil;
-    self.customValue = nil;
     _lastFetched = nil;
     _resourceObjectIdentifiers = nil;
 }
@@ -106,8 +91,8 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
                 result = [NSString stringWithString:self.query.text];
             }
         }];
-    } else if (self.customField) {
-        result = [NSString stringWithFormat:@"%@: %@",self.customField,self.customValue];
+    } else if (self.customAttribute) {
+        result = [NSString stringWithFormat:@"%@: %@",self.customAttribute.name,self.customAttribute.valueName];
     }
 
     return result;
@@ -120,7 +105,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     _query = nil;
     _lastFetched = nil;
     _resourceObjectIdentifiers = nil;
-    [self clearCustomField];
+    _customAttribute = nil;
 }
 
 - (void)setQuery:(MITMobiusRecentSearchQuery *)query
@@ -135,12 +120,12 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     _queryString = nil;
     _lastFetched = nil;
     _resourceObjectIdentifiers = nil;
-    [self clearCustomField];
+    _customAttribute = nil;
 }
 
 - (MITMobiusResourceSearchType)queryType
 {
-    if (self.customField) {
+    if (self.customAttribute) {
         return MITMobiusResourceSearchTypeCustomField;
     } else if (self.query.options.count > 0) {
         return MITMobiusResourceSearchTypeComplexQuery;
@@ -193,7 +178,7 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             break;
             
         case MITMobiusResourceSearchTypeCustomField:
-            [self resourcesWithField:self.customField value:self.customValue completion:completion];
+            [self resourcesWithCustomAttribute:completion];
             break;
             
         case MITMobiusResourceSearchTypeQuery:
@@ -309,17 +294,15 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
     [self resourcesWithQueryObject:query completion:block];
 }
 
-- (void)resourcesWithField:(NSString*)field value:(NSString*)value completion:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
+- (void)resourcesWithCustomAttribute:(void(^)(MITMobiusResourceDataSource* dataSource, NSError *error))block
 {
-    NSParameterAssert(field);
-    NSParameterAssert(value);
-
+    NSParameterAssert(self.customAttribute);
     NSURL *resourceReservations = [MITMobiusDataSource mobiusServerURL];
     NSMutableString *urlPath = [NSMutableString stringWithFormat:@"/%@",MITMobiusResourcePathPattern];
     
     
-    NSDictionary *predicate = @{@"where" : @[@{ @"field" : field,
-                                                @"value" : value }]};
+    NSDictionary *predicate = @{@"where" : @[@{ @"field" : self.customAttribute.identifier,
+                                                @"value" : self.customAttribute.valueIdentifier }]};
     NSData *jsonData = [NSJSONSerialization dataWithJSONObject:predicate options:0 error:nil];
     NSString *jsonString = [[[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding] urlEncodeUsingEncoding:NSUTF8StringEncoding useFormURLEncoded:YES];
     [urlPath appendFormat:@"?params=%@&format=json",jsonString];
@@ -561,6 +544,38 @@ static NSString* const MITMobiusResourcePathPattern = @"resource";
             return NO;
         }
     } error:nil];
+}
+
+@end
+
+@implementation MITMobiusCustomQueryAttribute
+@synthesize name = _name;
+@synthesize identifier = _identifier;
+@synthesize valueName = _valueName;
+@synthesize valueIdentifier = _valueIdentifier;
+
+- (instancetype)init
+{
+    self = [super init];
+    if (self) {
+
+    }
+
+    return self;
+}
+
+- (void)setAttributeIdentifier:(NSString*)identifier withName:(NSString*)name
+{
+    NSParameterAssert(identifier);
+    _identifier = [identifier copy];
+    _name = [name copy];
+}
+
+- (void)setValueIdentifier:(NSString*)identifier withName:(NSString*)name
+{
+    NSParameterAssert(identifier);
+    _valueIdentifier = [identifier copy];
+    _valueName = [name copy];
 }
 
 @end
