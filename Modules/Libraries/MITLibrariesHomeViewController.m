@@ -236,13 +236,13 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
-            cell.textLabel.text = @"Ask Us!";
+            cell.textLabel.text = @"Ask Us";
             cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionTellUsRow: {
-            cell.textLabel.text = @"Tell Us!";
+            cell.textLabel.text = @"Tell Us";
             cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewSecure];
             break;
         }

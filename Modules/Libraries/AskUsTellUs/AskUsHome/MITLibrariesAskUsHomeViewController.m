@@ -104,13 +104,13 @@ static CGFloat const MITLibrariesAskUsHomeCellPadding = 38.0;
     NSString *titleText;
     switch ([self askUsOptionForIndexPath:indexPath]) {
         case MITLibrariesAskUsOptionAskUs:
-            titleText = @"Ask Us!";
+            titleText = @"Ask Us";
             break;
         case MITLibrariesAskUsOptionConsultation:
             titleText = @"Make a research consultation appointment";
             break;
         case MITLibrariesAskUsOptionTellUs:
-            titleText = @"Tell Us!";
+            titleText = @"Tell Us";
             break;
         case MITLibrariesAskUsOptionGeneral:
             titleText = @"General Help";
