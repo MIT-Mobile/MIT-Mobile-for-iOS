@@ -52,7 +52,7 @@
 
 + (NSString *)aboutMITURLString
 {
-    return @"http://web.mit.edu/institute-events/events/";
+    return @"http://web.mit.edu/institute-events/events/tour.html";
 }
 
 + (NSString *)aboutGuidedToursText
