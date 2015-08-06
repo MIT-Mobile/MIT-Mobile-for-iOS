@@ -19,7 +19,7 @@ static NSString * const kMITLibraryUserDefaultsKeyLocationAndHours = @"kMITLibra
 {
     [super viewDidLoad];
     
-    self.title = @"Locations & Hours";
+    self.title = @"Hours & Locations";
     
     [self setupTableView];
     

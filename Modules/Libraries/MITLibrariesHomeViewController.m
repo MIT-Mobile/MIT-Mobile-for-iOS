@@ -230,7 +230,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
-            cell.textLabel.text = @"Locations & Hours";
+            cell.textLabel.text = @"Hours & Locations";
             cell.accessoryView = nil;
             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
             break;
