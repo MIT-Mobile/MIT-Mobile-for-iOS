@@ -230,7 +230,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 - (void)setupToolbar
 {
     self.navigationController.toolbar.translucent = NO;
-    self.locationsAndHoursButton = [[UIBarButtonItem alloc] initWithTitle:@"Locations & Hours" style:UIBarButtonItemStylePlain target:self action:@selector(locationsAndHoursPressed:)];
+    self.locationsAndHoursButton = [[UIBarButtonItem alloc] initWithTitle:@"Hours & Locations" style:UIBarButtonItemStylePlain target:self action:@selector(locationsAndHoursPressed:)];
     self.askUsTellUsButton = [[UIBarButtonItem alloc] initWithTitle:@"Ask Us/Tell Us" style:UIBarButtonItemStylePlain target:self action:@selector(askUsTellUsPressed:)];
     self.quickLinksButton = [[UIBarButtonItem alloc] initWithTitle:@"Quick Links" style:UIBarButtonItemStylePlain target:self action:@selector(quickLinksPressed:)];
     

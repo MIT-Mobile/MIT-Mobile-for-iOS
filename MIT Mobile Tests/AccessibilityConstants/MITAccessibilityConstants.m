@@ -28,8 +28,8 @@ NSString * const MITAccessibilityLibrariesHomeSearchBarLabel = @"Libraries Home 
 // Corresponds to the visible text in the cells on the home screen
 NSString * const MITAccessibilityLibrariesHomeCellYourAccount = @"Your Account";
 NSString * const MITAccessibilityLibrariesHomeCellLocations = @"Locations";
-NSString * const MITAccessibilityLibrariesHomeCellAskUs = @"Ask Us!";
-NSString * const MITAccessibilityLibrariesHomeCellTellUs = @"Tell Us!";
+NSString * const MITAccessibilityLibrariesHomeCellAskUs = @"Ask Us";
+NSString * const MITAccessibilityLibrariesHomeCellTellUs = @"Tell Us";
 NSString * const MITAccessibilityLibrariesHomeCellExternalLinkResearch = @"Mobile tools for library research";
 NSString * const MITAccessibilityLibrariesHomeCellExternalLinkNews = @"MIT Libraries News";
 NSString * const MITAccessibilityLibrariesHomeCellExternalLinkWebsite = @"Full MIT Libraries website";
