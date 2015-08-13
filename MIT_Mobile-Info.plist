@@ -17,7 +17,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0.2.1</string>
+	<string>4.0.3</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -42,7 +42,7 @@
 	<key>MITAboutMITText</key>
 	<string>The Massachusetts Institute of Technology, a co-educational privately endowed research university, is dedicated to advancing knowledge and educating students in science, technology, and other areas of scholarship to serve the nation and world. The Institute has more than 900 faculty and 10,000 undergraduate and graduate students.
 
-MIT's commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
+MIT&apos;s commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
 	<key>MITBuildDescription</key>
 	<string></string>
 	<key>MITBuildRevision</key>
