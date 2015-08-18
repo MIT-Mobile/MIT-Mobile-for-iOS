@@ -4,7 +4,6 @@
 #import "UIKit+MITAdditions.h"
 #import "UIKit+MITLibraries.h"
 #import "MITLibrariesSearchResultsListViewController.h"
-#import "MITLibrariesLocationsHoursViewController.h"
 #import "MITLibrariesSearchResultDetailViewController.h"
 #import "MITLibrariesYourAccountViewController.h"
 #import "MITLibrariesAskUsHomeViewController.h"
@@ -27,6 +26,8 @@ typedef NS_ENUM(NSInteger, MITLibrariesHomeViewControllerLinksStatus) {
     MITLibrariesHomeViewControllerLinksStatusFailed
 };
 
+static NSString * const kMITLibrariesHoursAndLocationsURL = @"http://libraries.mit.edu/hours";
+
 static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @"kMITLibrariesHomeViewControllerDefaultCellIdentifier";
 
 @interface MITLibrariesHomeViewController () <UITableViewDataSource, UITableViewDelegate, UISearchDisplayDelegate, UISearchBarDelegate, MITLibrariesSearchResultsViewControllerDelegate>
@@ -41,7 +42,6 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
 @property (nonatomic, weak) IBOutlet UIView *preSearchOverlay;
 @property (nonatomic, strong) MITLibrariesSearchResultsListViewController *searchResultsViewController;
 @property (nonatomic, strong) IBOutlet UITableView *mainTableView;
-@property (nonatomic, strong) MITLibrariesLocationsHoursViewController *locationsHoursVC;
 @end
 
 @implementation MITLibrariesHomeViewController
@@ -231,8 +231,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
             cell.textLabel.text = @"Hours & Locations";
-            cell.accessoryView = nil;
-            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
@@ -298,7 +297,10 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionLocationHoursRow: {
-            [self.navigationController pushViewController:self.locationsHoursVC animated:YES];
+            NSURL *hoursAndLocationsUrl = [NSURL URLWithString:kMITLibrariesHoursAndLocationsURL];
+            if ([[UIApplication sharedApplication] canOpenURL:hoursAndLocationsUrl]) {
+                [[UIApplication sharedApplication] openURL:hoursAndLocationsUrl];
+            }
             break;
         }
         case kMITLibrariesHomeViewControllerMainSectionAskUsRow: {
@@ -390,16 +392,6 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
     detailVC.worldcatItem = item;
     [detailVC hydrateCurrentItem];
     [self.navigationController pushViewController:detailVC animated:YES];
-}
-
-#pragma mark - Getters
-
-- (MITLibrariesLocationsHoursViewController *)locationsHoursVC
-{
-    if (!_locationsHoursVC) {
-        _locationsHoursVC = [[MITLibrariesLocationsHoursViewController alloc] initWithStyle:UITableViewStylePlain];
-    }
-    return _locationsHoursVC;
 }
 
 @end
