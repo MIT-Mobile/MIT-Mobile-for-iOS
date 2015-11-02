@@ -82,7 +82,7 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
             [self sendFeedback];
             break;
         case MITToursLinksCellInformationCenter:
-            [self openURLString:@"http://web.mit.edu/institute-events/events/"];
+            [self openURLString:@"http://institute-events.mit.edu/visit/tours"];
             break;
         case MITToursLinksCellAdmissions:
             [self openURLString:@"http://mitadmissions.org/"];
