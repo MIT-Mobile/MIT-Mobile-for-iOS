@@ -5,7 +5,7 @@
 #import <Foundation/Foundation.h>
 #import "MITMobileServerConfiguration.h"
 
-static NSString * const MobileAPIServers[] = {@"https://m.mit.edu/api", @"https://mobile-dev.mit.edu/api", @"https://mobile-stage.mit.edu/api", nil};
+static NSString * const MobileAPIServers[] = {@"http://m.mit.edu/api", @"http://mobile-dev.mit.edu/api", @"http://mobile-stage.mit.edu/api", nil};
 
 #if defined(DEBUG)
 NSUInteger const MITMobileServerConfigurationDefaultIndex = 1;
