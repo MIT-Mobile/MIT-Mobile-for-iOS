@@ -174,27 +174,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
         CGFloat height = self.webViewCellHeight + self.webViewInsets.bottom + self.webViewInsets.top;
         return height;
     } else if (indexPath.section == MITEmergencyTableSectionContacts && indexPath.row < [contacts count]) {
-        // There's probably a better way to do this —
-        // one that doesn't require hardcoding expected padding.
-        
-        // UITableViewCellStyleSubtitle layout differs between iOS 6 and 7
-        static UIEdgeInsets labelInsets;
-        labelInsets = UIEdgeInsetsMake(11., 15., 11., 34. + 2.);
-        
-        NSString *title = contacts[indexPath.row][@"title"];
-        NSString *phone = contacts[indexPath.row][@"phone"];
-        
-        CGFloat availableWidth = CGRectGetWidth(UIEdgeInsetsInsetRect(tableView.bounds, labelInsets));
-        
-        NSMutableParagraphStyle *paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] mutableCopy];
-        
-        CGSize titleSize = [title boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont buttonFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
-        
-        paragraphStyle.lineBreakMode = NSLineBreakByTruncatingTail;
-        
-        CGSize phoneSize = [phone boundingRectWithSize:CGSizeMake(availableWidth, 2000) options:NSStringDrawingUsesLineFragmentOrigin attributes:@{NSFontAttributeName: [UIFont systemFontOfSize:[UIFont smallSystemFontSize]], NSParagraphStyleAttributeName: paragraphStyle} context:nil].size;
-        
-        return MAX(titleSize.height + phoneSize.height + labelInsets.top + labelInsets.bottom, tableView.rowHeight);
+        return 60.;
     } else {
         return 44.;
     }
