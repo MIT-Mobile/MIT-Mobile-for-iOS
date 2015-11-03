@@ -157,7 +157,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             return 1;
         }
         case MITEmergencyTableSectionContacts: {
-            NSArray *numbers = [[EmergencyData sharedData] primaryPhoneNumbers];
+            NSArray *numbers = [[EmergencyData sharedData] primaryItems];
             return [numbers count] + 1;
         }
         default: {
@@ -168,7 +168,7 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath {
-    NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+    NSArray *contacts = [[EmergencyData sharedData] primaryItems];
     if (indexPath.section == MITEmergencyTableSectionAlerts) {
         
         CGFloat height = self.webViewCellHeight + self.webViewInsets.bottom + self.webViewInsets.top;
@@ -211,12 +211,17 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
             cell.detailTextLabel.textColor = [UIColor darkGrayColor];
         }
         
-        NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+        NSArray *contacts = [[EmergencyData sharedData] primaryItems];
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
-            cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
             cell.textLabel.text = contact[@"title"];
-            cell.detailTextLabel.text = contact[@"phone"];
+            // A primary contact item may be a phone number or a website URL
+            if (contact[@"phone"]) {
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewPhone];
+                cell.detailTextLabel.text = contact[@"phone"];
+            } else {
+                cell.accessoryView = [UIImageView accessoryViewWithMITType:MITAccessoryViewExternal];
+            }
         } else {
             cell.textLabel.text = @"More Emergency Contacts";
             cell.detailTextLabel.text = nil;
@@ -232,10 +237,18 @@ typedef NS_ENUM(NSUInteger, MITEmergencyTableSection) {
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath {
     if (indexPath.section == MITEmergencyTableSectionContacts) {
-        NSArray *contacts = [[EmergencyData sharedData] primaryPhoneNumbers];
+        NSArray *contacts = [[EmergencyData sharedData] primaryItems];
         if (indexPath.row < [contacts count]) {
             NSDictionary *contact = contacts[indexPath.row];
-            [MITTelephoneHandler attemptToCallPhoneNumber:contact[@"phone"]];
+            if (contact[@"phone"]) {
+                [MITTelephoneHandler attemptToCallPhoneNumber:contact[@"phone"]];
+            } else {
+                UIApplication *application = [UIApplication sharedApplication];
+                NSURL *url = [NSURL URLWithString:contact[@"url"]];
+                if ([application canOpenURL:url]) {
+                    [application openURL:url];
+                }
+            }
             
             [tableView deselectRowAtIndexPath:indexPath
                                      animated:YES];

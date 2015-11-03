@@ -10,7 +10,11 @@
 
 @interface EmergencyData ()
 @property (nonatomic,copy) NSArray *allPhoneNumbers;
-@property (nonatomic, copy) NSArray *primaryPhoneNumbers;
+@property (nonatomic, copy) NSDictionary *campusPolicePhoneNumber;
+@property (nonatomic, copy) NSDictionary *medicalPhoneNumber;
+@property (nonatomic, copy) NSDictionary *emergencyResponseGuideLink;
+@property (nonatomic, copy) NSDictionary *emergencyStatusPhoneNumber;
+@property (nonatomic, copy) NSArray *primaryItems;
 @property (copy) NSArray *contacts;
 @property (nonatomic, strong) NSString *announcementHTML;
 @property (nonatomic, strong) NSDate *publishedAt;
@@ -39,12 +43,18 @@ NSString * const EmergencyMessageLastRead = @"EmergencyLastRead";
     self = [super init];
     if (self != nil) {
         // TODO: get primary numbers from m.mit.edu (it's unlikely, but numbers might change)
-        self.primaryPhoneNumbers = @[@{@"title" : @"Campus Police",
-                                       @"phone" : @"617.253.1212"},
-                                     @{@"title" : @"MIT Medical",
-                                       @"phone" : @"617.253.1311"},
-                                     @{@"title" : @"Emergency Status",
-                                       @"phone" : @"617.253.7669"}];
+        self.campusPolicePhoneNumber = @{@"title" : @"Campus Police",
+                                         @"phone" : @"617.253.1212"};
+        self.medicalPhoneNumber = @{@"title" : @"MIT Medical",
+                                    @"phone" : @"617.253.1311"};
+        self.emergencyResponseGuideLink = @{@"title" : @"Emergency Response Guide",
+                                            @"url" : @"http://ehs.mit.edu/emergency/"};
+        self.emergencyStatusPhoneNumber = @{@"title" : @"Emergency Status",
+                                            @"phone" : @"617.253.7669"};
+        self.primaryItems = @[self.campusPolicePhoneNumber,
+                              self.medicalPhoneNumber,
+                              self.emergencyResponseGuideLink,
+                              self.emergencyStatusPhoneNumber];
         [self fetchContacts];
         
         [self checkForEmergencies];
