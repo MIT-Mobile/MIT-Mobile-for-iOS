@@ -107,9 +107,32 @@ static NSString* const MITLinksDataTitleKey = @"name";
     [self.loadingView removeFromSuperview];
 }
 
+#pragma mark - Hardcoded Links
+
+- (NSArray *)hardcodedLinks {
+    NSDictionary *quickRoomLink = @{MITLinksDataTitleKey: @"QuickRoom",
+                                    MITLinksDataURLKey: @"http://classrooms.mit.edu/classrooms"};
+    return @[quickRoomLink];
+}
+
+- (NSArray *)injectHardcodedLinks:(NSArray *)hardcodedLinks intoLinks:(NSArray *)links {
+    if (links.count > 0) {
+        NSMutableArray *mutableLinks = [links mutableCopy];
+        NSMutableDictionary *mutableSection = [links[0] mutableCopy];
+        mutableSection[MITLinksDataSectionKey] =
+            [mutableSection[MITLinksDataSectionKey] arrayByAddingObjectsFromArray:[self hardcodedLinks]];
+        mutableLinks[0] = [mutableSection copy];
+        return [mutableLinks copy];
+    } else {
+        return links;
+    }
+}
+
 #pragma mark - Server/Cache Difference handling
 
 - (void)updateLinksIfNeeded:(NSArray *)linksArray {
+    linksArray = [self injectHardcodedLinks:[self hardcodedLinks] intoLinks:linksArray];
+
     if (![linksArray isEqualToArray:self.linkResults]) {     // remove ! to test case where cache is different from server response
         [self saveLinksToCache:linksArray];
 
