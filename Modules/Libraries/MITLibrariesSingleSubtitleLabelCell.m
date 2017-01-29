@@ -11,6 +11,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.customTextLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
 }

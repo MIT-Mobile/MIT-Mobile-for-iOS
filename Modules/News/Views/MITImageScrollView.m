@@ -14,6 +14,7 @@
 @implementation MITImageScrollView
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.showsVerticalScrollIndicator = NO;
     self.showsHorizontalScrollIndicator = NO;
     self.bouncesZoom = YES;

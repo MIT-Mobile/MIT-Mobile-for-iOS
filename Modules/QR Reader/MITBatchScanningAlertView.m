@@ -8,6 +8,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self.layer setCornerRadius:5];
     
     CGRect frame = self.frame;
