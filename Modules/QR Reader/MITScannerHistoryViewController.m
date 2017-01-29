@@ -125,7 +125,7 @@
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if( [UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad )
     {

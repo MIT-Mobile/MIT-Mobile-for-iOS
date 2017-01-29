@@ -42,7 +42,7 @@
 
 #pragma mark - Rotation
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationPortrait;
 }

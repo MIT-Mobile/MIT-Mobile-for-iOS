@@ -207,7 +207,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 #pragma mark - Rotation
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationPortrait;
 }

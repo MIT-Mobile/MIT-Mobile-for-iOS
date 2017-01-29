@@ -387,7 +387,7 @@
 
 #pragma mark - Rotation
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     NSUInteger supportedOrientations = UIInterfaceOrientationMaskPortrait;
     if ([[UIDevice currentDevice] userInterfaceIdiom] == UIUserInterfaceIdiomPad) {
