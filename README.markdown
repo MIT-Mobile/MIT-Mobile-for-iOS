@@ -17,4 +17,4 @@ MIT Mobile is using <a href="https://cocoapods.org">cocoapods</a>, so make sure 
 
 #Feedback
 
-Questions, comments, and feedback are welcome at [iphone-app-feedback@mit.edu](mailto:iphone-app-feedback@mit.edu?subject=MIT Mobile for iPhone on GitHub).
+Questions, comments, and feedback are welcome at [tim@timapp.info](mailto:tim@timapp.info?subject=MIT Mobile for iPhone on GitHub).
