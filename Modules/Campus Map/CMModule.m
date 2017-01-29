@@ -1,6 +1,9 @@
 #import "CMModule.h"
 
 @implementation CMModule
+
+@dynamic rootViewController;
+
 - (instancetype)init
 {
     self = [super initWithName:MITModuleTagCampusMap title:@"Map"];

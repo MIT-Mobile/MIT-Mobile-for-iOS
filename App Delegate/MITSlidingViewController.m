@@ -57,6 +57,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 @dynamic leftBarButtonItem;
 @dynamic drawerViewController;
+@dynamic delegate;
 
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {

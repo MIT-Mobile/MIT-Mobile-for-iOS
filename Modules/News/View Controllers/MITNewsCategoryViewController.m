@@ -7,8 +7,6 @@
 
 @interface MITNewsCategoryViewController ()
 
-@property (nonatomic, getter=isSearching) BOOL searching;
-@property (nonatomic, strong) NSDate *lastUpdated;
 @property (nonatomic) BOOL movingBackFromStory;
 @property (nonatomic) BOOL isSingleDataSource;
 @property (nonatomic, copy) NSArray *dataSources;
