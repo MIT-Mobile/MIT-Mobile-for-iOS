@@ -97,7 +97,7 @@ static NSString *const kMITLinkCell = @"kMITLinkCell";
     if ([self.delegate respondsToSelector:@selector(presentMailViewController:)] && [MFMailComposeViewController canSendMail]) {
         NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
         NSString *email = infoDict[@"MITFeedbackAddress"];
-        NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@) on %@ %@", infoDict[@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
+        NSString *subject = [NSString stringWithFormat:@"Feedback for Tim Info %@ (%@) on %@ %@", infoDict[@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
         
         MFMailComposeViewController *mailComposer = [[MFMailComposeViewController alloc] init];
         [mailComposer setSubject:subject];

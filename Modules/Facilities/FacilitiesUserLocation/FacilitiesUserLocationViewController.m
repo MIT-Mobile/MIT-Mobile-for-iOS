@@ -254,7 +254,7 @@ static const NSUInteger kMaxResultCount = 10;
     switch([error code]) {
         case kCLErrorDenied:{
             UIAlertView *alert = [[UIAlertView alloc] initWithTitle:@"Unable to Determine Location"
-                                                             message:@"Please turn on location services to allow MIT Mobile to determine your location."
+                                                             message:@"Please turn on location services to allow Tim Info to determine your location."
                                                             delegate:self
                                                    cancelButtonTitle:@"OK"
                                                    otherButtonTitles:nil];

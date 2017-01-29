@@ -190,7 +190,7 @@
             case 2: {
                 NSDictionary *infoDict = [[NSBundle mainBundle] infoDictionary];
                 NSString *email = infoDict[@"MITFeedbackAddress"];
-                NSString *subject = [NSString stringWithFormat:@"Feedback for MIT Mobile %@ (%@) on %@ %@", infoDict[@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
+                NSString *subject = [NSString stringWithFormat:@"Feedback for Tim Info %@ (%@) on %@ %@", infoDict[@"CFBundleVersion"], [MITBuildInfo description], [[UIDevice currentDevice] systemName], [[UIDevice currentDevice] systemVersion]];
                 
                 if ([MFMailComposeViewController canSendMail]) {
                     MFMailComposeViewController *mailView = [[MFMailComposeViewController alloc] init];

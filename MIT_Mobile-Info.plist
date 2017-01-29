@@ -5,9 +5,11 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>MIT Mobile</string>
+	<string>Tim Info</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Tim Info</string>
 	<key>CFBundleIdentifier</key>
 	<string>edu.mit.mitmobile</string>
 	<key>CFBundleInfoDictionaryVersion</key>
@@ -17,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0</string>
+	<string>1.0</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -32,17 +34,17 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>1</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MITAboutAppText</key>
-	<string>MIT Mobile for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iOS platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
+	<string>Tim Info for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iOS platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
 	<key>MITAboutMITText</key>
 	<string>The Massachusetts Institute of Technology, a co-educational privately endowed research university, is dedicated to advancing knowledge and educating students in science, technology, and other areas of scholarship to serve the nation and world. The Institute has more than 900 faculty and 10,000 undergraduate and graduate students.
 
-MIT's commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
+MIT&apos;s commitment to innovation has led to a host of scientific breakthroughs and technological advances. Achievements include the first chemical synthesis of penicillin and vitamin A, the development of inertial guidance systems, modern technologies for artificial limbs, and the magnetic core memory that led to the development of digital computers. Sixty-three alumni, faculty, researchers and staff have won the Nobel Prizes.</string>
 	<key>MITBuildDescription</key>
 	<string></string>
 	<key>MITBuildRevision</key>
@@ -50,16 +52,16 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<key>MITCopyright</key>
 	<string></string>
 	<key>MITFeedbackAddress</key>
-	<string>iphone-app-feedback@mit.edu</string>
+	<string>tim@timapp.info</string>
 	<key>NSAppTransportSecurity</key>
 	<dict>
 		<key>NSAllowsArbitraryLoads</key>
 		<true/>
 	</dict>
 	<key>NSLocationUsageDescription</key>
-	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<string>Tim Info uses your location to find nearby shuttle stops and to show your location on maps.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<string>Tim Info uses your location to find nearby shuttle stops and to show your location on maps.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
