@@ -127,6 +127,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+//Disable Push Notifications
+    /*
     if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |
                                                     UIUserNotificationTypeSound |
@@ -134,6 +136,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+     */
 
     [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
