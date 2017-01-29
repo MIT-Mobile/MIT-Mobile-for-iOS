@@ -733,7 +733,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
+        MITMapPlace *place = (MITMapPlace *)view.annotation;
         [self pushDetailViewControllerForPlace:place];
     }
 }
@@ -758,7 +758,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
+    MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
     self.currentlySelectedPlace = place;
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.place = place;
@@ -780,7 +780,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
+    MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
     
     self.currentlySelectedPlace = place;
     self.calloutView.titleText = place.title;
@@ -808,6 +808,11 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self pushDetailViewControllerForPlace:self.currentlySelectedPlace];
     }
+}
+
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
+{
+    
 }
 
 #pragma mark - MITMapResultsListViewControllerDelegate
