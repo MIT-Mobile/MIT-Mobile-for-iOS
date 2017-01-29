@@ -1,8 +1,8 @@
 #About the app
 
-MIT Mobile for iPhone is the official iPhone app for MIT. It is created and maintained by MIT and shared under the MIT license. The project includes components from other open source projects — their licenses are detailed in their respective source files.
+Tim Info is an app shared under the MIT license. The project includes components from other open source projects — their licenses are detailed in their respective source files.
 
-MIT Mobile for Phone is free and available [on the App Store](http://itunes.apple.com/us/app/mit-mobile/id353590319).
+Tim Info for Phone is free and coming soon!
 
 Contributions are welcome!
 
