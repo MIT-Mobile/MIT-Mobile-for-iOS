@@ -144,7 +144,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
         if ([stopId isEqualToString:prediction.stopId] && [vehicleId isEqualToString:prediction.vehicleId]) {
             NSDate *notificationPredicationDate = notification.userInfo[kMITShuttleStopNotificationPredictionDateKey];
             NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
-            if (abs([predictionDate timeIntervalSinceDate:notificationPredicationDate]) < kMITShuttleStopNotificationVariance) {
+            if (fabs([predictionDate timeIntervalSinceDate:notificationPredicationDate]) < kMITShuttleStopNotificationVariance) {
                 return notification;
             }
         }
