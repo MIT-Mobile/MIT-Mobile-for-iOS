@@ -51,6 +51,11 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<string></string>
 	<key>MITFeedbackAddress</key>
 	<string>iphone-app-feedback@mit.edu</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
 	<key>NSLocationUsageDescription</key>
 	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
