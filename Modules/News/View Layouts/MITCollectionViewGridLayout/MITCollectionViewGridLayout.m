@@ -267,7 +267,6 @@
         CGFloat headerHeight = self.headerHeight;
         
         if ([self.collectionViewDelegate respondsToSelector:@selector(collectionView:layout:heightForHeaderInSection:withWidth:)]) {
-            MITCollectionViewGridLayoutSection *section = [self layoutForSection:indexPath.section];
             headerHeight = [self.collectionViewDelegate collectionView:self.collectionView layout:self heightForHeaderInSection:section withWidth:CGRectGetWidth(self.collectionView.bounds)];
         }
         

@@ -141,7 +141,8 @@
 
             NSString *message = [NSString stringWithFormat:@"%@ [%@]",faultString,faultCode];
             NSError *error = [NSError errorWithDomain:MITECPErrorDomain
-                                                 code:MITECPErrorFault
+#warning used to be MITECPErrorFault
+                                                 code:0
                                              userInfo:@{NSLocalizedDescriptionKey : message}];
             result = error;
         }

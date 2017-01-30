@@ -78,7 +78,7 @@ static NSString * MITLibrariesDateCodingKeyEndDate = @"MITLibrariesDateCodingKey
 {
     NSDateFormatter *dateFormatter = [MITLibrariesDate dateFormatter];
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    NSDateComponents *dateComponents = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:date];
+    NSDateComponents *dateComponents = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:date];
     
     if (dateComponents.hour == 0) {
         return @"midnight";
