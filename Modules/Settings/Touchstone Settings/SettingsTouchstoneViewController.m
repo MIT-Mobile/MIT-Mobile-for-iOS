@@ -583,7 +583,8 @@ static NSString* const MITTouchstoneSettingsLockIconExplanationText = @"A lock i
         if ([application respondsToSelector:@selector(registerForRemoteNotifications)]) {
             [application registerForRemoteNotifications];
         } else {
-            [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
+#warning no remote notifications
+            //[application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
         }
     }
 }

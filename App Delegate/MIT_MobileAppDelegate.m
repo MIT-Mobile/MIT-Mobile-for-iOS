@@ -112,7 +112,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     [self updateBasicServerInfo];
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
-
+#warning no remote notifications
+/*
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 
@@ -121,13 +122,13 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     } else {
         [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     }
-
+*/
     return YES;
 }
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
-//Disable Push Notifications
+#warning no remote notifications
     /*
     if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |

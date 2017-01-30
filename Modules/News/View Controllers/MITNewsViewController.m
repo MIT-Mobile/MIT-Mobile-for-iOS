@@ -451,8 +451,13 @@ CGFloat const refreshControlTextHeight = 19;
         }
     }
     if (self.searching) {
+#warning come back and fix this ... this points to another class's method
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
         UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
+#pragma clang diagnostic pop
+
         [rightBarItems addObject:cancelSearchItem];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {

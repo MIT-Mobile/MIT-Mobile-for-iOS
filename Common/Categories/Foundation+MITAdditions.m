@@ -633,7 +633,7 @@ typedef struct {
         regex = [NSRegularExpression regularExpressionWithPattern:@"\\s{2,}"
                                                           options:0 error:&error];
         stripped = [regex stringByReplacingMatchesInString:stripped
-                                                   options:NSRegularExpressionDotMatchesLineSeparators
+                                                   options:0
                                                      range:NSMakeRange(0, [stripped length])
                                               withTemplate:@" "];
     } else {
