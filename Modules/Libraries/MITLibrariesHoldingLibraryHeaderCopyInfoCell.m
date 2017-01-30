@@ -12,6 +12,7 @@
 @implementation MITLibrariesHoldingLibraryHeaderCopyInfoCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.callNumberLabel setLibrariesTextStyle:MITLibrariesTextStyleDetail];
     [self.extraInfoLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];

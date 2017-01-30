@@ -12,6 +12,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.backgroundColor = [UIColor colorWithRed:244.0/255.0 green:245.0/255.0 blue:248.0/255.0 alpha:1.0];
     self.mealTimeLabel.textColor = [UIColor mit_greyTextColor];
     [self.previousMealButton setImage:[UIImage imageNamed:MITImageActionArrowLeft] forState:UIControlStateNormal];

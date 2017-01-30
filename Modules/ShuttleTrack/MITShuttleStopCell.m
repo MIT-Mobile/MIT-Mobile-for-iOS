@@ -23,6 +23,7 @@ static NSString * const kTimeUnavailableText = @"—";
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.routeIndicatorCircleView.layer.cornerRadius = self.routeIndicatorCircleView.frame.size.width / 2;
 }
 

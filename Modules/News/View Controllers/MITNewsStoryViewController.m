@@ -85,7 +85,7 @@
     [self.bodyView loadHTMLString:[self htmlBody]
                           baseURL:nil];
 
-    if (!UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
+    if (UI_USER_INTERFACE_IDIOM() != UIUserInterfaceIdiomPad) {
 
         __block NSURL *imageURL = nil;
         [self.managedObjectContext performBlockAndWait:^{

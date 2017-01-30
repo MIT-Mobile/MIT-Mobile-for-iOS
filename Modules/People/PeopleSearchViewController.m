@@ -60,7 +60,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }

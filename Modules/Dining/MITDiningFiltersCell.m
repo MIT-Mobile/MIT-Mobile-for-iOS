@@ -14,6 +14,7 @@ static CGFloat const kMITDiningFiltersCellEstimatedHeight = 35.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
     
     self.filtersLabel.textColor = [UIColor mit_greyTextColor];

@@ -16,6 +16,7 @@ static CGFloat const kMITDiningScheduleCellEstimatedHeight = 67.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     self.dateRangesLabel.textColor = [UIColor mit_tintColor];

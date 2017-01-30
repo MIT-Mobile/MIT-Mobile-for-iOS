@@ -15,6 +15,7 @@ static int const kAlertViewTagShouldOpenLink = 12323;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     // Initialization code
     self.contentView.autoresizingMask = UIViewAutoresizingFlexibleHeight|UIViewAutoresizingFlexibleWidth;
     self.selectionStyle = UITableViewCellSelectionStyleNone;

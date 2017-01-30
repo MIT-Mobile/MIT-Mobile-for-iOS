@@ -18,6 +18,7 @@ static NSString * const PeopleStateDetail = @"detail";
 
 @implementation PeopleModule
 @synthesize peopleController = _peopleController;
+@dynamic rootViewController;
 
 - (id)init
 {

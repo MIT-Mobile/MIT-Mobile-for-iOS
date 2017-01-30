@@ -2,6 +2,9 @@
 #import "AboutTableViewController.h"
 
 @implementation AboutModule
+
+@dynamic rootViewController;
+
 - (instancetype) init {
     self = [super initWithName:MITModuleTagAbout title:@"About"];
     if (self) {

@@ -118,7 +118,7 @@ static NSUInteger MITNewsViewControllerTableViewHeaderHeight = 8;
     return UIInterfaceOrientationPortrait;
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }

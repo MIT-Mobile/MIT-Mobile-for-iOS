@@ -15,6 +15,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.separatorInset = UIEdgeInsetsMake(0, 91, 0, 0);
 }
 

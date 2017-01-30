@@ -127,6 +127,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+//Disable Push Notifications
+    /*
     if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |
                                                     UIUserNotificationTypeSound |
@@ -134,6 +136,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+     */
 
     [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
@@ -492,8 +495,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     ToursModule *toursModule = [[ToursModule alloc] init];
     [modules addObject:toursModule];
 
-    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
-    [modules addObject:emergencyModule];
+    //EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
+    //[modules addObject:emergencyModule];
 
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
     [modules addObject:librariesModule];

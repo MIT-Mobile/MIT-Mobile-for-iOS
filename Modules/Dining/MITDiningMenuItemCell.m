@@ -16,6 +16,7 @@ static CGFloat kMITDiningMenuItemCellEstimatedHeight = 44.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
     
     self.selectionStyle = UITableViewCellSelectionStyleNone;

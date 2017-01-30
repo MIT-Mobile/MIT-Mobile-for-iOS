@@ -15,6 +15,7 @@ NSString * const kMITShuttleRouteCellIdentifier = @"MITShuttleRouteCell";
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.textLabel.font = [UIFont systemFontOfSize:17.0];
 }
 
