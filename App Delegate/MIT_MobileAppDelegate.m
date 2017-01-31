@@ -209,6 +209,9 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Do Nothing
+    if ([[UIApplication sharedApplication] currentUserNotificationSettings].types && UIUserNotificationTypeBadge) {
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    }
 }
 
 #pragma mark - Shared resources

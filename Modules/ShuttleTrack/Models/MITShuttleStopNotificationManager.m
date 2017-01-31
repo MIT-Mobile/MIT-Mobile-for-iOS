@@ -52,6 +52,9 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 - (void)toggleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
 {
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    
     MITShuttlePrediction *corePrediction = [predictionGroup firstObject];
     UILocalNotification *scheduledNote = [self notificationForPrediction:corePrediction];
     if (scheduledNote) {
