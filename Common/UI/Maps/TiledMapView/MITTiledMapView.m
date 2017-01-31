@@ -99,7 +99,7 @@ const MKCoordinateRegion kMITToursDefaultMapRegion = {{42.359979, -71.091860}, {
     if (buttonIndex == 0)
     {
 #ifdef __IPHONE_8_0 // This allows us to compile with XCode 5/iOS 7 SDK
-        if ((&UIApplicationOpenSettingsURLString != NULL)) {
+        if ((UIApplicationOpenSettingsURLString != NULL)) {
             [[UIApplication sharedApplication] openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
         }
 #endif
