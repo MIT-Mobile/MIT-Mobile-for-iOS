@@ -7,7 +7,7 @@
 @class HighlightTableViewCell;
 @class FacilitiesLocationSearch;
 
-@interface FacilitiesCategoryViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface FacilitiesCategoryViewController : UIViewController
 @property (nonatomic,strong) UITableView* tableView;
 @property (nonatomic,strong) MITLoadingActivityView* loadingView;
 
@@ -20,7 +20,5 @@
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView;
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section;
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath;
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText;
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar;
 
 @end

@@ -504,12 +504,6 @@
     [self.tableView reloadData];
 }
 
-#pragma mark - UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    [self handleUpdatedSearchText:searchText];
-}
-
 - (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
     [self handleUpdatedSearchText:searchController.searchBar.text];
