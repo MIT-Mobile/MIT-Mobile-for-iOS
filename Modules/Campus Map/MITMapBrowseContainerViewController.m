@@ -98,8 +98,13 @@
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         recentsViewController.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemDone target:self action:@selector(doneButtonItemTapped:)];
     }
-    recentsViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:recentsViewController action:@selector(clearRecentSearchesButtonTapped:)];
+#warning come back and fix this ... this points to another class's method
     
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
+    recentsViewController.navigationItem.leftBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Clear" style:UIBarButtonItemStylePlain target:recentsViewController action:@selector(clearRecentSearchesButtonTapped:)];
+#pragma clang diagnostic pop
+
     self.viewControllers = @[[[UINavigationController alloc] initWithRootViewController:categoriesViewController],
                              [[UINavigationController alloc] initWithRootViewController:bookmarksViewController],
                              [[UINavigationController alloc] initWithRootViewController:recentsViewController]];

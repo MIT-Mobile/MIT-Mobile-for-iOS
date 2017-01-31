@@ -209,7 +209,7 @@ typedef NS_ENUM(NSInteger, MITToursSelfGuidedTour) {
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationPortrait;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (BOOL)shouldAutorotate

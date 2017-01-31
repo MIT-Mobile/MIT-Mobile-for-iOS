@@ -505,6 +505,8 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
 
 - (void)migrateBookmarks
 {
+#warning guess we don't want to migrate bookmarks
+/*
     return;
 
     NSURL *userDocumentsURL = [[NSFileManager defaultManager] URLForDirectory:NSDocumentDirectory
@@ -547,6 +549,7 @@ static NSString* const MITMapDefaultsPlacesFetchDateKey = @"MITMapDefaultsPlaces
             }
         }];
     }
+*/
 }
 
 @end

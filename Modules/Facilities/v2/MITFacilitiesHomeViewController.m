@@ -894,7 +894,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
     if( [self adjustedFieldRow:self.editingIndexPath.row] == MITFacilitiesFormFieldDescription )
     {
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingIndexPath.row inSection:0]
-                              atScrollPosition:UITableViewRowAnimationTop animated:YES];
+                              atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
     
     self.isKeyboardUp = YES;

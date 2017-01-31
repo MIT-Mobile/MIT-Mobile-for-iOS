@@ -7,7 +7,7 @@
 
 + (NSString*)relativeDateStringFromDate:(NSDate*)fromDate toDate:(NSDate*)toDate {
     NSMutableString *result = [NSMutableString string];
-    NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
+    NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSCalendarUnitSecond
                                                                  fromDate:fromDate
                                                                    toDate:toDate
                                                                   options:0];

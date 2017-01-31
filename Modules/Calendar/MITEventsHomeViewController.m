@@ -300,13 +300,13 @@ static NSString * const MITDayPickerCollectionViewCellIdentifier = @"MITDayPicke
 
 - (void)datePickerDidCancel:(MITDatePickerViewController *)datePicker
 {
-    [self dismissViewControllerAnimated:datePicker completion:NULL];
+    [self dismissViewControllerAnimated:datePicker != nil completion:NULL];
 }
 
 - (void)datePicker:(MITDatePickerViewController *)datePicker didSelectDate:(NSDate *)date
 {
     self.dayPickerController.currentlyDisplayedDate = date;
-    [self dismissViewControllerAnimated:datePicker completion:NULL];
+    [self dismissViewControllerAnimated:datePicker != nil completion:NULL];
 }
 
 #pragma mark - Calendar Selection

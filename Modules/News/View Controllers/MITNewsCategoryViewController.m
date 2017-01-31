@@ -46,7 +46,7 @@
         self.presentationStyle = MITNewsPresentationStyleGrid;
         self.gridViewController.showSingleCategory = YES;
     }
-    self.previousPresentationStyle = nil;
+    self.previousPresentationStyle = self.presentationStyle;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -147,7 +147,7 @@
     if (!self.dataSource.refreshedAt || self.dataSource.isUpdating || self.storyUpdateInProgress || self.loadingMoreStories) {
         return;
     }
-    NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSSecondCalendarUnit
+    NSDateComponents *dateDiff = [[NSCalendar currentCalendar] components:NSCalendarUnitSecond
                                                                  fromDate:self.dataSource.refreshedAt
                                                                    toDate:[NSDate date]
                                                                   options:0];
