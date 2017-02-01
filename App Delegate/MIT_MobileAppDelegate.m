@@ -262,7 +262,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
     }
 }
-
+/*
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSString *message = userInfo[@"aps"][@"alert"];
     [self _didRecieveNotification:userInfo withAlert:message];
@@ -318,7 +318,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         }
     }
 }
-
+*/
 #pragma mark - Background Fetch
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
