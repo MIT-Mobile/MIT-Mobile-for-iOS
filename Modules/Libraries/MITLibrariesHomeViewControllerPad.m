@@ -1,7 +1,5 @@
 #import "MITLibrariesHomeViewControllerPad.h"
 #import "MITLibrariesYourAccountViewControllerPad.h"
-#import "MITLibrariesLocationsHoursViewController.h"
-#import "MITLibrariesLibraryDetailViewController.h"
 #import "MITLibrariesLibrary.h"
 #import "MITLibrariesWebservices.h"
 #import "MITLibrariesQuickLinksViewController.h"
@@ -20,9 +18,12 @@ typedef NS_ENUM(NSInteger, MITLibrariesPadDisplayMode) {
     MITLibrariesPadDisplayModeSearch
 };
 
+
+static NSString * const kMITLibrariesHoursAndLocationsURL = @"http://libraries.mit.edu/hours";
+
 static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPreferredContentSize = {480,400};
 
-@interface MITLibrariesHomeViewControllerPad () <MITLibrariesLocationsIPadDelegate, UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate, MITLibrariesSearchResultsViewControllerDelegate, UIPopoverControllerDelegate>
+@interface MITLibrariesHomeViewControllerPad () <UISearchBarDelegate, MITLibrariesRecentSearchesDelegate, MITLibrariesAskUsHomeViewControllerDelegate, MITLibrariesSearchResultsViewControllerDelegate, UIPopoverControllerDelegate>
 
 @property (nonatomic, strong) MITLibrariesYourAccountViewControllerPad *accountViewController;
 @property (nonatomic, strong) MITLibrariesSearchResultsContainerViewControllerPad *searchViewController;
@@ -36,7 +37,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 
 @property (nonatomic, strong) NSArray *links;
 
-@property (nonatomic, strong) UIPopoverController *locationsAndHoursPopoverController;
 @property (nonatomic, strong) UIPopoverController *quickLinksPopoverController;
 @property (nonatomic, strong) UIPopoverController *recentSearchesPopoverController;
 @property (nonatomic, strong) UIPopoverController *askUsHomePopoverController;
@@ -230,7 +230,7 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 - (void)setupToolbar
 {
     self.navigationController.toolbar.translucent = NO;
-    self.locationsAndHoursButton = [[UIBarButtonItem alloc] initWithTitle:@"Locations & Hours" style:UIBarButtonItemStylePlain target:self action:@selector(locationsAndHoursPressed:)];
+    self.locationsAndHoursButton = [[UIBarButtonItem alloc] initWithTitle:@"Hours & Locations" style:UIBarButtonItemStylePlain target:self action:@selector(locationsAndHoursPressed:)];
     self.askUsTellUsButton = [[UIBarButtonItem alloc] initWithTitle:@"Ask Us/Tell Us" style:UIBarButtonItemStylePlain target:self action:@selector(askUsTellUsPressed:)];
     self.quickLinksButton = [[UIBarButtonItem alloc] initWithTitle:@"Quick Links" style:UIBarButtonItemStylePlain target:self action:@selector(quickLinksPressed:)];
     
@@ -253,14 +253,10 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
 
 - (void)locationsAndHoursPressed:(id)sender
 {
-    MITLibrariesLocationsHoursViewController *vc = [[MITLibrariesLocationsHoursViewController alloc] init];
-    vc.delegate = self;
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:vc];
-    
-    self.locationsAndHoursPopoverController = [[UIPopoverController alloc] initWithContentViewController:navController];
-    [self.locationsAndHoursPopoverController setPopoverContentSize:CGSizeMake(320, 568)];
-    [self.locationsAndHoursPopoverController presentPopoverFromBarButtonItem:self.locationsAndHoursButton permittedArrowDirections:UIPopoverArrowDirectionDown animated:YES];
+    NSURL *hoursAndLocationsUrl = [NSURL URLWithString:kMITLibrariesHoursAndLocationsURL];
+    if ([[UIApplication sharedApplication] canOpenURL:hoursAndLocationsUrl]) {
+        [[UIApplication sharedApplication] openURL:hoursAndLocationsUrl];
+    }
 }
 
 - (void)askUsTellUsPressed:(id)sender
@@ -338,21 +334,6 @@ static CGSize const MITLibrariesHomeViewControllerPadFormSheetPresentationPrefer
         self.accountViewController.view.hidden = YES;
         self.searchViewController.view.hidden = NO;
     }
-}
-
-#pragma mark - MITLibrariesLocationsIPadDelegate
-
-- (void)showLibraryDetailForLibrary:(MITLibrariesLibrary *)library
-{
-    MITLibrariesLibraryDetailViewController *detailVC = [[MITLibrariesLibraryDetailViewController alloc] init];
-    detailVC.library = library;
-    detailVC.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:detailVC action:@selector(dismiss)];
-    
-    UINavigationController *navController = [[UINavigationController alloc] initWithRootViewController:detailVC];
-    navController.modalPresentationStyle = UIModalPresentationFormSheet;
-    
-    [self.locationsAndHoursPopoverController dismissPopoverAnimated:YES];
-    [self presentViewController:navController animated:YES completion:nil];
 }
 
 #pragma mark - UISearchBarDelegate
