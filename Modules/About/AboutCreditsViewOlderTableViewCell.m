@@ -3,6 +3,7 @@
 @implementation AboutCreditsViewOlderTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
 }
 

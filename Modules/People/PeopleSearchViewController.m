@@ -27,7 +27,7 @@ typedef NS_ENUM(NSInteger, MITPeopleSearchTableViewSection) {
 // Hard-code this for now, should be pulled from the API in the future
 static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
-@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, MITPeopleRecentsViewControllerDelegate>
+@interface PeopleSearchViewController () <UISearchBarDelegate, UIAlertViewDelegate, MITPeopleRecentsViewControllerDelegate, UISearchResultsUpdating, UISearchControllerDelegate, UISearchBarDelegate>
 
 @property (nonatomic,weak) UITableView *searchResultsTableView;
 @property (nonatomic,weak) MITLoadingActivityView *searchResultsLoadingView;
@@ -60,7 +60,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }
@@ -72,6 +72,17 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     self.searchHandler = [MITPeopleSearchHandler new];
     
     [self configureRecentResultsController];
+    
+    UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+    searchController.searchResultsUpdater = self;
+    searchController.delegate = self;
+    searchController.searchBar.delegate = self;
+    searchController.dimsBackgroundDuringPresentation = NO;
+    self.definesPresentationContext = YES;
+    self.strongSearchDisplayController = searchController;
+
+    self.tableView.tableHeaderView = searchController.searchBar;
+    self.searchBar = searchController.searchBar;
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -82,12 +93,12 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     
     self.peopleFavorites = [PeopleFavoriteData retrieveFavoritePeople];
     
-    if ([self.searchDisplayController isActive])
+    if (!self.didBeginSearch)
     {
-        NSIndexPath *selectedRow = [self.searchDisplayController.searchResultsTableView indexPathForSelectedRow];
+        NSIndexPath *selectedRow = [self.tableView indexPathForSelectedRow];
         if (selectedRow && self.clearsSelectionOnViewWillAppear)
         {
-            [self.searchDisplayController.searchResultsTableView deselectRowAtIndexPath:selectedRow animated:animated];
+            [self.tableView deselectRowAtIndexPath:selectedRow animated:animated];
         }
         
         return;
@@ -144,7 +155,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     __weak PeopleSearchViewController *weakSelf = self;
     [self.searchHandler performSearchWithCompletionHandler:^(BOOL isSuccess)
      {
-         [weakSelf.searchDisplayController.searchResultsTableView reloadData];
+         [weakSelf.tableView reloadData];
          [weakSelf.searchResultsLoadingView removeFromSuperview];
      }];
     
@@ -156,9 +167,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     return self.searchHandler.searchResults;
 }
 
-#pragma mark - UISearchDisplay Delegate
-
-- (void)searchDisplayControllerDidBeginSearch:(UISearchDisplayController *)controller
+- (void)didPresentSearchController:(UISearchController *)searchController
 {
     self.didBeginSearch = YES;
     
@@ -166,17 +175,15 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     
     if (self.searchHandler.searchTerms)
     {
-        controller.searchBar.text = self.searchHandler.searchTerms;
+        searchController.searchBar.text = self.searchHandler.searchTerms;
         [self performSearch];
     }
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
 }
 
-- (BOOL)searchDisplayController:(UISearchDisplayController *)controller shouldReloadTableForSearchString:(NSString *)searchString
-{
-    return NO;
-}
-
-- (void)searchDisplayControllerWillEndSearch:(UISearchDisplayController *)controller
+- (void)willDismissSearchController:(UISearchController *)searchController
 {
     [self setRecentResultsHidden:YES];
     
@@ -185,7 +192,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     }];
 }
 
-- (void)searchDisplayControllerDidEndSearch:(UISearchDisplayController *)controller
+- (void)didDismissSearchController:(UISearchController *)searchController
 {
     self.searchHandler.searchTerms = nil;
     self.searchHandler.searchTokens = nil;
@@ -193,27 +200,21 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     [self.searchResultsLoadingView removeFromSuperview];
     
     self.didBeginSearch = NO;
-}
-
-#pragma mark UISearchBar delegate
-
-- (void)searchBarTextDidBeginEditing:(UISearchBar *)searchBar
-{
-    if( self.didBeginSearch )
-    {
-        [self setRecentResultsHidden:NO];
-    }
-}
-
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
-{
-    [self.recentResultsVC reloadRecentResultsWithFilterString:searchBar.text];
     
-    if ([searchBar.text length] <= 0) {
+    [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+        [self.tableView reloadData];
+    }];
+}
+
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
+{
+    [self.recentResultsVC reloadRecentResultsWithFilterString:searchController.searchBar.text];
+    
+    if ([searchController.searchBar.text length] <= 0) {
         self.searchHandler.searchResults = nil;
         self.searchHandler.searchTerms = nil;
         self.searchHandler.searchCancelled = YES;
-        [self.searchDisplayController.searchResultsTableView reloadData];
+        [self.tableView reloadData];
         
         if( [self.searchBar isFirstResponder] )
         {
@@ -234,19 +235,19 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
     self.searchHandler.searchTokens = nil;
     self.searchHandler.searchResults = nil;
     
-    [self.searchDisplayController.searchResultsTableView reloadData];
+    [self.tableView reloadData];
 }
 
 
 - (void)beginExternalSearch:(NSString *)externalSearchTerms {
 	self.searchHandler.searchTerms = externalSearchTerms;
 
-    if ([self.searchDisplayController isActive]) {
-        self.searchDisplayController.searchBar.text = externalSearchTerms;
-        [self.searchDisplayController.searchBar resignFirstResponder];
+    if (self.didBeginSearch) {
+        self.strongSearchDisplayController.searchBar.text = externalSearchTerms;
+        [self.strongSearchDisplayController.searchBar resignFirstResponder];
         [self performSearch];
     } else {
-        [self.searchDisplayController setActive:YES animated:YES];
+        [self.strongSearchDisplayController setActive:YES];
     }
 }
 
@@ -291,29 +292,23 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 #pragma mark - Table view methods
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView) {
+    if (!self.didBeginSearch) {
         return 3;
-    } else if (tableView == self.searchDisplayController.searchResultsTableView) {
-		return 1;
     } else {
-        return 0;
+        return 1;
     }
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section
 {
-	if (tableView == self.tableView)
+    if (!self.didBeginSearch)
     {
         return [self numberOfRowsInDefaultScreenSection:section];
 	}
-    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    else
     {
         return [self.searchHandler.searchResults count];
 	}
-    else
-    {
-        return 0;
-    }
 }
 
 - (NSInteger)numberOfRowsInDefaultScreenSection:(NSInteger)section
@@ -333,18 +328,14 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (tableView == self.tableView)
+    if (!self.didBeginSearch)
     {
         // show phone directory tel #, recents
         return [self tableView:self.tableView cellForDefaultRowAtIndexPath:indexPath];
 	}
-    else if (tableView == self.searchDisplayController.searchResultsTableView) // search results
-    {
-        return [self tableView:self.tableView cellForSearchRowAtIndexPath:indexPath];
-    }
     else
     {
-        return nil;
+        return [self tableView:self.tableView cellForSearchRowAtIndexPath:indexPath];
     }
 }
 
@@ -453,7 +444,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (CGFloat)tableView:(UITableView *)tableView heightForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-	if (tableView == self.tableView) {
+    if (!self.didBeginSearch) {
         MITPeopleSearchTableViewSection section = indexPath.section;
 
         if (MITPeopleSearchTableViewSectionExample == section)
@@ -477,7 +468,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             return 44.0;
         }
 	}
-    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    else
     {
         if ([self.searchHandler.searchResults count])
         {
@@ -490,7 +481,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (NSString *)tableView:(UITableView *)tableView titleForHeaderInSection:(NSInteger)section
 {
-    if (tableView == self.tableView) {
+    if (!self.didBeginSearch) {
         if (MITPeopleSearchTableViewSectionFavorites == section) {
             return [self.peopleFavorites count] > 0 ? @"Favorites" : @" ";
         }
@@ -501,7 +492,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 - (void)tableView:(UITableView *)tableView didSelectRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (tableView == self.tableView)
+    if (!self.didBeginSearch)
     {
         [tableView deselectRowAtIndexPath:indexPath animated:YES];
         
@@ -514,7 +505,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
             }
         }
     }
-    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    else
     { // user selected search result
 
         [self performSegueWithIdentifier:@"showPerson" sender:[tableView cellForRowAtIndexPath:indexPath]];
@@ -586,16 +577,16 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
 
 #pragma mark - Connection methods
 - (void)showLoadingView {
-    if (self.searchDisplayController.searchResultsTableView) {
+    if (self.didBeginSearch) {
         MITLoadingActivityView *loadingView = self.searchResultsLoadingView;
         if (!self.searchResultsLoadingView) {
-            CGRect frame = self.searchDisplayController.searchResultsTableView.bounds;
+            CGRect frame = self.tableView.bounds;
             loadingView = [[MITLoadingActivityView alloc] initWithFrame:frame];
 
             self.searchResultsLoadingView = loadingView;
         }
 
-        [self.searchDisplayController.searchResultsTableView addSubview:loadingView];
+        [self.tableView addSubview:loadingView];
     }
 }
 
@@ -608,7 +599,7 @@ static NSString* const MITPeopleDirectoryAssistancePhone = @"617.253.1000";
         
         if( self.didBeginSearch )
         {
-            NSIndexPath *indexPath = [self.searchDisplayController.searchResultsTableView indexPathForCell:cell];
+            NSIndexPath *indexPath = [self.tableView indexPathForCell:cell];
             PeopleDetailsViewController *vc = (PeopleDetailsViewController *)segue.destinationViewController;
             vc.personDetails = self.searchHandler.searchResults[indexPath.row];
         }

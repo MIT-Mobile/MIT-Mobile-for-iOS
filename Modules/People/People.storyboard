@@ -135,19 +135,9 @@ Phone: '6172531000', '31000'</string>
                     <navigationItem key="navigationItem" title="People Directory" id="tQt-TN-PWz"/>
                     <connections>
                         <outlet property="searchBar" destination="E5U-BI-S0w" id="txm-r5-5yK"/>
-                        <outlet property="searchDisplayController" destination="uPD-xl-cEX" id="xbh-SD-04A"/>
                     </connections>
                 </tableViewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="6Cn-md-YlS" sceneMemberID="firstResponder"/>
-                <searchDisplayController id="uPD-xl-cEX">
-                    <connections>
-                        <outlet property="delegate" destination="pGg-6v-bdr" id="CAb-Zn-M2G"/>
-                        <outlet property="searchBar" destination="E5U-BI-S0w" id="fSx-n3-izb"/>
-                        <outlet property="searchContentsController" destination="pGg-6v-bdr" id="4we-Tj-wxu"/>
-                        <outlet property="searchResultsDataSource" destination="pGg-6v-bdr" id="GoT-9P-HbE"/>
-                        <outlet property="searchResultsDelegate" destination="pGg-6v-bdr" id="n6x-gT-Cl0"/>
-                    </connections>
-                </searchDisplayController>
             </objects>
             <point key="canvasLocation" x="459" y="64"/>
         </scene>

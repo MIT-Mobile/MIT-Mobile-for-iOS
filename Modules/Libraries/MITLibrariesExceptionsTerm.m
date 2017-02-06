@@ -50,7 +50,7 @@ static NSString * const MITLibrariesExceptionTermCodingKeyReason = @"MITLibrarie
 
 - (BOOL)isOpenOnDayOfDate:(NSDate *)date
 {
-    return [date dateFallsBetweenStartDate:self.startDate endDate:self.endDate components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit)];
+    return [date dateFallsBetweenStartDate:self.startDate endDate:self.endDate components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay)];
 }
 
 - (NSDate*)startDate

@@ -20,6 +20,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
    
     self.venueHoursLabel.textColor = [UIColor mit_greyTextColor];

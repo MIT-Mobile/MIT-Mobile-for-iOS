@@ -372,7 +372,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
-    if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
         self.comparisonViewController = [[MITDiningMenuComparisonViewController alloc] init];
         self.comparisonViewController.houseVenues = [self.houseVenue.venues.house array];
         self.comparisonViewController.filtersApplied = self.filters;

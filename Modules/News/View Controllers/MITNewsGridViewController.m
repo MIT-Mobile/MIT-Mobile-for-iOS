@@ -85,7 +85,7 @@
         self.managedObjectContext = [[MITCoreDataController defaultController] newManagedObjectContextWithConcurrencyType:NSMainQueueConcurrencyType trackChanges:NO];
     }
     
-    [self updateLayoutForOrientation:self.interfaceOrientation];
+    [self updateLayoutForOrientation:[[UIApplication sharedApplication] statusBarOrientation]];
 }
 
 - (void)viewDidAppear:(BOOL)animated

@@ -14,6 +14,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     _showsSeparator = YES;
     [self.itemTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleBookTitle];
     [self.yearAndAuthorLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];

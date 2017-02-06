@@ -57,6 +57,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
 
 @dynamic leftBarButtonItem;
 @dynamic drawerViewController;
+@dynamic delegate;
 
 - (instancetype)initWithViewControllers:(NSArray*)viewControllers;
 {
@@ -623,7 +624,7 @@ static CGFloat const MITSlidingViewControllerDefaultAnchorRightPeekAmountPhone =
     }
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if ([self actualTopVC]) {
         return [[self actualTopVC] supportedInterfaceOrientations];

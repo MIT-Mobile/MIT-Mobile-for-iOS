@@ -308,6 +308,11 @@ static NSString * const kMITEntityNameDiningRetailVenue = @"MITDiningRetailVenue
 
 #pragma mark - MITCalloutViewDelegate
 
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
+{
+    
+}
+
 - (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offscreenOffset
 {
     MKMapView *mapView = self.mapView;

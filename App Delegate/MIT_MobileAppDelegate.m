@@ -112,7 +112,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     [self updateBasicServerInfo];
 
     [[NSUserDefaults standardUserDefaults] removeObjectForKey:MITModulesSavedStateKey];
-
+#warning no remote notifications
+/*
     // get deviceToken if it exists
     self.deviceToken = [[NSUserDefaults standardUserDefaults] objectForKey:DeviceTokenKey];
 
@@ -121,12 +122,14 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     } else {
         [application registerForRemoteNotificationTypes:(UIRemoteNotificationTypeAlert | UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeSound)];
     }
-
+*/
     return YES;
 }
 
 - (BOOL)application:(UIApplication*)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+#warning no remote notifications
+    /*
     if ([application respondsToSelector:@selector(registerUserNotificationSettings:)]) {
         UIUserNotificationType notificationTypes = (UIUserNotificationTypeBadge |
                                                     UIUserNotificationTypeSound |
@@ -134,6 +137,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:notificationTypes categories:nil];
         [application registerUserNotificationSettings:settings];
     }
+     */
 
     [[MITShuttleController sharedController] loadDefaultShuttleRoutes];
 
@@ -205,6 +209,9 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
 - (void)applicationDidBecomeActive:(UIApplication *)application
 {
     // Do Nothing
+    if ([[UIApplication sharedApplication] currentUserNotificationSettings].types && UIUserNotificationTypeBadge) {
+        [[UIApplication sharedApplication] setApplicationIconBadgeNumber:0];
+    }
 }
 
 #pragma mark - Shared resources
@@ -255,7 +262,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         [application setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalNever];
     }
 }
-
+/*
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     NSString *message = userInfo[@"aps"][@"alert"];
     [self _didRecieveNotification:userInfo withAlert:message];
@@ -311,7 +318,7 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
         }
     }
 }
-
+*/
 #pragma mark - Background Fetch
 
 - (void)application:(UIApplication *)application performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
@@ -492,8 +499,8 @@ static NSString* const MITMobileLastActiveModuleNameKey = @"MITMobileLastActiveM
     ToursModule *toursModule = [[ToursModule alloc] init];
     [modules addObject:toursModule];
 
-    EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
-    [modules addObject:emergencyModule];
+    //EmergencyModule *emergencyModule = [[EmergencyModule alloc] init];
+    //[modules addObject:emergencyModule];
 
     LibrariesModule *librariesModule = [[LibrariesModule alloc] init];
     [modules addObject:librariesModule];
