@@ -102,7 +102,7 @@ static CGFloat const kMITDiningFilterHeaderHeight = 40.0;
 
 #pragma mark - Rotation
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }

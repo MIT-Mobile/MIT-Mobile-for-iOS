@@ -44,7 +44,7 @@ static CGFloat const kMITEventHomeMasterWidthLandscape = 380.0;
         UIViewController *detailViewController = [self.viewControllers objectAtIndex:1];
         
         CGFloat targetMasterViewControllerWidth = kMITEventHomeMasterWidthPortrait;
-        if (UIInterfaceOrientationIsLandscape([[UIDevice currentDevice] orientation])) {
+        if (UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation])) {
             targetMasterViewControllerWidth = kMITEventHomeMasterWidthLandscape;
         }
         

@@ -17,6 +17,7 @@ static CGFloat kMITCalendarEventCellEstimatedHeight = 80.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
     self.eventLocationLabel.textColor =
     self.eventTimeLabel.textColor = [UIColor mit_greyTextColor];

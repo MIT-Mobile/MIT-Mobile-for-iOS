@@ -91,7 +91,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     
     [self setupViews];
     
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [self addPortraitConstraints];
     } else {
         [self addLandscapeConstraints];
@@ -452,7 +452,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     
     self.scrollView.mit_showsPullToRefresh = YES;
     
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [self.scrollView removeConstraint:self.mapContainerViewPortraitHeightConstraint];
         self.mapContainerViewPortraitHeightConstraint = [NSLayoutConstraint constraintWithItem:self.mapContainerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kMapContainerViewEmbeddedHeightPortrait];
         [self.scrollView addConstraint:self.mapContainerViewPortraitHeightConstraint];
@@ -511,7 +511,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     
     self.scrollView.mit_showsPullToRefresh = NO;
     
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [self.scrollView removeConstraint:self.mapContainerViewPortraitHeightConstraint];
         self.mapContainerViewPortraitHeightConstraint = [NSLayoutConstraint constraintWithItem:self.mapContainerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:kMapContainerViewEmbeddedHeightPortrait];
         [self.scrollView addConstraint:self.mapContainerViewPortraitHeightConstraint];
@@ -566,7 +566,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
     
     self.scrollView.mit_showsPullToRefresh = NO;
     
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         [self.scrollView removeConstraint:self.routeStopContainerViewHeightConstraint];
         self.routeStopContainerViewHeightConstraint = [NSLayoutConstraint constraintWithItem:self.routeStopContainerView attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:0];
         [self.scrollView addConstraint:self.routeStopContainerViewHeightConstraint];
@@ -615,7 +615,7 @@ static const CGFloat kNavigationBarStopStateExtensionHeight = 14.0;
 
 - (NSTimeInterval)stateTransitionDuration
 {
-    return UIInterfaceOrientationIsLandscape(self.interfaceOrientation) ? kStateTransitionDurationLandscape : kStateTransitionDurationPortrait;
+    return UIInterfaceOrientationIsLandscape([[UIApplication sharedApplication] statusBarOrientation]) ? kStateTransitionDurationLandscape : kStateTransitionDurationPortrait;
 }
 
 #pragma mark - Showing/Hiding Route and Stop

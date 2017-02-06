@@ -15,6 +15,7 @@ static CGFloat const kMITDiningDietaryFlagListCellRightPadding = 10;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
 }
 

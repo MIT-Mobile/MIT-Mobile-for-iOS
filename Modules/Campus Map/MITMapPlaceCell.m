@@ -13,6 +13,7 @@ const CGFloat kMapPlaceCellEstimatedHeight = 50.0;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self refreshLabelLayoutWidths];
 }
 

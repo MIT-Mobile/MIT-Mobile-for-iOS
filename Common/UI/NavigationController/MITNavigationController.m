@@ -24,7 +24,7 @@
     }
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if ([self topViewController]) {
         return [[self topViewController] supportedInterfaceOrientations];

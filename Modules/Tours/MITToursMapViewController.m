@@ -313,6 +313,11 @@ static NSInteger kAnnotationMarginRight = 50;
     }
 }
 
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
+{
+    
+}
+
 #pragma mark - User Location Centering
 
 - (BOOL)isTrackingUser

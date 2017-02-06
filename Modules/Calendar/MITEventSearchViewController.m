@@ -317,7 +317,7 @@ typedef NS_ENUM(NSInteger, MITEventSearchViewControllerState) {
     return UIInterfaceOrientationPortrait;
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }

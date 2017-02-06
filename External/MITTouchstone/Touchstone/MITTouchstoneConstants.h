@@ -2,11 +2,14 @@
 
 extern NSString* const MITECPErrorDomain;
 
+#warning throws errors everywhere!
+/*
 NS_ENUM(NSInteger, MITECPErrorCode) {
     MITECPErrorInvalidXML = 0xA00,
     MITECPErrorUnknown,
     MITECPErrorFault
 };
+*/
 
 enum : int {
     MIT_XML_COPY_SHALLOW = 0,

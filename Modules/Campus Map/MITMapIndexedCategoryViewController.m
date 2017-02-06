@@ -154,7 +154,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
             [sectionIndexTitles addObject:[childCategory sectionIndexTitle]];
             if (idx < [self.category.children count] - 1) {
                 // Add dot separators between actual section index titles
-                for (NSInteger dotIndex = 0; dotIndex < MITMapSectionIndexSeparatorDotCountForOrientation(self.interfaceOrientation); ++dotIndex) {
+                for (NSInteger dotIndex = 0; dotIndex < MITMapSectionIndexSeparatorDotCountForOrientation([[UIApplication sharedApplication] statusBarOrientation]); ++dotIndex) {
                     [sectionIndexTitles addObject:@"\u2022"];
                 }
             }
@@ -219,7 +219,7 @@ NSInteger MITMapSectionIndexSeparatorDotCountForOrientation(UIInterfaceOrientati
 - (NSInteger)tableView:(UITableView *)tableView sectionForSectionIndexTitle:(NSString *)title atIndex:(NSInteger)index
 {
     NSInteger effectiveIndex = index + 1;   // Touching the dot after the index title should select that section
-    float indexTitlesPerSection = (float)(MITMapSectionIndexSeparatorDotCountForOrientation(self.interfaceOrientation) + 1);    // Number of index titles that map to a single section
+    float indexTitlesPerSection = (float)(MITMapSectionIndexSeparatorDotCountForOrientation([[UIApplication sharedApplication] statusBarOrientation]) + 1);    // Number of index titles that map to a single section
     return floor(effectiveIndex / indexTitlesPerSection);
 }
 

@@ -287,7 +287,7 @@
     if (_interfaceHidden != interfaceHidden) {
         _interfaceHidden = interfaceHidden;
         
-        UIDeviceOrientation orientation = [[UIDevice currentDevice] orientation];
+        UIInterfaceOrientation orientation = [[UIApplication sharedApplication] statusBarOrientation];
         
         if (UIInterfaceOrientationIsLandscape(orientation) &&
             self.isPhone) {

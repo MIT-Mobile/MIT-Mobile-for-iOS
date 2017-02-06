@@ -2,6 +2,9 @@
 #import "LinksViewController.h"
 
 @implementation LinksModule
+
+@dynamic rootViewController;
+
 - (instancetype)init {
     self = [super initWithName:MITModuleTagLinks title:@"Links"];
     if (self) {

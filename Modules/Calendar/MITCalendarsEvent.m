@@ -80,8 +80,8 @@
         
         if (self.endAt) {
             NSCalendar *calendar = [NSCalendar currentCalendar];
-            NSDateComponents *startComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.startAt];
-            NSDateComponents *endComps = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:self.endAt];
+            NSDateComponents *startComps = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:self.startAt];
+            NSDateComponents *endComps = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:self.endAt];
             NSTimeInterval interval = [self.endAt timeIntervalSinceDate:self.startAt];
             // only a date with no time -> no time displayed
             if (startComps.hour == 0 && startComps.minute == 0 && endComps.hour == 0 && endComps.minute == 0) {

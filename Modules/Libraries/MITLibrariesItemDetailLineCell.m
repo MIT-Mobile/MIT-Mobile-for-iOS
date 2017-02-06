@@ -9,6 +9,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.lineTitleLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];
     [self.lineDetailLabel setLibrariesTextStyle:MITLibrariesTextStyleDetail];

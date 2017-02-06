@@ -14,6 +14,7 @@
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     // Initialization code
     self.titleLabel.textColor = [UIColor mit_tintColor];
     self.iconActionButton.backgroundColor = [UIColor greenColor];

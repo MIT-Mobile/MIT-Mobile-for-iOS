@@ -572,7 +572,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupMITTileOverlay
 {
-    static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
+    static NSString * const template = @"https://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
     
     MITTileOverlay *tileOverlay = [[MITTileOverlay alloc] initWithURLTemplate:template];
     tileOverlay.canReplaceMapContent = YES;
@@ -582,7 +582,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupBaseTileOverlay
 {
-    static NSString * const template = @"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
+    static NSString * const template = @"https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
     
     MKTileOverlay *baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
     baseTileOverlay.canReplaceMapContent = YES;

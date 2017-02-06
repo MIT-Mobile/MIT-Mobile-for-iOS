@@ -145,7 +145,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
     return UIInterfaceOrientationPortrait;
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }
@@ -894,7 +894,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
     if( [self adjustedFieldRow:self.editingIndexPath.row] == MITFacilitiesFormFieldDescription )
     {
         [self.tableView scrollToRowAtIndexPath:[NSIndexPath indexPathForRow:self.editingIndexPath.row inSection:0]
-                              atScrollPosition:UITableViewRowAnimationTop animated:YES];
+                              atScrollPosition:UITableViewScrollPositionTop animated:YES];
     }
     
     self.isKeyboardUp = YES;
@@ -1100,6 +1100,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self.subtitleTextView setFont:[UIFont systemFontOfSize:16]];
     CGSize size = [self.subtitleTextView sizeThatFits:CGSizeMake(self.subtitleTextView.frame.size.width, FLT_MAX)];
     CGRect textViewFrame = self.subtitleTextView.frame;
@@ -1116,6 +1117,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self.titleLabel setFont:[UIFont systemFontOfSize:14]];
     [self.subtitleLabel setFont:[UIFont systemFontOfSize:16]];
     
@@ -1128,6 +1130,7 @@ static NSInteger const kNumberOfFieldsWithoutRoom = 5;
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     [self.subtitleLabel setFont:[UIFont systemFontOfSize:14]];
 }
 

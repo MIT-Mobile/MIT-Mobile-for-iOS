@@ -106,7 +106,7 @@ NSString * const kLocationManagerAuthorizationStatusKey = @"authorizationStatus"
         case kCLAuthorizationStatusRestricted:
             authorized = NO;
             break;
-        case kCLAuthorizationStatusAuthorized:
+        case kCLAuthorizationStatusAuthorizedAlways:
         case kCLAuthorizationStatusAuthorizedWhenInUse:
             authorized = YES;
             break;
