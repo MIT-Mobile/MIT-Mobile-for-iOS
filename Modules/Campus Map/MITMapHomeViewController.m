@@ -12,7 +12,7 @@
 #import "MITMapTypeAheadTableViewController.h"
 #import "MITSlidingViewController.h"
 #import "MITLocationManager.h"
-#import "SMCalloutView.h"
+#import "MITCalloutView.h"
 
 static NSString * const kMITMapPlaceAnnotationViewIdentifier = @"MITMapPlaceAnnotationView";
 
@@ -25,7 +25,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
     MITMapSearchQueryTypeCategory
 };
 
-@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, SMCalloutViewDelegate>
+@interface MITMapHomeViewController () <UISearchBarDelegate, MKMapViewDelegate, UIPopoverControllerDelegate, MITMapResultsListViewControllerDelegate, MITMapPlaceSelectionDelegate, MITCalloutViewDelegate>
 
 @property (nonatomic, strong) UISearchBar *searchBar;
 @property (nonatomic, strong) UIBarButtonItem *bookmarksBarButton;
@@ -36,7 +36,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 @property (nonatomic, strong) MITMapTypeAheadTableViewController *typeAheadViewController;
 @property (nonatomic, strong) UIPopoverController *typeAheadPopoverController;
 @property (nonatomic) BOOL isShowingIpadResultsList;
-@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic, strong) UIViewController *calloutViewController;
 @property (nonatomic, strong) MITMapPlace *currentlySelectedPlace;
 
@@ -207,19 +207,15 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)setupCalloutView
 {
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
-    calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        calloutView.rightAccessoryView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
+    MITCalloutView *callout = [MITCalloutView new];
+    callout.delegate = self;
+    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) {
+        callout.shouldHighlightOnTouch = NO;
+    } else {
+        callout.permittedArrowDirections = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom;
     }
-    
-    self.calloutView = calloutView;
-    
-    self.tiledMapView.mapView.calloutView = self.calloutView;
+    self.calloutView = callout;
+    self.tiledMapView.mapView.mitCalloutView = self.calloutView;
 }
 
 - (void)setupTypeAheadTableView
@@ -303,7 +299,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseIn animations:^{
             resultsVC.view.frame = CGRectMake(-320, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-        self.calloutView.constrainedInsets = UIEdgeInsetsZero;
+        self.calloutView.externalInsets = UIEdgeInsetsMake(10, 10, 10, 10);
+        [self.calloutView updatePresentation];
         self.isShowingIpadResultsList = NO;
     }
 }
@@ -315,7 +312,8 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
         [UIView animateWithDuration:0.35 delay:0 options:UIViewAnimationOptionCurveEaseOut animations:^{
             resultsVC.view.frame = CGRectMake(0, resultsVC.view.frame.origin.y, resultsVC.view.frame.size.width, resultsVC.view.frame.size.height);
         } completion:nil];
-        self.calloutView.constrainedInsets = UIEdgeInsetsMake(0, resultsVC.view.frame.size.width, 0, 0);
+        self.calloutView.externalInsets = UIEdgeInsetsMake(10, resultsVC.view.frame.size.width + 10, 10, 10);
+        [self.calloutView updatePresentation];
         self.isShowingIpadResultsList = YES;
     }
 }
@@ -727,7 +725,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView didDeselectAnnotationView:(MKAnnotationView *)view
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]){
-        [self.calloutView dismissCalloutAnimated:YES];
+        [self.calloutView dismissCallout];
         self.currentlySelectedPlace = nil;
     }
 }
@@ -735,7 +733,7 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 - (void)mapView:(MKMapView *)mapView annotationView:(MKAnnotationView *)view calloutAccessoryControlTapped:(UIControl *)control
 {
     if ([view isKindOfClass:[MITMapPlaceAnnotationView class]]) {
-        MITMapPlace *place = view.annotation;
+        MITMapPlace *place = (MITMapPlace *)view.annotation;
         [self pushDetailViewControllerForPlace:place];
     }
 }
@@ -760,69 +758,61 @@ typedef NS_ENUM(NSUInteger, MITMapSearchQueryType) {
 
 - (void)presentIPadCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
+    MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
     self.currentlySelectedPlace = place;
     MITMapPlaceDetailViewController *detailVC = [[MITMapPlaceDetailViewController alloc] initWithNibName:nil bundle:nil];
     detailVC.place = place;
     
     detailVC.view.frame = CGRectMake(0, 0, 295, 500);
     
-    SMCalloutView *calloutView = self.calloutView;
+    MITCalloutView *calloutView = self.calloutView;
     calloutView.contentView = detailVC.view;
-    calloutView.contentView.clipsToBounds = YES;
-    calloutView.calloutOffset = annotationView.calloutOffset;
+    calloutView.internalInsets = UIEdgeInsetsZero;
         
     self.calloutView = calloutView;
     self.calloutViewController = detailVC;
     
-    [calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    
-    // We have to adjust the frame of the content view once its in the view hierarchy, because its constraints don't play nicely with SMCalloutView
-    if (calloutView.currentArrowDirection == SMCalloutArrowDirectionUp) {
-        detailVC.view.frame = CGRectMake(0, 15, 320, 496);
-    }
-    else {
-        detailVC.view.frame = CGRectMake(0, 2, 320, 496);
-    }
+    // For whatever reason, an annotation view takes up the left half of its view.  Adjust this for proper presentation
+    CGRect annotationBounds = annotationView.bounds;
+    annotationBounds.size.width /= 2.0;
+    [calloutView presentFromRect:annotationBounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)presentIPhoneCalloutForAnnotationView:(MKAnnotationView *)annotationView
 {
-    MITMapPlace *place = annotationView.annotation;
+    MITMapPlace *place = (MITMapPlace *)annotationView.annotation;
     
     self.currentlySelectedPlace = place;
-    self.calloutView.title = place.title;
-    self.calloutView.subtitle = place.subtitle;
-    self.calloutView.calloutOffset = annotationView.calloutOffset;
-
-    [self.calloutView presentCalloutFromRect:annotationView.bounds inView:annotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    self.calloutView.titleText = place.title;
+    self.calloutView.subtitleText = place.subtitle;
+    
+    // For whatever reason, an annotation view takes up the left half of its view.  Adjust this for proper presentation
+    CGRect annotationBounds = annotationView.bounds;
+    annotationBounds.size.width /= 2.0;
+    [self.calloutView presentFromRect:annotationBounds inView:annotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
-#pragma mark - SMCalloutViewDelegate Methods
+#pragma mark - MITCalloutViewDelegate Methods
 
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offscreenOffset
 {
     MKMapView *mapView = self.mapView;
-    CGPoint adjustedCenter = CGPointMake(-offset.width + mapView.bounds.size.width * 0.5,
-                                         -offset.height + mapView.bounds.size.height * 0.5);
+    CGPoint adjustedCenter = CGPointMake(offscreenOffset.x + mapView.bounds.size.width * 0.5,
+                                         offscreenOffset.y + mapView.bounds.size.height * 0.5);
     CLLocationCoordinate2D newCenter = [mapView convertPoint:adjustedCenter toCoordinateFromView:mapView];
     [mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
         [self pushDetailViewControllerForPlace:self.currentlySelectedPlace];
     }
 }
 
-- (BOOL)calloutViewShouldHighlight:(SMCalloutView *)calloutView
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView
 {
-    if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
-        return YES;
-    }
-    return NO;
+    
 }
 
 #pragma mark - MITMapResultsListViewControllerDelegate

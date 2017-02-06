@@ -4,6 +4,7 @@
 @implementation MITLibrariesHoldingLibraryHeaderCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     self.selectionStyle = UITableViewCellSelectionStyleNone;
     [self.libraryNameLabel setLibrariesTextStyle:MITLibrariesTextStyleTitle];
     [self.availableCopiesLabel setLibrariesTextStyle:MITLibrariesTextStyleSubtitle];

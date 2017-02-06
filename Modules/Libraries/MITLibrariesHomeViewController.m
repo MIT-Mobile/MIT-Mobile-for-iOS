@@ -247,7 +247,7 @@ static NSString * const kMITLibrariesHomeViewControllerDefaultCellIdentifier = @
         }
         default: {
             cell.textLabel.text = nil;
-            cell.accessoryType = nil;
+            cell.accessoryType = UITableViewCellAccessoryNone;
             cell.accessoryView = nil;
         }
     }

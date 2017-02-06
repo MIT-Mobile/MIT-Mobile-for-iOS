@@ -7,7 +7,7 @@
 #import "MITShuttleStop.h"
 #import "MITShuttlePredictionList.h"
 #import "MITShuttlePrediction.h"
-#import "MITShuttleRouteContainerViewController.h"
+#import "MITShuttleRouteStopMapContainerViewController.h"
 #import "MITShuttleRouteViewController.h"
 #import "MITShuttleResourceData.h"
 #import "UIKit+MITAdditions.h"
@@ -79,7 +79,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         } else {
             self.title = nil;
         }
-        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStyleBordered target:nil action:nil];
+        self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@" " style:UIBarButtonItemStylePlain target:nil action:nil];
     }
     return self;
 }
@@ -363,8 +363,11 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
         }
         
         [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-            self.nearestStops = stopsByRouteIdentifier;
-            [self updateNearestStopsPredictionsDependencies];
+            if (![self.nearestStops isEqual:stopsByRouteIdentifier]) {
+                self.forceRefreshForNextDependencies = YES;
+                self.nearestStops = stopsByRouteIdentifier;
+                [self updateNearestStopsPredictionsDependencies];
+            }
             
             if (completion) {
                 completion();
@@ -654,7 +657,7 @@ typedef NS_ENUM(NSUInteger, MITShuttleSection) {
                     return;
                 }
             } else {
-                MITShuttleRouteContainerViewController *routeContainerViewController = [[MITShuttleRouteContainerViewController alloc] initWithRoute:route stop:stop];
+                MITShuttleRouteStopMapContainerViewController *routeContainerViewController = [[MITShuttleRouteStopMapContainerViewController alloc] initWithRoute:route stop:stop];
                 [self.navigationController pushViewController:routeContainerViewController animated:YES];
             }
             break;

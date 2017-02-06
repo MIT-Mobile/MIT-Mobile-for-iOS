@@ -103,22 +103,22 @@ NSString * const MITBuildingServicesEmailKey = @"MITBuildingServicesEmailKey";
     
     if( self.location == nil && self.customLocation == nil )
     {
-        return nil;
+        return NO;
     }
     
     if( self.shouldSetRoom && self.room == nil && self.roomAltName == nil )
     {
-        return nil;
+        return NO;
     }
     
     if( self.reportDescription == nil || [self.reportDescription length] == 0 )
     {
-        return nil;
+        return NO;
     }
     
     if( self.problemType == nil )
     {
-        return nil;
+        return NO;
     }
     
     return YES;

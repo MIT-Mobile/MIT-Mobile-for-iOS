@@ -275,61 +275,55 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 
 - (MITDiningHouseMealListViewController *)nextViewControllerForCurrentMeal:(MITDiningMeal *)meal andCurrentDay:(MITDiningHouseDay *)day
 {
-    MITDiningHouseMealListViewController *next = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
-    if (meal) {
-        if ([day.sortedMealsArray.lastObject isEqual:meal]) {
-            if ([self.houseVenue.mealsByDay.lastObject isEqual:day]) {
-                next = nil;
-            } else {
-                NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
-                next.day = self.houseVenue.mealsByDay[idx + 1];
-                next.meal = next.day.sortedMealsArray.firstObject;
-            }
-        } else {
-            NSUInteger idx = [day.sortedMealsArray indexOfObject:meal];
+    MITDiningHouseMealListViewController *next = nil;
+    
+    if (meal && ![day.sortedMealsArray.lastObject isEqual:meal]) {
+        NSUInteger idx = [day.sortedMealsArray indexOfObject:meal];
+        
+        if (idx != NSNotFound && idx < day.sortedMealsArray.count) {
+            next = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
             next.meal = day.sortedMealsArray[idx + 1];
             next.day = day;
         }
-    } else {
-        if ([self.houseVenue.mealsByDay.lastObject isEqual:day]) {
-            next = nil;
-        } else {
-            NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+    } else if (![self.houseVenue.mealsByDay.lastObject isEqual:day]) {
+        NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+        
+        if (idx != NSNotFound && idx < self.houseVenue.mealsByDay.count) {
+            next = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
             next.day = self.houseVenue.mealsByDay[idx + 1];
             next.meal = next.day.sortedMealsArray.firstObject;
         }
     }
+    
     [next applyFilters:self.filters];
+    
     return next;
 }
 
 - (MITDiningHouseMealListViewController *)previousViewControllerForCurrentMeal:(MITDiningMeal *)meal andCurrentDay:(MITDiningHouseDay *)day
 {
-    MITDiningHouseMealListViewController *previous = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
-    if (meal) {
-        if ([day.sortedMealsArray.firstObject isEqual:meal]) {
-            if ([self.houseVenue.mealsByDay.firstObject isEqual:day]) {
-                previous = nil;
-            } else {
-                NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
-                previous.day = self.houseVenue.mealsByDay[idx - 1];
-                previous.meal = previous.day.sortedMealsArray.lastObject;
-            }
-        } else {
-            NSUInteger idx = [day.sortedMealsArray indexOfObject:meal];
+    MITDiningHouseMealListViewController *previous = nil;
+    
+    if (meal && ![day.sortedMealsArray.firstObject isEqual:meal]) {
+        NSUInteger idx = [day.sortedMealsArray indexOfObject:meal];
+        
+        if (idx != NSNotFound && idx != 0) {
+            previous = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
             previous.meal = day.sortedMealsArray[idx - 1];
             previous.day = day;
         }
-    } else {
-        if ([self.houseVenue.mealsByDay.firstObject isEqual:day]) {
-            previous = nil;
-        } else {
-            NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+    } else if (![self.houseVenue.mealsByDay.firstObject isEqual:day]) {
+        NSUInteger idx = [self.houseVenue.mealsByDay indexOfObject:day];
+        
+        if (idx != NSNotFound && idx != 0) {
+            previous = [[MITDiningHouseMealListViewController alloc] initWithNibName:nil bundle:nil];
             previous.day = self.houseVenue.mealsByDay[idx - 1];
             previous.meal = previous.day.sortedMealsArray.lastObject;
         }
     }
+    
     [previous applyFilters:self.filters];
+    
     return previous;
 }
 
@@ -378,7 +372,7 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 {
     [super willRotateToInterfaceOrientation:toInterfaceOrientation duration:duration];
     
-    if (UIDeviceOrientationIsLandscape(toInterfaceOrientation)) {
+    if (UIInterfaceOrientationIsLandscape(toInterfaceOrientation)) {
         self.comparisonViewController = [[MITDiningMenuComparisonViewController alloc] init];
         self.comparisonViewController.houseVenues = [self.houseVenue.venues.house array];
         self.comparisonViewController.filtersApplied = self.filters;

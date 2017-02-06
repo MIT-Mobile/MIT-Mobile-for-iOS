@@ -225,7 +225,14 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
     if (! persistentStore) return nil;
     if (! [self.persistentStoreCoordinator removePersistentStore:persistentStore error:error]) return nil;
 
-    NSDictionary *seedOptions = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]) };
+    NSDictionary *seedOptions = nil;
+    if (nilOrOptions) {
+        NSMutableDictionary *mutableOptions = [nilOrOptions mutableCopy];
+        [mutableOptions setObject:(seedPath ?: [NSNull null]) forKey:RKSQLitePersistentStoreSeedDatabasePathOption];
+        seedOptions = mutableOptions;
+    } else {
+        seedOptions = @{ RKSQLitePersistentStoreSeedDatabasePathOption: (seedPath ?: [NSNull null]) };
+    }
     persistentStore = [self.persistentStoreCoordinator addPersistentStoreWithType:NSSQLiteStoreType configuration:nilOrConfigurationName URL:storeURL options:seedOptions error:error];
     if (! persistentStore) return nil;
     
@@ -328,8 +335,12 @@ static char RKManagedObjectContextChangeMergingObserverAssociationKey;
 
 - (BOOL)resetPersistentStores:(NSError **)error
 {
-    [self.mainQueueManagedObjectContext reset];
-    [self.persistentStoreManagedObjectContext reset];
+    [self.mainQueueManagedObjectContext performBlockAndWait:^{
+        [self.mainQueueManagedObjectContext reset];
+    }];
+    [self.persistentStoreManagedObjectContext performBlockAndWait:^{
+        [self.persistentStoreManagedObjectContext reset];
+    }];
     
     NSError *localError;
     for (NSPersistentStore *persistentStore in self.persistentStoreCoordinator.persistentStores) {

@@ -190,7 +190,7 @@
     if ([self.scannerMgr isScanningSupported])
     {
         UIBarButtonItem *toolbarItem = [[UIBarButtonItem alloc] initWithTitle:@"History"
-                                                                        style:UIBarButtonItemStyleBordered
+                                                                        style:UIBarButtonItemStylePlain
                                                                        target:self
                                                                        action:@selector(showHistory:)];
         self.navigationItem.rightBarButtonItem = toolbarItem;
@@ -237,7 +237,7 @@
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     if( [self isOnIpad] )
     {
@@ -271,7 +271,7 @@
 - (void)showHistoryOnIphone
 {
     [self.navigationItem.rightBarButtonItem setEnabled:NO];
-    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStyleBordered target:nil action:nil];
+    self.navigationItem.backBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Scanner" style:UIBarButtonItemStylePlain target:nil action:nil];
     
     MITScannerHistoryViewController *historyVC = [MITScannerHistoryViewController new];
     [self.navigationController pushViewController:historyVC animated:YES];

@@ -11,6 +11,9 @@
 @end
 
 @implementation EmergencyModule
+
+@dynamic rootViewController;
+
 - (instancetype)init
 {
     self = [super initWithName:MITModuleTagEmergency title:@"Emergency"];

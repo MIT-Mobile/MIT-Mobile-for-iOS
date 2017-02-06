@@ -4,6 +4,9 @@
 #import "MITFacilitiesHomeViewController.h"
 
 @implementation FacilitiesModule
+
+@dynamic rootViewController;
+
 - (instancetype)init
 {
     self = [super initWithName:MITModuleTagFacilities title:@"Building Services"];

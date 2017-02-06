@@ -149,6 +149,7 @@ NSString * const MITImageActionArrowRight = @"global-action-arrow_right";
 
 NSString * const MITImageNameSearch = @"global-search";
 NSString * const MITImageDisclosureRight = @"global-disclosure_right";
+NSString * const MITImageCalloutDisclosureRight = @"global-callout-disclosure";
 NSString * const MITImageTransparentPixel = @"global-transparent-pixel";
 
 NSString * const MITImageLogoDarkContent = @"global-mit-logo-light";

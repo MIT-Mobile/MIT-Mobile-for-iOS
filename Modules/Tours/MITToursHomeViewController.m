@@ -271,7 +271,7 @@ typedef NS_ENUM(NSInteger, MITToursTableViewSection) {
     return UIInterfaceOrientationPortrait;
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }

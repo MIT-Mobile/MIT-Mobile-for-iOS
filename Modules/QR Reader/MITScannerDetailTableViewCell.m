@@ -4,6 +4,7 @@
 @implementation MITScannerDetailTableViewCell
 
 - (void)awakeFromNib {
+    [super awakeFromNib];
     // Initialization code
     
     [self.cellHeaderTitle setTextColor:[UIColor mit_tintColor]];

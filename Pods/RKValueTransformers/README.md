@@ -1,7 +1,7 @@
 RKValueTransformers
 ===================
 
-[![Build Status](https://travis-ci.org/RestKit/RKValueTransformers.png?branch=master,development)](https://travis-ci.org/RestKit/RKValueTransformers) 
+[![Build Status](http://img.shields.io/travis/RestKit/RKValueTransformers/master.svg?style=flat)](https://travis-ci.org/RestKit/RKValueTransformers) 
 ![Pod Version](http://cocoapod-badges.herokuapp.com/v/RKValueTransformers/badge.png) 
 ![Pod Platform](http://cocoapod-badges.herokuapp.com/p/RKValueTransformers/badge.png)
 
@@ -32,7 +32,10 @@ RKValueTransformers is a "batteries included" library that ships with value tran
   * Any singular object to a collection (`NSArray`, `NSSet`, `NSOrderedSet` and their mutable counterparts)
   * Any object and an `NSDictionary` (object becomes a key for empty nested dictionary)
   * Any class conforming to `NSMutableCoding` -> mutable representation of itself
-  * `NSString` <-> `NSDate` via `NSDateFormatter`
+  * `NSString` <-> `NSDate` via `NSDateFormatter`. Default formats include:
+  	* RFC 1123 format
+    * RFC 850 format
+    * ANSI C's asctime() format
   * `NSString` <-> `NSNumber` via `NSNumberFormatter`
 * Lightweight. Implemented in a single pair or header and implementation files.
 * Fully unit tested and documented.
@@ -99,17 +102,17 @@ RKValueTransformers supports the creation of ad-hoc value transformer instances 
 
 ```objc
 RKValueTransformer *uppercaseStringTransformer = [RKBlockValueTransformer valueTransformerWithValidationBlock:^BOOL(__unsafe_unretained Class sourceClass, __unsafe_unretained Class destinationClass) {
-        // We transform a `NSString` into another `NSString`
-        return ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSURL class]]);
-    } transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
-    	// Validate the input and output
-        RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSString class], error);
-        RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSString class], error);
-        
-        // Perform the transformation
-        *outputValue = [(NSString *)inputValue uppercaseString];
-        return YES;
-    }];
+    // We transform a `NSString` into another `NSString`
+    return ([sourceClass isSubclassOfClass:[NSString class]] && [destinationClass isSubclassOfClass:[NSString class]]);
+} transformationBlock:^BOOL(id inputValue, __autoreleasing id *outputValue, Class outputValueClass, NSError *__autoreleasing *error) {
+	// Validate the input and output
+    RKValueTransformerTestInputValueIsKindOfClass(inputValue, [NSString class], error);
+    RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, [NSString class], error);
+    
+    // Perform the transformation
+    *outputValue = [(NSString *)inputValue uppercaseString];
+    return YES;
+}];
 ```
 
 ## Installation

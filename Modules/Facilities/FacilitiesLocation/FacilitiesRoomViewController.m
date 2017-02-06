@@ -11,8 +11,8 @@
 #import "UIKit+MITAdditions.h"
 #import "MITBuildingServicesReportForm.h"
 
-@interface FacilitiesRoomViewController ()
-@property (nonatomic,strong) UISearchDisplayController *strongSearchDisplayController;
+@interface FacilitiesRoomViewController () <UITableViewDataSource,UITableViewDelegate,UISearchResultsUpdating>
+@property (nonatomic,strong) UISearchController *strongSearchDisplayController;
 @property (nonatomic,strong) MITLoadingActivityView* loadingView;
 @property (nonatomic,strong) FacilitiesLocationData* locationData;
 @property (nonatomic,strong) NSPredicate* filterPredicate;
@@ -26,6 +26,7 @@
 @property (nonatomic, strong) NSMutableDictionary *floors;
 
 @property (nonatomic, assign) BOOL hasZeroFloor;
+@property (nonatomic, assign) BOOL searching;
 
 - (NSArray*)dataForMainTableView;
 - (void)configureMainTableCell:(UITableViewCell*)cell forIndexPath:(NSIndexPath*)indexPath;
@@ -80,23 +81,19 @@
     }
     
     {
-        UISearchBar *searchBar = [[UISearchBar alloc] init];
-        searchBar.delegate = self;
-        
-        UISearchDisplayController *searchController = [[UISearchDisplayController alloc] initWithSearchBar:searchBar
-                                                                                        contentsController:self];
-        searchController.delegate = self;
-        searchController.searchResultsDataSource = self;
-        searchController.searchResultsDelegate = self;
+        UISearchController *searchController = [[UISearchController alloc] initWithSearchResultsController:nil];
+        searchController.searchResultsUpdater = self;
+        searchController.dimsBackgroundDuringPresentation = NO;
+        self.definesPresentationContext = YES;
         self.strongSearchDisplayController = searchController;
         
         // while we still need to initialize searchController for both iPhone and iPad,
         // we only need add search bar to the view for the iPhone case
         if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
         {
-            [searchBar sizeToFit];
-            searchBarFrame = searchBar.frame;
-            self.tableView.tableHeaderView = searchBar;
+            [searchController.searchBar sizeToFit];
+            searchBarFrame = searchController.searchBar.frame;
+            self.tableView.tableHeaderView = searchController.searchBar;
         }
     }
     
@@ -153,9 +150,9 @@
                         [blockSelf.tableView reloadData];
                     }
                     
-                    if ([blockSelf.searchDisplayController isActive] && ((blockSelf.filteredData == nil) || updated)) {
+                    if ([blockSelf.strongSearchDisplayController isActive] && ((blockSelf.filteredData == nil) || updated)) {
                         blockSelf.filteredData = nil;
-                        [blockSelf.searchDisplayController.searchResultsTableView reloadData];
+                        [blockSelf.tableView reloadData];
                     }
                 }
             }
@@ -180,7 +177,7 @@
     return MITCanAutorotateForOrientation(interfaceOrientation, [self supportedInterfaceOrientations]);
 }
 
-- (NSUInteger)supportedInterfaceOrientations
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
     return UIInterfaceOrientationMaskPortrait;
 }
@@ -314,7 +311,7 @@
     FacilitiesRoom *room = nil;
     NSString *altName = nil;
     
-    if (tableView == self.tableView)
+    if (!self.searching)
     {
         if( indexPath.section == 0 && indexPath.row == 0 )
         {
@@ -329,7 +326,7 @@
             room = [self roomAtIndexPath:indexPath];
         }
     }
-    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    else
     {
         if (indexPath.row == 0) {
             altName = self.searchString;
@@ -400,7 +397,7 @@
 }
 
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView {
-    if (tableView == self.tableView)
+    if (!self.searching)
     {
         if( self.cachedData == nil )
         {
@@ -416,7 +413,7 @@
 }
 
 - (NSInteger)tableView:(UITableView *)tableView numberOfRowsInSection:(NSInteger)section {
-    if (tableView == self.tableView)
+    if (!self.searching)
     {
         if ((self.cachedData == nil) || ([self.cachedData count] == 0))
         {
@@ -438,7 +435,7 @@
     static NSString *facilitiesIdentifier = @"facilitiesCell";
     static NSString *searchIdentifier = @"searchCell";
     
-    if (tableView == self.tableView)
+    if (!self.searching)
     {
         UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:facilitiesIdentifier];
         
@@ -451,7 +448,7 @@
         
         return cell;
     }
-    else if (tableView == self.searchDisplayController.searchResultsTableView)
+    else
     {
         HighlightTableViewCell *hlCell = (HighlightTableViewCell*)[tableView dequeueReusableCellWithIdentifier:searchIdentifier];
         
@@ -465,11 +462,7 @@
         if (indexPath.row == 0)
         {
             hlCell.highlightLabel.searchString = nil;
-            
-            if( UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPhone )
-            {
-                hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
-            }
+            hlCell.highlightLabel.text = [NSString stringWithFormat:@"Use \"%@\"",self.searchString];
         }
         else
         {
@@ -478,10 +471,6 @@
         }
         
         return hlCell;
-    }
-    else
-    {
-        return nil;
     }
 }
 
@@ -511,30 +500,14 @@
     [MITBuildingServicesReportForm sharedServiceReport].room = nil;
     [MITBuildingServicesReportForm sharedServiceReport].roomAltName = self.searchString;
     
-    if( customLocationText.length == 0 )
-    {
-        [self.strongSearchDisplayController.searchResultsTableView reloadData];
-        [self.strongSearchDisplayController.searchResultsTableView removeFromSuperview];
-    }
-    else
-    {
-        if( [self.strongSearchDisplayController.searchResultsTableView superview] == nil )
-        {
-            [self.view addSubview:self.strongSearchDisplayController.searchResultsTableView];
-            [self.strongSearchDisplayController.searchResultsTableView setFrame:self.tableView.frame];
-            [self.strongSearchDisplayController.searchResultsTableView setBackgroundColor:[UIColor whiteColor]];
-        }
-        
-        [self.strongSearchDisplayController.searchResultsTableView reloadData];
-    }
+    self.searching = customLocationText.length == 0 ? NO : YES;
+    [self.tableView reloadData];
 }
 
-#pragma mark - UISearchBarDelegate
-- (void)searchBar:(UISearchBar *)searchBar textDidChange:(NSString *)searchText
+- (void)updateSearchResultsForSearchController:(UISearchController *)searchController
 {
-    [self handleUpdatedSearchText:searchText];
+    [self handleUpdatedSearchText:searchController.searchBar.text];
 }
-
 
 - (void)handleUpdatedSearchText:(NSString *)searchText
 {
@@ -544,23 +517,10 @@
         self.searchString = ([self.trimmedString length] > 0) ? self.trimmedString : nil;
         self.filteredData = nil;
     }
-}
+    
+    self.searching = searchText.length == 0 ? NO : YES;
+    [self.tableView reloadData];
 
-- (void)searchBarCancelButtonClicked:(UISearchBar *)searchBar {
-    [self.searchDisplayController setActive:NO
-                                   animated:YES];
-}
-
-// Make sure tapping the status bar always scrolls to the top of the active table
-- (void)searchDisplayController:(UISearchDisplayController *)controller didLoadSearchResultsTableView:(UITableView *)tableView {
-    self.tableView.scrollsToTop = NO;
-    tableView.scrollsToTop = YES;
-}
-
-- (void)searchDisplayController:(UISearchDisplayController *)controller willUnloadSearchResultsTableView:(UITableView *)tableView {
-    // using willUnload because willHide strangely doesn't get called when the "Cancel" button is clicked
-    tableView.scrollsToTop = NO;
-    self.tableView.scrollsToTop = YES;
 }
 
 #pragma mark - utils

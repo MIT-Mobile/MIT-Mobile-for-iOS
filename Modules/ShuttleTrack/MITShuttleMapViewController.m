@@ -11,16 +11,18 @@
 #import "UIKit+MITAdditions.h"
 #import "MITShuttleStopViewController.h"
 #import "MITCalloutMapView.h"
-#import "SMCalloutView.h"
 #import "MITTiledMapView.h"
 #import "MITLocationManager.h"
 #import "MITTileOverlay.h"
 #import <QuartzCore/QuartzCore.h>
 #import "MITShuttleVehiclesDataSource.h"
 #import "MITShuttleVehicleList.h"
+#import "MITCalloutView.h"
 
 NSString * const kMITShuttleMapAnnotationViewReuseIdentifier = @"kMITShuttleMapAnnotationViewReuseIdentifier";
 NSString * const kMITShuttleMapBusAnnotationViewReuseIdentifier = @"kMITShuttleMapBusAnnotationViewReuseIdentifier";
+
+static CGFloat ToolbarHeight = 44.0;
 
 static const NSTimeInterval kVehiclesRefreshInterval = 10.0;
 
@@ -32,7 +34,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     MITShuttleStopStateNext     = 1 << 1,
 };
 
-@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, SMCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
+@interface MITShuttleMapViewController () <MKMapViewDelegate, NSFetchedResultsControllerDelegate, MITCalloutViewDelegate, MITShuttleStopViewControllerDelegate>
 
 @property (nonatomic, strong) NSFetchRequest *routesFetchRequest;
 @property (nonatomic, strong) MITShuttleVehiclesDataSource *vehiclesDataSource;
@@ -48,7 +50,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 @property (nonatomic) BOOL shouldRepositionMapOnRotate;
 @property (nonatomic) BOOL touchesActive;
 
-@property (nonatomic, strong) SMCalloutView *calloutView;
+@property (nonatomic, strong) MITCalloutView *calloutView;
 @property (nonatomic, strong) MITShuttleStopViewController *calloutStopViewController;
 
 @property (nonatomic, strong) UIToolbar *toolbar;
@@ -425,7 +427,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 - (void)setMapToolBarHidden:(BOOL)hidden
 {
     if (hidden) {
-        self.toolbarBottomConstraint.constant = self.toolbar.bounds.size.height;
+        self.toolbarBottomConstraint.constant = ToolbarHeight;
     } else {
         self.toolbarBottomConstraint.constant = 0;
     }
@@ -549,7 +551,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     NSArray *horizontalToolbarConstraints = [NSLayoutConstraint constraintsWithVisualFormat:@"H:|-0-[toolbar]-0-|" options:0 metrics:nil views:@{@"toolbar": self.toolbar}];
     [self.view addConstraints:horizontalToolbarConstraints];
     
-    NSLayoutConstraint *toolbarHeightConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:44];
+    NSLayoutConstraint *toolbarHeightConstraint = [NSLayoutConstraint constraintWithItem:self.toolbar attribute:NSLayoutAttributeHeight relatedBy:NSLayoutRelationEqual toItem:nil attribute:NSLayoutAttributeNotAnAttribute multiplier:1 constant:ToolbarHeight];
     [self.view addConstraint:toolbarHeightConstraint];
     
     [self.view removeConstraint:self.mapBottomConstraint];
@@ -570,7 +572,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupMITTileOverlay
 {
-    static NSString * const template = @"http://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
+    static NSString * const template = @"https://m.mit.edu/api/arcgis/WhereIs_Base_Topo/MapServer/tile/{z}/{y}/{x}";
     
     MITTileOverlay *tileOverlay = [[MITTileOverlay alloc] initWithURLTemplate:template];
     tileOverlay.canReplaceMapContent = YES;
@@ -580,7 +582,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupBaseTileOverlay
 {
-    static NSString * const template = @"http://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
+    static NSString * const template = @"https://services.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/{z}/{y}/{x}";
     
     MKTileOverlay *baseTileOverlay = [[MKTileOverlay alloc] initWithURLTemplate:template];
     baseTileOverlay.canReplaceMapContent = YES;
@@ -724,14 +726,16 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
 
 - (void)setupCalloutView
 {
-    SMCalloutView *calloutView = [[SMCalloutView alloc] initWithFrame:CGRectZero];
-    calloutView.contentViewMargin = 0;
-    calloutView.anchorMargin = 39;
-    calloutView.delegate = self;
-    calloutView.permittedArrowDirection = SMCalloutArrowDirectionAny;
-    
-    self.calloutView = calloutView;
-    self.tiledMapView.mapView.calloutView = calloutView;
+    if (!self.calloutView) {
+        // TODO: Lazy load?
+        MITCalloutView *calloutView = [MITCalloutView new];
+        calloutView.delegate = self;
+        if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPhone) {
+            calloutView.permittedArrowDirections = MITCalloutArrowDirectionTop | MITCalloutArrowDirectionBottom;
+        }
+        self.calloutView = calloutView;
+        self.tiledMapView.mapView.mitCalloutView = calloutView;
+    }
 }
 
 - (void)presentPadCalloutForStop:(MITShuttleStop *)stop
@@ -770,20 +774,16 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [nav didMoveToParentViewController:self];
     
     [self setupCalloutView];
-    
+    self.calloutView.shouldHighlightOnTouch = NO;
+    self.calloutView.internalInsets = UIEdgeInsetsZero;
+    self.calloutView.externalInsets = UIEdgeInsetsMake(CGRectGetMaxY(self.navigationController.navigationBar.frame) + 10, 10, 10, 10);
     self.calloutView.contentView = nav.view;
-    self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
     
-    [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
-    
-    // Need to set again after presenting because it readjusts itself. (Needs Both!)
-    if (self.calloutView.currentArrowDirection == SMCalloutArrowDirectionDown) {
-        frame.origin.y = 0;
-    } else {
-        // Top 20 px will be masked to an arrow, offset the frame down to prevent clipping our view.
-        frame.origin.y = 20;
+    CGRect bounds = stopAnnotationView.bounds;
+    if (self.shouldUsePinAnnotations) {
+        bounds.size.width /= 2.0;
     }
-    nav.view.frame = frame;
+    [self.calloutView presentFromRect:bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)presentPhoneCalloutForStop:(MITShuttleStop *)stop
@@ -793,7 +793,7 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     [self setupCalloutView];
     
     self.calloutView.contentView = nil;
-    self.calloutView.title = stop.title;
+    self.calloutView.titleText = stop.title;
     
     NSString *calloutSubtitle = nil;
     switch ([self.route status]) {
@@ -829,33 +829,29 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
         }
     }
     
-    self.calloutView.subtitle = calloutSubtitle;
+    self.calloutView.subtitleText = calloutSubtitle;
     
-    UIImageView *chevronImageView = [[UIImageView alloc] initWithImage:[UIImage imageNamed:MITImageDisclosureRight]];
-    chevronImageView.contentMode = UIViewContentModeRight;
-    self.calloutView.rightAccessoryView = chevronImageView;
-    
-    self.calloutView.calloutOffset = stopAnnotationView.calloutOffset;
-    [self.calloutView presentCalloutFromRect:stopAnnotationView.bounds inView:stopAnnotationView constrainedToView:self.tiledMapView.mapView animated:YES];
+    CGRect bounds = stopAnnotationView.bounds;
+    bounds.size.width /= 2.0;
+    [self.calloutView presentFromRect:bounds inView:stopAnnotationView withConstrainingView:self.tiledMapView.mapView];
 }
 
 - (void)dismissCurrentCalloutAnimated:(BOOL)animated
 {
-    [self.calloutView dismissCalloutAnimated:animated];
+    [self.calloutView dismissCallout];
 }
 
-#pragma mark - SMCalloutViewDelegate Methods
+#pragma mark - MITCalloutViewDelegate Methods
 
-- (NSTimeInterval)calloutView:(SMCalloutView *)calloutView delayForRepositionWithSize:(CGSize)offset
+- (void)calloutView:(MITCalloutView *)calloutView positionedOffscreenWithOffset:(CGPoint)offscreenOffset
 {
-    CGPoint adjustedCenter = CGPointMake(-offset.width + self.tiledMapView.mapView.bounds.size.width * 0.5,
-                                         -offset.height + self.tiledMapView.mapView.bounds.size.height * 0.5);
+    CGPoint adjustedCenter = CGPointMake(offscreenOffset.x + self.tiledMapView.mapView.bounds.size.width * 0.5,
+                                         offscreenOffset.y + self.tiledMapView.mapView.bounds.size.height * 0.5);
     CLLocationCoordinate2D newCenter = [self.tiledMapView.mapView convertPoint:adjustedCenter toCoordinateFromView:self.tiledMapView.mapView];
     [self.tiledMapView.mapView setCenterCoordinate:newCenter animated:YES];
-    return kSMCalloutViewRepositionDelayForUIScrollView;
 }
 
-- (void)calloutViewClicked:(SMCalloutView *)calloutView
+- (void)calloutViewTapped:(MITCalloutView *)calloutView
 {
     [self dismissCurrentCalloutAnimated:YES];
     if ([self.delegate respondsToSelector:@selector(shuttleMapViewController:didClickCalloutForStop:)]) {
@@ -863,10 +859,11 @@ typedef NS_OPTIONS(NSUInteger, MITShuttleStopState) {
     }
 }
 
-- (void)calloutViewDidDisappear:(SMCalloutView *)calloutView
-{
+- (void)calloutViewRemovedFromViewHierarchy:(MITCalloutView *)calloutView {
     [self.calloutStopViewController willMoveToParentViewController:nil];
     [self.calloutStopViewController removeFromParentViewController];
+    calloutView.contentView = nil;
+    [self.calloutStopViewController didMoveToParentViewController:nil];
     self.calloutStopViewController = nil;
 }
 

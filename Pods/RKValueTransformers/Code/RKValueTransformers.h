@@ -83,17 +83,23 @@ typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
  @param error A pointer to an `NSError` object in which to assign a newly constructed error if the test fails. Cannot be `nil`.
  */
 #define RKValueTransformerTestInputValueIsKindOfClass(inputValue, expectedClass, error) ({ \
-    NSArray *supportedClasses = [expectedClass isKindOfClass:[NSArray class]] ? (NSArray *)expectedClass : @[ expectedClass ];\
+    id expectedArgument = (expectedClass); \
     BOOL success = NO; \
-    for (Class supportedClass in supportedClasses) {\
-        if ([inputValue isKindOfClass:supportedClass]) { \
-            success = YES; \
-            break; \
-        }; \
+    if ([expectedArgument isKindOfClass:[NSArray class]]) { \
+        for (Class supportedClass in expectedArgument) {\
+            if ([inputValue isKindOfClass:supportedClass]) { \
+                success = YES; \
+                break; \
+            } \
+        } \
+    } else { \
+        success = [inputValue isKindOfClass:expectedArgument]; \
     } \
     if (! success) { \
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `%@`, but got a `%@`.", expectedClass, [inputValue class]] };\
-        if (error) *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+        if (error) { \
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `inputValue` of type `%@`, but got a `%@`.", expectedArgument, [inputValue class]] };\
+            *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorUntransformableInputValue userInfo:userInfo]; \
+        } \
         return NO; \
     } \
 })
@@ -108,17 +114,23 @@ typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
  @param error A pointer to an `NSError` object in which to assign a newly constructed error if the test fails. Cannot be `nil`.
  */
 #define RKValueTransformerTestOutputValueClassIsSubclassOfClass(outputValueClass, expectedClass, error) ({ \
-    NSArray *supportedClasses = [expectedClass isKindOfClass:[NSArray class]] ? (NSArray *)expectedClass : @[ expectedClass ];\
     BOOL success = NO; \
-    for (Class supportedClass in supportedClasses) {\
-        if ([outputValueClass isSubclassOfClass:supportedClass]) { \
-            success = YES; \
-            break; \
-        }; \
+    id expectedArgument = (expectedClass); \
+    if ([expectedArgument isKindOfClass:[NSArray class]]) { \
+        for (Class supportedClass in expectedArgument) {\
+            if ([outputValueClass isSubclassOfClass:supportedClass]) { \
+                success = YES; \
+                break; \
+            } \
+        } \
+    } else { \
+        success = [outputValueClass isSubclassOfClass:expectedArgument]; \
     } \
     if (! success) { \
-        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `outputValueClass` of type `%@`, but got a `%@`.", expectedClass, outputValueClass] };\
-        if (error) *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorUnsupportedOutputClass userInfo:userInfo]; \
+        if (error) { \
+            NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Expected an `outputValueClass` of type `%@`, but got a `%@`.", expectedArgument, outputValueClass] };\
+            *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorUnsupportedOutputClass userInfo:userInfo]; \
+        } \
         return NO; \
     } \
 })
@@ -135,10 +147,12 @@ typedef NS_ENUM(NSUInteger, RKValueTransformationError) {
  */
 #define RKValueTransformerTestTransformation(condition, error, ...) ({ \
 if (! (condition)) { \
-    NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:__VA_ARGS__] };\
-    if (error) *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo]; \
-        return NO; \
+    if (error) { \
+        NSDictionary *userInfo = @{ NSLocalizedDescriptionKey: [NSString stringWithFormat:__VA_ARGS__] };\
+        *error = [NSError errorWithDomain:RKValueTransformersErrorDomain code:RKValueTransformationErrorTransformationFailed userInfo:userInfo]; \
     } \
+    return NO; \
+  } \
 })
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////

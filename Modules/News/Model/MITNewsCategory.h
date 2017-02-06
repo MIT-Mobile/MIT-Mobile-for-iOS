@@ -12,6 +12,8 @@
 @property (nonatomic, strong) NSNumber * order;
 @property (nonatomic, strong) NSURL * url;
 @property (nonatomic, copy) NSSet *stories;
+
++ (RKMapping*)storyObjectMapping;
 @end
 
 @interface MITNewsCategory (CoreDataGeneratedAccessors)

@@ -52,6 +52,9 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
 
 - (void)toggleNotificationForPredictionGroup:(NSArray *)predictionGroup withRouteTitle:(NSString *)routeTitle
 {
+    UIUserNotificationSettings *settings = [UIUserNotificationSettings settingsForTypes:UIUserNotificationTypeBadge | UIUserNotificationTypeSound | UIUserNotificationTypeAlert categories:nil];
+    [[UIApplication sharedApplication] registerUserNotificationSettings:settings];
+    
     MITShuttlePrediction *corePrediction = [predictionGroup firstObject];
     UILocalNotification *scheduledNote = [self notificationForPrediction:corePrediction];
     if (scheduledNote) {
@@ -144,7 +147,7 @@ const NSTimeInterval kMITShuttleStopNotificationInterval = -300.0;
         if ([stopId isEqualToString:prediction.stopId] && [vehicleId isEqualToString:prediction.vehicleId]) {
             NSDate *notificationPredicationDate = notification.userInfo[kMITShuttleStopNotificationPredictionDateKey];
             NSDate *predictionDate = [NSDate dateWithTimeIntervalSince1970:[prediction.timestamp doubleValue]];
-            if (abs([predictionDate timeIntervalSinceDate:notificationPredicationDate]) < kMITShuttleStopNotificationVariance) {
+            if (fabs([predictionDate timeIntervalSinceDate:notificationPredicationDate]) < kMITShuttleStopNotificationVariance) {
                 return notification;
             }
         }

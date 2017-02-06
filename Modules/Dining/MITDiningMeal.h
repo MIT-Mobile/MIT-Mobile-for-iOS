@@ -22,6 +22,8 @@
 - (BOOL)isSuperficiallyEqualToMeal:(MITDiningMeal *)meal;
 - (NSString *)titleCaseName;
 
++ (NSInteger)mealOrderForMealName:(NSString *)mealName;
+
 @end
 
 @interface MITDiningMeal (CoreDataGeneratedAccessors)

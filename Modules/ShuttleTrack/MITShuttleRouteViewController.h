@@ -15,15 +15,14 @@
 // Used by container view controller so that we prevent weird tableview ui behavior when we are hiding this below the full-screen map
 @property (nonatomic, assign) BOOL shouldSuppressPredictionRefreshReloads;
 
+// Defaults to YES
+@property (nonatomic, assign) BOOL shouldShowRefreshControl;
+
 - (instancetype)initWithRoute:(MITShuttleRoute *)route;
 - (void)highlightStop:(MITShuttleStop *)stop;
 
-@end
-
-@protocol MITShuttleRouteViewControllerDataSource <NSObject>
-
-- (BOOL)isMapEmbeddedInRouteViewController:(MITShuttleRouteViewController *)routeViewController;
-- (CGFloat)embeddedMapHeightForRouteViewController:(MITShuttleRouteViewController *)routeViewController;
+- (void)refresh;
+- (CGFloat)targetTableViewHeight;
 
 @end
 
@@ -32,8 +31,7 @@
 - (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didSelectStop:(MITShuttleStop *)stop;
 
 @optional
-- (void)routeViewController:(MITShuttleRouteViewController *)routeViewController didScrollToContentOffset:(CGPoint)contentOffset;
-- (void)routeViewControllerDidRefresh:(MITShuttleRouteViewController *)routeViewController;
 - (void)routeViewControllerDidSelectMapPlaceholderCell:(MITShuttleRouteViewController *)routeViewController;
+- (void)routeViewControllerDidFinishRefreshing:(MITShuttleRouteViewController *)routeViewController;
 
 @end

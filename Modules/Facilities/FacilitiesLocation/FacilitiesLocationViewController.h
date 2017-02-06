@@ -7,7 +7,7 @@
 @class HighlightTableViewCell;
 @class FacilitiesLocationSearch;
 
-@interface FacilitiesLocationViewController : UIViewController <UITableViewDataSource,UITableViewDelegate,UISearchDisplayDelegate,UISearchBarDelegate>
+@interface FacilitiesLocationViewController : UIViewController 
 @property (nonatomic,strong) UITableView* tableView;
 @property (nonatomic,strong) FacilitiesCategory* category;
 

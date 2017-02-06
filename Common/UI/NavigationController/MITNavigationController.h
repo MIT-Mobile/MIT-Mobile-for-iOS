@@ -4,6 +4,6 @@
 
 // Rotation forwarding
 - (UIInterfaceOrientation)preferredInterfaceOrientationForPresentation;
-- (NSUInteger)supportedInterfaceOrientations;
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations;
 - (BOOL)shouldAutorotate;
 @end

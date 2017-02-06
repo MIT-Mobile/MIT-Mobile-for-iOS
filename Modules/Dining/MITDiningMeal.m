@@ -83,4 +83,21 @@
     return [[MITDiningMeal mealDateFormatter] dateFromString:dateString];
 }
 
++ (NSInteger)mealOrderForMealName:(NSString *)mealName
+{
+    NSString *lowerMealName = mealName.lowercaseString;
+    if ([lowerMealName isEqualToString:@"breakfast"]) {
+        return 0;
+    } else if ([lowerMealName isEqualToString:@"brunch"]) {
+        return 1;
+    } else if ([lowerMealName isEqualToString:@"lunch"]) {
+        return 2;
+    } else if ([lowerMealName isEqualToString:@"dinner"]) {
+        return 3;
+    } else {
+        NSLog(@"Error: Unknown meal name type %@!", mealName);
+        return NSNotFound;
+    }
+}
+
 @end

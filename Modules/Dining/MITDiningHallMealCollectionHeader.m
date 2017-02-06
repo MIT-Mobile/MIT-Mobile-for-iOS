@@ -57,11 +57,10 @@
     }
     self.currentMealHoursLabel.text = [NSString stringWithFormat:@"%@ %@", mealName, mealHoursString];
     
+    self.currentStatusLabel.text = [day statusStringForDate:[NSDate date]];
     if ([venue isOpenNow]) {
-        self.currentStatusLabel.text = @"Open";
         self.currentStatusLabel.textColor = [UIColor mit_openGreenColor];
     } else {
-        self.currentStatusLabel.text = @"Closed";
         self.currentStatusLabel.textColor = [UIColor mit_closedRedColor];
     }
     
@@ -101,7 +100,7 @@
     header.frame = frame;
     
     CGFloat height = [header systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    return MAX(44, height);
+    return MAX(48, height);
 }
 
 + (MITDiningHallMealCollectionHeader *)sizingHeader

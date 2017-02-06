@@ -168,10 +168,10 @@ static NSTimeInterval const MITDiningHouseMealSelectorLongPressTimerDuration = 0
     NSArray *allKeys = [newDateKeyedMeals allKeys];
     for (id key in allKeys) {
         NSOrderedSet *dateSortedMeals = [newDateKeyedMeals objectForKey:key];
-        dateSortedMeals = [NSOrderedSet orderedSetWithArray:[dateSortedMeals sortedArrayUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            MITDiningMeal *meal1 = obj1;
-            MITDiningMeal *meal2 = obj2;
-            return [meal1.startTime compare:meal2.startTime];
+        dateSortedMeals = [NSOrderedSet orderedSetWithArray:[dateSortedMeals sortedArrayUsingComparator:^NSComparisonResult(MITDiningMeal *left, MITDiningMeal *right) {
+            NSInteger leftOrder = [MITDiningMeal mealOrderForMealName:left.name];
+            NSInteger rightOrder = [MITDiningMeal mealOrderForMealName:right.name];
+            return [@(leftOrder) compare:@(rightOrder)];
         }]];
         [newDateKeyedMeals setObject:dateSortedMeals forKey:key];
     }

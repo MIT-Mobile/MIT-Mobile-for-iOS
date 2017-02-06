@@ -372,7 +372,7 @@ CGFloat const refreshControlTextHeight = 19;
     [self.searchController didMoveToParentViewController:self];
     [UIView animateWithDuration:(0.33)
                           delay:0.
-                        options:UIViewAnimationCurveEaseOut
+                        options:UIViewAnimationOptionCurveEaseOut
                      animations:^{
                          self.searchController.view.alpha = .5;
                      } completion:nil];
@@ -440,7 +440,7 @@ CGFloat const refreshControlTextHeight = 19;
     if (self.presentationStyle == MITNewsPresentationStyleList) {
         if ([self supportsPresentationStyle:MITNewsPresentationStyleGrid]) {
             UIImage *gridImage = [UIImage imageNamed:MITImageBarButtonGrid];
-            UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonSystemItemStop target:self action:@selector(showStoriesAsGrid:)];
+            UIBarButtonItem *gridItem = [[UIBarButtonItem alloc] initWithImage:gridImage style:UIBarButtonItemStylePlain target:self action:@selector(showStoriesAsGrid:)];
             [rightBarItems addObject:gridItem];
         }
     } else if (self.presentationStyle == MITNewsPresentationStyleGrid) {
@@ -451,8 +451,13 @@ CGFloat const refreshControlTextHeight = 19;
         }
     }
     if (self.searching) {
+#warning come back and fix this ... this points to another class's method
         
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wundeclared-selector"
         UIBarButtonItem *cancelSearchItem = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemCancel target:self.searchController action:@selector(searchBarCancelButtonClicked)];
+#pragma clang diagnostic pop
+
         [rightBarItems addObject:cancelSearchItem];
         
         if (UI_USER_INTERFACE_IDIOM() == UIUserInterfaceIdiomPad) {
@@ -543,7 +548,7 @@ CGFloat const refreshControlTextHeight = 19;
                 [strongSelf addNoResultsViewWithMessage:refreshControl.attributedTitle.string];
                 
             } else {
-                BOOL *storyHasBeenDownloaded = NO;
+                BOOL storyHasBeenDownloaded = NO;
                 for (MITNewsDataSource *datasource in strongSelf.dataSources) {
                     if ([datasource.objects count] != 0) {
                         storyHasBeenDownloaded = YES;

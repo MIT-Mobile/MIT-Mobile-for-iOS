@@ -123,7 +123,7 @@ static CGFloat const kMITLibrariesYourAccountGridCollectionViewSectionHorizontal
     CGFloat interItemSpacing = ((UICollectionViewFlowLayout *)collectionView.collectionViewLayout).minimumInteritemSpacing;
     CGFloat cellWidth = 0;
     NSInteger numberOfColumns = 0;
-    if (UIInterfaceOrientationIsPortrait(self.interfaceOrientation)) {
+    if (UIInterfaceOrientationIsPortrait([[UIApplication sharedApplication] statusBarOrientation])) {
         numberOfColumns = 2;
     } else {
         numberOfColumns = 3;
