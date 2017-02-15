@@ -94,7 +94,7 @@ static CGFloat kMITDiningVenueCellEstimatedHeight = 67.0;
     cell.frame = frame;
     
     CGFloat height = [cell.contentView systemLayoutSizeFittingSize:UILayoutFittingCompressedSize].height;
-    ++height; // add pixel for cell separator
+   // ++height; // add pixel for cell separator
     return MAX(kMITDiningVenueCellEstimatedHeight, height);
 }
 
