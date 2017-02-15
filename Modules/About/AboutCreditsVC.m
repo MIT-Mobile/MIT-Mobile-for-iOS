@@ -110,7 +110,7 @@ NSString* const AboutCreditsTableViewCellIdentifier = @"AboutCredits";
     webView.frame = frame;
     CGSize size = [webView sizeThatFits:CGSizeZero];
 
-    self.webViewHeightsDictionary[[NSNumber numberWithInt:webView.tag]] = [NSNumber numberWithFloat:size.height];
+    self.webViewHeightsDictionary[[NSNumber numberWithInteger:webView.tag]] = [NSNumber numberWithFloat:size.height];
 
     [self.tableView reloadData];
 }

@@ -7,9 +7,11 @@
     return [[[NSBundle mainBundle] infoDictionary] objectForKey:MITBuildRevisionKey];
 }
 
-// e.g. 3.0.1-34-g7411fb9
+// e.g. @"3.0.1-34-g7411fb9 (7)", `git describe` plus
 + (NSString *)description {
-    return [[[NSBundle mainBundle] infoDictionary] objectForKey:MITBuildDescriptionKey];
+    NSString *gitDescribe = [[[NSBundle mainBundle] infoDictionary] objectForKey:MITBuildDescriptionKey];
+    NSString *buildNumber = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleVersion"];
+    return [NSString stringWithFormat:@"%@ (%@)", gitDescribe, buildNumber];
 }
 
 

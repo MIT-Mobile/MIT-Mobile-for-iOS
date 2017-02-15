@@ -17,6 +17,7 @@ NSString * const MITPadDayOfTheWeekCellNibName = @"MITPadDayOfTheWeekCell";
 
 - (void)awakeFromNib
 {
+    [super awakeFromNib];
     self.dayOfTheMonthLabel.layer.cornerRadius = CGRectGetHeight(self.dayOfTheMonthLabel.bounds) / 2.0;
     self.dayOfTheMonthLabel.layer.masksToBounds = YES;
     self.dayOfTheMonthLabel.layer.shouldRasterize = YES;

@@ -633,7 +633,7 @@ typedef struct {
         regex = [NSRegularExpression regularExpressionWithPattern:@"\\s{2,}"
                                                           options:0 error:&error];
         stripped = [regex stringByReplacingMatchesInString:stripped
-                                                   options:NSRegularExpressionDotMatchesLineSeparators
+                                                   options:0
                                                      range:NSMakeRange(0, [stripped length])
                                               withTemplate:@" "];
     } else {
@@ -654,7 +654,7 @@ typedef struct {
     [formatter setDateStyle:NSDateFormatterShortStyle];
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     [calendar setTimeZone:[NSTimeZone defaultTimeZone]];
-    NSDateComponents *components = [calendar components:(NSHourCalendarUnit | NSMinuteCalendarUnit) fromDate:[NSDate date]];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitHour | NSCalendarUnitMinute) fromDate:[NSDate date]];
     components.hour = 20;
     components.year = 2013;
     components.month = 5;
@@ -668,7 +668,7 @@ typedef struct {
     // takes date string of format hh:mm and returns an NSDate with today's date at the specified time.
     
     NSCalendar *cal = [NSCalendar cachedCurrentCalendar];
-    NSDateComponents *comp = [cal components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit|NSHourCalendarUnit|NSMinuteCalendarUnit|NSTimeZoneCalendarUnit fromDate:[NSDate date]];
+    NSDateComponents *comp = [cal components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay|NSCalendarUnitHour|NSCalendarUnitMinute|NSCalendarUnitTimeZone fromDate:[NSDate date]];
     
     NSArray *timeComponents = [time componentsSeparatedByString:@":"];
     comp.hour = [[timeComponents objectAtIndex:0] integerValue];
@@ -681,16 +681,16 @@ typedef struct {
 - (BOOL) isEqualToDateIgnoringTime:(NSDate *)aDate
 {
     return [self isEqualToDate:aDate
-                    components:(NSYearCalendarUnit |
-                                NSMonthCalendarUnit |
-                                NSDayCalendarUnit)];
+                    components:(NSCalendarUnitYear |
+                                NSCalendarUnitMonth|
+                                NSCalendarUnitDay)];
 }
 
 - (BOOL)isEqualToTimeIgnoringDay:(NSDate *)date
 {
     return [self isEqualToDate:date
-                    components:(NSHourCalendarUnit |
-                                NSMinuteCalendarUnit)];
+                    components:(NSCalendarUnitHour |
+                                NSCalendarUnitMinute)];
 }
 
 - (BOOL) isEqualToDate:(NSDate*)otherDate
@@ -715,14 +715,14 @@ typedef struct {
 - (BOOL) isTomorrow
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
-                                                             NSMonthCalendarUnit |
-                                                             NSDayCalendarUnit)
+    NSDateComponents *selfComponents = [calendar components:(NSCalendarUnitYear |
+                                                             NSCalendarUnitMonth |
+                                                             NSCalendarUnitDay)
                                                    fromDate:[self dateBySubtractingDay]];
     
-    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
-                                                              NSMonthCalendarUnit |
-                                                              NSDayCalendarUnit)
+    NSDateComponents *todayComponents = [calendar components:(NSCalendarUnitYear |
+                                                              NSCalendarUnitMonth |
+                                                              NSCalendarUnitDay)
                                                     fromDate:[NSDate date]];
     
     return [todayComponents isEqual:selfComponents];
@@ -732,14 +732,14 @@ typedef struct {
 - (BOOL) isYesterday
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    NSDateComponents *selfComponents = [calendar components:(NSYearCalendarUnit |
-                                                             NSMonthCalendarUnit |
-                                                             NSDayCalendarUnit)
+    NSDateComponents *selfComponents = [calendar components:(NSCalendarUnitYear |
+                                                             NSCalendarUnitMonth |
+                                                             NSCalendarUnitDay)
                                                    fromDate:[self dateByAddingDay]];
     
-    NSDateComponents *todayComponents = [calendar components:(NSYearCalendarUnit |
-                                                              NSMonthCalendarUnit |
-                                                              NSDayCalendarUnit)
+    NSDateComponents *todayComponents = [calendar components:(NSCalendarUnitYear |
+                                                              NSCalendarUnitMonth |
+                                                              NSCalendarUnitDay)
                                                     fromDate:[NSDate date]];
     
     return [todayComponents isEqual:selfComponents];
@@ -747,16 +747,16 @@ typedef struct {
 
 - (NSDate *)dateWithoutTime
 {
-    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSYearCalendarUnit|NSMonthCalendarUnit|NSDayCalendarUnit fromDate:self];
+    NSDateComponents* comps = [[NSCalendar currentCalendar] components:NSCalendarUnitYear|NSCalendarUnitMonth|NSCalendarUnitDay fromDate:self];
     return [[NSCalendar currentCalendar] dateFromComponents:comps];
 }
 
 - (NSDate *) startOfDay
 {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
-    return [calendar dateFromComponents:[calendar components:(NSYearCalendarUnit |
-                                                              NSMonthCalendarUnit |
-                                                              NSDayCalendarUnit)
+    return [calendar dateFromComponents:[calendar components:(NSCalendarUnitYear |
+                                                              NSCalendarUnitMonth |
+                                                              NSCalendarUnitDay)
                                                     fromDate:self]];
 }
 
@@ -766,7 +766,7 @@ typedef struct {
     
     NSDate *dayStart = nil;
     NSTimeInterval dayInterval = 0;
-    [calendar rangeOfUnit:NSDayCalendarUnit
+    [calendar rangeOfUnit:NSCalendarUnitDay
                 startDate:&dayStart
                  interval:&dayInterval
                   forDate:self];
@@ -782,11 +782,11 @@ typedef struct {
 - (NSDate *)startOfWeek
 {
     NSCalendar *calendar = [NSCalendar currentCalendar];
-    NSDateComponents *currentDateWeekdayComponents = [calendar components:NSWeekdayCalendarUnit fromDate:self];
+    NSDateComponents *currentDateWeekdayComponents = [calendar components:NSCalendarUnitWeekday fromDate:self];
     NSDateComponents *dateComponentsToSubtract = [[NSDateComponents alloc] init];
     dateComponentsToSubtract.day = calendar.firstWeekday - currentDateWeekdayComponents.weekday;
     NSDate *startDate = [calendar dateByAddingComponents:dateComponentsToSubtract toDate:self options:0];
-    NSDateComponents *components = [calendar components:(NSYearCalendarUnit | NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:startDate];
+    NSDateComponents *components = [calendar components:(NSCalendarUnitYear | NSCalendarUnitMonth | NSCalendarUnitDay) fromDate:startDate];
     return [calendar dateFromComponents:components];
 }
 
@@ -799,9 +799,9 @@ typedef struct {
     
     // Strip off the time so we return a date that is at the
     // start of the previous day
-    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
-                                                                     NSMonthCalendarUnit |
-                                                                     NSDayCalendarUnit)
+    NSDateComponents *strippedComponents = [calendar components:(NSCalendarUnitYear |
+                                                                     NSCalendarUnitMonth |
+                                                                     NSCalendarUnitDay)
                                                            fromDate:self];
     
     return [[NSCalendar cachedCurrentCalendar] dateByAddingComponents:dateComponents
@@ -818,9 +818,9 @@ typedef struct {
     
     // Strip off the time so we return a date that is at the
     // start of the next day
-    NSDateComponents *strippedComponents = [calendar components:(NSYearCalendarUnit |
-                                                                     NSMonthCalendarUnit |
-                                                                     NSDayCalendarUnit)
+    NSDateComponents *strippedComponents = [calendar components:(NSCalendarUnitYear |
+                                                                 NSCalendarUnitMonth |
+                                                                 NSCalendarUnitDay)
                                                            fromDate:self];
     return [calendar dateByAddingComponents:dateComponents
                                      toDate:[calendar dateFromComponents:strippedComponents]
@@ -880,7 +880,7 @@ typedef struct {
  @return A compact string representation of the date's time components.
  */
 - (NSString *) MITShortTimeOfDayString {
-    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSMinuteCalendarUnit
+    NSDateComponents *components = [[NSCalendar cachedCurrentCalendar] components:NSCalendarUnitMinute
                                                                          fromDate:self];
     
     static NSDateFormatter *formatter;
@@ -931,11 +931,13 @@ typedef struct {
 }
 
 - (NSDateComponents *)dayComponents {
-    return [[NSCalendar cachedCurrentCalendar] components:(NSYearCalendarUnit| NSMonthCalendarUnit | NSDayCalendarUnit) fromDate:self];
+    return [[NSCalendar cachedCurrentCalendar] components:(NSCalendarUnitYear |
+                                                           NSCalendarUnitMonth |
+                                                           NSCalendarUnitDay) fromDate:self];
 }
 
 - (NSDateComponents *)timeComponents {
-    return [[NSCalendar cachedCurrentCalendar] components:(NSHourCalendarUnit | NSMinuteCalendarUnit | NSSecondCalendarUnit) fromDate:self];
+    return [[NSCalendar cachedCurrentCalendar] components:(NSCalendarUnitHour | NSCalendarUnitMinute | NSCalendarUnitSecond) fromDate:self];
 }
 
 /** Returns a date with its time components changed to match the input date.
@@ -947,14 +949,14 @@ typedef struct {
 - (NSDate *)dateWithTimeOfDayFromDate:(NSDate *)date {
     NSCalendar *calendar = [NSCalendar cachedCurrentCalendar];
     
-    NSDateComponents *components = [calendar components:(NSYearCalendarUnit |
-                                                         NSMonthCalendarUnit |
-                                                         NSDayCalendarUnit)
+    NSDateComponents *components = [calendar components:(NSCalendarUnitYear |
+                                                         NSCalendarUnitMonth |
+                                                         NSCalendarUnitDay)
                                                fromDate:self];
     
-    NSDateComponents *timeComponents = [calendar components:(NSHourCalendarUnit |
-                                                             NSMinuteCalendarUnit |
-                                                             NSSecondCalendarUnit)
+    NSDateComponents *timeComponents = [calendar components:(NSCalendarUnitHour |
+                                                             NSCalendarUnitMinute |
+                                                             NSCalendarUnitSecond)
                                                    fromDate:date];
     
    return [calendar dateByAddingComponents:timeComponents
@@ -1007,7 +1009,7 @@ typedef struct {
 
 - (NSString *)MITDateCode
 {
-    NSCalendarUnit calendarUnits = (NSDayCalendarUnit | NSWeekdayCalendarUnit);
+    NSCalendarUnit calendarUnits = (NSCalendarUnitDay | NSCalendarUnitWeekday);
     NSDateComponents *dateComponents = [[NSCalendar cachedCurrentCalendar] components:calendarUnits fromDate:self];
  
     switch (dateComponents.weekday) {

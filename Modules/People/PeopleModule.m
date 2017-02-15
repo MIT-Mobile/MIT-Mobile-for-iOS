@@ -18,6 +18,7 @@ static NSString * const PeopleStateDetail = @"detail";
 
 @implementation PeopleModule
 @synthesize peopleController = _peopleController;
+@dynamic rootViewController;
 
 - (id)init
 {
@@ -68,7 +69,7 @@ static NSString * const PeopleStateDetail = @"detail";
     NSString *query = [url.query urlDecodeUsingEncoding:NSUTF8StringEncoding];
     if ([action isEqualToString:PeopleStateSearchBegin]) {
         self.rootViewController.searchBar.text = query;
-        [self.rootViewController.searchDisplayController setActive:YES animated:NO];
+        [self.rootViewController.strongSearchDisplayController setActive:YES];
         return;
     }
 

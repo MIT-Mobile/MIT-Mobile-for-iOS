@@ -43,7 +43,7 @@
 }
 
 - (NSInteger)weekdayForSection:(NSInteger)section {
-    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSWeekdayCalendarUnit fromDate:[self dateForSection:section]];
+    NSDateComponents *components = [[NSCalendar currentCalendar] components:NSCalendarUnitWeekday fromDate:[self dateForSection:section]];
     return components.weekday;
 }
 

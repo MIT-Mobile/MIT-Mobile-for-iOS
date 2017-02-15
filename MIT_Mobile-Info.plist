@@ -5,11 +5,13 @@
 	<key>CFBundleDevelopmentRegion</key>
 	<string>English</string>
 	<key>CFBundleDisplayName</key>
-	<string>MIT Mobile</string>
+	<string>Tim Info</string>
 	<key>CFBundleExecutable</key>
 	<string>${EXECUTABLE_NAME}</string>
+	<key>CFBundleGetInfoString</key>
+	<string>Tim Info</string>
 	<key>CFBundleIdentifier</key>
-	<string>edu.mit.mitmobile</string>
+	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -17,7 +19,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>4.0</string>
+	<string>1.0.2</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -32,13 +34,15 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>8</string>
+	<string>7</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.education</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>MITAboutAppText</key>
-	<string>MIT Mobile for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iOS platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
+	<string>Tim Info for iPhone has been collaboratively designed and developed by MIT students and staff to extend the Institute’s mobile framework to the iOS platform. If you have ideas for improvements or new functionality, we’d love to hear them.</string>
 	<key>MITAboutMITText</key>
 	<string>The Massachusetts Institute of Technology, a co-educational privately endowed research university, is dedicated to advancing knowledge and educating students in science, technology, and other areas of scholarship to serve the nation and world. The Institute has more than 900 faculty and 10,000 undergraduate and graduate students.
 
@@ -47,14 +51,23 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<string></string>
 	<key>MITBuildRevision</key>
 	<string></string>
-	<key>MITCopyright</key>
-	<string></string>
 	<key>MITFeedbackAddress</key>
-	<string>iphone-app-feedback@mit.edu</string>
+	<string>tim@timapp.info</string>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsArbitraryLoads</key>
+		<true/>
+	</dict>
+	<key>NSCalendarsUsageDescription</key>
+	<string>Tim Info uses your calendar to add events from the Events Calendar</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Tim Info uses your camera to take pictures of bar codes and to send pictures to building services.</string>
 	<key>NSLocationUsageDescription</key>
-	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<string>Tim Info uses your location to find nearby shuttle stops and to show your location on maps.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>MIT Mobile uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<string>Tim Info uses your location to find nearby shuttle stops and to show your location on maps.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Tim Info uses your photo library to upload photos for Building Services Reports</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>fetch</string>
@@ -65,22 +78,25 @@ MIT's commitment to innovation has led to a host of scientific breakthroughs and
 	<string>Main</string>
 	<key>UIPrerenderedIcon</key>
 	<true/>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UIStatusBarHidden</key>
 	<true/>
 	<key>UIStatusBarStyle</key>
 	<string>UIStatusBarStyleDefault</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
-		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationMaskPortrait</string>
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationMaskPortraitUpsideDown</string>
 	</array>
 </dict>
 </plist>

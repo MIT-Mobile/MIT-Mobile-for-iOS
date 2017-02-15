@@ -176,9 +176,10 @@ static __weak MITTouchstoneController *_sharedTouchstonController = nil;
             storedCredential = credentials[lastLoggedInUser];
             (*stop) = YES;
         } else if (!fallbackCredential) {
-            if ([identityProvider canAuthenticateForUser:lastLoggedInUser]) {
+#warning touchstone things
+           /* if ([identityProvider canAuthenticateForUser:lastLoggedInUser]) {
                 fallbackCredential = [NSURLCredential credentialWithUser:lastLoggedInUser password:nil persistence:NSURLCredentialPersistenceNone];
-            }
+            }*/
         } else if ([credentials count] > 0) {
             DDLogWarn(@"found %lu credentials but missing a value for %@",(unsigned long)[credentials count],MITTouchstoneLastLoggedInUserKey);
         }
