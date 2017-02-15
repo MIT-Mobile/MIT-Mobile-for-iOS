@@ -84,7 +84,6 @@ static NSString *const kMITDiningFiltersUserDefaultsKey = @"kMITDiningFiltersUse
 {
     if (!_venueInfoView) {
         MITDiningVenueInfoCell *cell = [[[NSBundle mainBundle] loadNibNamed:NSStringFromClass([MITDiningVenueInfoCell class]) owner:self options:nil] objectAtIndex:0]; //[self.tableView dequeueReusableCellWithIdentifier:kMITDiningHouseVenueInfoCell];
-        cell.translatesAutoresizingMaskIntoConstraints = NO;
         
         [cell setHouseVenue:self.houseVenue];
         cell.delegate = self;
